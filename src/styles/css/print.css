@@ -1,0 +1,30 @@
+/**
+ * print.css: Stili ottimizzati per la stampa della pagina.
+ * Nasconde menu, link superflui e sfondi colorati.
+ */
+
+@media print {
+    body {
+        font-size: 12pt;
+        background: white;
+        color: black;
+    }
+
+    nav, 
+    .back-to-top, 
+    .main-footer, 
+    .main-header h1 {
+        display: none !important;
+    }
+
+    a::after {
+        content: " (" attr(href) ")";
+        font-size: 0.8em;
+    }
+
+    .content-container {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+}

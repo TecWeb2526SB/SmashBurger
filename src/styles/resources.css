@@ -1,0 +1,7 @@
+/**
+ * resources.css: File centrale per l'importazione di tutti i fogli di stile del progetto.
+ * Viene incluso come unico <link> nell'HTML.
+ */
+
+@import url("css/general.css");
+@import url("css/print.css");
