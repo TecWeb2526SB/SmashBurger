@@ -7,9 +7,11 @@
 // 1. Includi il file delle risorse centrale
 require_once __DIR__ . '/includes/resources.php';
 
-// 2. Definizione variabili specifiche per la pagina (opzionale)
-$pageTitle = 'SmashBurger - Homepage - I migliori Burger Smash';
-$pageDescription = 'Scopri i segreti della cottura smash di SmashBurger: carne di qualità, ingredienti freschi e gusto inimitabile. Prenota il tuo tavolo!';
+// 2. Definizione variabili specifiche per la pagina
+$pageTitle = 'Home - Smash Burger Original | Il vero gusto dello smash';
+$pageDescription = 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina a domicilio o ritira in sede.';
+$isHomepage = true;       // Usa <h1> per il brand solo nella home
+$currentPage = 'index.php'; // Indica la voce attiva nel menu principale
 
 // 3. Caricamento della struttura della pagina (Template)
 include_once __DIR__ . '/views/template/header.php';

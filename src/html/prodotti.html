@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I nostri prodotti - Smash Burger Original</title>
+    <meta name="description"
+        content="Scopri tutti i burger, i contorni e le bevande di Smash Burger Original. Ingredienti freschi e tecnica smash per ogni morso.">
+    <meta name="keywords" content="smash burger menu, burger, patatine, bevande, prezzi">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/style.css" media="screen">
+    <link rel="stylesheet" href="../css/mobile.css" media="screen">
+    <link rel="stylesheet" href="../css/print.css" media="print">
+
+    <link rel="shortcut icon" href="../images/favicon.ico">
+</head>
+
+<body>
+
+    <!-- Skip link -->
+    <nav id="skip-link" aria-label="Salta al contenuto">
+        <a href="#content">Vai al contenuto principale</a>
+    </nav>
+
+    <!-- ================================================================
+         HEADER
+         - Nelle pagine interne: brand e' <p>, NON <h1>
+         - Voce attiva "I nostri prodotti": nessun <a>, aria-current="page"
+    ================================================================== -->
+    <header>
+        <div class="contenitore">
+
+            <p class="brand"><a href="home.php">Smash Burger</a></p>
+
+            <nav id="menu-principale" aria-label="Navigazione principale">
+                <ul>
+                    <li><a href="home.php">Home</a></li>
+                    <li class="attivo" aria-current="page">I nostri prodotti</li>
+                    <li><a href="servizi.php">Servizi</a></li>
+                    <li><a href="sedi.php">Chi siamo</a></li>
+                    <li><a href="login.php">Accedi</a></li>
+                </ul>
+            </nav>
+
+            <button id="theme-toggle" type="button" aria-label="Attiva modalit&agrave; scura">
+                Cambia contrasto
+            </button>
+
+        </div>
+    </header>
+
+    <!-- ================================================================
+         MAIN
+    ================================================================== -->
+    <main id="content">
+
+        <!-- INTESTAZIONE PAGINA ---------------------------------------- -->
+        <section id="intestazione-prodotti" aria-labelledby="titolo-prodotti">
+            <div class="contenitore">
+                <h1 id="titolo-prodotti">I nostri prodotti</h1>
+                <p>Tutto quello che trovi nel nostro menu &egrave; preparato al momento.
+                    Scegli la tua combinazione e ordinala a domicilio o al banco.</p>
+            </div>
+        </section>
+
+        <!-- FILTRO CATEGORIE (progressively enhanced via JS) ------------ -->
+        <!--
+            Senza JS: tutti i prodotti sono visibili, i link sono ancore interne.
+            Con JS: main.js intercetta i click e filtra via classe CSS.
+            La nav e' semanticamente corretta in entrambi i casi.
+        -->
+        <nav id="filtro-categorie" aria-label="Filtra per categoria">
+            <div class="contenitore">
+                <ul>
+                    <li><a href="#burger">Burger</a></li>
+                    <li><a href="#contorni">Contorni</a></li>
+                    <li><a href="#bevande">Bevande</a></li>
+                    <li><a href="#menu-combo">Menu combo</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- CATEGORIA: BURGER ------------------------------------------ -->
+        <section id="burger" aria-labelledby="titolo-burger">
+            <div class="contenitore">
+
+                <h2 id="titolo-burger">Burger</h2>
+
+                <!--
+                    Ogni prodotto e' un <article> autonomo e identificabile.
+                    <h3> per rispettare la gerarchia: h1 pagina > h2 categoria > h3 prodotto.
+                    Il prezzo e' in <p> con classe semantica, non in uno span presentazionale.
+                    Le immagini hanno alt descrittivo con keyword rilevante.
+                    Nessuna tabella: i prodotti non sono dati tabulari.
+                -->
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-classic-smash">
+                    <figure>
+                        <img src="../images/prodotti/classic-smash.webp"
+                            alt="Classic Smash: burger singolo con cheddar fuso e salsa speciale" width="400"
+                            height="300">
+                        <figcaption>Classic Smash</figcaption>
+                    </figure>
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-classic-smash">Classic Smash</h3>
+                        <p>Patty di manzo schiacciato, cheddar americano, cipolle caramellate,
+                            cetrioli, senape e ketchup su bun tostato al burro.</p>
+                        <p class="prezzo" aria-label="Prezzo: 7 euro e 50">7,50 &euro;</p>
+                        <a href="carrello.php?aggiungi=classic-smash" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-double-smash">
+                    <figure>
+                        <img src="../images/prodotti/double-smash.webp"
+                            alt="Double Smash Cheese: doppio patty con doppio strato di cheddar fuso" width="400"
+                            height="300">
+                        <figcaption>Double Smash Cheese</figcaption>
+                    </figure>
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-double-smash">Double Smash Cheese</h3>
+                        <p>Due patty di manzo, doppio cheddar, cipolla bianca cruda,
+                            salsa speciale della casa su bun tostato.</p>
+                        <p class="prezzo" aria-label="Prezzo: 10 euro e 50">10,50 &euro;</p>
+                        <a href="carrello.php?aggiungi=double-smash" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-crispy-chicken">
+                    <figure>
+                        <img src="../images/prodotti/crispy-chicken.webp"
+                            alt="Crispy Chicken Smash: petto di pollo panato e fritto con coleslaw" width="400"
+                            height="300">
+                        <figcaption>Crispy Chicken Smash</figcaption>
+                    </figure>
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-crispy-chicken">Crispy Chicken Smash</h3>
+                        <p>Petto di pollo marinato e panato, coleslaw artigianale,
+                            salsa sriracha-mayo e cetriolini su bun brioche.</p>
+                        <p class="prezzo" aria-label="Prezzo: 9 euro">9,00 &euro;</p>
+                        <a href="carrello.php?aggiungi=crispy-chicken" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- CATEGORIA: CONTORNI ---------------------------------------- -->
+        <section id="contorni" aria-labelledby="titolo-contorni">
+            <div class="contenitore">
+
+                <h2 id="titolo-contorni">Contorni</h2>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-patatine">
+                    <figure>
+                        <img src="../images/prodotti/patatine.webp"
+                            alt="Patatine fritte croccanti con sale marino e rosmarino" width="400" height="300">
+                        <figcaption>Patatine fritte</figcaption>
+                    </figure>
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-patatine">Patatine fritte</h3>
+                        <p>Patatine a bastoncino, fritte in olio di semi di girasole,
+                            con sale marino e rosmarino. Disponibili in formato normale o extra large.</p>
+                        <p class="prezzo" aria-label="Prezzo: 3 euro e 50">3,50 &euro;</p>
+                        <a href="carrello.php?aggiungi=patatine" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-onion-rings">
+                    <figure>
+                        <img src="../images/prodotti/onion-rings.webp"
+                            alt="Anelli di cipolla in pastella croccante dorata" width="400" height="300">
+                        <figcaption>Onion rings</figcaption>
+                    </figure>
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-onion-rings">Onion rings</h3>
+                        <p>Anelli di cipolla bianca in pastella alla birra, fritti al momento.
+                            Serviti con salsa ranch.</p>
+                        <p class="prezzo" aria-label="Prezzo: 4 euro">4,00 &euro;</p>
+                        <a href="carrello.php?aggiungi=onion-rings" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- CATEGORIA: BEVANDE ----------------------------------------- -->
+        <section id="bevande" aria-labelledby="titolo-bevande">
+            <div class="contenitore">
+
+                <h2 id="titolo-bevande">Bevande</h2>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-bibite">
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-bibite">Bibite in lattina</h3>
+                        <p>Coca-Cola, Fanta, Sprite. Formato 33 cl, servite fredde.</p>
+                        <p class="prezzo" aria-label="Prezzo: 2 euro e 50">2,50 &euro;</p>
+                        <a href="carrello.php?aggiungi=bibita" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-milkshake">
+                    <figure>
+                        <img src="../images/prodotti/milkshake.webp"
+                            alt="Milkshake artigianale al cioccolato con panna montata" width="400" height="300">
+                        <figcaption>Milkshake artigianale</figcaption>
+                    </figure>
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-milkshake">Milkshake artigianale</h3>
+                        <p>Preparato al momento con gelato artigianale. Gusti disponibili:
+                            cioccolato, fragola, vaniglia.</p>
+                        <p class="prezzo" aria-label="Prezzo: 5 euro">5,00 &euro;</p>
+                        <a href="carrello.php?aggiungi=milkshake" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- CATEGORIA: MENU COMBO --------------------------------------- -->
+        <section id="menu-combo" aria-labelledby="titolo-combo">
+            <div class="contenitore">
+
+                <h2 id="titolo-combo">Menu combo</h2>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-combo-classic">
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-combo-classic">Combo Classic</h3>
+                        <p>Classic Smash + patatine formato normale + bibita a scelta.
+                            Risparmio di 2,00 &euro; rispetto agli acquisti singoli.</p>
+                        <p class="prezzo" aria-label="Prezzo: 11 euro">11,00 &euro;</p>
+                        <a href="carrello.php?aggiungi=combo-classic" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+                <article class="scheda-prodotto" aria-labelledby="prodotto-combo-double">
+                    <div class="scheda-prodotto-testo">
+                        <h3 id="prodotto-combo-double">Combo Double</h3>
+                        <p>Double Smash Cheese + patatine extra large + bibita a scelta.
+                            Risparmio di 2,50 &euro; rispetto agli acquisti singoli.</p>
+                        <p class="prezzo" aria-label="Prezzo: 13 euro e 50">13,50 &euro;</p>
+                        <a href="carrello.php?aggiungi=combo-double" class="bottone-primario">
+                            Aggiungi al carrello
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ================================================================
+         FOOTER (identico a home, estratto in footer.php nella versione PHP)
+    ================================================================== -->
+    <footer>
+        <div class="contenitore">
+
+            <section aria-labelledby="titolo-contatti">
+                <h2 id="titolo-contatti">Contatti</h2>
+                <address>
+                    <p>Email: <a href="mailto:info@smashburger.it">info&commat;smashburger.it</a></p>
+                    <p>Telefono: <a href="tel:+390123456789">+39 0123 456 789</a></p>
+                </address>
+            </section>
+
+            <section aria-labelledby="titolo-social">
+                <h2 id="titolo-social">Seguici</h2>
+                <p>
+                    <a href="https://instagram.com/smashburgeroriginal" rel="noopener noreferrer" target="_blank"
+                        aria-label="Instagram di Smash Burger (apre in nuova scheda)">
+                        Instagram
+                    </a>
+                </p>
+            </section>
+
+            <div class="footer-basso">
+                <p>&copy; 2024 Smash Burger Original &mdash; P.IVA 12345678901</p>
+                <nav aria-label="Informazioni legali">
+                    <ul>
+                        <li><a href="policy.php">Privacy Policy</a></li>
+                        <li><a href="mappa.php">Mappa del sito</a></li>
+                    </ul>
+                </nav>
+            </div>
+
+        </div>
+    </footer>
+
+    <script src="../scripts/main.js" defer></script>
+
+</body>
+
+</html>

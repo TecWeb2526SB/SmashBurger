@@ -1,0 +1,464 @@
+/* --------------------------------------------------------------------------
+   1. VARIABILI CSS
+   -------------------------------------------------------------------------- */
+
+:root {
+    /* Palette: bianco puro + nero + accento rosso mattone */
+    --colore-sfondo:        #ffffff;
+    --colore-testo:         #111111;
+    --colore-testo-leggero: #555555;
+    --colore-accento:       #c0392b;
+    --colore-accento-hover: #96281b;
+    --colore-bordo:         #e0e0e0;
+    --colore-sfondo-alt:    #f5f5f5;
+
+    /* Link */
+    --colore-link:          #c0392b;
+    --colore-link-visitato: #7b241c;  /* contrasto ≥ 3:1 rispetto al non visitato */
+    --colore-link-focus:    #c0392b;
+
+    /* Tipografia */
+    --font-base:   'Inter', sans-serif;
+    --font-size-base: 1rem;       /* 16px browser default */
+    --line-height-base: 1.6;
+
+    /* Spaziatura */
+    --spazio-xs:  0.25rem;
+    --spazio-sm:  0.5rem;
+    --spazio-md:  1rem;
+    --spazio-lg:  2rem;
+    --spazio-xl:  4rem;
+
+    /* Layout */
+    --larghezza-max: 72rem;       /* ~1152px */
+    --raggio-bordo:  0.25rem;
+
+    /* Focus */
+    --outline-focus: 3px solid #c0392b;
+    --outline-offset: 3px;
+
+    /* Transizioni */
+    --transizione-base: 150ms ease;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. DARK MODE AUTOMATICA (prefers-color-scheme)
+   -------------------------------------------------------------------------- */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --colore-sfondo:        #111111;
+        --colore-testo:         #f0f0f0;
+        --colore-testo-leggero: #aaaaaa;
+        --colore-accento:       #e74c3c;
+        --colore-accento-hover: #c0392b;
+        --colore-bordo:         #2a2a2a;
+        --colore-sfondo-alt:    #1a1a1a;
+
+        --colore-link:          #e74c3c;
+        --colore-link-visitato: #c39797;
+    }
+}
+
+
+/* --------------------------------------------------------------------------
+   3. DARK MODE MANUALE (toggle JS — classe sul <html>)
+   -------------------------------------------------------------------------- */
+
+html.tema-scuro {
+    --colore-sfondo:        #111111;
+    --colore-testo:         #f0f0f0;
+    --colore-testo-leggero: #aaaaaa;
+    --colore-accento:       #e74c3c;
+    --colore-accento-hover: #c0392b;
+    --colore-bordo:         #2a2a2a;
+    --colore-sfondo-alt:    #1a1a1a;
+
+    --colore-link:          #e74c3c;
+    --colore-link-visitato: #c39797;
+}
+
+html.tema-chiaro {
+    --colore-sfondo:        #ffffff;
+    --colore-testo:         #111111;
+    --colore-testo-leggero: #555555;
+    --colore-accento:       #c0392b;
+    --colore-accento-hover: #96281b;
+    --colore-bordo:         #e0e0e0;
+    --colore-sfondo-alt:    #f5f5f5;
+
+    --colore-link:          #c0392b;
+    --colore-link-visitato: #7b241c;
+}
+
+
+/* --------------------------------------------------------------------------
+   4. RESET MINIMALE
+   -------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 100%;   /* rispetta le impostazioni utente del browser */
+    scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;  /* eccezione giustificata: override accessibilità riduzione movimento */
+        transition-duration: 0.01ms !important;
+    }
+}
+
+body {
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    font-family: var(--font-base);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+img,
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+ul,
+ol {
+    list-style: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. TIPOGRAFIA
+   -------------------------------------------------------------------------- */
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--colore-testo);
+}
+
+/* Scala tipografica modulare — rapporto 1.25 (Major Third) */
+h1 { font-size: 2.441rem; }
+h2 { font-size: 1.953rem; }
+h3 { font-size: 1.563rem; }
+h4 { font-size: 1.25rem;  }
+h5 { font-size: 1rem;     }
+h6 { font-size: 0.875rem; }
+
+p {
+    margin-bottom: var(--spazio-md);
+    color: var(--colore-testo);
+}
+
+p:last-child {
+    margin-bottom: 0;
+}
+
+strong { font-weight: 700; }
+em     { font-style: italic; }
+
+abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
+}
+
+address {
+    font-style: normal;
+    line-height: var(--line-height-base);
+}
+
+
+/* --------------------------------------------------------------------------
+   6. LINK
+   -------------------------------------------------------------------------- */
+
+a {
+    color: var(--colore-link);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transition: color var(--transizione-base);
+}
+
+a:hover {
+    color: var(--colore-accento-hover);
+}
+
+a:visited {
+    color: var(--colore-link-visitato);
+}
+
+a:focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+    border-radius: var(--raggio-bordo);
+    color: var(--colore-link-focus);
+}
+
+
+/* --------------------------------------------------------------------------
+   7. SKIP LINK (accessibilità — primo elemento nella pagina)
+   -------------------------------------------------------------------------- */
+
+#skip-link a {
+    position: absolute;
+    top: -10rem;
+    left: var(--spazio-md);
+    z-index: 1000;
+    background-color: var(--colore-accento);
+    color: #ffffff;
+    padding: var(--spazio-sm) var(--spazio-md);
+    border-radius: var(--raggio-bordo);
+    font-weight: 700;
+    text-decoration: none;
+    transition: top var(--transizione-base);
+}
+
+#skip-link a:focus {
+    top: var(--spazio-md);
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+}
+
+
+/* --------------------------------------------------------------------------
+   8. LAYOUT — contenitore principale
+   -------------------------------------------------------------------------- */
+
+.contenitore {
+    width: 100%;
+    max-width: var(--larghezza-max);
+    margin-inline: auto;
+    padding-inline: var(--spazio-lg);
+}
+
+main {
+    flex: 1;  /* spinge il footer in fondo */
+    padding-block: var(--spazio-xl);
+}
+
+
+/* --------------------------------------------------------------------------
+   9. HEADER
+   -------------------------------------------------------------------------- */
+
+header {
+    background-color: var(--colore-sfondo);
+    border-bottom: 1px solid var(--colore-bordo);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header > .contenitore {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spazio-md);
+    padding-block: var(--spazio-md);
+}
+
+/* Il brand/logo — solo nella home è <h1>, nelle altre è <p> */
+.brand {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--colore-testo);
+    text-decoration: none;
+}
+
+.brand:visited {
+    color: var(--colore-testo);
+}
+
+.brand:hover {
+    color: var(--colore-accento);
+}
+
+/* <h1> nella home — stesso stile visivo del brand */
+header h1 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--colore-testo);
+    margin: 0;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. NAVIGAZIONE PRINCIPALE
+   -------------------------------------------------------------------------- */
+
+#menu-principale ul {
+    display: flex;
+    align-items: center;
+    gap: var(--spazio-lg);
+    flex-wrap: wrap;
+}
+
+/* Voce generica del menu */
+#menu-principale li {
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+#menu-principale a {
+    color: var(--colore-testo);
+    text-decoration: none;
+    padding-block: var(--spazio-xs);
+    border-bottom: 2px solid transparent;
+    transition: color var(--transizione-base),
+                border-color var(--transizione-base);
+}
+
+#menu-principale a:hover {
+    color: var(--colore-accento);
+    border-bottom-color: var(--colore-accento);
+}
+
+#menu-principale a:visited {
+    color: var(--colore-testo);  /* i link di nav non mostrano stato visitato */
+}
+
+#menu-principale a:focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+    border-radius: var(--raggio-bordo);
+}
+
+/*
+   Pagina attiva: nessun <a>, solo testo.
+   La classe .attivo è applicata via PHP sulla <li> corrente.
+   Non serve JavaScript per questo comportamento.
+*/
+#menu-principale li.attivo {
+    color: var(--colore-accento);
+    font-weight: 700;
+    border-bottom: 2px solid var(--colore-accento);
+    padding-block: var(--spazio-xs);
+    cursor: default;
+}
+
+
+/* --------------------------------------------------------------------------
+   11. PULSANTE TEMA (theme toggle)
+   -------------------------------------------------------------------------- */
+
+#theme-toggle {
+    background: none;
+    border: 1px solid var(--colore-bordo);
+    color: var(--colore-testo);
+    padding: var(--spazio-xs) var(--spazio-sm);
+    border-radius: var(--raggio-bordo);
+    font-size: 0.8125rem;
+    font-family: var(--font-base);
+    cursor: pointer;
+    transition: border-color var(--transizione-base),
+                color var(--transizione-base);
+    white-space: nowrap;
+}
+
+#theme-toggle:hover {
+    border-color: var(--colore-accento);
+    color: var(--colore-accento);
+}
+
+#theme-toggle:focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+}
+
+
+/* --------------------------------------------------------------------------
+   12. FOOTER
+   -------------------------------------------------------------------------- */
+
+footer {
+    background-color: var(--colore-sfondo-alt);
+    border-top: 1px solid var(--colore-bordo);
+    padding-block: var(--spazio-xl);
+}
+
+footer > .contenitore {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--spazio-lg);
+}
+
+footer h2 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: var(--spazio-md);
+    color: var(--colore-testo);
+}
+
+footer p,
+footer address {
+    font-size: 0.9375rem;
+    color: var(--colore-testo-leggero);
+    margin-bottom: var(--spazio-sm);
+}
+
+footer a {
+    color: var(--colore-link);
+}
+
+footer a:visited {
+    color: var(--colore-link-visitato);
+}
+
+footer a:hover {
+    color: var(--colore-accento-hover);
+}
+
+footer a:focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+    border-radius: var(--raggio-bordo);
+}
+
+/* Barra inferiore del footer: copyright + nav legale */
+.footer-basso {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spazio-md);
+    padding-top: var(--spazio-lg);
+    border-top: 1px solid var(--colore-bordo);
+    font-size: 0.8125rem;
+    color: var(--colore-testo-leggero);
+}
+
+.footer-basso nav ul {
+    display: flex;
+    gap: var(--spazio-md);
+    flex-wrap: wrap;
+}
+
+.footer-basso nav a {
+    font-size: 0.8125rem;
+    color: var(--colore-testo-leggero);
+}

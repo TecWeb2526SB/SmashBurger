@@ -3,47 +3,48 @@
  * homepage.php: Contenuto dinamico per la pagina principale di SmashBurger.
  */
 ?>
-<section class="welcome-section">
-    <h2>I Nostri Burgers</h2>
-    <p>Il miglior smash burger della città, preparato con ingredienti freschi e di alta qualità.</p>
-    
-    <div class="main-visual">
-        <!-- Immagine di contenuto con attributo alt descrittivo come da specifiche -->
-        <img src="styles/img/placeholder_burger.jpg" alt="Un succulento smash burger con formaggio fuso, lattuga e salsa speciale su un vassoio di legno" width="600" height="400">
+
+<!-- HERO -->
+<section id="hero" aria-labelledby="titolo-hero">
+    <div class="contenitore">
+        <h2 id="titolo-hero">L&apos;arte dello Smash Burger</h2>
+        <p>Non il solito hamburger. Una tecnica di cottura precisa per una reazione
+            di Maillard perfetta. Croccantezza esterna e succulenza interna garantite.</p>
+        <a href="prodotti.php" class="bottone-primario">Scopri il menu</a>
+        <figure>
+            <img src="images/hero-burger.webp" alt="Double Smash Cheese con crosticina croccante e formaggio fuso"
+                width="800" height="450">
+            <figcaption>Il nostro iconico Double Smash Cheese</figcaption>
+        </figure>
     </div>
-
-    <div class="features">
-        <article>
-            <h3>Cottura Smash</h3>
-            <p>Carne pressata sulla piastra bollente per ottenere una crosticina perfetta.</p>
-        </article>
-        <article>
-            <h3>Ingredienti Freschi</h3>
-            <p>Solo prodotti selezionati dai nostri fornitori locali di fiducia.</p>
-        </article>
-    </div>
-
-    <section class="reservation">
-        <h3>Prenota un Tavolo</h3>
-        <form action="index.php" method="POST">
-            <fieldset>
-                <legend>I tuoi dati</legend>
-                <p>
-                    <label for="name">Nome completo:</label>
-                    <input type="text" id="name" name="name" required aria-required="true">
-                </p>
-                <p>
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required aria-required="true">
-                </p>
-                <p>
-                    <label for="message">Note per la prenotazione (campo testo libero richiesto):</label>
-                    <textarea id="message" name="message" rows="4"></textarea>
-                </p>
-                <button type="submit" class="btn-primary">Invia Prenotazione</button>
-            </fieldset>
-        </form>
-    </section>
-
-    <p>Sito in fase di sviluppo con Apache e MariaDB.</p>
 </section>
+
+<!-- PROMOZIONI -->
+<section id="promozioni" aria-labelledby="titolo-promozioni">
+    <div class="contenitore">
+        <h2 id="titolo-promozioni">Offerte del mese</h2>
+
+        <article aria-labelledby="titolo-studente">
+            <h3 id="titolo-studente">Menu Studente</h3>
+            <p>Mostra il tuo badge in cassa o inserisci il codice online per avere
+                uno sconto del 15&percnt; sui menu combo.</p>
+        </article>
+
+        <article aria-labelledby="titolo-famiglia">
+            <h3 id="titolo-famiglia">Combo Famiglia</h3>
+            <p>Quattro Smash Burger classici e due porzioni di patatine extra large
+                a un prezzo speciale.</p>
+        </article>
+    </div>
+</section>
+
+<!-- ASIDE ordini recenti (condizionale su $_SESSION) -->
+<aside aria-labelledby="titolo-ordini">
+    <div class="contenitore">
+        <h2 id="titolo-ordini">Ultimi ordini</h2>
+        <p>Entra nella tua
+            <a href="area_personale.php">area personale</a>
+            per ripetere l&apos;ultimo ordine con un solo click.
+        </p>
+    </div>
+</aside>
