@@ -8,6 +8,19 @@
     <meta name="description"
         content="Scopri l'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina a domicilio o ritira in sede.">
     <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away">
+    <meta name="color-scheme" content="light dark">
+
+    <!-- Script inline: applica il tema salvato PRIMA del render per evitare flash -->
+    <script>
+        (function () {
+            var tema = localStorage.getItem('smashburger-tema');
+            if (tema === 'scuro' || (!tema && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('tema-scuro');
+            } else if (tema === 'chiaro') {
+                document.documentElement.classList.add('tema-chiaro');
+            }
+        }());
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +35,7 @@
 
 <body>
 
-    <!-- Skip link -->
+    <!-- Skip link: primo elemento tabbable nella pagina -->
     <nav id="skip-link" aria-label="Salta al contenuto">
         <a href="#content">Vai al contenuto principale</a>
     </nav>
@@ -30,12 +43,12 @@
     <header>
         <div class="contenitore">
 
-            <!-- h1 SOLO nella home. Nelle altre pagine: <p class="brand"> -->
+            <!-- <h1> SOLO nella home. Nelle altre pagine: <p class="brand"> -->
             <h1 class="brand">Smash Burger</h1>
 
             <nav id="menu-principale" aria-label="Navigazione principale">
                 <ul>
-                    <!-- Voce attiva: nessun <a>, aria-current="page" -->
+                    <!-- Voce attiva: nessun <a>, aria-current="page" per screen reader -->
                     <li class="attivo" aria-current="page">Home</li>
                     <li><a href="prodotti.html">I nostri prodotti</a></li>
                     <li><a href="servizi.html">Servizi</a></li>
@@ -44,7 +57,7 @@
                 </ul>
             </nav>
 
-            <button id="theme-toggle" type="button" aria-label="Attiva modalit&agrave; scura">
+            <button id="theme-toggle" type="button" aria-label="Attiva modalit&agrave; scura" aria-pressed="false">
                 Cambia contrasto
             </button>
 
@@ -87,12 +100,12 @@
             </div>
         </section>
 
-        <!-- ASIDE ordini recenti (in home.php sarà condizionale su $_SESSION) -->
+        <!-- ASIDE: ordini recenti -->
         <aside aria-labelledby="titolo-ordini">
             <div class="contenitore">
                 <h2 id="titolo-ordini">Ultimi ordini</h2>
                 <p>Entra nella tua
-                    <a href="area_personale.php">area personale</a>
+                    <a href="area_personale.html">area personale</a>
                     per ripetere l&apos;ultimo ordine con un solo click.
                 </p>
             </div>
@@ -122,11 +135,11 @@
             </section>
 
             <div class="footer-basso">
-                <p>&copy; 2024 Smash Burger Original &mdash; P.IVA 12345678901</p>
+                <p>&copy; 2025 Smash Burger Original &mdash; P.IVA 12345678901</p>
                 <nav aria-label="Informazioni legali">
                     <ul>
-                        <li><a href="policy.php">Privacy Policy</a></li>
-                        <li><a href="mappa.php">Mappa del sito</a></li>
+                        <li><a href="policy.html">Privacy Policy</a></li>
+                        <li><a href="mappa.html">Mappa del sito</a></li>
                     </ul>
                 </nav>
             </div>
@@ -134,7 +147,7 @@
         </div>
     </footer>
 
-    <script src="../scripts/main.js?v=1.0" defer></script>
+    <script src="../scripts/main.js" defer></script>
 
 </body>
 
