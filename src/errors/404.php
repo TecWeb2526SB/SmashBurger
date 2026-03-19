@@ -1,25 +1,31 @@
 <?php
 /**
- * Pagina di errore HTTP 404 (Not Found).
- * Carica stili e logica esterni per garantire pulizia e consistenza.
+ * 404.php: Pagina di errore HTTP 404 (Not Found).
  */
 http_response_code(404);
 ?>
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" xml:lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Risorsa Non Trovata</title>
-    <!-- Inclusione delle risorse esterne -->
-    <link rel="stylesheet" href="/styles/resources.css">
-    <script src="/styles/js/main.js" defer></script>
+    <title>404 - Pagina non trovata - Smash Burger Original</title>
+    <link rel="stylesheet" href="/styles/css/style.css" media="screen">
+    <link rel="stylesheet" href="/styles/css/print.css" media="print">
 </head>
-<body class="status-layout">
-    <main class="status-container">
-        <h1 class="status-code not-found">404</h1>
-        <p class="status-message">La pagina che stai cercando non esiste o è stata spostata.</p>
-        <a href="/" class="btn-primary">Torna alla Home</a>
+<body>
+
+    <nav id="skip-link" aria-label="Salta al contenuto">
+        <a href="#content">Vai al contenuto principale</a>
+    </nav>
+
+    <main id="content">
+        <div class="contenitore">
+            <h1>404</h1>
+            <p>La pagina che stai cercando non esiste o &egrave; stata spostata.</p>
+            <p><a href="/index.php">Torna alla home</a></p>
+        </div>
     </main>
+
 </body>
 </html>

@@ -1,25 +1,33 @@
 <?php
 /**
- * Pagina di errore HTTP 403 (Forbidden).
- * Utilizza le classi semantiche definite nel file CSS globale.
+ * 403.php: Pagina di errore HTTP 403 (Forbidden).
+ * Autonoma: non include resources.php perché potrebbe essere servita
+ * anche quando il bootstrap dell'applicazione fallisce.
  */
 http_response_code(403);
 ?>
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" xml:lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>403 - Accesso Negato</title>
-    <!-- Inclusione delle risorse esterne -->
-    <link rel="stylesheet" href="/styles/resources.css">
-    <script src="/styles/js/main.js" defer></script>
+    <title>403 - Accesso negato - Smash Burger Original</title>
+    <link rel="stylesheet" href="/styles/css/style.css" media="screen">
+    <link rel="stylesheet" href="/styles/css/print.css" media="print">
 </head>
-<body class="status-layout">
-    <main class="status-container">
-        <h1 class="status-code forbidden">403</h1>
-        <p class="status-message">Non hai i permessi necessari per visualizzare questa risorsa.</p>
-        <a href="/" class="btn-primary">Richiedi Accesso / Home</a>
+<body>
+
+    <nav id="skip-link" aria-label="Salta al contenuto">
+        <a href="#content">Vai al contenuto principale</a>
+    </nav>
+
+    <main id="content">
+        <div class="contenitore">
+            <h1>403</h1>
+            <p>Non hai i permessi necessari per visualizzare questa risorsa.</p>
+            <p><a href="/index.php">Torna alla home</a></p>
+        </div>
     </main>
+
 </body>
 </html>

@@ -1,0 +1,116 @@
+/* --------------------------------------------------------------------------
+   PRINT.CSS — Stili ottimizzati per la stampa
+   Caricato solo con media="print". Non impatta la resa a schermo.
+   -------------------------------------------------------------------------- */
+
+@media print {
+
+    /* --- Colori e sfondo --- */
+    *,
+    *::before,
+    *::after {
+        background: transparent !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    /* --- Link: mostra URL dopo il testo --- */
+    a[href]::after {
+        content: " (" attr(href) ")";
+        font-size: 0.75em;
+        word-break: break-all;
+    }
+
+    /* Evita di mostrare l'URL per link interni e anchor */
+    a[href^="#"]::after,
+    a[href^="javascript:"]::after {
+        content: "";
+    }
+
+    /* --- Elementi da nascondere --- */
+    header,
+    footer,
+    nav,
+    #skip-link,
+    #theme-toggle,
+    #menu-toggle,
+    #filtro-categorie,
+    .bottone-primario,
+    .mostra-password,
+    form button[type="submit"] {
+        display: none !important;
+    }
+
+    /* --- Impaginazione --- */
+    body {
+        font-size: 12pt;
+        line-height: 1.5;
+    }
+
+    h1 { font-size: 24pt; }
+    h2 { font-size: 18pt; }
+    h3 { font-size: 14pt; }
+
+    /* Evita interruzioni di pagina dentro elementi importanti */
+    h1,
+    h2,
+    h3,
+    h4,
+    figure,
+    .scheda-prodotto {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    p,
+    blockquote {
+        orphans: 3;
+        widows: 3;
+    }
+
+    /* --- Layout --- */
+    .contenitore {
+        max-width: 100%;
+        padding-inline: 0;
+    }
+
+    main {
+        padding-block: 0;
+    }
+
+    /* --- Immagini --- */
+    img {
+        max-width: 100% !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* --- Tabelle --- */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        border: 1px solid #cccccc;
+        padding: 4pt 8pt;
+        text-align: left;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    /* --- Badge W3C: non stampare le immagini esterne --- */
+    .w3c-badges {
+        display: none;
+    }
+
+}

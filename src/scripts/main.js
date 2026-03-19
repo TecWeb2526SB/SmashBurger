@@ -219,6 +219,101 @@ function inizializzaValidazioneForm() {
 }
 
 /* ==========================================================================
+   5. TOGGLE VISIBILITÀ PASSWORD
+   ========================================================================== */
+
+function inizializzaTogglePassword() {
+    const bottoni = document.querySelectorAll('.mostra-password');
+    if (bottoni.length === 0) return;
+
+    bottoni.forEach(function (bottone) {
+        bottone.addEventListener('click', function () {
+            const wrapper = bottone.closest('.campo-password-wrapper');
+            if (!wrapper) return;
+
+            const input = wrapper.querySelector('input[type="password"], input[type="text"]');
+            if (!input) return;
+
+            const visibile = input.type === 'text';
+            input.type = visibile ? 'password' : 'text';
+            bottone.setAttribute('aria-pressed', String(!visibile));
+            bottone.setAttribute('aria-label', visibile ? 'Mostra password' : 'Nascondi password');
+        });
+    });
+}
+
+/* ==========================================================================
+   6. VALIDAZIONE REAL-TIME FORM AUTENTICAZIONE
+   ========================================================================== */
+
+function inizializzaValidazioneAuth() {
+    const campi = document.querySelectorAll(
+        '.auth-box input[required], .auth-box input[minlength]'
+    );
+    if (campi.length === 0) return;
+
+    campi.forEach(function (campo) {
+        /* Mostra l'errore quando il campo perde il focus */
+        campo.addEventListener('blur', function () {
+            aggiornaStatoCampo(campo);
+        });
+
+        /* Rimuove l'errore mentre si digita (se il campo diventa valido) */
+        campo.addEventListener('input', function () {
+            if (campo.validity.valid) {
+                pulisciErroreCampo(campo);
+            }
+        });
+    });
+
+    /* Controllo speciale: conferma password deve coincidere con password */
+    const conferma = document.getElementById('conferma');
+    const password = document.getElementById('password');
+    if (conferma && password) {
+        conferma.addEventListener('blur', function () {
+            if (!conferma.validity.valueMissing && conferma.value !== password.value) {
+                mostraErroreCampo(conferma, 'Le password non coincidono.');
+            } else {
+                aggiornaStatoCampo(conferma);
+            }
+        });
+    }
+}
+
+function aggiornaStatoCampo(campo) {
+    if (!campo.validity.valid) {
+        const msg = messaggioErrore(campo);
+        mostraErroreCampo(campo, msg);
+    } else {
+        pulisciErroreCampo(campo);
+    }
+}
+
+function mostraErroreCampo(campo, messaggio) {
+    campo.setAttribute('aria-invalid', 'true');
+    const erroreId = campo.getAttribute('aria-describedby');
+    if (erroreId) {
+        const erroreEl = document.getElementById(erroreId);
+        if (erroreEl) {
+            erroreEl.textContent = messaggio;
+            erroreEl.removeAttribute('hidden');
+        }
+    }
+}
+
+function pulisciErroreCampo(campo) {
+    campo.setAttribute('aria-invalid', 'false');
+    const erroreId = campo.getAttribute('aria-describedby');
+    if (erroreId) {
+        const erroreEl = document.getElementById(erroreId);
+        if (erroreEl) {
+            erroreEl.textContent = '';
+            erroreEl.setAttribute('hidden', '');
+        }
+    }
+}
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -227,4 +322,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaFiltroProdotti();
     inizializzaMenuMobile();
     inizializzaValidazioneForm();
+    inizializzaTogglePassword();
+    inizializzaValidazioneAuth();
 });

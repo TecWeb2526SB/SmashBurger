@@ -1,25 +1,32 @@
 <?php
 /**
- * Pagina di errore HTTP 500 (Internal Server Error).
- * Fornisce un feedback all'utente in caso di fallimento del sistema.
+ * 500.php: Pagina di errore HTTP 500 (Internal Server Error).
+ * Non include resources.php: viene servita proprio quando il bootstrap fallisce.
  */
 http_response_code(500);
 ?>
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" xml:lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>500 - Errore Interno del Server</title>
-    <!-- Inclusione delle risorse esterne -->
-    <link rel="stylesheet" href="/styles/resources.css">
-    <script src="/styles/js/main.js" defer></script>
+    <title>500 - Errore del server - Smash Burger Original</title>
+    <link rel="stylesheet" href="/styles/css/style.css" media="screen">
+    <link rel="stylesheet" href="/styles/css/print.css" media="print">
 </head>
-<body class="status-layout">
-    <main class="status-container">
-        <h1 class="status-code server-error">500</h1>
-        <p class="status-message">Qualcosa è andato storto nei nostri server. Stiamo già lavorando per risolvere il problema.</p>
-        <a href="/" class="btn-primary">Torna alla Home</a>
+<body>
+
+    <nav id="skip-link" aria-label="Salta al contenuto">
+        <a href="#content">Vai al contenuto principale</a>
+    </nav>
+
+    <main id="content">
+        <div class="contenitore">
+            <h1>500</h1>
+            <p>Qualcosa &egrave; andato storto nei nostri server. Stiamo lavorando per risolvere il problema.</p>
+            <p><a href="/index.php">Torna alla home</a></p>
+        </div>
     </main>
+
 </body>
 </html>
