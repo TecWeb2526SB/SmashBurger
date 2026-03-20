@@ -6,7 +6,7 @@
 
 <section aria-labelledby="titolo-carrello">
     <div class="contenitore">
-        <h2 id="titolo-carrello">Il tuo carrello</h2>
+        <h1 id="titolo-carrello">Il tuo carrello</h1>
         <!-- Contenuto da sviluppare -->
     </div>
 </section>

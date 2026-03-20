@@ -6,7 +6,7 @@
 
 <section aria-labelledby="titolo-sedi">
     <div class="contenitore">
-        <h2 id="titolo-sedi">Chi siamo e le nostre sedi</h2>
+        <h1 id="titolo-sedi">Chi siamo e le nostre sedi</h1>
         <!-- Contenuto da sviluppare -->
     </div>
 </section>

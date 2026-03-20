@@ -6,7 +6,7 @@
 
 <section id="intestazione-prodotti" aria-labelledby="titolo-prodotti">
     <div class="contenitore">
-        <h2 id="titolo-prodotti">I nostri prodotti</h2>
+        <h1 id="titolo-prodotti">I nostri prodotti</h1>
         <p>Tutto quello che trovi nel nostro men&ugrave; &egrave; preparato al momento.</p>
     </div>
 </section>

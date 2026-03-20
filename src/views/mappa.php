@@ -6,7 +6,7 @@
 
 <section aria-labelledby="titolo-mappa">
     <div class="contenitore">
-        <h2 id="titolo-mappa">Mappa del sito</h2>
+        <h1 id="titolo-mappa">Mappa del sito</h1>
         <ul>
             <li><a href="index.php">Home</a></li>
             <li><a href="prodotti.php">I nostri prodotti</a></li>

@@ -6,7 +6,7 @@
 
 <section aria-labelledby="titolo-area-personale">
     <div class="contenitore">
-        <h2 id="titolo-area-personale">Area personale</h2>
+        <h1 id="titolo-area-personale">Area personale</h1>
         <!-- Contenuto da sviluppare -->
     </div>
 </section>
