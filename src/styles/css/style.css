@@ -289,6 +289,13 @@ main {
     padding-block: var(--spazio-xl);
 }
 
+/* Pagine con breadcrumb: rimuove padding superiore di main
+   per avvicinare la pill alla navbar */
+main:has(> .breadcrumb) {
+    padding-block-start: 0;
+}
+
+
 
 /* --------------------------------------------------------------------------
    9. HEADER
@@ -848,7 +855,7 @@ footer a:focus-visible {
 }
 
 /* Separatore generato via CSS — non viene letto dagli screen reader principali */
-.breadcrumb li + li::before {
+.breadcrumb li+li::before {
     content: "›";
     margin-inline: var(--spazio-xs);
     color: var(--colore-bordo);
@@ -899,10 +906,10 @@ footer a:focus-visible {
     pointer-events: none;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
     transition: opacity var(--transizione-base),
-                background-color var(--transizione-base),
-                color var(--transizione-base),
-                transform var(--transizione-base),
-                box-shadow var(--transizione-base);
+        background-color var(--transizione-base),
+        color var(--transizione-base),
+        transform var(--transizione-base),
+        box-shadow var(--transizione-base);
 }
 
 #torna-su.visibile {
@@ -931,4 +938,4 @@ footer a:focus-visible {
     #torna-su {
         transition: none;
     }
-}
+}
