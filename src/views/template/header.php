@@ -98,4 +98,4 @@ $vMob = file_exists(__DIR__ . '/../../styles/css/mobile.css')
     </header>
 
     <main id="content">
-    <?php include_once __DIR__ . '/breadcrumb.php'; ?>
+        <?php include_once __DIR__ . '/breadcrumb.php'; ?>
