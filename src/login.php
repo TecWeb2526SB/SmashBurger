@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle       = 'Accedi al tuo account - Smash Burger Original';
 $pageDescription = 'Accedi al tuo account Smash Burger per gestire i tuoi ordini e le tue preferenze.';
 $currentPage     = 'login.php';
+$breadcrumb      = [['Home', 'index.php'], ['Accedi', null]];
 
 include_once __DIR__ . '/views/template/header.php';
 include_once __DIR__ . '/views/login.php';

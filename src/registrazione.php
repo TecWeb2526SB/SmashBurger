@@ -55,6 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $pageTitle       = 'Crea un account - Smash Burger Original';
 $pageDescription = 'Registrati su Smash Burger per ordinare più velocemente e tenere traccia dei tuoi ordini.';
 $currentPage     = 'registrazione.php';
+$breadcrumb      = [['Home', 'index.php'], ['Crea un account', null]];
 
 include_once __DIR__ . '/views/template/header.php';
 include_once __DIR__ . '/views/registrazione.php';

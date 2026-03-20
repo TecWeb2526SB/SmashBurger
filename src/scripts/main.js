@@ -314,6 +314,32 @@ function pulisciErroreCampo(campo) {
 }
 
 /* ==========================================================================
+   7. TORNA SU
+   ========================================================================== */
+
+function inizializzaTornaSu() {
+    const bottone = $('#torna-su');
+    if (!bottone) return;
+
+    function aggiornaVisibilita() {
+        if (window.scrollY > 300) {
+            bottone.classList.add('visibile');
+        } else {
+            bottone.classList.remove('visibile');
+        }
+    }
+
+    window.addEventListener('scroll', aggiornaVisibilita, { passive: true });
+    aggiornaVisibilita();
+
+    bottone.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const skipLink = document.querySelector('#skip-link a');
+        if (skipLink) skipLink.focus();
+    });
+}
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -324,4 +350,5 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaValidazioneForm();
     inizializzaTogglePassword();
     inizializzaValidazioneAuth();
+    inizializzaTornaSu();
 });

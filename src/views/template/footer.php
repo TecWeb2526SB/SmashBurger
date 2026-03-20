@@ -90,6 +90,10 @@ $vjs = file_exists(__DIR__ . '/../../scripts/main.js')
 ?>
 <script src="scripts/main.js?v=<?php echo $vjs; ?>" defer></script>
 
+<button id="torna-su" type="button" aria-label="Torna all'inizio della pagina">
+    <span aria-hidden="true">↑</span>
+</button>
+
 </body>
 
-</html>
+</html>
