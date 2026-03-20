@@ -11,7 +11,7 @@
 <section aria-labelledby="titolo-registrazione" class="auth-sezione">
     <div class="contenitore">
         <div class="auth-box">
-            <h2 id="titolo-registrazione">Crea un account</h2>
+            <h1 id="titolo-registrazione">Crea un account</h1>
 
             <?php if (!empty($errori)): ?>
                 <div role="alert" class="errore-sommario">

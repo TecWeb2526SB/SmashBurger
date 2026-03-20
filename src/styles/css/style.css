@@ -697,7 +697,7 @@ footer a:focus-visible {
     background-color: var(--colore-sfondo);
 }
 
-.auth-box h2 {
+.auth-box h1 {
     font-size: 1.563rem;
     margin-bottom: var(--spazio-lg);
     text-align: center;

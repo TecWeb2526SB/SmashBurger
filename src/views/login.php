@@ -11,7 +11,7 @@
 <section aria-labelledby="titolo-login" class="auth-sezione">
     <div class="contenitore">
         <div class="auth-box">
-            <h2 id="titolo-login">Accedi al tuo account</h2>
+            <h1 id="titolo-login">Accedi al tuo account</h1>
 
             <?php if (!empty($errori)): ?>
                 <div role="alert" class="errore-sommario">
