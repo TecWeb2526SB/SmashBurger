@@ -7,9 +7,11 @@
 // 1. Includi il file delle risorse centrale
 require_once __DIR__ . '/includes/resources.php';
 
+$selectedBranch = branch_get_selected($pdo);
+
 // 2. Definizione variabili specifiche per la pagina
 $pageTitle = 'Home - Smash Burger Original | Il vero gusto dello smash';
-$pageDescription = 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina a domicilio o ritira in sede.';
+$pageDescription = 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina online e ritira in sede.';
 $isHomepage = true;       // Usa <h1> per il brand solo nella home
 $currentPage = 'index.php'; // Indica la voce attiva nel menu principale
 

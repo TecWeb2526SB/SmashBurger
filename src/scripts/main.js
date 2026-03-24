@@ -340,6 +340,136 @@ function inizializzaTornaSu() {
 }
 
 /* ==========================================================================
+   8. SWITCHER SEDE + MAPPA INTERATTIVA SEDI
+   ========================================================================== */
+
+function inizializzaBranchSwitcher() {
+    const selects = document.querySelectorAll('.branch-switcher select');
+    if (selects.length === 0) return;
+
+    selects.forEach(function (select) {
+        select.addEventListener('change', function () {
+            const form = select.closest('form');
+            if (form) {
+                form.submit();
+            }
+        });
+    });
+}
+
+function inizializzaMappaSedi() {
+    const wrapper = document.getElementById('sedi-interattive');
+    if (!wrapper) return;
+
+    const links = wrapper.querySelectorAll('.sede-link');
+    if (links.length === 0) return;
+
+    const detailName = document.getElementById('sede-dettaglio-nome');
+    const detailAddress = document.getElementById('sede-dettaglio-indirizzo');
+    const detailPhone = document.getElementById('sede-dettaglio-phone');
+    const detailPhoneLink = document.getElementById('sede-dettaglio-phone-link');
+    const detailEmail = document.getElementById('sede-dettaglio-email');
+    const detailEmailLink = document.getElementById('sede-dettaglio-email-link');
+    const detailHours = document.getElementById('sede-dettaglio-orari-valore');
+    const detailNotes = document.getElementById('sede-dettaglio-note-valore');
+    const mapFrame = document.getElementById('sedi-mappa-frame');
+    const menuLink = document.getElementById('sede-dettaglio-menu-link');
+
+    function normalizzaTelefono(tel) {
+        return tel.replace(/[^0-9+]/g, '');
+    }
+
+    function render(link, aggiornaUrl) {
+        links.forEach(function (l) {
+            const attiva = l === link;
+            l.classList.toggle('attiva', attiva);
+            if (attiva) {
+                l.setAttribute('aria-current', 'true');
+            } else {
+                l.removeAttribute('aria-current');
+            }
+        });
+
+        const nome = link.dataset.branchName || '';
+        const city = link.dataset.branchCity || '';
+        const province = link.dataset.branchProvince || '';
+        const address = link.dataset.branchAddress || '';
+        const postal = link.dataset.branchPostal || '';
+        const phone = link.dataset.branchPhone || '';
+        const email = link.dataset.branchEmail || '';
+        const notes = link.dataset.branchNotes || '';
+        const hours = link.dataset.branchHours || '';
+        const map = link.dataset.branchMap || '';
+        const slug = link.dataset.branchSlug || '';
+
+        if (detailName) {
+            detailName.textContent = nome;
+        }
+        if (detailAddress) {
+            detailAddress.textContent = address + ', ' + postal + ' ' + city + ' (' + province + ')';
+        }
+        if (detailPhone) {
+            detailPhone.textContent = phone;
+        }
+        if (detailPhoneLink) {
+            detailPhoneLink.setAttribute('href', 'tel:' + normalizzaTelefono(phone));
+        }
+        if (detailEmail) {
+            detailEmail.textContent = email;
+        }
+        if (detailEmailLink) {
+            detailEmailLink.setAttribute('href', 'mailto:' + email);
+        }
+        if (detailHours) {
+            detailHours.textContent = hours || 'Orari non disponibili';
+        }
+        if (detailNotes) {
+            detailNotes.textContent = notes || 'Nessuna nota specifica per il ritiro.';
+        }
+        if (mapFrame && map) {
+            mapFrame.setAttribute('src', map);
+        }
+        if (menuLink && slug) {
+            menuLink.setAttribute('href', 'prodotti.php?sede=' + encodeURIComponent(slug));
+        }
+
+        if (aggiornaUrl && slug && window.history && window.history.replaceState) {
+            const nextUrl = new URL(window.location.href);
+            nextUrl.searchParams.set('sede', slug);
+            window.history.replaceState({}, '', nextUrl.toString());
+        }
+    }
+
+    links.forEach(function (link) {
+        link.addEventListener('mouseenter', function () {
+            render(link, false);
+        });
+
+        link.addEventListener('focus', function () {
+            render(link, false);
+        });
+
+        link.addEventListener('click', function (e) {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                return;
+            }
+
+            e.preventDefault();
+            render(link, true);
+            window.location.assign(link.href);
+        });
+    });
+
+    const selectedSlug = wrapper.dataset.selectedSlug;
+    const initial = selectedSlug
+        ? wrapper.querySelector('.sede-link[data-branch-slug="' + selectedSlug + '"]')
+        : links[0];
+    if (initial) {
+        render(initial, false);
+    }
+}
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -351,4 +481,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaTogglePassword();
     inizializzaValidazioneAuth();
     inizializzaTornaSu();
+    inizializzaBranchSwitcher();
+    inizializzaMappaSedi();
 });

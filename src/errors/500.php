@@ -11,8 +11,7 @@ http_response_code(500);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>500 - Errore del server - Smash Burger Original</title>
-    <link rel="stylesheet" href="/styles/css/style.css" media="screen">
-    <link rel="stylesheet" href="/styles/css/print.css" media="print">
+    <link rel="stylesheet" href="../styles/resources.css">
 </head>
 <body>
 
@@ -24,7 +23,7 @@ http_response_code(500);
         <div class="contenitore">
             <h1>500</h1>
             <p>Qualcosa &egrave; andato storto nei nostri server. Stiamo lavorando per risolvere il problema.</p>
-            <p><a href="/index.php">Torna alla home</a></p>
+            <p><a href="../index.php">Torna alla home</a></p>
         </div>
     </main>
 

@@ -8,26 +8,29 @@ require_once __DIR__ . '/includes/resources.php';
 
 $errori = [];
 $valori = [
-    'nome'  => '',
-    'email' => '',
+    'username' => '',
 ];
+$csrfToken = csrf_token();
+
+if (is_logged_in()) {
+    header('Location: area_personale.php');
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome     = trim($_POST['nome']     ?? '');
-    $email    = trim($_POST['email']    ?? '');
+    $csrfTokenForm = $_POST['csrf_token'] ?? null;
+    $username = trim($_POST['username'] ?? '');
     $password = trim($_POST['password'] ?? '');
     $conferma = trim($_POST['conferma'] ?? '');
 
-    if ($nome === '') {
-        $errori['nome'] = 'Inserisci il tuo nome.';
-    } elseif (mb_strlen($nome) < 2) {
-        $errori['nome'] = 'Il nome deve contenere almeno 2 caratteri.';
+    if (!csrf_is_valid($csrfTokenForm)) {
+        $errori['generale'] = 'Sessione scaduta o richiesta non valida. Ricarica la pagina e riprova.';
     }
 
-    if ($email === '') {
-        $errori['email'] = 'Inserisci la tua e-mail.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errori['email'] = 'Formato e-mail non valido.';
+    if ($username === '') {
+        $errori['username'] = 'Inserisci uno username.';
+    } elseif (!preg_match('/^[a-zA-Z0-9_.-]{3,50}$/', $username)) {
+        $errori['username'] = 'Username non valido (3-50 caratteri: lettere, numeri, . _ -).';
     }
 
     if ($password === '') {
@@ -42,13 +45,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errori['conferma'] = 'Le password non coincidono.';
     }
 
-    $valori['nome']  = htmlspecialchars($nome,  ENT_QUOTES, 'UTF-8');
-    $valori['email'] = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+    $valori['username'] = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
 
     if (empty($errori)) {
-        /* TODO: inserire utente nel database */
-        /* Esempio di redirect dopo registrazione: */
-        /* header('Location: area_personale.php'); exit; */
+        $existsStmt = $pdo->prepare(
+            'SELECT id FROM users WHERE username = :username LIMIT 1'
+        );
+        $existsStmt->execute(['username' => $username]);
+        if ($existsStmt->fetchColumn() !== false) {
+            $errori['username'] = 'Username gia in uso. Scegline un altro.';
+        } else {
+            $insertStmt = $pdo->prepare(
+                'INSERT INTO users (username, password_hash, role, created_at, updated_at)
+                 VALUES (:username, :password_hash, "user", NOW(), NOW())'
+            );
+            $insertStmt->execute([
+                'username' => $username,
+                'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+            ]);
+
+            $nuovoUtenteId = (int) $pdo->lastInsertId();
+            login_user([
+                'id' => $nuovoUtenteId,
+                'username' => $username,
+                'role' => 'user',
+            ]);
+            flash_set('success', 'Registrazione completata. Benvenuto, ' . $username . '!');
+            header('Location: area_personale.php');
+            exit;
+        }
     }
 }
 

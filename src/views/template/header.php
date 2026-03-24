@@ -11,11 +11,8 @@
  * $navItems viene da includes/variables.php (caricato via resources.php).
  */
 
-$vCss = file_exists(__DIR__ . '/../../styles/css/style.css')
-    ? filemtime(__DIR__ . '/../../styles/css/style.css')
-    : time();
-$vMob = file_exists(__DIR__ . '/../../styles/css/mobile.css')
-    ? filemtime(__DIR__ . '/../../styles/css/mobile.css')
+$vResources = file_exists(__DIR__ . '/../../styles/resources.css')
+    ? filemtime(__DIR__ . '/../../styles/resources.css')
     : time();
 ?>
 <!DOCTYPE html>
@@ -41,13 +38,7 @@ $vMob = file_exists(__DIR__ . '/../../styles/css/mobile.css')
         }());
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="styles/css/style.css?v=<?php echo $vCss; ?>" media="screen">
-    <link rel="stylesheet" href="styles/css/mobile.css?v=<?php echo $vMob; ?>" media="screen">
-    <link rel="stylesheet" href="styles/css/print.css" media="print">
+    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
 
     <link rel="shortcut icon" href="images/favicon.ico">
 </head>
@@ -70,6 +61,10 @@ $vMob = file_exists(__DIR__ . '/../../styles/css/mobile.css')
                     <a href="index.php">Smash Burger</a>
                 </p>
             <?php endif; ?>
+
+            <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principale">
+                Menu
+            </button>
 
             <nav id="menu-principale" aria-label="Navigazione principale">
                 <ul>

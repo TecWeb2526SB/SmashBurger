@@ -22,3 +22,8 @@ define('PDO_OPTIONS', [
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     PDO::ATTR_EMULATE_PREPARES   => false,
 ]);
+
+// Sessione applicativa (necessaria per CSRF e stato utente)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}

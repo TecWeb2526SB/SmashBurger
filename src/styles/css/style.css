@@ -9,7 +9,7 @@
     --colore-testo-leggero: #555555;
     --colore-accento: #c0392b;
     --colore-accento-hover: #96281b;
-    --colore-bordo: #e0e0e0;
+    --colore-bordo: #dedede;
     --colore-sfondo-alt: #f5f5f5;
 
     /* Link */
@@ -19,7 +19,7 @@
     --colore-link-focus: #c0392b;
 
     /* Tipografia */
-    --font-base: 'Inter', sans-serif;
+    --font-base: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     --font-size-base: 1rem;
     /* 16px browser default */
     --line-height-base: 1.6;
@@ -30,11 +30,16 @@
     --spazio-md: 1rem;
     --spazio-lg: 2rem;
     --spazio-xl: 4rem;
+    --spazio-sezione: clamp(2.5rem, 5vw, 4rem);
 
     /* Layout */
     --larghezza-max: 72rem;
     /* ~1152px */
-    --raggio-bordo: 0.25rem;
+    --raggio-bordo: 0.5rem;
+    --raggio-card: 0.85rem;
+    --bordo-standard: 1px solid var(--colore-bordo);
+    --ombra-leggera: 0 6px 20px rgba(0, 0, 0, 0.06);
+    --ombra-hover: 0 12px 26px rgba(0, 0, 0, 0.12);
 
     /* Focus */
     --outline-focus: 3px solid #c0392b;
@@ -303,7 +308,7 @@ main:has(> .breadcrumb) {
 
 header {
     background-color: var(--colore-sfondo);
-    border-bottom: 1px solid var(--colore-bordo);
+    border-bottom: var(--bordo-standard);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -406,7 +411,7 @@ header h1 {
 
 #theme-toggle {
     background: none;
-    border: 1px solid var(--colore-bordo);
+    border: var(--bordo-standard);
     color: var(--colore-testo);
     padding: var(--spazio-xs) var(--spazio-sm);
     border-radius: var(--raggio-bordo);
@@ -435,7 +440,7 @@ header h1 {
 
 footer {
     background-color: var(--colore-sfondo-alt);
-    border-top: 1px solid var(--colore-bordo);
+    border-top: var(--bordo-standard);
     padding-block: var(--spazio-xl);
 }
 
@@ -488,7 +493,7 @@ footer a:focus-visible {
     flex-wrap: wrap;
     gap: var(--spazio-md);
     padding-top: var(--spazio-lg);
-    border-top: 1px solid var(--colore-bordo);
+    border-top: var(--bordo-standard);
     font-size: 0.8125rem;
     color: var(--colore-testo-leggero);
 }
@@ -562,7 +567,7 @@ footer a:focus-visible {
     display: inline-block;
     background-color: var(--colore-accento);
     color: #ffffff;
-    border: none;
+    border: 1px solid transparent;
     padding: var(--spazio-sm) var(--spazio-lg);
     border-radius: var(--raggio-bordo);
     font-family: var(--font-base);
@@ -571,16 +576,22 @@ footer a:focus-visible {
     cursor: pointer;
     text-decoration: none;
     transition: background-color var(--transizione-base),
-        transform var(--transizione-base);
+        transform var(--transizione-base),
+        box-shadow var(--transizione-base);
     width: 100%;
     text-align: center;
     margin-top: var(--spazio-md);
+    box-shadow: var(--ombra-leggera);
 }
 
 .bottone-primario:hover {
     background-color: var(--colore-accento-hover);
     color: #ffffff;
     transform: translateY(-1px);
+}
+
+.bottone-primario:visited {
+    color: #ffffff;
 }
 
 .bottone-primario:focus-visible {
@@ -590,6 +601,41 @@ footer a:focus-visible {
 
 .bottone-primario:active {
     transform: translateY(0);
+}
+
+.bottone-secondario {
+    display: inline-block;
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    border: var(--bordo-standard);
+    padding: var(--spazio-sm) var(--spazio-lg);
+    border-radius: var(--raggio-bordo);
+    font-family: var(--font-base);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: border-color var(--transizione-base),
+        color var(--transizione-base),
+        transform var(--transizione-base),
+        box-shadow var(--transizione-base);
+    box-shadow: var(--ombra-leggera);
+}
+
+.bottone-secondario:hover {
+    border-color: var(--colore-accento);
+    color: var(--colore-accento);
+    transform: translateY(-1px);
+}
+
+.bottone-secondario:visited {
+    color: var(--colore-testo);
+}
+
+.bottone-secondario:focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
 }
 
 
@@ -602,19 +648,40 @@ footer a:focus-visible {
     grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
     gap: var(--spazio-lg);
     margin-top: var(--spazio-lg);
+    align-items: stretch;
+}
+
+#intestazione-prodotti {
+    margin-bottom: var(--spazio-lg);
+}
+
+.categoria-sezione {
+    margin-top: var(--spazio-sezione);
+}
+
+.categoria-sezione h2 {
+    margin-bottom: var(--spazio-md);
+}
+
+.categoria-sezione .griglia-prodotti {
+    margin-top: var(--spazio-md);
 }
 
 .scheda-prodotto {
-    border: 1px solid var(--colore-bordo);
-    border-radius: calc(var(--raggio-bordo) * 2);
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
     overflow: hidden;
     background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     transition: box-shadow var(--transizione-base),
         transform var(--transizione-base);
 }
 
 .scheda-prodotto:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--ombra-hover);
     transform: translateY(-2px);
 }
 
@@ -626,29 +693,65 @@ footer a:focus-visible {
 
 .scheda-prodotto-corpo {
     padding: var(--spazio-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-md);
+    flex: 1;
+}
+
+.scheda-prodotto-contenuto {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-sm);
+    flex: 1;
+}
+
+.scheda-prodotto-azioni {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-sm);
 }
 
 .scheda-prodotto h3,
 .scheda-prodotto h4 {
     font-size: 1.125rem;
-    margin-bottom: var(--spazio-xs);
+    margin-bottom: 0;
+    min-height: 2.7rem;
 }
 
 .scheda-prodotto p {
     font-size: 0.9375rem;
     color: var(--colore-testo-leggero);
-    margin-bottom: var(--spazio-sm);
+    margin-bottom: 0;
+}
+
+.scheda-prodotto-descrizione {
+    min-height: 3rem;
+}
+
+.scheda-prodotto-allergeni {
+    min-height: 1.5rem;
 }
 
 .prezzo {
     font-size: 1.125rem;
     font-weight: 700;
     color: var(--colore-accento);
+    margin-bottom: 0;
+}
+
+.scheda-prodotto .bottone-primario {
+    margin-top: 0;
+}
+
+.scheda-prodotto-azioni .disponibilita-ko {
+    margin-top: 0;
 }
 
 /* Filtro categorie */
 #filtro-categorie {
-    margin-block: var(--spazio-lg);
+    margin-block: var(--spazio-md);
 }
 
 #filtro-categorie ul {
@@ -660,7 +763,7 @@ footer a:focus-visible {
 #filtro-categorie a {
     display: inline-block;
     padding: var(--spazio-xs) var(--spazio-md);
-    border: 1px solid var(--colore-bordo);
+    border: var(--bordo-standard);
     border-radius: 2rem;
     color: var(--colore-testo);
     text-decoration: none;
@@ -699,9 +802,10 @@ footer a:focus-visible {
     max-width: 26rem;
     margin-inline: auto;
     padding: var(--spazio-xl) var(--spazio-lg);
-    border: 1px solid var(--colore-bordo);
-    border-radius: calc(var(--raggio-bordo) * 2);
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
     background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
 }
 
 .auth-box h1 {
@@ -727,7 +831,7 @@ footer a:focus-visible {
 .campo-gruppo input {
     width: 100%;
     padding: var(--spazio-sm) var(--spazio-md);
-    border: 1px solid var(--colore-bordo);
+    border: var(--bordo-standard);
     border-radius: var(--raggio-bordo);
     background-color: var(--colore-sfondo);
     color: var(--colore-testo);
@@ -819,7 +923,169 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   16. HAMBURGER MENU (visibile solo via mobile.css / media query)
+   16. FEEDBACK E CARRELLO/CHECKOUT
+   -------------------------------------------------------------------------- */
+
+.alert {
+    border-radius: var(--raggio-card);
+    padding: var(--spazio-sm) var(--spazio-md);
+    margin-bottom: var(--spazio-md);
+    border: var(--bordo-standard);
+    background-color: var(--colore-sfondo-alt);
+}
+
+.alert.success {
+    border-color: #2e7d32;
+    background-color: rgba(46, 125, 50, 0.1);
+}
+
+.alert.error {
+    border-color: var(--colore-accento);
+    background-color: rgba(192, 57, 43, 0.1);
+}
+
+.scheda-prodotto-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 12rem;
+    background-color: var(--colore-sfondo-alt);
+    color: var(--colore-testo-leggero);
+    font-size: 0.9rem;
+}
+
+.disponibilita-ko {
+    color: var(--colore-accento);
+    font-weight: 600;
+}
+
+.tabella-wrapper {
+    overflow-x: auto;
+    margin-top: var(--spazio-md);
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+}
+
+.tabella-carrello {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 42rem;
+}
+
+.tabella-carrello th,
+.tabella-carrello td {
+    border-bottom: var(--bordo-standard);
+    padding: var(--spazio-sm);
+    vertical-align: middle;
+    text-align: left;
+}
+
+.inline-form {
+    display: inline-flex;
+    gap: var(--spazio-xs);
+    align-items: center;
+}
+
+.inline-form input[type="number"] {
+    width: 4.5rem;
+    padding: 0.35rem 0.5rem;
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-bordo);
+}
+
+.inline-form button {
+    border: var(--bordo-standard);
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    border-radius: var(--raggio-bordo);
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+}
+
+.inline-form button:hover {
+    border-color: var(--colore-accento);
+    color: var(--colore-accento);
+    background-color: var(--colore-sfondo-alt);
+}
+
+.totale-carrello {
+    margin-top: var(--spazio-md);
+    font-size: 1.125rem;
+}
+
+.azioni-carrello {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spazio-sm);
+    align-items: center;
+    margin-top: var(--spazio-md);
+}
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: var(--spazio-lg);
+    align-items: start;
+}
+
+.checkout-fieldset {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    padding: var(--spazio-sm) var(--spazio-md);
+    margin-bottom: var(--spazio-md);
+    display: flex;
+    gap: var(--spazio-md);
+    flex-wrap: wrap;
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+}
+
+.checkout-fieldset legend {
+    font-weight: 700;
+    padding-inline: 0.3rem;
+}
+
+.campo-gruppo select,
+.campo-gruppo textarea {
+    width: 100%;
+    padding: var(--spazio-sm) var(--spazio-md);
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-bordo);
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    font-family: var(--font-base);
+    font-size: 1rem;
+}
+
+.riepilogo-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.riepilogo-lista li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spazio-sm);
+    border-bottom: 1px dashed var(--colore-bordo);
+    padding-block: 0.45rem;
+}
+
+.ordine-card {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    padding: var(--spazio-md);
+    margin-top: var(--spazio-md);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+}
+
+
+/* --------------------------------------------------------------------------
+   17. HAMBURGER MENU (visibile solo via mobile.css / media query)
    -------------------------------------------------------------------------- */
 
 /* Il bottone è nascosto di default su desktop */
@@ -829,7 +1095,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   17. BREADCRUMB — isoletta centrata
+   18. BREADCRUMB — isoletta centrata
    -------------------------------------------------------------------------- */
 
 .breadcrumb {
@@ -847,7 +1113,7 @@ footer a:focus-visible {
     padding: var(--spazio-xs) var(--spazio-md);
     margin: 0;
     background-color: var(--colore-sfondo-alt);
-    border: 1px solid var(--colore-bordo);
+    border: var(--bordo-standard);
     border-radius: 2rem;
     font-size: 0.8125rem;
     color: var(--colore-testo-leggero);
@@ -884,7 +1150,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   18. PULSANTE TORNA SU — cerchio con bordo, hover fill
+   19. PULSANTE TORNA SU — cerchio con bordo, hover fill
    -------------------------------------------------------------------------- */
 
 #torna-su {
@@ -938,4 +1204,378 @@ footer a:focus-visible {
     #torna-su {
         transition: none;
     }
+}
+
+
+/* --------------------------------------------------------------------------
+   20. HOMEPAGE — gerarchia visiva e coerenza componenti
+   -------------------------------------------------------------------------- */
+
+.home-hero {
+    padding-block: var(--spazio-sezione);
+    border-bottom: var(--bordo-standard);
+    background: linear-gradient(180deg, var(--colore-sfondo) 0%, var(--colore-sfondo-alt) 100%);
+}
+
+.home-hero-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: var(--spazio-lg);
+    align-items: start;
+}
+
+.home-eyebrow {
+    display: inline-block;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--colore-accento);
+    background-color: rgba(192, 57, 43, 0.08);
+    border: var(--bordo-standard);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    margin-bottom: var(--spazio-sm);
+}
+
+.home-hero h2 {
+    max-width: 20ch;
+    margin-bottom: var(--spazio-md);
+}
+
+.home-hero p {
+    color: var(--colore-testo-leggero);
+}
+
+.hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spazio-sm);
+    margin-block: var(--spazio-lg);
+}
+
+.hero-cta .bottone-primario,
+.hero-cta .bottone-secondario {
+    margin-top: 0;
+    width: auto;
+    min-width: 11rem;
+}
+
+.hero-kpi {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: var(--spazio-md);
+}
+
+.hero-kpi li {
+    border-left: 3px solid var(--colore-accento);
+    padding-left: var(--spazio-sm);
+    color: var(--colore-testo-leggero);
+}
+
+.hero-panel {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    padding: 1.25rem;
+}
+
+.hero-panel h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--spazio-sm);
+}
+
+.hero-panel p {
+    margin-bottom: 0.35rem;
+}
+
+.hero-panel-note {
+    margin-top: var(--spazio-sm);
+    padding-top: var(--spazio-sm);
+    border-top: var(--bordo-standard);
+    font-size: 0.875rem;
+}
+
+#punti-forza,
+#promozioni,
+#come-ordinare,
+#best-seller {
+    padding-block: var(--spazio-sezione);
+}
+
+#promozioni,
+#come-ordinare,
+#best-seller {
+    border-top: var(--bordo-standard);
+}
+
+.home-section-title {
+    margin-bottom: var(--spazio-lg);
+    max-width: 26ch;
+}
+
+.feature-grid,
+.offer-grid,
+.steps-grid,
+.menu-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spazio-md);
+}
+
+.feature-card,
+.offer-card,
+.step-card,
+.menu-preview-card {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    padding: 1.2rem;
+    transition: transform var(--transizione-base),
+        box-shadow var(--transizione-base);
+}
+
+.feature-card:hover,
+.offer-card:hover,
+.step-card:hover,
+.menu-preview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ombra-hover);
+}
+
+.feature-card h3,
+.offer-card h3,
+.step-card h3,
+.menu-preview-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--spazio-sm);
+}
+
+.feature-card p,
+.offer-card p,
+.step-card p,
+.menu-preview-card p {
+    color: var(--colore-testo-leggero);
+}
+
+.step-card strong {
+    display: inline-block;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--colore-accento);
+    margin-bottom: var(--spazio-sm);
+}
+
+.offer-note {
+    margin-top: var(--spazio-sm);
+    padding-top: var(--spazio-sm);
+    border-top: var(--bordo-standard);
+    font-size: 0.875rem;
+}
+
+.menu-preview-card .prezzo {
+    margin-top: var(--spazio-sm);
+    display: inline-block;
+}
+
+.home-bottom-cta {
+    margin-top: var(--spazio-lg);
+    text-align: center;
+    font-weight: 600;
+}
+
+.home-closing-cta {
+    padding-bottom: var(--spazio-sezione);
+}
+
+.home-closing-cta .contenitore {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo-alt);
+    padding: 1.4rem 1.2rem;
+}
+
+
+/* --------------------------------------------------------------------------
+   21. SEDI E SELETTORE BRANCH
+   -------------------------------------------------------------------------- */
+
+.branch-switcher {
+    margin-top: var(--spazio-md);
+    display: grid;
+    grid-template-columns: auto minmax(12rem, 1fr) auto;
+    gap: var(--spazio-sm);
+    align-items: center;
+    max-width: 44rem;
+}
+
+.branch-switcher label {
+    font-weight: 600;
+}
+
+.branch-switcher select {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-bordo);
+    padding: 0.45rem 0.6rem;
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    font-family: var(--font-base);
+    font-size: 0.9375rem;
+}
+
+.branch-switcher button {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-bordo);
+    padding: 0.45rem 0.75rem;
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    font-family: var(--font-base);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.branch-switcher button:hover {
+    color: var(--colore-accento);
+    border-color: var(--colore-accento);
+}
+
+.branch-switcher-note {
+    grid-column: 1 / -1;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--colore-testo-leggero);
+}
+
+#contatti-brand {
+    padding-block: var(--spazio-lg);
+    border-top: var(--bordo-standard);
+    border-bottom: var(--bordo-standard);
+    background-color: var(--colore-sfondo-alt);
+}
+
+#contatti-brand .sede-dettaglio-card {
+    max-width: 52rem;
+}
+
+.sedi-layout {
+    padding-block: var(--spazio-sezione);
+}
+
+.sedi-grid {
+    margin-top: var(--spazio-lg);
+    display: grid;
+    grid-template-columns: minmax(15rem, 19rem) 1fr;
+    gap: var(--spazio-lg);
+    align-items: start;
+}
+
+.sedi-lista ul {
+    display: grid;
+    gap: var(--spazio-sm);
+}
+
+.sedi-lista h3 {
+    font-size: 1rem;
+    margin-bottom: var(--spazio-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.sede-link {
+    display: block;
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    padding: 0.85rem 0.95rem;
+    text-decoration: none;
+    color: var(--colore-testo);
+    transition: border-color var(--transizione-base),
+        transform var(--transizione-base),
+        box-shadow var(--transizione-base);
+}
+
+.sede-link strong {
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.sede-link span {
+    display: block;
+    color: var(--colore-testo-leggero);
+    font-size: 0.9rem;
+}
+
+.sede-link:hover {
+    border-color: var(--colore-accento);
+    transform: translateY(-1px);
+}
+
+.sede-link.attiva {
+    border-color: var(--colore-accento);
+    box-shadow: var(--ombra-hover);
+}
+
+.sede-link.attiva strong {
+    color: var(--colore-accento);
+}
+
+.sede-dettaglio-wrap {
+    display: grid;
+    gap: var(--spazio-md);
+}
+
+.sede-dettaglio-card {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    box-shadow: var(--ombra-leggera);
+    background-color: var(--colore-sfondo);
+    padding: 1rem 1.1rem;
+}
+
+.sede-dettaglio-card h3 {
+    margin-bottom: var(--spazio-sm);
+}
+
+.sede-dettaglio-card p {
+    color: var(--colore-testo-leggero);
+}
+
+.sede-dettaglio-azioni {
+    margin-top: var(--spazio-md);
+}
+
+.sede-dettaglio-azioni .bottone-primario {
+    width: auto;
+    margin-top: 0;
+}
+
+.sede-mappa-box {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    overflow: hidden;
+    box-shadow: var(--ombra-leggera);
+    min-height: 20rem;
+}
+
+#sedi-mappa-frame {
+    width: 100%;
+    min-height: 20rem;
+    border: 0;
+}
+
+#servizi-intro,
+#servizi-offerti,
+#servizi-standard,
+#servizi-contatti {
+    padding-block: var(--spazio-sezione);
+}
+
+#servizi-offerti,
+#servizi-standard,
+#servizi-contatti {
+    border-top: var(--bordo-standard);
 }

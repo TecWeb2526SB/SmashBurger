@@ -3,6 +3,6 @@
  * Viene incluso come unico <link> nell'HTML.
  */
 
-@import url("css/style.css");
-@import url("css/print.css");
-@import url("css/mobile.css");
+@import url("css/style.css") screen;
+@import url("css/mobile.css") screen;
+@import url("css/print.css") print;

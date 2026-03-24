@@ -6,29 +6,55 @@ require_once __DIR__ . '/includes/resources.php';
  * Gestisce sia GET (mostra form) sia POST (valida credenziali).
  */
 
-$errori      = [];
-$valoreEmail = '';
+$errori          = [];
+$valoreUsername  = '';
+$csrfToken       = csrf_token();
+$flash           = flash_get();
+
+if (is_logged_in()) {
+    header('Location: area_personale.php');
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = trim($_POST['email']    ?? '');
-    $password = trim($_POST['password'] ?? '');
+    $csrfTokenForm = $_POST['csrf_token'] ?? null;
+    $username = trim($_POST['username'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
 
-    if ($email === '') {
-        $errori['email'] = 'Inserisci la tua e-mail.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errori['email'] = 'Formato e-mail non valido.';
+    if (!csrf_is_valid($csrfTokenForm)) {
+        $errori['generale'] = 'Sessione scaduta o richiesta non valida. Ricarica la pagina e riprova.';
+    }
+
+    if ($username === '') {
+        $errori['username'] = 'Inserisci il tuo username.';
+    } elseif (!preg_match('/^[a-zA-Z0-9_.-]{3,50}$/', $username)) {
+        $errori['username'] = 'Username non valido (3-50 caratteri: lettere, numeri, . _ -).';
     }
 
     if ($password === '') {
         $errori['password'] = 'Inserisci la tua password.';
     }
 
-    $valoreEmail = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+    $valoreUsername = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
 
     if (empty($errori)) {
-        /* TODO: verificare le credenziali nel database */
-        /* Esempio di redirect dopo login riuscito: */
-        /* header('Location: area_personale.php'); exit; */
+        $stmt = $pdo->prepare(
+            'SELECT id, username, password_hash, role
+             FROM users
+             WHERE username = :username
+             LIMIT 1'
+        );
+        $stmt->execute(['username' => $username]);
+        $utente = $stmt->fetch();
+
+        if (!$utente || !password_verify($password, (string) $utente['password_hash'])) {
+            $errori['generale'] = 'Credenziali non valide.';
+        } else {
+            login_user($utente);
+            flash_set('success', 'Accesso effettuato con successo. Bentornato, ' . $utente['username'] . '!');
+            header('Location: area_personale.php');
+            exit;
+        }
     }
 }
 
