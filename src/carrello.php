@@ -6,28 +6,6 @@ require_login();
 $utente = current_user();
 $userId = (int) $utente['id'];
 $csrfToken = csrf_token();
-$allBranches = branches_get_all($pdo);
-
-$requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
-if ($requestedBranchSlug !== '') {
-    if (branch_select_by_slug($pdo, $requestedBranchSlug)) {
-        $branchAfterSelect = branch_get_selected($pdo);
-        $sync = cart_sync_with_selected_branch(
-            $pdo,
-            $userId,
-            $branchAfterSelect ? (int) $branchAfterSelect['id'] : 0
-        );
-        if ($sync['ok']) {
-            flash_set('success', $sync['message'] ?? 'Sede aggiornata con successo.');
-        } else {
-            flash_set('error', $sync['message'] ?? 'Impossibile cambiare sede con carrello attivo.');
-        }
-    } else {
-        flash_set('error', 'La sede selezionata non e disponibile.');
-    }
-    header('Location: carrello.php');
-    exit;
-}
 
 $selectedBranch = branch_get_selected($pdo);
 $selectedBranchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;

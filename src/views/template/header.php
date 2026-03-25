@@ -14,6 +14,15 @@
 $vResources = file_exists(__DIR__ . '/../../styles/resources.css')
     ? filemtime(__DIR__ . '/../../styles/resources.css')
     : time();
+
+$headerSelectedBranch = null;
+if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected')) {
+    try {
+        $headerSelectedBranch = branch_get_selected($pdo);
+    } catch (\Throwable $e) {
+        $headerSelectedBranch = null;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="it" xml:lang="it">
@@ -44,23 +53,25 @@ $vResources = file_exists(__DIR__ . '/../../styles/resources.css')
 </head>
 
 <body>
-
-    <nav id="skip-link" aria-label="Salta al contenuto">
-        <a href="#content">Vai al contenuto principale</a>
-    </nav>
-
     <header>
         <div class="contenitore">
+            <div class="brand-wrap">
+                <?php if (!empty($isHomepage)): ?>
+                    <h1 class="brand">
+                        <a href="index.php">Smash Burger</a>
+                    </h1>
+                <?php else: ?>
+                    <p class="brand">
+                        <a href="index.php">Smash Burger</a>
+                    </p>
+                <?php endif; ?>
 
-            <?php if (!empty($isHomepage)): ?>
-                <h1 class="brand">
-                    <a href="index.php">Smash Burger</a>
-                </h1>
-            <?php else: ?>
-                <p class="brand">
-                    <a href="index.php">Smash Burger</a>
-                </p>
-            <?php endif; ?>
+                <?php if (!empty($headerSelectedBranch)): ?>
+                    <p class="brand-sede">
+                        <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
+                    </p>
+                <?php endif; ?>
+            </div>
 
             <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principale">
                 Menu

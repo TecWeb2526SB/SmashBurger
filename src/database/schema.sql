@@ -203,7 +203,7 @@ CREATE TABLE orders (
     fulfillment_type ENUM('asporto', 'ritiro') NOT NULL DEFAULT 'ritiro',
     pickup_at DATETIME NULL,
     order_status ENUM('pending', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled') NOT NULL DEFAULT 'pending',
-    payment_method ENUM('card', 'paypal', 'cash') NOT NULL,
+    payment_method ENUM('card', 'paypal') NOT NULL,
     payment_status ENUM('pending', 'paid', 'failed', 'refunded') NOT NULL DEFAULT 'pending',
     total_cents INT UNSIGNED NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -248,7 +248,7 @@ CREATE TABLE order_items (
 CREATE TABLE payment_transactions (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     order_id INT UNSIGNED NOT NULL,
-    payment_method ENUM('card', 'paypal', 'cash') NOT NULL,
+    payment_method ENUM('card', 'paypal') NOT NULL,
     transaction_status ENUM('pending', 'approved', 'declined', 'refunded') NOT NULL DEFAULT 'pending',
     gateway_reference VARCHAR(64) NOT NULL,
     amount_cents INT UNSIGNED NOT NULL,

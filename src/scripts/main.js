@@ -334,8 +334,6 @@ function inizializzaTornaSu() {
 
     bottone.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        const skipLink = document.querySelector('#skip-link a');
-        if (skipLink) skipLink.focus();
     });
 }
 
@@ -373,13 +371,12 @@ function inizializzaMappaSedi() {
     const detailHours = document.getElementById('sede-dettaglio-orari-valore');
     const detailNotes = document.getElementById('sede-dettaglio-note-valore');
     const mapFrame = document.getElementById('sedi-mappa-frame');
-    const menuLink = document.getElementById('sede-dettaglio-menu-link');
 
     function normalizzaTelefono(tel) {
         return tel.replace(/[^0-9+]/g, '');
     }
 
-    function render(link, aggiornaUrl) {
+    function render(link) {
         links.forEach(function (l) {
             const attiva = l === link;
             l.classList.toggle('attiva', attiva);
@@ -400,7 +397,6 @@ function inizializzaMappaSedi() {
         const notes = link.dataset.branchNotes || '';
         const hours = link.dataset.branchHours || '';
         const map = link.dataset.branchMap || '';
-        const slug = link.dataset.branchSlug || '';
 
         if (detailName) {
             detailName.textContent = nome;
@@ -429,33 +425,16 @@ function inizializzaMappaSedi() {
         if (mapFrame && map) {
             mapFrame.setAttribute('src', map);
         }
-        if (menuLink && slug) {
-            menuLink.setAttribute('href', 'prodotti.php?sede=' + encodeURIComponent(slug));
-        }
-
-        if (aggiornaUrl && slug && window.history && window.history.replaceState) {
-            const nextUrl = new URL(window.location.href);
-            nextUrl.searchParams.set('sede', slug);
-            window.history.replaceState({}, '', nextUrl.toString());
-        }
     }
 
     links.forEach(function (link) {
-        link.addEventListener('mouseenter', function () {
-            render(link, false);
-        });
-
-        link.addEventListener('focus', function () {
-            render(link, false);
-        });
-
         link.addEventListener('click', function (e) {
             if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
                 return;
             }
 
             e.preventDefault();
-            render(link, true);
+            render(link);
             window.location.assign(link.href);
         });
     });
@@ -465,8 +444,67 @@ function inizializzaMappaSedi() {
         ? wrapper.querySelector('.sede-link[data-branch-slug="' + selectedSlug + '"]')
         : links[0];
     if (initial) {
-        render(initial, false);
+        render(initial);
     }
+}
+
+/* ==========================================================================
+   9. CHECKOUT - TOGGLE CAMPI DINAMICI
+   ========================================================================== */
+
+function inizializzaCheckoutRitiro() {
+    const radios = document.querySelectorAll('input[name="pickup_mode"]');
+    const timeWrap = document.getElementById('pickup-time-wrap');
+    const timeSelect = document.getElementById('pickup_time');
+    if (radios.length === 0 || !timeWrap) return;
+
+    function aggiornaStato() {
+        const selezionato = document.querySelector('input[name="pickup_mode"]:checked');
+        const mostraOrario = selezionato && selezionato.value === 'orario';
+        timeWrap.hidden = !mostraOrario;
+
+        if (timeSelect) {
+            timeSelect.disabled = !mostraOrario;
+            if (mostraOrario && !timeSelect.value && timeSelect.options.length > 0) {
+                timeSelect.selectedIndex = 0;
+            }
+        }
+    }
+
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', aggiornaStato);
+    });
+    aggiornaStato();
+}
+
+function inizializzaCheckoutPagamento() {
+    const radios = document.querySelectorAll('input[name="payment_method"]');
+    const cardBox = document.getElementById('payment-card-fields');
+    const paypalBox = document.getElementById('payment-paypal-fields');
+    if (radios.length === 0 || !cardBox || !paypalBox) return;
+
+    function impostaDisabilitazione(contenitore, disabilita) {
+        contenitore.querySelectorAll('input, select, textarea').forEach(function (campo) {
+            campo.disabled = disabilita;
+        });
+    }
+
+    function aggiornaStato() {
+        const selezionato = document.querySelector('input[name="payment_method"]:checked');
+        const metodo = selezionato ? selezionato.value : 'card';
+
+        const mostraCarta = metodo === 'card';
+        cardBox.hidden = !mostraCarta;
+        paypalBox.hidden = mostraCarta;
+
+        impostaDisabilitazione(cardBox, !mostraCarta);
+        impostaDisabilitazione(paypalBox, mostraCarta);
+    }
+
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', aggiornaStato);
+    });
+    aggiornaStato();
 }
 
 /* ==========================================================================
@@ -483,4 +521,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaTornaSu();
     inizializzaBranchSwitcher();
     inizializzaMappaSedi();
+    inizializzaCheckoutRitiro();
+    inizializzaCheckoutPagamento();
 });

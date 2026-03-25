@@ -13,11 +13,6 @@ http_response_code(404);
     <link rel="stylesheet" href="../styles/resources.css">
 </head>
 <body>
-
-    <nav id="skip-link" aria-label="Salta al contenuto">
-        <a href="#content">Vai al contenuto principale</a>
-    </nav>
-
     <main id="content">
         <div class="contenitore">
             <h1>404</h1>

@@ -253,32 +253,7 @@ a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   7. SKIP LINK (accessibilità — primo elemento nella pagina)
-   -------------------------------------------------------------------------- */
-
-#skip-link a {
-    position: absolute;
-    top: -10rem;
-    left: var(--spazio-md);
-    z-index: 1000;
-    background-color: var(--colore-accento);
-    color: #ffffff;
-    padding: var(--spazio-sm) var(--spazio-md);
-    border-radius: var(--raggio-bordo);
-    font-weight: 700;
-    text-decoration: none;
-    transition: top var(--transizione-base);
-}
-
-#skip-link a:focus {
-    top: var(--spazio-md);
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-}
-
-
-/* --------------------------------------------------------------------------
-   8. LAYOUT — contenitore principale
+   7. LAYOUT — contenitore principale
    -------------------------------------------------------------------------- */
 
 .contenitore {
@@ -300,10 +275,18 @@ main:has(> .breadcrumb) {
     padding-block-start: 0;
 }
 
+main:has(> .breadcrumb) > section:first-of-type {
+    padding-top: var(--spazio-lg);
+}
+
+main:has(> .breadcrumb) > section:last-of-type {
+    padding-bottom: var(--spazio-lg);
+}
+
 
 
 /* --------------------------------------------------------------------------
-   9. HEADER
+   8. HEADER
    -------------------------------------------------------------------------- */
 
 header {
@@ -322,6 +305,13 @@ header>.contenitore {
     padding-block: var(--spazio-md);
 }
 
+.brand-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+}
+
 /* Il brand/logo — solo nella home è <h1>, nelle altre è <p> */
 .brand {
     font-size: 1.25rem;
@@ -329,6 +319,7 @@ header>.contenitore {
     letter-spacing: -0.02em;
     color: var(--colore-testo);
     text-decoration: none;
+    margin: 0;
 }
 
 .brand:visited {
@@ -348,9 +339,17 @@ header h1 {
     margin: 0;
 }
 
+.brand-sede {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--colore-testo-leggero);
+}
+
 
 /* --------------------------------------------------------------------------
-   10. NAVIGAZIONE PRINCIPALE
+   9. NAVIGAZIONE PRINCIPALE
    -------------------------------------------------------------------------- */
 
 #menu-principale ul {
@@ -640,7 +639,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   14. COMPONENTI — SCHEDA PRODOTTO E GRIGLIA
+   13. COMPONENTI — SCHEDA PRODOTTO E GRIGLIA
    -------------------------------------------------------------------------- */
 
 .griglia-prodotti {
@@ -656,15 +655,15 @@ footer a:focus-visible {
 }
 
 .categoria-sezione {
-    margin-top: var(--spazio-sezione);
+    margin-top: calc(var(--spazio-sezione) + var(--spazio-md));
 }
 
 .categoria-sezione h2 {
-    margin-bottom: var(--spazio-md);
+    margin-bottom: var(--spazio-sm);
 }
 
 .categoria-sezione .griglia-prodotti {
-    margin-top: var(--spazio-md);
+    margin-top: var(--spazio-lg);
 }
 
 .scheda-prodotto {
@@ -693,24 +692,22 @@ footer a:focus-visible {
 
 .scheda-prodotto-corpo {
     padding: var(--spazio-md);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spazio-md);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    row-gap: var(--spazio-md);
     flex: 1;
 }
 
 .scheda-prodotto-contenuto {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    align-content: start;
     gap: var(--spazio-sm);
-    flex: 1;
 }
 
 .scheda-prodotto-azioni {
-    margin-top: auto;
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: var(--spazio-sm);
+    align-content: end;
 }
 
 .scheda-prodotto h3,
@@ -743,6 +740,10 @@ footer a:focus-visible {
 
 .scheda-prodotto .bottone-primario {
     margin-top: 0;
+}
+
+.scheda-prodotto-azioni form {
+    width: 100%;
 }
 
 .scheda-prodotto-azioni .disponibilita-ko {
@@ -788,7 +789,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   15. PAGINE AUTENTICAZIONE — LOGIN E REGISTRAZIONE
+   14. PAGINE AUTENTICAZIONE — LOGIN E REGISTRAZIONE
    -------------------------------------------------------------------------- */
 
 .auth-sezione {
@@ -923,7 +924,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   16. FEEDBACK E CARRELLO/CHECKOUT
+   15. FEEDBACK E CARRELLO/CHECKOUT
    -------------------------------------------------------------------------- */
 
 .alert {
@@ -1031,14 +1032,63 @@ footer a:focus-visible {
     align-items: start;
 }
 
+.checkout-shell {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr;
+    gap: var(--spazio-lg);
+    align-items: start;
+}
+
+.checkout-card {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-sm);
+}
+
+.checkout-intro {
+    margin-bottom: var(--spazio-md);
+}
+
+.checkout-main {
+    max-width: 56rem;
+    margin-inline: auto;
+}
+
+.checkout-step-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spazio-sm);
+    margin-bottom: var(--spazio-lg);
+}
+
+.checkout-step-list li {
+    border: var(--bordo-standard);
+    border-radius: 999px;
+    padding: 0.45rem 0.7rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--colore-testo-leggero);
+    background-color: var(--colore-sfondo);
+}
+
+.checkout-step-list li.attivo {
+    color: #ffffff;
+    background-color: var(--colore-accento);
+    border-color: var(--colore-accento);
+}
+
 .checkout-fieldset {
     border: var(--bordo-standard);
     border-radius: var(--raggio-card);
-    padding: var(--spazio-sm) var(--spazio-md);
+    padding: var(--spazio-md);
     margin-bottom: var(--spazio-md);
-    display: flex;
-    gap: var(--spazio-md);
-    flex-wrap: wrap;
+    display: grid;
+    gap: var(--spazio-sm);
     background-color: var(--colore-sfondo);
     box-shadow: var(--ombra-leggera);
 }
@@ -1046,6 +1096,80 @@ footer a:focus-visible {
 .checkout-fieldset legend {
     font-weight: 700;
     padding-inline: 0.3rem;
+    margin-bottom: 0.2rem;
+}
+
+.checkout-fieldset label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.checkout-option-note {
+    margin-top: -0.25rem;
+    margin-bottom: var(--spazio-xs);
+    margin-left: 1.5rem;
+    color: var(--colore-testo-leggero);
+    font-size: 0.875rem;
+}
+
+.checkout-navigation {
+    margin-top: var(--spazio-lg);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: var(--spazio-sm);
+}
+
+.checkout-navigation .bottone-primario,
+.checkout-navigation .bottone-secondario {
+    width: 100%;
+    min-height: 2.8rem;
+    margin-top: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkout-form {
+    min-height: 100%;
+}
+
+.checkout-form .checkout-navigation {
+    margin-top: auto;
+    padding-top: var(--spazio-md);
+}
+
+.checkout-muted {
+    color: var(--colore-testo-leggero);
+}
+
+.checkout-payment-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spazio-md);
+}
+
+.checkout-summary {
+    margin-top: var(--spazio-sm);
+}
+
+.checkout-payment-box {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-bordo);
+    padding: var(--spazio-md);
+    background-color: var(--colore-sfondo-alt);
+}
+
+.checkout-payment-box h2 {
+    font-size: 1.125rem;
+    margin-bottom: var(--spazio-sm);
+}
+
+.checkout-inline-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spazio-sm);
 }
 
 .campo-gruppo select,
@@ -1085,7 +1209,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   17. HAMBURGER MENU (visibile solo via mobile.css / media query)
+   16. HAMBURGER MENU (visibile solo via mobile.css / media query)
    -------------------------------------------------------------------------- */
 
 /* Il bottone è nascosto di default su desktop */
@@ -1095,7 +1219,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   18. BREADCRUMB — isoletta centrata
+   17. BREADCRUMB — isoletta centrata
    -------------------------------------------------------------------------- */
 
 .breadcrumb {
@@ -1150,7 +1274,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   19. PULSANTE TORNA SU — cerchio con bordo, hover fill
+   18. PULSANTE TORNA SU — cerchio con bordo, hover fill
    -------------------------------------------------------------------------- */
 
 #torna-su {
@@ -1208,7 +1332,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   20. HOMEPAGE — gerarchia visiva e coerenza componenti
+   19. HOMEPAGE — gerarchia visiva e coerenza componenti
    -------------------------------------------------------------------------- */
 
 .home-hero {
@@ -1400,7 +1524,7 @@ footer a:focus-visible {
 
 
 /* --------------------------------------------------------------------------
-   21. SEDI E SELETTORE BRANCH
+   20. SEDI E SELETTORE BRANCH
    -------------------------------------------------------------------------- */
 
 .branch-switcher {
@@ -1449,15 +1573,37 @@ footer a:focus-visible {
     color: var(--colore-testo-leggero);
 }
 
-#contatti-brand {
-    padding-block: var(--spazio-lg);
-    border-top: var(--bordo-standard);
-    border-bottom: var(--bordo-standard);
-    background-color: var(--colore-sfondo-alt);
+.chi-siamo-intro {
+    padding-block: var(--spazio-sezione);
 }
 
-#contatti-brand .sede-dettaglio-card {
-    max-width: 52rem;
+.chi-siamo-lead {
+    max-width: 70ch;
+    color: var(--colore-testo-leggero);
+    margin-bottom: var(--spazio-lg);
+}
+
+.chi-siamo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spazio-md);
+}
+
+.chi-siamo-card {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    padding: 1.1rem;
+}
+
+.chi-siamo-card h2 {
+    font-size: 1.125rem;
+    margin-bottom: var(--spazio-sm);
+}
+
+.chi-siamo-card p {
+    color: var(--colore-testo-leggero);
 }
 
 .sedi-layout {
@@ -1542,15 +1688,6 @@ footer a:focus-visible {
 
 .sede-dettaglio-card p {
     color: var(--colore-testo-leggero);
-}
-
-.sede-dettaglio-azioni {
-    margin-top: var(--spazio-md);
-}
-
-.sede-dettaglio-azioni .bottone-primario {
-    width: auto;
-    margin-top: 0;
 }
 
 .sede-mappa-box {

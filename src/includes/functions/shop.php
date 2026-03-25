@@ -248,6 +248,243 @@ function branch_select_by_slug(PDO $pdo, string $slug): bool
     return true;
 }
 
+function branch_get_hours_for_weekday(PDO $pdo, int $branchId, int $weekday): ?array
+{
+    if ($branchId <= 0 || $weekday < 1 || $weekday > 7) {
+        return null;
+    }
+
+    $stmt = $pdo->prepare(
+        'SELECT day_label, open_time, close_time, is_closed
+         FROM branch_hours
+         WHERE branch_id = :branch_id
+           AND weekday = :weekday
+         LIMIT 1'
+    );
+    $stmt->execute([
+        'branch_id' => $branchId,
+        'weekday' => $weekday,
+    ]);
+    $row = $stmt->fetch();
+
+    return $row ?: null;
+}
+
+function branch_get_opening_window_for_date(
+    PDO $pdo,
+    int $branchId,
+    \DateTimeImmutable $date,
+    ?\DateTimeZone $tz = null
+): ?array {
+    $timezone = $tz ?? new \DateTimeZone('Europe/Rome');
+    $weekday = (int) $date->format('N');
+    $hours = branch_get_hours_for_weekday($pdo, $branchId, $weekday);
+    if ($hours === null) {
+        return null;
+    }
+
+    if ((int) ($hours['is_closed'] ?? 0) === 1) {
+        return null;
+    }
+
+    $openTime = (string) ($hours['open_time'] ?? '');
+    $closeTime = (string) ($hours['close_time'] ?? '');
+    if ($openTime === '' || $closeTime === '') {
+        return null;
+    }
+
+    $open = \DateTimeImmutable::createFromFormat(
+        'Y-m-d H:i:s',
+        $date->format('Y-m-d') . ' ' . substr($openTime, 0, 8),
+        $timezone
+    );
+    $close = \DateTimeImmutable::createFromFormat(
+        'Y-m-d H:i:s',
+        $date->format('Y-m-d') . ' ' . substr($closeTime, 0, 8),
+        $timezone
+    );
+
+    if ($open === false || $close === false) {
+        return null;
+    }
+
+    if ($close <= $open) {
+        $close = $close->modify('+1 day');
+    }
+
+    return [
+        'day_label' => (string) ($hours['day_label'] ?? ''),
+        'open' => $open,
+        'close' => $close,
+    ];
+}
+
+function branch_get_next_pickup_datetime(
+    PDO $pdo,
+    int $branchId,
+    ?\DateTimeImmutable $now = null,
+    ?\DateTimeZone $tz = null
+): ?\DateTimeImmutable {
+    $timezone = $tz ?? new \DateTimeZone('Europe/Rome');
+    $reference = $now ?? new \DateTimeImmutable('now', $timezone);
+    $minimumFromNow = $reference->modify('+10 minutes');
+    $startDay = $reference->setTime(0, 0);
+
+    for ($dayOffset = 0; $dayOffset <= 7; $dayOffset++) {
+        $day = $startDay->modify('+' . $dayOffset . ' day');
+        $window = branch_get_opening_window_for_date($pdo, $branchId, $day, $timezone);
+        if ($window === null) {
+            continue;
+        }
+
+        $candidate = $window['open']->modify('+10 minutes');
+        if ($candidate < $minimumFromNow) {
+            $candidate = $minimumFromNow;
+        }
+
+        if ($candidate <= $window['close']) {
+            return $candidate;
+        }
+    }
+
+    return null;
+}
+
+function branch_round_up_to_interval(\DateTimeImmutable $dt, int $intervalMinutes = 10): \DateTimeImmutable
+{
+    $minutesFromMidnight = ((int) $dt->format('H') * 60) + (int) $dt->format('i');
+    $rounded = (int) (ceil($minutesFromMidnight / $intervalMinutes) * $intervalMinutes);
+
+    return $dt->setTime(0, 0)->modify('+' . $rounded . ' minutes');
+}
+
+function branch_get_today_pickup_slots(
+    PDO $pdo,
+    int $branchId,
+    int $intervalMinutes = 10,
+    ?\DateTimeImmutable $now = null,
+    ?\DateTimeZone $tz = null
+): array {
+    $timezone = $tz ?? new \DateTimeZone('Europe/Rome');
+    $reference = $now ?? new \DateTimeImmutable('now', $timezone);
+    $window = branch_get_opening_window_for_date($pdo, $branchId, $reference, $timezone);
+    if ($window === null) {
+        return [];
+    }
+
+    $minimumFromNow = $reference->modify('+10 minutes');
+    $earliest = $window['open']->modify('+10 minutes');
+    if ($minimumFromNow > $earliest) {
+        $earliest = $minimumFromNow;
+    }
+
+    $cursor = branch_round_up_to_interval($earliest, $intervalMinutes);
+    if ($cursor > $window['close']) {
+        return [];
+    }
+
+    $slots = [];
+    while ($cursor <= $window['close']) {
+        $slots[] = [
+            'time' => $cursor->format('H:i'),
+            'raw' => $cursor->format('Y-m-d\TH:i'),
+            'display' => $cursor->format('H:i'),
+        ];
+        $cursor = $cursor->modify('+' . $intervalMinutes . ' minutes');
+    }
+
+    return $slots;
+}
+
+function branch_validate_pickup_datetime(
+    PDO $pdo,
+    int $branchId,
+    string $pickupAtRaw,
+    ?\DateTimeZone $tz = null,
+    bool $sameDayOnly = false
+): array {
+    $timezone = $tz ?? new \DateTimeZone('Europe/Rome');
+    $value = trim($pickupAtRaw);
+    if ($value === '') {
+        return [
+            'ok' => false,
+            'message' => 'Seleziona data e orario di ritiro.',
+        ];
+    }
+
+    $pickup = \DateTimeImmutable::createFromFormat('Y-m-d\TH:i', $value, $timezone);
+    $errors = \DateTimeImmutable::getLastErrors();
+    $hasFormatErrors = is_array($errors)
+        && ((int) ($errors['warning_count'] ?? 0) > 0 || (int) ($errors['error_count'] ?? 0) > 0);
+    if ($pickup === false || $hasFormatErrors) {
+        return [
+            'ok' => false,
+            'message' => 'Formato data/ora non valido.',
+        ];
+    }
+
+    $now = new \DateTimeImmutable('now', $timezone);
+    if ($sameDayOnly && $pickup->format('Y-m-d') !== $now->format('Y-m-d')) {
+        return [
+            'ok' => false,
+            'message' => 'Il ritiro programmato e disponibile solo per la giornata corrente.',
+        ];
+    }
+
+    $minimumFromNow = $now->modify('+10 minutes');
+    if ($pickup < $minimumFromNow) {
+        if ($sameDayOnly) {
+            $todaySlots = branch_get_today_pickup_slots($pdo, $branchId, 10, $now, $timezone);
+            $suggestion = !empty($todaySlots) ? ' Primo orario disponibile: ' . $todaySlots[0]['display'] . '.' : '';
+        } else {
+            $next = branch_get_next_pickup_datetime($pdo, $branchId, $now, $timezone);
+            $suggestion = $next ? ' Primo orario disponibile: ' . $next->format('d/m/Y H:i') . '.' : '';
+        }
+        return [
+            'ok' => false,
+            'message' => 'L orario selezionato non e piu disponibile.' . $suggestion,
+        ];
+    }
+
+    $window = branch_get_opening_window_for_date($pdo, $branchId, $pickup, $timezone);
+    if ($window === null) {
+        return [
+            'ok' => false,
+            'message' => 'La sede selezionata e chiusa nell orario richiesto.',
+        ];
+    }
+
+    $earliest = $window['open']->modify('+10 minutes');
+    if ($minimumFromNow > $earliest) {
+        $earliest = $minimumFromNow;
+    }
+
+    if ($pickup < $earliest) {
+        return [
+            'ok' => false,
+            'message' => 'Per il ritiro in sede il primo orario disponibile e ' . $earliest->format('d/m/Y H:i') . '.',
+            'earliest_raw' => $earliest->format('Y-m-d\TH:i'),
+            'earliest_display' => $earliest->format('d/m/Y H:i'),
+        ];
+    }
+
+    if ($pickup > $window['close']) {
+        return [
+            'ok' => false,
+            'message' => 'L orario selezionato supera la chiusura della sede.',
+        ];
+    }
+
+    return [
+        'ok' => true,
+        'pickup_sql' => $pickup->format('Y-m-d H:i:s'),
+        'pickup_raw' => $pickup->format('Y-m-d\TH:i'),
+        'pickup_display' => $pickup->format('d/m/Y H:i'),
+        'earliest_raw' => $earliest->format('Y-m-d\TH:i'),
+        'earliest_display' => $earliest->format('d/m/Y H:i'),
+    ];
+}
+
 function catalog_get(PDO $pdo, ?int $branchId = null): array
 {
     if ($branchId === null) {
@@ -696,16 +933,6 @@ function payment_simulate(string $method, int $totalCents, string $cardNumber = 
 {
     $reference = strtoupper($method) . '-' . date('YmdHis') . '-' . random_int(1000, 9999);
 
-    if ($method === 'cash') {
-        return [
-            'success' => true,
-            'payment_status' => 'pending',
-            'transaction_status' => 'pending',
-            'gateway_reference' => $reference,
-            'message' => 'Pagamento in cassa previsto al ritiro.',
-        ];
-    }
-
     if ($method === 'card') {
         $digits = preg_replace('/\D+/', '', $cardNumber);
         if (strlen($digits) < 13 || strlen($digits) > 19) {
@@ -802,18 +1029,15 @@ function order_place(
     }
 
     $fulfillment = in_array($fulfillmentType, ['asporto', 'ritiro'], true) ? $fulfillmentType : 'ritiro';
-    $payment = in_array($paymentMethod, ['card', 'paypal', 'cash'], true) ? $paymentMethod : 'card';
+    $payment = in_array($paymentMethod, ['card', 'paypal'], true) ? $paymentMethod : 'card';
 
     $pickupAt = null;
-    if ($pickupAtRaw !== '') {
-        $dt = \DateTime::createFromFormat('Y-m-d\TH:i', $pickupAtRaw);
-        if ($dt !== false) {
-            $pickupAt = $dt->format('Y-m-d H:i:s');
+    if ($fulfillment === 'ritiro') {
+        $pickupValidation = branch_validate_pickup_datetime($pdo, $branchId, $pickupAtRaw, null, true);
+        if (!$pickupValidation['ok']) {
+            return ['ok' => false, 'message' => (string) $pickupValidation['message']];
         }
-    }
-
-    if ($fulfillment === 'ritiro' && $pickupAt === null) {
-        return ['ok' => false, 'message' => 'Per il ritiro indica data e orario.'];
+        $pickupAt = (string) $pickupValidation['pickup_sql'];
     }
 
     $paymentResult = payment_simulate(
@@ -912,6 +1136,8 @@ function order_place(
         'order_id' => $orderId,
         'order_number' => $orderNumber,
         'message' => $paymentResult['message'],
+        'fulfillment_type' => $fulfillment,
+        'pickup_at' => $pickupAt,
     ];
 }
 

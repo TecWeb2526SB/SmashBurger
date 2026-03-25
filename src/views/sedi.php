@@ -5,23 +5,44 @@
  * Variabili attese:
  *   $allBranches    array
  *   $selectedBranch ?array
- *   $brandContacts  array
  *   $branchesJson   string
  *   $branchWarning  ?string
  */
 ?>
 
-<section aria-labelledby="titolo-sedi">
+<section class="chi-siamo-intro" aria-labelledby="titolo-sedi">
     <div class="contenitore">
         <h1 id="titolo-sedi">Chi siamo e le nostre sedi</h1>
-        <p>
+        <p class="chi-siamo-lead">
             Smash Burger Original nasce in Veneto con una promessa semplice: burger fatti al momento,
-            processi chiari e qualita costante in ogni sede.
+            ingredienti selezionati e qualita costante in ogni sede.
         </p>
-        <p>
-            Oggi puoi ordinare online scegliendo la sede da cui ritirare: disponibilita e gestione ordini
-            sono differenziate per punto vendita.
-        </p>
+
+        <div class="chi-siamo-grid">
+            <article class="chi-siamo-card">
+                <h2>La nostra filosofia</h2>
+                <p>
+                    Lavoriamo con processi chiari, ricette replicabili e attenzione al dettaglio.
+                    Ogni ordine viene preparato espresso, con tempi rapidi e standard condivisi.
+                </p>
+            </article>
+
+            <article class="chi-siamo-card">
+                <h2>Qualita e trasparenza</h2>
+                <p>
+                    Tracciamo disponibilita e menu in modo dinamico per sede: quello che vedi online
+                    e allineato al punto vendita selezionato, inclusi orari e note di ritiro.
+                </p>
+            </article>
+
+            <article class="chi-siamo-card">
+                <h2>Esperienza locale</h2>
+                <p>
+                    Ogni sede e integrata nel proprio territorio con team dedicato e servizio uniforme.
+                    Dal ritiro immediato al ritiro programmato, l esperienza resta semplice e affidabile.
+                </p>
+            </article>
+        </div>
     </div>
 </section>
 
@@ -34,35 +55,6 @@
         </div>
     </section>
 <?php endif; ?>
-
-<section id="contatti-brand" aria-labelledby="titolo-contatti-brand">
-    <div class="contenitore">
-        <h2 id="titolo-contatti-brand">Contatti brand</h2>
-        <div class="sede-dettaglio-card">
-            <p>
-                <strong><?php echo htmlspecialchars($brandContacts['brand_name'] ?? 'Smash Burger Original', ENT_QUOTES, 'UTF-8'); ?></strong>
-            </p>
-            <p>
-                Assistenza clienti:
-                <a href="mailto:<?php echo htmlspecialchars($brandContacts['support_email'] ?? 'info@smashburger.it', ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($brandContacts['support_email'] ?? 'info@smashburger.it', ENT_QUOTES, 'UTF-8'); ?>
-                </a>
-            </p>
-            <p>
-                Info brand:
-                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['info_phone'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($brandContacts['info_phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                </a>
-                -
-                Ordini:
-                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['order_phone'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($brandContacts['order_phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                </a>
-            </p>
-            <p class="branch-switcher-note"><?php echo count($allBranches); ?> sedi attive tra Veneto e Friuli Venezia Giulia.</p>
-        </div>
-    </div>
-</section>
 
 <?php if (empty($allBranches) || empty($selectedBranch)): ?>
     <section aria-label="Sedi non disponibili">
@@ -139,13 +131,6 @@
                             <span id="sede-dettaglio-note-valore"><?php echo htmlspecialchars($selectedBranch['pickup_notes'] ?? '', ENT_QUOTES, 'UTF-8'); ?></span>
                         </p>
 
-                        <div class="sede-dettaglio-azioni">
-                            <a id="sede-dettaglio-menu-link"
-                                class="bottone-primario"
-                                href="prodotti.php?sede=<?php echo rawurlencode($selectedBranch['slug']); ?>">
-                                Seleziona questa sede e vai al menu
-                            </a>
-                        </div>
                     </article>
 
                     <div class="sede-mappa-box">

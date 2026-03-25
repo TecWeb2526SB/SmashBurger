@@ -9,7 +9,6 @@ if ($requestedBranchSlug !== '' && !branch_select_by_slug($pdo, $requestedBranch
 
 $allBranches = branches_get_all($pdo);
 $selectedBranch = branch_get_selected($pdo);
-$brandContacts = brand_contact_get($pdo);
 
 $branchesForJs = array_map(static function (array $branch): array {
     return [
