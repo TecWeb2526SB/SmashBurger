@@ -17,26 +17,8 @@ $csrfToken = csrf_token();
     <div class="contenitore">
         <h1 id="titolo-prodotti">I nostri prodotti</h1>
         <p>Tutto quello che trovi nel nostro menu e preparato al momento, con disponibilita legata alla sede scelta.</p>
-
-        <?php if (!empty($allBranches)): ?>
-            <form class="branch-switcher" method="GET" action="prodotti.php" aria-label="Seleziona sede per disponibilita menu">
-                <label for="sede-menu">Sede menu</label>
-                <select id="sede-menu" name="sede">
-                    <?php foreach ($allBranches as $branch): ?>
-                        <option value="<?php echo htmlspecialchars($branch['slug'], ENT_QUOTES, 'UTF-8'); ?>"
-                            <?php echo (!empty($selectedBranch) && (int) $selectedBranch['id'] === (int) $branch['id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($branch['city'] . ' - ' . $branch['address_line'], ENT_QUOTES, 'UTF-8'); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-                <button type="submit">Aggiorna sede</button>
-                <p class="branch-switcher-note">
-                    I prodotti nel carrello saranno associati alla sede selezionata.
-                </p>
-            </form>
-        <?php endif; ?>
-    </div>
-</section>
+        </div>
+        </section>
 
 <?php if (!empty($flash)): ?>
     <section aria-label="Messaggio sistema">

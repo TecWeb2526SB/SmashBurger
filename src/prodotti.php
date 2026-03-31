@@ -4,6 +4,7 @@ require_once __DIR__ . '/includes/resources.php';
 $isAjax = isset($_GET['ajax']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
 $branchWarning = null;
 $requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
+$force = isset($_GET['force']) && $_GET['force'] === '1';
 
 if ($requestedBranchSlug !== '') {
     $ok = branch_select_by_slug($pdo, $requestedBranchSlug);
@@ -12,7 +13,7 @@ if ($requestedBranchSlug !== '') {
     } elseif (is_logged_in()) {
         $utente = current_user();
         $branchNow = branch_get_selected($pdo);
-        $sync = cart_sync_with_selected_branch($pdo, (int)$utente['id'], $branchNow ? (int)$branchNow['id'] : 0);
+        $sync = cart_sync_with_selected_branch($pdo, (int)$utente['id'], $branchNow ? (int)$branchNow['id'] : 0, $force);
         if (!$sync['ok']) {
             $branchWarning = $sync['message'];
         }

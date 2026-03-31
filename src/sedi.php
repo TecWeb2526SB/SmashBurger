@@ -3,12 +3,25 @@ require_once __DIR__ . '/includes/resources.php';
 
 $branchWarning = null;
 $requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
-if ($requestedBranchSlug !== '' && !branch_select_by_slug($pdo, $requestedBranchSlug)) {
-    $branchWarning = 'La sede selezionata non e disponibile. Ti mostriamo una sede valida.';
-}
 
 $allBranches = branches_get_all($pdo);
 $selectedBranch = branch_get_selected($pdo);
+$viewedBranch = $selectedBranch; // Default to active branch
+
+if ($requestedBranchSlug !== '') {
+    $found = null;
+    foreach ($allBranches as $b) {
+        if ($b['slug'] === $requestedBranchSlug) {
+            $found = $b;
+            break;
+        }
+    }
+    if ($found) {
+        $viewedBranch = $found;
+    } else {
+        $branchWarning = 'La sede richiesta non è disponibile.';
+    }
+}
 
 $branchesForJs = array_map(static function (array $branch): array {
     return [

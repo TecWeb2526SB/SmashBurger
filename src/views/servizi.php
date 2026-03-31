@@ -19,7 +19,6 @@
         <?php if (!empty($selectedBranch)): ?>
             <p>
                 Sede attiva: <strong><?php echo htmlspecialchars($selectedBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong>.
-                <a href="sedi.php?sede=<?php echo rawurlencode((string) $selectedBranch['slug']); ?>">Cambia sede</a>
             </p>
         <?php endif; ?>
     </div>

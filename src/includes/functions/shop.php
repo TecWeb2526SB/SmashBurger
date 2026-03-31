@@ -683,7 +683,7 @@ function cart_get_active_id(PDO $pdo, int $userId, ?int $branchId = null): int
     return (int) $pdo->lastInsertId();
 }
 
-function cart_sync_with_selected_branch(PDO $pdo, int $userId, int $selectedBranchId): array
+function cart_sync_with_selected_branch(PDO $pdo, int $userId, int $selectedBranchId, bool $force = false): array
 {
     if ($selectedBranchId <= 0) {
         return ['ok' => false, 'message' => 'Nessuna sede valida selezionata.'];
@@ -703,17 +703,22 @@ function cart_sync_with_selected_branch(PDO $pdo, int $userId, int $selectedBran
 
     $itemsCount = cart_count_items($pdo, $activeCartId);
     if ($itemsCount > 0) {
-        $activeBranch = branch_get_by_id($pdo, $activeBranchId);
-        if ($activeBranch !== null) {
-            $_SESSION['selected_branch_id'] = (int) $activeBranch['id'];
-            $_SESSION['selected_branch_slug'] = (string) $activeBranch['slug'];
+        if (!$force) {
+            $activeBranch = branch_get_by_id($pdo, $activeBranchId);
+            if ($activeBranch !== null) {
+                $_SESSION['selected_branch_id'] = (int) $activeBranch['id'];
+                $_SESSION['selected_branch_slug'] = (string) $activeBranch['slug'];
+            }
+
+            $branchName = $activeBranch ? (string) $activeBranch['name'] : 'sede corrente';
+            return [
+                'ok' => false,
+                'message' => 'Hai un carrello attivo per ' . $branchName . '. Svuotalo prima di cambiare sede.',
+            ];
         }
 
-        $branchName = $activeBranch ? (string) $activeBranch['name'] : 'sede corrente';
-        return [
-            'ok' => false,
-            'message' => 'Hai un carrello attivo per ' . $branchName . '. Svuotalo prima di cambiare sede.',
-        ];
+        // Se forziamo, svuotiamo il carrello usando la funzione già presente (linea 996)
+        cart_clear($pdo, $userId);
     }
 
     $update = $pdo->prepare(
@@ -725,6 +730,13 @@ function cart_sync_with_selected_branch(PDO $pdo, int $userId, int $selectedBran
         'branch_id' => $selectedBranchId,
         'id' => $activeCartId,
     ]);
+
+    // Dopo l'aggiornamento forzato, assicuriamoci che la sessione rifletta la NUOVA sede
+    $newBranch = branch_get_by_id($pdo, $selectedBranchId);
+    if ($newBranch) {
+        $_SESSION['selected_branch_id'] = (int) $newBranch['id'];
+        $_SESSION['selected_branch_slug'] = (string) $newBranch['slug'];
+    }
 
     return [
         'ok' => true,

@@ -341,10 +341,235 @@ header h1 {
 
 .brand-sede {
     margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
     font-size: 0.84rem;
     font-weight: 600;
     letter-spacing: 0.01em;
     color: var(--colore-testo-leggero);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s ease;
+}
+
+.brand-sede:hover {
+    color: var(--colore-accento);
+}
+
+.freccetta-sede {
+    width: 0.7rem;
+    height: 0.7rem;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.8;
+    margin-top: 1px; /* Allineamento ottico */
+    display: block; /* Per gestire correttamente le trasformazioni */
+}
+
+.brand-sede:hover .freccetta-sede {
+    opacity: 1;
+}
+
+.brand-sede[aria-expanded="true"] .freccetta-sede {
+    transform: rotate(180deg);
+}
+
+/* Dropdown Menu Header */
+.header-sede-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.sede-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    background-color: var(--colore-sfondo);
+    min-width: 260px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--colore-bordo);
+    border-radius: 8px;
+    z-index: 1000;
+    padding: 0.8rem 0;
+}
+
+.tema-scuro .sede-dropdown-menu {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.sede-dropdown-menu.aperto {
+    display: block;
+    animation: fadeInSlide 0.2s ease-out;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sede-dropdown-titolo {
+    padding: 0 1.2rem 0.6rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--colore-testo-leggero);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--colore-bordo);
+    margin-bottom: 0.4rem;
+}
+
+.sede-dropdown-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sede-opzione {
+    display: flex;
+    flex-direction: column;
+    padding: 0.8rem 1.2rem;
+    padding-right: 4rem; /* Spazio per il badge */
+    text-decoration: none;
+    color: var(--colore-testo);
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+
+.sede-opzione:hover {
+    background-color: var(--colore-sfondo-alt);
+}
+
+.sede-opzione strong {
+    font-size: 0.95rem;
+    display: block;
+    color: var(--colore-testo);
+    line-height: 1.2;
+}
+
+.sede-indirizzo {
+    font-size: 0.8rem;
+    color: var(--colore-testo-leggero);
+    margin-top: 0.2rem;
+    line-height: 1.3;
+}
+
+.corrente .sede-opzione {
+    background-color: var(--colore-sfondo-alt);
+    border-left: 3px solid var(--colore-accento);
+}
+
+.badge-corrente {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--colore-accento);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px; /* Più squadrato come il resto del design */
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Modal / Dialog per conferma cambio sede */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.modal-overlay.mostra {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background-color: var(--colore-sfondo);
+    width: 90%;
+    max-width: 450px;
+    padding: var(--spazio-lg);
+    border-radius: var(--raggio-card);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--colore-bordo);
+}
+
+.modal-overlay.mostra .modal-content {
+    transform: translateY(0);
+}
+
+.modal-titolo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: var(--spazio-md);
+    color: var(--colore-testo);
+}
+
+.modal-messaggio {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--colore-testo-leggero);
+    margin-bottom: var(--spazio-lg);
+}
+
+.modal-azioni {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spazio-md);
+}
+
+.modal-bottone {
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--raggio-bordo);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+}
+
+.modal-bottone-annulla {
+    background-color: transparent;
+    color: var(--colore-testo-leggero);
+    border: 1px solid var(--colore-bordo);
+}
+
+.modal-bottone-annulla:hover {
+    background-color: var(--colore-sfondo-alt);
+    color: var(--colore-testo);
+}
+
+.modal-bottone-conferma {
+    background-color: var(--colore-accento);
+    color: #ffffff;
+}
+
+.modal-bottone-conferma:hover {
+    background-color: var(--colore-accento-hover);
 }
 
 
@@ -420,8 +645,6 @@ header h1 {
     position: relative;
     display: inline-flex;
     align-items: center;
-}
-
 .badge-notifica {
     position: absolute;
     top: -0.7rem;
@@ -436,7 +659,17 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.25rem;
+    line-height: 1;
+    z-index: 2;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease, visibility 0.2s;
+}
+
+.badge-nascosto {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0);
+}
+
     border: 1.5px solid var(--colore-sfondo);
     line-height: 1;
     box-shadow: 0 1px 4px rgba(0,0,0,0.25);
@@ -1702,6 +1935,10 @@ footer a:focus-visible {
 
 .sede-link {
     display: block;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
     border: var(--bordo-standard);
     border-radius: var(--raggio-card);
     background-color: var(--colore-sfondo);
@@ -1718,9 +1955,22 @@ footer a:focus-visible {
     display: block;
     margin-bottom: 0.2rem;
 }
-
 .sede-link span {
     display: block;
+    font-size: 0.8rem;
+    color: var(--colore-testo-leggero);
+}
+
+.sede-attiva-label {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--colore-accento);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
     color: var(--colore-testo-leggero);
     font-size: 0.9rem;
 }

@@ -8,11 +8,24 @@ $vResources = file_exists(__DIR__ . '/../../styles/resources.css')
     : time();
 
 $headerSelectedBranch = null;
-if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected')) {
-    try {
-        $headerSelectedBranch = branch_get_selected($pdo);
-    } catch (\Throwable $e) {
-        $headerSelectedBranch = null;
+$headerAllBranches = [];
+$headerCartCount = 0;
+
+if (isset($pdo) && $pdo instanceof \PDO) {
+    if (function_exists('branch_get_selected')) {
+        try {
+            $headerSelectedBranch = branch_get_selected($pdo);
+            if (function_exists('branches_get_all')) {
+                $headerAllBranches = branches_get_all($pdo);
+            }
+        } catch (\Throwable $e) {
+            $headerSelectedBranch = null;
+        }
+    }
+    
+    if (function_exists('is_logged_in') && is_logged_in()) {
+        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
+        $headerCartCount = $headerCart['items_count'] ?? 0;
     }
 }
 ?>
@@ -43,7 +56,7 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
     <link rel="shortcut icon" href="images/favicon.ico">
 </head>
 
-<body>
+<body data-cart-count="<?php echo $headerCartCount; ?>">
     <header>
         <div class="contenitore">
             <div class="brand-wrap">
@@ -52,9 +65,35 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
                 </span>
 
                 <?php if (!empty($headerSelectedBranch)): ?>
-                    <p class="brand-sede">
-                        <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
-                    </p>
+                    <div class="header-sede-dropdown">
+                        <button id="sede-dropdown-toggle" class="brand-sede" type="button" aria-expanded="false" aria-haspopup="true">
+                            <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
+                            <svg class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" aria-labelledby="sede-dropdown-toggle">
+                            <p class="sede-dropdown-titolo">Scegli la tua sede</p>
+                            <ul>
+                                <?php foreach ($headerAllBranches as $hb): 
+                                    $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
+                                ?>
+                                    <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
+                                        <a href="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>" 
+                                           class="sede-opzione"
+                                           data-sede-slug="<?php echo htmlspecialchars($hb['slug'], ENT_QUOTES, 'UTF-8'); ?>"
+                                           data-sede-name="<?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <strong><?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                            <span class="sede-indirizzo"><?php echo htmlspecialchars($hb['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <?php if ($isCurrent): ?>
+                                                <span class="badge-corrente">Attiva</span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
                 <?php endif; ?>
             </div>
 
@@ -72,21 +111,19 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
                             <?php if ($isActive): ?>
                                 <span class="nav-item-wrap">
                                     <?php echo htmlspecialchars($label); ?>
-                                    <?php if ($isCart && is_logged_in()): 
-                                        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
-                                        $cartCount = $headerCart['items_count'] ?? 0;
-                                    ?>
-                                        <span class="badge-notifica"><?php echo $cartCount; ?></span>
+                                    <?php if ($isCart): ?>
+                                        <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
+                                            <?php echo $headerCartCount; ?>
+                                        </span>
                                     <?php endif; ?>
                                 </span>
                             <?php else: ?>
                                 <a href="<?php echo htmlspecialchars($href); ?>" class="nav-item-wrap">
                                     <?php echo htmlspecialchars($label); ?>
-                                    <?php if ($isCart && is_logged_in()): 
-                                        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
-                                        $cartCount = $headerCart['items_count'] ?? 0;
-                                    ?>
-                                        <span class="badge-notifica"><?php echo $cartCount; ?></span>
+                                    <?php if ($isCart): ?>
+                                        <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
+                                            <?php echo $headerCartCount; ?>
+                                        </span>
                                     <?php endif; ?>
                                 </a>
                             <?php endif; ?>
@@ -101,6 +138,21 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
             </div>
         </div>
     </header>
+
+    <!-- Modal Cambio Sede -->
+    <div id="modal-cambio-sede" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titolo">
+        <div class="modal-content">
+            <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
+            <p class="modal-messaggio">
+                Hai già dei prodotti nel carrello per un'altra sede. 
+                Cambiando sede ora, il tuo carrello attuale verrà svuotato. Vuoi procedere?
+            </p>
+            <div class="modal-azioni">
+                <button type="button" class="modal-bottone modal-bottone-annulla" id="modal-annulla">Annulla</button>
+                <button type="button" class="modal-bottone modal-bottone-conferma" id="modal-conferma">Sì, svuota e cambia</button>
+            </div>
+        </div>
+    </div>
 
     <main id="content">
         <?php include_once __DIR__ . '/breadcrumb.php'; ?>

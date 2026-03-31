@@ -365,6 +365,7 @@ function mostraNotifica(messaggio, tipo = 'success') {
 function inizializzaAjaxCart() {
     const forms = document.querySelectorAll('form[action="carrello.php"]');
     if (forms.length === 0) return;
+    const body = document.body;
 
     forms.forEach(form => {
         form.addEventListener('submit', async function (e) {
@@ -385,15 +386,25 @@ function inizializzaAjaxCart() {
                 const data = await response.json();
                 if (data.ok) {
                     mostraNotifica(data.message || 'Prodotto aggiunto al carrello!');
-                    
+
                     // Aggiorna il numeretto nel badge (se presente)
-                    const badge = document.querySelector('.badge-notifica');
-                    if (badge && typeof data.cart_count !== 'undefined') {
-                        badge.textContent = data.cart_count;
-                        // Feedback visivo (opzionale: una piccola animazione)
-                        badge.style.transform = 'scale(1.3)';
-                        setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                    const badges = document.querySelectorAll('.badge-notifica');
+                    if (typeof data.cart_count !== 'undefined') {
+                        body.dataset.cartCount = data.cart_count;
+
+                        badges.forEach(badge => {
+                            badge.textContent = data.cart_count;
+                            if (parseInt(data.cart_count, 10) > 0) {
+                                badge.classList.remove('badge-nascosto');
+                            } else {
+                                badge.classList.add('badge-nascosto');
+                            }
+                            // Feedback visivo
+                            badge.style.transform = 'scale(1.4)';
+                            setTimeout(() => badge.style.transform = '', 300);
+                        });
                     }
+
                 } else {
                     mostraNotifica(data.message || 'Errore durante l\'aggiunta.', 'error');
                 }
@@ -524,7 +535,6 @@ function inizializzaMappaSedi() {
 
             e.preventDefault();
             render(link);
-            window.location.assign(link.href);
         });
     });
 
@@ -535,6 +545,93 @@ function inizializzaMappaSedi() {
     if (initial) {
         render(initial);
     }
+}
+
+/* ==========================================================================
+   9. HEADER - SWITCHER SEDE DROPDOWN
+   ========================================================================== */
+
+function inizializzaHeaderSede() {
+    const toggle = document.getElementById('sede-dropdown-toggle');
+    const menu = document.getElementById('sede-dropdown-menu');
+    if (!toggle || !menu) return;
+
+    const modal = document.getElementById('modal-cambio-sede');
+    const btnAnnulla = document.getElementById('modal-annulla');
+    const btnConferma = document.getElementById('modal-conferma');
+    const body = document.body;
+    let targetUrl = '';
+
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', !expanded);
+        menu.classList.toggle('aperto', !expanded);
+    });
+
+    const options = menu.querySelectorAll('.sede-opzione');
+    options.forEach(option => {
+        option.addEventListener('click', function (e) {
+            const isCurrent = option.closest('li').classList.contains('corrente');
+            if (isCurrent) {
+                e.preventDefault();
+                toggle.setAttribute('aria-expanded', 'false');
+                menu.classList.remove('aperto');
+                return;
+            }
+
+            const cartCount = parseInt(body.dataset.cartCount || '0', 10);
+            if (cartCount > 0) {
+                e.preventDefault();
+                const url = new URL(option.href, window.location.origin);
+                url.searchParams.set('force', '1');
+                targetUrl = url.toString();
+                modal.classList.add('mostra');
+                
+                // Chiudi il dropdown
+                toggle.setAttribute('aria-expanded', 'false');
+                menu.classList.remove('aperto');
+            }
+        });
+    });
+
+    if (btnAnnulla) {
+        btnAnnulla.addEventListener('click', () => {
+            modal.classList.remove('mostra');
+            targetUrl = '';
+        });
+    }
+
+    if (btnConferma) {
+        btnConferma.addEventListener('click', () => {
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+        });
+    }
+
+    // Chiudi modale se si clicca fuori dal contenuto
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('mostra');
+            targetUrl = '';
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.classList.remove('aperto');
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.classList.remove('aperto');
+            modal.classList.remove('mostra');
+        }
+    });
 }
 
 /* ==========================================================================
@@ -609,6 +706,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaValidazioneAuth();
     inizializzaTornaSu();
     inizializzaAjaxCart();
+    inizializzaHeaderSede();
     inizializzaBranchSwitcher();
     inizializzaMappaSedi();
     inizializzaCheckoutRitiro();

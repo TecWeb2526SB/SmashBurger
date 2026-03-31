@@ -51,6 +51,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errori['generale'] = 'Credenziali non valide.';
         } else {
             login_user($utente);
+            
+            // Se l'utente ha un carrello attivo, sincronizziamo la sede della sessione con quella del carrello
+            if (function_exists('cart_get_active_row')) {
+                $activeCart = cart_get_active_row($pdo, (int)$utente['id']);
+                if ($activeCart && !empty($activeCart['branch_id'])) {
+                    $cartBranch = branch_get_by_id($pdo, (int)$activeCart['branch_id']);
+                    if ($cartBranch) {
+                        $_SESSION['selected_branch_id'] = (int)$cartBranch['id'];
+                        $_SESSION['selected_branch_slug'] = (string)$cartBranch['slug'];
+                    }
+                }
+            }
+
             flash_set('success', 'Accesso effettuato con successo. Bentornato, ' . $utente['username'] . '!');
             header('Location: area_personale.php');
             exit;
