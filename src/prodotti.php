@@ -1,20 +1,27 @@
 <?php
 require_once __DIR__ . '/includes/resources.php';
 
+$isAjax = isset($_GET['ajax']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
 $branchWarning = null;
 $requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
-if ($requestedBranchSlug !== '' && !branch_select_by_slug($pdo, $requestedBranchSlug)) {
-    $branchWarning = 'La sede richiesta non e disponibile. Ti mostriamo una sede valida.';
-} elseif ($requestedBranchSlug !== '' && is_logged_in()) {
-    $utente = current_user();
-    $branchNow = branch_get_selected($pdo);
-    $sync = cart_sync_with_selected_branch(
-        $pdo,
-        (int) ($utente['id'] ?? 0),
-        $branchNow ? (int) $branchNow['id'] : 0
-    );
-    if (!$sync['ok']) {
-        $branchWarning = $sync['message'] ?? 'Impossibile cambiare sede con carrello attivo.';
+
+if ($requestedBranchSlug !== '') {
+    $ok = branch_select_by_slug($pdo, $requestedBranchSlug);
+    if (!$ok) {
+        $branchWarning = 'La sede richiesta non è disponibile.';
+    } elseif (is_logged_in()) {
+        $utente = current_user();
+        $branchNow = branch_get_selected($pdo);
+        $sync = cart_sync_with_selected_branch($pdo, (int)$utente['id'], $branchNow ? (int)$branchNow['id'] : 0);
+        if (!$sync['ok']) {
+            $branchWarning = $sync['message'];
+        }
+    }
+
+    if ($isAjax) {
+        header('Content-Type: application/json');
+        echo json_encode(['ok' => ($branchWarning === null), 'message' => $branchWarning]);
+        exit;
     }
 }
 

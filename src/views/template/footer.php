@@ -19,34 +19,21 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
         <!-- ORARI DI APERTURA -->
         <section aria-labelledby="titolo-orari">
             <h2 id="titolo-orari">Orari di apertura</h2>
-            <table class="orari-tabella">
-                <caption class="sr-only">Orari settimanali di apertura della sede selezionata</caption>
-                <tbody>
-                    <?php if (!empty($footerHours)): ?>
-                        <?php foreach ($footerHours as $row): ?>
-                            <tr>
-                                <th scope="row"><?php echo htmlspecialchars($row['day_label'], ENT_QUOTES, 'UTF-8'); ?></th>
-                                <td>
-                                    <?php if ((int) $row['is_closed'] === 1): ?>
-                                        Chiuso
-                                    <?php else: ?>
-                                        <?php echo htmlspecialchars(substr((string) $row['open_time'], 0, 5), ENT_QUOTES, 'UTF-8'); ?>
-                                        -
-                                        <?php echo htmlspecialchars(substr((string) $row['close_time'], 0, 5), ENT_QUOTES, 'UTF-8'); ?>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <th scope="row">Orari</th>
-                            <td>Non disponibili</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+            <?php $groupedHours = branch_hours_grouped($footerHours); ?>
+            <ul class="orari-lista-footer">
+                <?php if (!empty($groupedHours)): ?>
+                    <?php foreach ($groupedHours as $row): ?>
+                        <li>
+                            <span class="giorni"><?php echo htmlspecialchars($row['days'], ENT_QUOTES, 'UTF-8'); ?>:</span>
+                            <span class="ore"><?php echo htmlspecialchars($row['hours'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>Orari non disponibili</li>
+                <?php endif; ?>
+            </ul>
             <?php if (!empty($footerBranch['name'])): ?>
-                <p>Sede visualizzata: <strong><?php echo htmlspecialchars($footerBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                <p class="sede-footer-corrente">Sede: <strong><?php echo htmlspecialchars($footerBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
             <?php endif; ?>
         </section>
 

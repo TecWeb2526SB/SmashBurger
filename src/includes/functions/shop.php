@@ -30,6 +30,76 @@ function branch_osm_embed_url(float $latitude, float $longitude): string
     return 'https://www.openstreetmap.org/export/embed.html?bbox=' . $bbox . '&layer=mapnik&marker=' . $marker;
 }
 
+function branch_hours_grouped(array $hours): array
+{
+    if (empty($hours)) {
+        return [];
+    }
+
+    $fmt = static function ($time): string {
+        $value = (string) $time;
+        return strlen($value) >= 5 ? substr($value, 0, 5) : $value;
+    };
+
+    $days = [
+        1 => 'Lun',
+        2 => 'Mar',
+        3 => 'Mer',
+        4 => 'Gio',
+        5 => 'Ven',
+        6 => 'Sab',
+        7 => 'Dom'
+    ];
+
+    $groups = [];
+    foreach ($hours as $h) {
+        $w = (int) $h['weekday'];
+        $label = $days[$w] ?? $h['day_label'];
+        $timeStr = ((int) $h['is_closed'] === 1)
+            ? 'Chiuso'
+            : $fmt($h['open_time']) . ' - ' . $fmt($h['close_time']);
+
+        if (!isset($groups[$timeStr])) {
+            $groups[$timeStr] = [];
+        }
+        $groups[$timeStr][] = ['weekday' => $w, 'label' => $label];
+    }
+
+    $final = [];
+    foreach ($groups as $time => $dayList) {
+        $dayLabels = array_column($dayList, 'label');
+        $count = count($dayLabels);
+
+        if ($count === 7) {
+            $range = 'Tutti i giorni';
+        } elseif ($count > 1) {
+            // Check if sequential
+            $isSequential = true;
+            for ($i = 1; $i < $count; $i++) {
+                if ($dayList[$i]['weekday'] !== $dayList[$i - 1]['weekday'] + 1) {
+                    $isSequential = false;
+                    break;
+                }
+            }
+
+            if ($isSequential && $count >= 3) {
+                $range = $dayLabels[0] . ' - ' . $dayLabels[$count - 1];
+            } else {
+                $range = implode(', ', $dayLabels);
+            }
+        } else {
+            $range = $dayLabels[0];
+        }
+
+        $final[] = [
+            'days' => $range,
+            'hours' => $time
+        ];
+    }
+
+    return $final;
+}
+
 function branch_hours_compact(array $hours): string
 {
     if (empty($hours)) {

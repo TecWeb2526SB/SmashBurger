@@ -80,13 +80,13 @@
                 Totale ordine: <strong><?php echo money_eur((int) $carrello['total_cents']); ?></strong>
             </p>
 
-            <div class="azioni-carrello">
-                <form class="inline-form" method="POST" action="carrello.php">
+            <div class="azioni-carrello-footer">
+                <form method="POST" action="carrello.php" class="form-svuota">
                     <input type="hidden" name="csrf_token"
                         value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" name="action" value="clear_cart">
                     <input type="hidden" name="redirect_to" value="carrello.php">
-                    <button type="submit">Svuota carrello</button>
+                    <button type="submit" class="bottone-secondario">Svuota carrello</button>
                 </form>
                 <a class="bottone-primario" href="checkout.php">Procedi al checkout</a>
             </div>

@@ -62,7 +62,7 @@
                             <?php echo isset($errori['password']) ? 'aria-invalid="true"' : ''; ?>>
                         <button type="button" class="mostra-password" aria-pressed="false"
                             aria-label="Mostra password">
-                            <span aria-hidden="true">👁</span>
+                            <span aria-hidden="true">Vedi</span>
                         </button>
                     </div>
                     <span id="password-errore" class="campo-errore" <?php echo empty($errori['password']) ? 'hidden' : ''; ?>>

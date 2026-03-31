@@ -338,17 +338,106 @@ function inizializzaTornaSu() {
 }
 
 /* ==========================================================================
-   8. SWITCHER SEDE + MAPPA INTERATTIVA SEDI
+   8. AJAX - AGGIUNTA CARRELLO E SWITCHER SEDE
    ========================================================================== */
 
+function mostraNotifica(messaggio, tipo = 'success') {
+    const esistente = $('.notifica-toast');
+    if (esistente) esistente.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `notifica-toast ${tipo}`;
+    toast.setAttribute('role', 'alert');
+    toast.textContent = messaggio;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('mostra');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove('mostra');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function inizializzaAjaxCart() {
+    const forms = document.querySelectorAll('form[action="carrello.php"]');
+    if (forms.length === 0) return;
+
+    forms.forEach(form => {
+        form.addEventListener('submit', async function (e) {
+            const action = form.querySelector('input[name="action"]');
+            if (!action || action.value !== 'add_product') return;
+
+            e.preventDefault();
+            const formData = new FormData(form);
+            formData.append('ajax', '1');
+
+            try {
+                const response = await fetch('carrello.php', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                const data = await response.json();
+                if (data.ok) {
+                    mostraNotifica(data.message || 'Prodotto aggiunto al carrello!');
+                    
+                    // Aggiorna il numeretto nel badge (se presente)
+                    const badge = document.querySelector('.badge-notifica');
+                    if (badge && typeof data.cart_count !== 'undefined') {
+                        badge.textContent = data.cart_count;
+                        // Feedback visivo (opzionale: una piccola animazione)
+                        badge.style.transform = 'scale(1.3)';
+                        setTimeout(() => badge.style.transform = 'scale(1)', 200);
+                    }
+                } else {
+                    mostraNotifica(data.message || 'Errore durante l\'aggiunta.', 'error');
+                }
+            } catch (err) {
+                console.error('Errore AJAX:', err);
+                form.submit(); // Fallback
+            }
+        });
+    });
+}
+
 function inizializzaBranchSwitcher() {
-    const selects = document.querySelectorAll('.branch-switcher select');
+    const selects = document.querySelectorAll('.branch-switcher select, .hero-branch-selector select');
     if (selects.length === 0) return;
 
     selects.forEach(function (select) {
-        select.addEventListener('change', function () {
+        select.addEventListener('change', async function () {
             const form = select.closest('form');
-            if (form) {
+            if (!form) return;
+
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+            for (const pair of formData.entries()) {
+                params.append(pair[0], pair[1]);
+            }
+            params.append('ajax', '1');
+
+            try {
+                const action = form.getAttribute('action') || window.location.pathname;
+                const response = await fetch(action + '?' + params.toString(), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.ok) {
+                        // Aggiorna l'interfaccia senza refresh completo se possibile
+                        // Per ora facciamo un refresh pulito o aggiorniamo i link
+                        window.location.reload();
+                    }
+                } else {
+                    form.submit();
+                }
+            } catch (err) {
                 form.submit();
             }
         });
@@ -519,6 +608,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaTogglePassword();
     inizializzaValidazioneAuth();
     inizializzaTornaSu();
+    inizializzaAjaxCart();
     inizializzaBranchSwitcher();
     inizializzaMappaSedi();
     inizializzaCheckoutRitiro();

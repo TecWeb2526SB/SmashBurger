@@ -35,6 +35,11 @@ if (
 }
 
 $todaySlots = branch_get_today_pickup_slots($pdo, $selectedBranchId, 10);
+
+if (empty($todaySlots)) {
+    $errori['generale'] = 'Siamo spiacenti, per oggi non ci sono orari disponibili per il ritiro presso questa sede.';
+}
+
 $defaultSlot = !empty($todaySlots) ? (string) $todaySlots[0]['time'] : '';
 
 $flowFulfillmentType = (string) ($checkoutFlow['fulfillment_type'] ?? 'asporto');
@@ -63,38 +68,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errori['generale'] = 'Sessione scaduta o richiesta non valida.';
     }
 
-    $form['pickup_mode'] = (string) ($_POST['pickup_mode'] ?? 'immediato');
-    $form['pickup_time'] = trim((string) ($_POST['pickup_time'] ?? ''));
-
-    if (!in_array($form['pickup_mode'], ['immediato', 'orario'], true)) {
-        $errori['fulfillment_type'] = 'Metodo di ritiro non valido.';
+    if (empty($todaySlots)) {
+        $errori['generale'] = 'Siamo spiacenti, per oggi non ci sono orari disponibili per il ritiro presso questa sede.';
     }
 
-    $fulfillmentType = $form['pickup_mode'] === 'orario' ? 'ritiro' : 'asporto';
-    $pickupRaw = '';
+    if (empty($errori)) {
+        $form['pickup_mode'] = (string) ($_POST['pickup_mode'] ?? 'immediato');
+        $form['pickup_time'] = trim((string) ($_POST['pickup_time'] ?? ''));
 
-    if ($form['pickup_mode'] === 'orario') {
-        if (empty($todaySlots)) {
-            $errori['pickup_at'] = 'Oggi non ci sono orari disponibili per il ritiro programmato.';
+        if (!in_array($form['pickup_mode'], ['immediato', 'orario'], true)) {
+            $errori['fulfillment_type'] = 'Metodo di ritiro non valido.';
         }
 
-        if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $form['pickup_time'])) {
-            $errori['pickup_at'] = 'Seleziona un orario valido.';
-        }
+        $fulfillmentType = $form['pickup_mode'] === 'orario' ? 'ritiro' : 'asporto';
+        $pickupRaw = '';
 
-        if (empty($errori['pickup_at'])) {
-            $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Rome'));
-            $pickupRaw = $today->format('Y-m-d') . 'T' . $form['pickup_time'];
-            $pickupValidation = branch_validate_pickup_datetime($pdo, $selectedBranchId, $pickupRaw, null, true);
-        } else {
-            $pickupValidation = ['ok' => false, 'message' => (string) $errori['pickup_at']];
-        }
+        if ($form['pickup_mode'] === 'orario') {
+            if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $form['pickup_time'])) {
+                $errori['pickup_at'] = 'Seleziona un orario valido.';
+            }
 
-        if (!$pickupValidation['ok']) {
-            $errori['pickup_at'] = (string) $pickupValidation['message'];
-        } else {
-            $pickupRaw = (string) $pickupValidation['pickup_raw'];
-            $form['pickup_time'] = substr($pickupRaw, 11, 5);
+            if (empty($errori['pickup_at'])) {
+                $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Rome'));
+                $pickupRaw = $today->format('Y-m-d') . 'T' . $form['pickup_time'];
+                $pickupValidation = branch_validate_pickup_datetime($pdo, $selectedBranchId, $pickupRaw, null, true);
+            } else {
+                $pickupValidation = ['ok' => false, 'message' => (string) $errori['pickup_at']];
+            }
+
+            if (!$pickupValidation['ok']) {
+                $errori['pickup_at'] = (string) $pickupValidation['message'];
+            } else {
+                $pickupRaw = (string) $pickupValidation['pickup_raw'];
+                $form['pickup_time'] = substr($pickupRaw, 11, 5);
+            }
         }
     }
 

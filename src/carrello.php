@@ -25,30 +25,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $action = (string) ($_POST['action'] ?? '');
-    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello.php');
-    $allowedRedirects = ['carrello.php', 'prodotti.php'];
-    if (!in_array($redirectTo, $allowedRedirects, true)) {
-        $redirectTo = 'carrello.php';
-    }
+    $isAjax = isset($_POST['ajax']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
+    $result = ['ok' => false, 'message' => 'Azione non valida.'];
 
     if ($action === 'add_product') {
         $productId = (int) ($_POST['product_id'] ?? 0);
         $qty = max(1, (int) ($_POST['quantity'] ?? 1));
         $result = cart_add_product($pdo, $userId, $productId, $qty, $selectedBranchId);
-        flash_set($result['ok'] ? 'success' : 'error', $result['message']);
     } elseif ($action === 'update_item') {
         $itemId = (int) ($_POST['item_id'] ?? 0);
         $qty = (int) ($_POST['quantity'] ?? 0);
         $result = cart_update_item_qty($pdo, $userId, $itemId, $qty, $selectedBranchId);
-        flash_set($result['ok'] ? 'success' : 'error', $result['message']);
     } elseif ($action === 'remove_item') {
         $itemId = (int) ($_POST['item_id'] ?? 0);
         $result = cart_remove_item($pdo, $userId, $itemId, $selectedBranchId);
-        flash_set($result['ok'] ? 'success' : 'error', $result['message']);
     } elseif ($action === 'clear_cart') {
         cart_clear($pdo, $userId, $selectedBranchId);
-        flash_set('success', 'Carrello svuotato.');
+        $result = ['ok' => true, 'message' => 'Carrello svuotato.'];
     }
+
+    if ($isAjax) {
+        if ($result['ok'] && $action === 'add_product') {
+            $summary = cart_get_summary($pdo, $userId, $selectedBranchId);
+            $result['cart_count'] = $summary['items_count'] ?? 0;
+        }
+        header('Content-Type: application/json');
+        echo json_encode($result);
+        exit;
+    }
+
+    flash_set($result['ok'] ? 'success' : 'error', $result['message']);
+    
+    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello.php');
+    $allowedRedirects = ['carrello.php', 'prodotti.php'];
 
     header('Location: ' . $redirectTo);
     exit;

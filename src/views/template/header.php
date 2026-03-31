@@ -1,14 +1,6 @@
 <?php
 /**
  * header.php: Intestazione comune a tutte le pagine.
- *
- * Variabili attese dal controller:
- *   $pageTitle       string  Titolo della pagina (max 60 car.)
- *   $pageDescription string  Meta description
- *   $currentPage     string  Nome del file controller (es. 'prodotti.php')
- *   $isHomepage      bool    true solo nella home → usa <h1> per il brand
- *
- * $navItems viene da includes/variables.php (caricato via resources.php).
  */
 
 $vResources = file_exists(__DIR__ . '/../../styles/resources.css')
@@ -48,7 +40,6 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
     </script>
 
     <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
-
     <link rel="shortcut icon" href="images/favicon.ico">
 </head>
 
@@ -56,15 +47,9 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
     <header>
         <div class="contenitore">
             <div class="brand-wrap">
-                <?php if (!empty($isHomepage)): ?>
-                    <h1 class="brand">
-                        <a href="index.php">Smash Burger</a>
-                    </h1>
-                <?php else: ?>
-                    <p class="brand">
-                        <a href="index.php">Smash Burger</a>
-                    </p>
-                <?php endif; ?>
+                <span class="brand">
+                    <a href="index.php">Smash Burger</a>
+                </span>
 
                 <?php if (!empty($headerSelectedBranch)): ?>
                     <p class="brand-sede">
@@ -81,25 +66,39 @@ if (isset($pdo) && $pdo instanceof \PDO && function_exists('branch_get_selected'
                 <ul>
                     <?php foreach ($navItems as $label => $href):
                         $isActive = isset($currentPage) && $currentPage === $href;
+                        $isCart = ($label === 'Carrello');
                     ?>
-                        <?php if ($isActive): ?>
-                            <li class="attivo" aria-current="page">
-                                <?php echo htmlspecialchars($label); ?>
-                            </li>
-                        <?php else: ?>
-                            <li>
-                                <a href="<?php echo htmlspecialchars($href); ?>">
+                        <li class="<?php echo $isActive ? 'attivo' : ''; ?>" <?php echo $isActive ? 'aria-current="page"' : ''; ?>>
+                            <?php if ($isActive): ?>
+                                <span class="nav-item-wrap">
                                     <?php echo htmlspecialchars($label); ?>
+                                    <?php if ($isCart && is_logged_in()): 
+                                        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
+                                        $cartCount = $headerCart['items_count'] ?? 0;
+                                    ?>
+                                        <span class="badge-notifica"><?php echo $cartCount; ?></span>
+                                    <?php endif; ?>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo htmlspecialchars($href); ?>" class="nav-item-wrap">
+                                    <?php echo htmlspecialchars($label); ?>
+                                    <?php if ($isCart && is_logged_in()): 
+                                        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
+                                        $cartCount = $headerCart['items_count'] ?? 0;
+                                    ?>
+                                        <span class="badge-notifica"><?php echo $cartCount; ?></span>
+                                    <?php endif; ?>
                                 </a>
-                            </li>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             </nav>
 
-            <button id="theme-toggle" type="button" aria-pressed="false"
-                aria-label="Attiva modalità scura">Cambia tema</button>
-
+            <div class="header-azioni">
+                <button id="theme-toggle" type="button" aria-pressed="false"
+                    aria-label="Attiva modalità scura">Cambia tema</button>
+            </div>
         </div>
     </header>
 
