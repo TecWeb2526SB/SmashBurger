@@ -3,8 +3,9 @@
  * registrazione.php: View della pagina di registrazione.
  *
  * Variabili attese dal controller:
- *   $errori  array   Errori di validazione (chiavi: 'nome', 'email', 'password', 'conferma')
- *   $valori  array   Valori da ripopolare dopo errore (chiavi: 'nome', 'email')
+ *   $errori  array   Errori di validazione (chiavi: 'username', 'password', 'conferma')
+ *   $valori  array   Valori da ripopolare dopo errore (chiave: 'username')
+ *   $csrfToken string Token CSRF della sessione
  */
 ?>
 
@@ -15,42 +16,29 @@
 
             <?php if (!empty($errori)): ?>
                 <div role="alert" class="errore-sommario">
-                    <p>Correggi gli errori nel modulo prima di procedere.</p>
+                    <p><?php echo htmlspecialchars($errori['generale'] ?? 'Correggi gli errori nel modulo prima di procedere.', ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
             <?php endif; ?>
 
             <form method="POST" action="registrazione.php" data-valida novalidate>
+                <input type="hidden" name="csrf_token"
+                    value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                 <div class="campo-gruppo">
-                    <label for="nome">Nome</label>
+                    <label for="username">Username</label>
                     <input
                         type="text"
-                        id="nome"
-                        name="nome"
-                        value="<?php echo $valori['nome'] ?? ''; ?>"
+                        id="username"
+                        name="username"
+                        value="<?php echo $valori['username'] ?? ''; ?>"
                         required
-                        minlength="2"
-                        autocomplete="given-name"
-                        aria-describedby="nome-errore"
-                        <?php echo isset($errori['nome']) ? 'aria-invalid="true"' : ''; ?>>
-                    <span id="nome-errore" class="campo-errore" <?php echo empty($errori['nome']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['nome'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </div>
-
-                <div class="campo-gruppo">
-                    <label for="email">E-mail</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value="<?php echo $valori['email'] ?? ''; ?>"
-                        required
-                        autocomplete="email"
-                        aria-describedby="email-errore"
-                        <?php echo isset($errori['email']) ? 'aria-invalid="true"' : ''; ?>>
-                    <span id="email-errore" class="campo-errore" <?php echo empty($errori['email']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                        minlength="3"
+                        maxlength="50"
+                        autocomplete="username"
+                        aria-describedby="username-errore"
+                        <?php echo isset($errori['username']) ? 'aria-invalid="true"' : ''; ?>>
+                    <span id="username-errore" class="campo-errore" <?php echo empty($errori['username']) ? 'hidden' : ''; ?>>
+                        <?php echo htmlspecialchars($errori['username'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </div>
 
@@ -68,7 +56,7 @@
                             <?php echo isset($errori['password']) ? 'aria-invalid="true"' : ''; ?>>
                         <button type="button" class="mostra-password" aria-pressed="false"
                             aria-label="Mostra password">
-                            <span aria-hidden="true">👁</span>
+                            <span aria-hidden="true">Vedi</span>
                         </button>
                     </div>
                     <span id="password-errore" class="campo-errore" <?php echo empty($errori['password']) ? 'hidden' : ''; ?>>
@@ -89,7 +77,7 @@
                             <?php echo isset($errori['conferma']) ? 'aria-invalid="true"' : ''; ?>>
                         <button type="button" class="mostra-password" aria-pressed="false"
                             aria-label="Mostra conferma password">
-                            <span aria-hidden="true">👁</span>
+                            <span aria-hidden="true">Vedi</span>
                         </button>
                     </div>
                     <span id="conferma-errore" class="campo-errore" <?php echo empty($errori['conferma']) ? 'hidden' : ''; ?>>

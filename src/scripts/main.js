@@ -334,9 +334,363 @@ function inizializzaTornaSu() {
 
     bottone.addEventListener('click', function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        const skipLink = document.querySelector('#skip-link a');
-        if (skipLink) skipLink.focus();
     });
+}
+
+/* ==========================================================================
+   8. AJAX - AGGIUNTA CARRELLO E SWITCHER SEDE
+   ========================================================================== */
+
+function mostraNotifica(messaggio, tipo = 'success') {
+    const esistente = $('.notifica-toast');
+    if (esistente) esistente.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `notifica-toast ${tipo}`;
+    toast.setAttribute('role', 'alert');
+    toast.textContent = messaggio;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('mostra');
+    }, 10);
+
+    setTimeout(() => {
+        toast.classList.remove('mostra');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+function inizializzaAjaxCart() {
+    const forms = document.querySelectorAll('form[action="carrello.php"]');
+    if (forms.length === 0) return;
+    const body = document.body;
+
+    forms.forEach(form => {
+        form.addEventListener('submit', async function (e) {
+            const action = form.querySelector('input[name="action"]');
+            if (!action || action.value !== 'add_product') return;
+
+            e.preventDefault();
+            const formData = new FormData(form);
+            formData.append('ajax', '1');
+
+            try {
+                const response = await fetch('carrello.php', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                const data = await response.json();
+                if (data.ok) {
+                    mostraNotifica(data.message || 'Prodotto aggiunto al carrello!');
+
+                    // Aggiorna il numeretto nel badge (se presente)
+                    const badges = document.querySelectorAll('.badge-notifica');
+                    if (typeof data.cart_count !== 'undefined') {
+                        body.dataset.cartCount = data.cart_count;
+
+                        badges.forEach(badge => {
+                            badge.textContent = data.cart_count;
+                            if (parseInt(data.cart_count, 10) > 0) {
+                                badge.classList.remove('badge-nascosto');
+                            } else {
+                                badge.classList.add('badge-nascosto');
+                            }
+                            // Feedback visivo
+                            badge.style.transform = 'scale(1.4)';
+                            setTimeout(() => badge.style.transform = '', 300);
+                        });
+                    }
+
+                } else {
+                    mostraNotifica(data.message || 'Errore durante l\'aggiunta.', 'error');
+                }
+            } catch (err) {
+                console.error('Errore AJAX:', err);
+                form.submit(); // Fallback
+            }
+        });
+    });
+}
+
+function inizializzaBranchSwitcher() {
+    const selects = document.querySelectorAll('.branch-switcher select, .hero-branch-selector select');
+    if (selects.length === 0) return;
+
+    selects.forEach(function (select) {
+        select.addEventListener('change', async function () {
+            const form = select.closest('form');
+            if (!form) return;
+
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+            for (const pair of formData.entries()) {
+                params.append(pair[0], pair[1]);
+            }
+            params.append('ajax', '1');
+
+            try {
+                const action = form.getAttribute('action') || window.location.pathname;
+                const response = await fetch(action + '?' + params.toString(), {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.ok) {
+                        // Aggiorna l'interfaccia senza refresh completo se possibile
+                        // Per ora facciamo un refresh pulito o aggiorniamo i link
+                        window.location.reload();
+                    }
+                } else {
+                    form.submit();
+                }
+            } catch (err) {
+                form.submit();
+            }
+        });
+    });
+}
+
+function inizializzaMappaSedi() {
+    const wrapper = document.getElementById('sedi-interattive');
+    if (!wrapper) return;
+
+    const links = wrapper.querySelectorAll('.sede-link');
+    if (links.length === 0) return;
+
+    const detailName = document.getElementById('sede-dettaglio-nome');
+    const detailAddress = document.getElementById('sede-dettaglio-indirizzo');
+    const detailPhone = document.getElementById('sede-dettaglio-phone');
+    const detailPhoneLink = document.getElementById('sede-dettaglio-phone-link');
+    const detailEmail = document.getElementById('sede-dettaglio-email');
+    const detailEmailLink = document.getElementById('sede-dettaglio-email-link');
+    const detailHours = document.getElementById('sede-dettaglio-orari-valore');
+    const detailNotes = document.getElementById('sede-dettaglio-note-valore');
+    const mapFrame = document.getElementById('sedi-mappa-frame');
+
+    function normalizzaTelefono(tel) {
+        return tel.replace(/[^0-9+]/g, '');
+    }
+
+    function render(link) {
+        links.forEach(function (l) {
+            const attiva = l === link;
+            l.classList.toggle('attiva', attiva);
+            if (attiva) {
+                l.setAttribute('aria-current', 'true');
+            } else {
+                l.removeAttribute('aria-current');
+            }
+        });
+
+        const nome = link.dataset.branchName || '';
+        const city = link.dataset.branchCity || '';
+        const province = link.dataset.branchProvince || '';
+        const address = link.dataset.branchAddress || '';
+        const postal = link.dataset.branchPostal || '';
+        const phone = link.dataset.branchPhone || '';
+        const email = link.dataset.branchEmail || '';
+        const notes = link.dataset.branchNotes || '';
+        const hours = link.dataset.branchHours || '';
+        const map = link.dataset.branchMap || '';
+
+        if (detailName) {
+            detailName.textContent = nome;
+        }
+        if (detailAddress) {
+            detailAddress.textContent = address + ', ' + postal + ' ' + city + ' (' + province + ')';
+        }
+        if (detailPhone) {
+            detailPhone.textContent = phone;
+        }
+        if (detailPhoneLink) {
+            detailPhoneLink.setAttribute('href', 'tel:' + normalizzaTelefono(phone));
+        }
+        if (detailEmail) {
+            detailEmail.textContent = email;
+        }
+        if (detailEmailLink) {
+            detailEmailLink.setAttribute('href', 'mailto:' + email);
+        }
+        if (detailHours) {
+            detailHours.textContent = hours || 'Orari non disponibili';
+        }
+        if (detailNotes) {
+            detailNotes.textContent = notes || 'Nessuna nota specifica per il ritiro.';
+        }
+        if (mapFrame && map) {
+            mapFrame.setAttribute('src', map);
+        }
+    }
+
+    links.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                return;
+            }
+
+            e.preventDefault();
+            render(link);
+        });
+    });
+
+    const selectedSlug = wrapper.dataset.selectedSlug;
+    const initial = selectedSlug
+        ? wrapper.querySelector('.sede-link[data-branch-slug="' + selectedSlug + '"]')
+        : links[0];
+    if (initial) {
+        render(initial);
+    }
+}
+
+/* ==========================================================================
+   9. HEADER - SWITCHER SEDE DROPDOWN
+   ========================================================================== */
+
+function inizializzaHeaderSede() {
+    const toggle = document.getElementById('sede-dropdown-toggle');
+    const menu = document.getElementById('sede-dropdown-menu');
+    if (!toggle || !menu) return;
+
+    const modal = document.getElementById('modal-cambio-sede');
+    const btnAnnulla = document.getElementById('modal-annulla');
+    const btnConferma = document.getElementById('modal-conferma');
+    const body = document.body;
+    let targetUrl = '';
+
+    toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        const expanded = toggle.getAttribute('aria-expanded') === 'true';
+        toggle.setAttribute('aria-expanded', !expanded);
+        menu.classList.toggle('aperto', !expanded);
+    });
+
+    const options = menu.querySelectorAll('.sede-opzione');
+    options.forEach(option => {
+        option.addEventListener('click', function (e) {
+            const isCurrent = option.closest('li').classList.contains('corrente');
+            if (isCurrent) {
+                e.preventDefault();
+                toggle.setAttribute('aria-expanded', 'false');
+                menu.classList.remove('aperto');
+                return;
+            }
+
+            const cartCount = parseInt(body.dataset.cartCount || '0', 10);
+            if (cartCount > 0) {
+                e.preventDefault();
+                const url = new URL(option.href, window.location.origin);
+                url.searchParams.set('force', '1');
+                targetUrl = url.toString();
+                modal.classList.add('mostra');
+                
+                // Chiudi il dropdown
+                toggle.setAttribute('aria-expanded', 'false');
+                menu.classList.remove('aperto');
+            }
+        });
+    });
+
+    if (btnAnnulla) {
+        btnAnnulla.addEventListener('click', () => {
+            modal.classList.remove('mostra');
+            targetUrl = '';
+        });
+    }
+
+    if (btnConferma) {
+        btnConferma.addEventListener('click', () => {
+            if (targetUrl) {
+                window.location.href = targetUrl;
+            }
+        });
+    }
+
+    // Chiudi modale se si clicca fuori dal contenuto
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('mostra');
+            targetUrl = '';
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.classList.remove('aperto');
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            toggle.setAttribute('aria-expanded', 'false');
+            menu.classList.remove('aperto');
+            modal.classList.remove('mostra');
+        }
+    });
+}
+
+/* ==========================================================================
+   9. CHECKOUT - TOGGLE CAMPI DINAMICI
+   ========================================================================== */
+
+function inizializzaCheckoutRitiro() {
+    const radios = document.querySelectorAll('input[name="pickup_mode"]');
+    const timeWrap = document.getElementById('pickup-time-wrap');
+    const timeSelect = document.getElementById('pickup_time');
+    if (radios.length === 0 || !timeWrap) return;
+
+    function aggiornaStato() {
+        const selezionato = document.querySelector('input[name="pickup_mode"]:checked');
+        const mostraOrario = selezionato && selezionato.value === 'orario';
+        timeWrap.hidden = !mostraOrario;
+
+        if (timeSelect) {
+            timeSelect.disabled = !mostraOrario;
+            if (mostraOrario && !timeSelect.value && timeSelect.options.length > 0) {
+                timeSelect.selectedIndex = 0;
+            }
+        }
+    }
+
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', aggiornaStato);
+    });
+    aggiornaStato();
+}
+
+function inizializzaCheckoutPagamento() {
+    const radios = document.querySelectorAll('input[name="payment_method"]');
+    const cardBox = document.getElementById('payment-card-fields');
+    const paypalBox = document.getElementById('payment-paypal-fields');
+    if (radios.length === 0 || !cardBox || !paypalBox) return;
+
+    function impostaDisabilitazione(contenitore, disabilita) {
+        contenitore.querySelectorAll('input, select, textarea').forEach(function (campo) {
+            campo.disabled = disabilita;
+        });
+    }
+
+    function aggiornaStato() {
+        const selezionato = document.querySelector('input[name="payment_method"]:checked');
+        const metodo = selezionato ? selezionato.value : 'card';
+
+        const mostraCarta = metodo === 'card';
+        cardBox.hidden = !mostraCarta;
+        paypalBox.hidden = mostraCarta;
+
+        impostaDisabilitazione(cardBox, !mostraCarta);
+        impostaDisabilitazione(paypalBox, mostraCarta);
+    }
+
+    radios.forEach(function (radio) {
+        radio.addEventListener('change', aggiornaStato);
+    });
+    aggiornaStato();
 }
 
 /* ==========================================================================
@@ -351,4 +705,10 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaTogglePassword();
     inizializzaValidazioneAuth();
     inizializzaTornaSu();
+    inizializzaAjaxCart();
+    inizializzaHeaderSede();
+    inizializzaBranchSwitcher();
+    inizializzaMappaSedi();
+    inizializzaCheckoutRitiro();
+    inizializzaCheckoutPagamento();
 });

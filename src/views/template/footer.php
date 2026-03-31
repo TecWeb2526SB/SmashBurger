@@ -2,6 +2,14 @@
 /**
  * footer.php: Frammento di codice per il piè di pagina comune di tutte le pagine.
  */
+$brandContacts = isset($pdo) ? brand_contact_get($pdo) : [];
+$footerBranch = isset($pdo) ? branch_get_selected($pdo) : null;
+$footerHours = $footerBranch['hours'] ?? [];
+
+$brandEmail = (string) ($brandContacts['support_email'] ?? 'info@smashburger.it');
+$brandInfoPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 1099');
+$brandOrderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000');
+$brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagram.com/smashburgeroriginal');
 ?>
 </main>
 
@@ -11,31 +19,39 @@
         <!-- ORARI DI APERTURA -->
         <section aria-labelledby="titolo-orari">
             <h2 id="titolo-orari">Orari di apertura</h2>
-            <table class="orari-tabella">
-                <caption class="sr-only">Orari settimanali di apertura</caption>
-                <tbody>
-                    <tr>
-                        <th scope="row">Lunedì – Venerdì</th>
-                        <td>11:30 – 22:30</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Sabato</th>
-                        <td>11:00 – 23:30</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">Domenica</th>
-                        <td>12:00 – 22:00</td>
-                    </tr>
-                </tbody>
-            </table>
+            <?php $groupedHours = branch_hours_grouped($footerHours); ?>
+            <ul class="orari-lista-footer">
+                <?php if (!empty($groupedHours)): ?>
+                    <?php foreach ($groupedHours as $row): ?>
+                        <li>
+                            <span class="giorni"><?php echo htmlspecialchars($row['days'], ENT_QUOTES, 'UTF-8'); ?>:</span>
+                            <span class="ore"><?php echo htmlspecialchars($row['hours'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>Orari non disponibili</li>
+                <?php endif; ?>
+            </ul>
+            <?php if (!empty($footerBranch['name'])): ?>
+                <p class="sede-footer-corrente">Sede: <strong><?php echo htmlspecialchars($footerBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+            <?php endif; ?>
         </section>
 
         <!-- CONTATTI -->
         <section aria-labelledby="titolo-contatti">
             <h2 id="titolo-contatti">Contatti</h2>
             <address>
-                <p>Email: <a href="mailto:info@smashburger.it">info&commat;smashburger.it</a></p>
-                <p>Telefono: <a href="tel:+390123456789">+39 0123 456 789</a></p>
+                <p>Email brand: <a href="mailto:<?php echo htmlspecialchars($brandEmail, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($brandEmail, ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <p>Info brand: <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $brandInfoPhone), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($brandInfoPhone, ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <p>Ordini brand: <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $brandOrderPhone), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($brandOrderPhone, ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <?php if (!empty($footerBranch['phone'])): ?>
+                    <p>
+                        Telefono sede:
+                        <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) $footerBranch['phone']), ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php echo htmlspecialchars((string) $footerBranch['phone'], ENT_QUOTES, 'UTF-8'); ?>
+                        </a>
+                    </p>
+                <?php endif; ?>
             </address>
         </section>
 
@@ -43,11 +59,20 @@
         <section aria-labelledby="titolo-indirizzo">
             <h2 id="titolo-indirizzo">Indirizzo</h2>
             <address>
-                <p>Via Roma 42</p>
-                <p>35100 Padova (PD)</p>
-                <p>
-                    <a href="sedi.php">Tutte le sedi &rarr;</a>
-                </p>
+                <?php if (!empty($footerBranch)): ?>
+                    <p><?php echo htmlspecialchars($footerBranch['address_line'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p>
+                        <?php echo htmlspecialchars($footerBranch['postal_code'], ENT_QUOTES, 'UTF-8'); ?>
+                        <?php echo htmlspecialchars($footerBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
+                        (<?php echo htmlspecialchars($footerBranch['province'], ENT_QUOTES, 'UTF-8'); ?>)
+                    </p>
+                    <p>
+                        <a href="sedi.php?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &rarr;</a>
+                    </p>
+                <?php else: ?>
+                    <p>Sede non disponibile.</p>
+                    <p><a href="sedi.php">Tutte le sedi &rarr;</a></p>
+                <?php endif; ?>
             </address>
         </section>
 
@@ -55,7 +80,7 @@
         <section aria-labelledby="titolo-social">
             <h2 id="titolo-social">Seguici</h2>
             <p>
-                <a href="https://instagram.com/smashburgeroriginal" rel="noopener noreferrer" target="_blank"
+                <a href="<?php echo htmlspecialchars($brandInstagram, ENT_QUOTES, 'UTF-8'); ?>" rel="noopener noreferrer" target="_blank"
                     aria-label="Instagram di Smash Burger (apre in nuova scheda)">
                     Instagram
                 </a>
@@ -75,8 +100,8 @@
             </nav>
 
             <div class="w3c-badges">
-                <img src="images/w3chtml.png" alt="HTML5 Valido" width="88" height="31">
-                <img src="images/w3ccss.png" alt="CSS Valido" width="88" height="31">
+                <img src="images/w3chtml.png" alt="" aria-hidden="true" width="88" height="31">
+                <img src="images/w3ccss.png" alt="" aria-hidden="true" width="88" height="31">
             </div>
         </div>
 
@@ -101,4 +126,4 @@ $vjs = file_exists(__DIR__ . '/../../scripts/main.js')
 
 </body>
 
-</html>
+</html>

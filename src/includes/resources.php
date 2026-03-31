@@ -10,6 +10,9 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/variables.php';
 
 // 3. Carica le classi e le funzioni (da popolare man mano)
+require_once __DIR__ . '/functions/security.php';
+require_once __DIR__ . '/functions/auth.php';
+require_once __DIR__ . '/functions/shop.php';
 // require_once __DIR__ . '/functions/utility.php';
 // require_once __DIR__ . '/class/Database.php';
 

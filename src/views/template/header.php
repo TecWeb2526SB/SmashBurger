@@ -1,22 +1,33 @@
 <?php
 /**
  * header.php: Intestazione comune a tutte le pagine.
- *
- * Variabili attese dal controller:
- *   $pageTitle       string  Titolo della pagina (max 60 car.)
- *   $pageDescription string  Meta description
- *   $currentPage     string  Nome del file controller (es. 'prodotti.php')
- *   $isHomepage      bool    true solo nella home → usa <h1> per il brand
- *
- * $navItems viene da includes/variables.php (caricato via resources.php).
  */
 
-$vCss = file_exists(__DIR__ . '/../../styles/css/style.css')
-    ? filemtime(__DIR__ . '/../../styles/css/style.css')
+$vResources = file_exists(__DIR__ . '/../../styles/resources.css')
+    ? filemtime(__DIR__ . '/../../styles/resources.css')
     : time();
-$vMob = file_exists(__DIR__ . '/../../styles/css/mobile.css')
-    ? filemtime(__DIR__ . '/../../styles/css/mobile.css')
-    : time();
+
+$headerSelectedBranch = null;
+$headerAllBranches = [];
+$headerCartCount = 0;
+
+if (isset($pdo) && $pdo instanceof \PDO) {
+    if (function_exists('branch_get_selected')) {
+        try {
+            $headerSelectedBranch = branch_get_selected($pdo);
+            if (function_exists('branches_get_all')) {
+                $headerAllBranches = branches_get_all($pdo);
+            }
+        } catch (\Throwable $e) {
+            $headerSelectedBranch = null;
+        }
+    }
+    
+    if (function_exists('is_logged_in') && is_logged_in()) {
+        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
+        $headerCartCount = $headerCart['items_count'] ?? 0;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="it" xml:lang="it">
@@ -41,61 +52,107 @@ $vMob = file_exists(__DIR__ . '/../../styles/css/mobile.css')
         }());
     </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="styles/css/style.css?v=<?php echo $vCss; ?>" media="screen">
-    <link rel="stylesheet" href="styles/css/mobile.css?v=<?php echo $vMob; ?>" media="screen">
-    <link rel="stylesheet" href="styles/css/print.css" media="print">
-
+    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
     <link rel="shortcut icon" href="images/favicon.ico">
 </head>
 
-<body>
-
-    <nav id="skip-link" aria-label="Salta al contenuto">
-        <a href="#content">Vai al contenuto principale</a>
-    </nav>
-
+<body data-cart-count="<?php echo $headerCartCount; ?>">
     <header>
         <div class="contenitore">
+            <div class="brand-wrap">
+                <span class="brand">
+                    <a href="index.php">Smash Burger</a>
+                </span>
 
-            <?php if (!empty($isHomepage)): ?>
-                <h1 class="brand">
-                    <a href="index.php">Smash Burger</a>
-                </h1>
-            <?php else: ?>
-                <p class="brand">
-                    <a href="index.php">Smash Burger</a>
-                </p>
-            <?php endif; ?>
+                <?php if (!empty($headerSelectedBranch)): ?>
+                    <div class="header-sede-dropdown">
+                        <button id="sede-dropdown-toggle" class="brand-sede" type="button" aria-expanded="false" aria-haspopup="true">
+                            <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
+                            <svg class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" aria-labelledby="sede-dropdown-toggle">
+                            <p class="sede-dropdown-titolo">Scegli la tua sede</p>
+                            <ul>
+                                <?php foreach ($headerAllBranches as $hb): 
+                                    $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
+                                ?>
+                                    <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
+                                        <a href="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>" 
+                                           class="sede-opzione"
+                                           data-sede-slug="<?php echo htmlspecialchars($hb['slug'], ENT_QUOTES, 'UTF-8'); ?>"
+                                           data-sede-name="<?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <strong><?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                            <span class="sede-indirizzo"><?php echo htmlspecialchars($hb['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <?php if ($isCurrent): ?>
+                                                <span class="badge-corrente">Attiva</span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principale">
+                Menu
+            </button>
 
             <nav id="menu-principale" aria-label="Navigazione principale">
                 <ul>
                     <?php foreach ($navItems as $label => $href):
                         $isActive = isset($currentPage) && $currentPage === $href;
+                        $isCart = ($label === 'Carrello');
                     ?>
-                        <?php if ($isActive): ?>
-                            <li class="attivo" aria-current="page">
-                                <?php echo htmlspecialchars($label); ?>
-                            </li>
-                        <?php else: ?>
-                            <li>
-                                <a href="<?php echo htmlspecialchars($href); ?>">
+                        <li class="<?php echo $isActive ? 'attivo' : ''; ?>" <?php echo $isActive ? 'aria-current="page"' : ''; ?>>
+                            <?php if ($isActive): ?>
+                                <span class="nav-item-wrap">
                                     <?php echo htmlspecialchars($label); ?>
+                                    <?php if ($isCart): ?>
+                                        <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
+                                            <?php echo $headerCartCount; ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo htmlspecialchars($href); ?>" class="nav-item-wrap">
+                                    <?php echo htmlspecialchars($label); ?>
+                                    <?php if ($isCart): ?>
+                                        <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
+                                            <?php echo $headerCartCount; ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </a>
-                            </li>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             </nav>
 
-            <button id="theme-toggle" type="button" aria-pressed="false"
-                aria-label="Attiva modalità scura">Cambia tema</button>
-
+            <div class="header-azioni">
+                <button id="theme-toggle" type="button" aria-pressed="false"
+                    aria-label="Attiva modalità scura">Cambia tema</button>
+            </div>
         </div>
     </header>
+
+    <!-- Modal Cambio Sede -->
+    <div id="modal-cambio-sede" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titolo">
+        <div class="modal-content">
+            <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
+            <p class="modal-messaggio">
+                Hai già dei prodotti nel carrello per un'altra sede. 
+                Cambiando sede ora, il tuo carrello attuale verrà svuotato. Vuoi procedere?
+            </p>
+            <div class="modal-azioni">
+                <button type="button" class="modal-bottone modal-bottone-annulla" id="modal-annulla">Annulla</button>
+                <button type="button" class="modal-bottone modal-bottone-conferma" id="modal-conferma">Sì, svuota e cambia</button>
+            </div>
+        </div>
+    </div>
 
     <main id="content">
         <?php include_once __DIR__ . '/breadcrumb.php'; ?>
