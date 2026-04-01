@@ -41,5 +41,6 @@ if ($isLoggedIn) {
     $siteMapItems['Carrello'] = 'carrello.php';
     $siteMapItems['Checkout'] = 'checkout.php';
     $siteMapItems['Area personale'] = 'area_personale.php';
+    $siteMapItems['Profilo account'] = 'profilo.php';
     $siteMapItems['Esci'] = 'logout.php';
 }

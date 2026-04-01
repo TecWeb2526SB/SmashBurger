@@ -227,17 +227,63 @@ function inizializzaTogglePassword() {
     if (bottoni.length === 0) return;
 
     bottoni.forEach(function (bottone) {
-        bottone.addEventListener('click', function () {
-            const wrapper = bottone.closest('.campo-password-wrapper');
-            if (!wrapper) return;
+        const wrapper = bottone.closest('.campo-password-wrapper');
+        if (!wrapper) return;
 
-            const input = wrapper.querySelector('input[type="password"], input[type="text"]');
-            if (!input) return;
+        const input = wrapper.querySelector('input');
+        if (!input) return;
 
-            const visibile = input.type === 'text';
-            input.type = visibile ? 'password' : 'text';
-            bottone.setAttribute('aria-pressed', String(!visibile));
-            bottone.setAttribute('aria-label', visibile ? 'Mostra password' : 'Nascondi password');
+        const iconaChiusa = bottone.querySelector('.icona-password-chiusa');
+        const iconaAperta = bottone.querySelector('.icona-password-aperta');
+        const labelMostra = bottone.getAttribute('aria-label') || 'Tieni premuto per mostrare la password';
+        const labelNascondi = labelMostra.replace('Tieni premuto per mostrare', 'Rilascia per nascondere');
+
+        function aggiornaVisibilita(visibile) {
+            input.type = visibile ? 'text' : 'password';
+            bottone.setAttribute('aria-pressed', String(visibile));
+            bottone.setAttribute('aria-label', visibile ? labelNascondi : labelMostra);
+            bottone.classList.toggle('is-active', visibile);
+
+            if (iconaChiusa) {
+                iconaChiusa.hidden = visibile;
+            }
+
+            if (iconaAperta) {
+                iconaAperta.hidden = !visibile;
+            }
+        }
+
+        function mostraPassword(e) {
+            if (e.type === 'pointerdown' && e.button !== 0) return;
+            e.preventDefault();
+            aggiornaVisibilita(true);
+        }
+
+        function nascondiPassword() {
+            aggiornaVisibilita(false);
+        }
+
+        aggiornaVisibilita(false);
+
+        bottone.addEventListener('pointerdown', mostraPassword);
+        bottone.addEventListener('pointerup', nascondiPassword);
+        bottone.addEventListener('pointercancel', nascondiPassword);
+        bottone.addEventListener('pointerleave', nascondiPassword);
+        bottone.addEventListener('click', function (e) {
+            e.preventDefault();
+        });
+        bottone.addEventListener('blur', nascondiPassword);
+        bottone.addEventListener('keydown', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                aggiornaVisibilita(true);
+            }
+        });
+        bottone.addEventListener('keyup', function (e) {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                aggiornaVisibilita(false);
+            }
         });
     });
 }
@@ -366,53 +412,281 @@ function inizializzaAjaxCart() {
     const forms = document.querySelectorAll('form[action="carrello.php"]');
     if (forms.length === 0) return;
     const body = document.body;
+    const totaleCarrello = document.getElementById('carrello-totale-valore');
+
+    function aggiornaBadgeCarrello(cartCount) {
+        const badges = document.querySelectorAll('.badge-notifica');
+        body.dataset.cartCount = String(cartCount);
+
+        badges.forEach(badge => {
+            badge.textContent = cartCount;
+            if (parseInt(cartCount, 10) > 0) {
+                badge.classList.remove('badge-nascosto');
+            } else {
+                badge.classList.add('badge-nascosto');
+            }
+            badge.style.transform = 'scale(1.4)';
+            setTimeout(() => {
+                badge.style.transform = '';
+            }, 300);
+        });
+    }
+
+    function aggiornaRiepilogoCarrello(data) {
+        if (typeof data.cart_count !== 'undefined') {
+            aggiornaBadgeCarrello(data.cart_count);
+        }
+
+        if (totaleCarrello && data.cart_total_formatted) {
+            totaleCarrello.textContent = data.cart_total_formatted;
+        }
+    }
 
     forms.forEach(form => {
-        form.addEventListener('submit', async function (e) {
-            const action = form.querySelector('input[name="action"]');
-            if (!action || action.value !== 'add_product') return;
+        const action = form.querySelector('input[name="action"]');
+        if (!action) return;
 
-            e.preventDefault();
-            const formData = new FormData(form);
-            formData.append('ajax', '1');
+        if (action.value === 'add_product') {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                formData.append('ajax', '1');
 
-            try {
-                const response = await fetch('carrello.php', {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
+                try {
+                    const response = await fetch('carrello.php', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
 
-                const data = await response.json();
-                if (data.ok) {
-                    mostraNotifica(data.message || 'Prodotto aggiunto al carrello!');
+                    const data = await response.json();
+                    if (data.ok) {
+                        mostraNotifica(data.message || 'Prodotto aggiunto al carrello!');
+                        aggiornaRiepilogoCarrello(data);
+                    } else {
+                        mostraNotifica(data.message || 'Errore durante l\'aggiunta.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Errore AJAX:', err);
+                    form.submit(); // Fallback
+                }
+            });
+            return;
+        }
 
-                    // Aggiorna il numeretto nel badge (se presente)
-                    const badges = document.querySelectorAll('.badge-notifica');
-                    if (typeof data.cart_count !== 'undefined') {
-                        body.dataset.cartCount = data.cart_count;
+        if (action.value === 'update_item') {
+            const quantityInput = form.querySelector('[data-cart-quantity-input]');
+            if (!quantityInput) return;
+            const quantityDisplay = form.querySelector('[data-cart-quantity-display]');
+            const decrementButton = form.querySelector('[data-quantity-step="-1"]');
+            const incrementButton = form.querySelector('[data-quantity-step="1"]');
 
-                        badges.forEach(badge => {
-                            badge.textContent = data.cart_count;
-                            if (parseInt(data.cart_count, 10) > 0) {
-                                badge.classList.remove('badge-nascosto');
-                            } else {
-                                badge.classList.add('badge-nascosto');
-                            }
-                            // Feedback visivo
-                            badge.style.transform = 'scale(1.4)';
-                            setTimeout(() => badge.style.transform = '', 300);
-                        });
+            function clampQuantity(value) {
+                const parsed = Number.parseInt(value, 10);
+                const min = Number.parseInt(quantityInput.dataset.min || '0', 10);
+                const max = Number.parseInt(quantityInput.dataset.max || '100', 10);
+
+                if (Number.isNaN(parsed)) {
+                    return min;
+                }
+
+                return Math.min(max, Math.max(min, parsed));
+            }
+
+            function aggiornaStepperUi() {
+                const currentValue = clampQuantity(quantityInput.value);
+                const min = Number.parseInt(quantityInput.dataset.min || '0', 10);
+                const max = Number.parseInt(quantityInput.dataset.max || '100', 10);
+                quantityInput.value = String(currentValue);
+
+                if (quantityDisplay) {
+                    quantityDisplay.textContent = String(currentValue);
+                    quantityDisplay.setAttribute('aria-valuenow', String(currentValue));
+                    quantityDisplay.setAttribute('aria-valuemin', String(min));
+                    quantityDisplay.setAttribute('aria-valuemax', String(max));
+                }
+
+                if (decrementButton) {
+                    decrementButton.disabled = currentValue <= min;
+                }
+
+                if (incrementButton) {
+                    incrementButton.disabled = currentValue >= max;
+                }
+            }
+
+            function setStepperBusy(isBusy) {
+                if (quantityDisplay) {
+                    quantityDisplay.setAttribute('aria-disabled', isBusy ? 'true' : 'false');
+                }
+
+                if (decrementButton) {
+                    decrementButton.disabled = isBusy || clampQuantity(quantityInput.value) <= Number.parseInt(quantityInput.dataset.min || '0', 10);
+                }
+
+                if (incrementButton) {
+                    incrementButton.disabled = isBusy || clampQuantity(quantityInput.value) >= Number.parseInt(quantityInput.dataset.max || '100', 10);
+                }
+            }
+
+            const inviaAggiornamento = async function () {
+                const previousValue = String(clampQuantity(
+                    quantityInput.dataset.currentQuantity || quantityInput.defaultValue || '0'
+                ));
+
+                quantityInput.value = String(clampQuantity(quantityInput.value));
+                if (quantityInput.value === previousValue) {
+                    aggiornaStepperUi();
+                    return;
+                }
+
+                const formData = new FormData(form);
+                formData.append('ajax', '1');
+                setStepperBusy(true);
+
+                try {
+                    const response = await fetch('carrello.php', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    const data = await response.json();
+                    if (!data.ok) {
+                        quantityInput.value = previousValue;
+                        mostraNotifica(data.message || 'Impossibile aggiornare la quantita.', 'error');
+                        return;
                     }
 
-                } else {
-                    mostraNotifica(data.message || 'Errore durante l\'aggiunta.', 'error');
+                    if (data.cart_is_empty) {
+                        window.location.reload();
+                        return;
+                    }
+
+                    if (data.item) {
+                        quantityInput.value = data.item.quantity;
+                        quantityInput.dataset.currentQuantity = String(data.item.quantity);
+
+                        const row = form.closest('tr');
+                        if (row) {
+                            const lineTotal = row.querySelector('[data-cart-line-total]');
+                            if (lineTotal) {
+                                lineTotal.textContent = data.item.line_total_formatted;
+                            }
+                        }
+                    } else {
+                        const row = form.closest('tr');
+                        if (row) {
+                            row.remove();
+                        }
+                    }
+
+                    aggiornaRiepilogoCarrello(data);
+                    aggiornaStepperUi();
+                    mostraNotifica(data.message || 'Carrello aggiornato.');
+                } catch (err) {
+                    console.error('Errore AJAX:', err);
+                    quantityInput.value = previousValue;
+                    aggiornaStepperUi();
+                    form.submit();
+                } finally {
+                    setStepperBusy(false);
                 }
-            } catch (err) {
-                console.error('Errore AJAX:', err);
-                form.submit(); // Fallback
+            };
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                inviaAggiornamento();
+            });
+
+            quantityInput.addEventListener('change', inviaAggiornamento);
+
+            if (decrementButton) {
+                decrementButton.addEventListener('click', function () {
+                    quantityInput.value = String(clampQuantity(quantityInput.value) - 1);
+                    aggiornaStepperUi();
+                    inviaAggiornamento();
+                });
             }
-        });
+
+            if (incrementButton) {
+                incrementButton.addEventListener('click', function () {
+                    quantityInput.value = String(clampQuantity(quantityInput.value) + 1);
+                    aggiornaStepperUi();
+                    inviaAggiornamento();
+                });
+            }
+
+            if (quantityDisplay) {
+                quantityDisplay.addEventListener('keydown', function (e) {
+                    const min = Number.parseInt(quantityInput.dataset.min || '0', 10);
+                    const max = Number.parseInt(quantityInput.dataset.max || '100', 10);
+                    const currentValue = clampQuantity(quantityInput.value);
+                    let nextValue = currentValue;
+
+                    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                        nextValue = currentValue - 1;
+                    } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                        nextValue = currentValue + 1;
+                    } else if (e.key === 'Home') {
+                        nextValue = min;
+                    } else if (e.key === 'End') {
+                        nextValue = max;
+                    } else {
+                        return;
+                    }
+
+                    e.preventDefault();
+                    quantityInput.value = String(clampQuantity(nextValue));
+                    aggiornaStepperUi();
+                    inviaAggiornamento();
+                });
+            }
+
+            aggiornaStepperUi();
+            return;
+        }
+
+        if (action.value === 'remove_item' || action.value === 'clear_cart') {
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                formData.append('ajax', '1');
+
+                try {
+                    const response = await fetch('carrello.php', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    const data = await response.json();
+                    if (!data.ok) {
+                        mostraNotifica(data.message || 'Operazione non riuscita.', 'error');
+                        return;
+                    }
+
+                    if (action.value === 'remove_item') {
+                        const row = form.closest('tr');
+                        if (row) {
+                            row.remove();
+                        }
+                    }
+
+                    aggiornaRiepilogoCarrello(data);
+
+                    if (data.cart_is_empty || action.value === 'clear_cart') {
+                        window.location.reload();
+                        return;
+                    }
+
+                    mostraNotifica(data.message || 'Carrello aggiornato.');
+                } catch (err) {
+                    console.error('Errore AJAX:', err);
+                    form.submit();
+                }
+            });
+        }
     });
 }
 
@@ -554,58 +828,185 @@ function inizializzaMappaSedi() {
 function inizializzaHeaderSede() {
     const toggle = document.getElementById('sede-dropdown-toggle');
     const menu = document.getElementById('sede-dropdown-menu');
-    if (!toggle || !menu) return;
-
+    const hasBranchDropdown = Boolean(toggle && menu);
     const modal = document.getElementById('modal-cambio-sede');
     const btnAnnulla = document.getElementById('modal-annulla');
     const btnConferma = document.getElementById('modal-conferma');
+    const modalTitolo = document.getElementById('modal-titolo');
+    const modalMessaggio = document.getElementById('modal-messaggio');
+    const logoutLink = document.querySelector('[data-confirm-logout="true"]');
+    if (!modal || !btnAnnulla || !btnConferma || !modalTitolo || !modalMessaggio) {
+        return;
+    }
+
     const body = document.body;
-    let targetUrl = '';
+    let targetOption = null;
+    let lastFocusedElement = null;
+    let pendingModalAction = null;
 
-    toggle.addEventListener('click', function (e) {
-        e.stopPropagation();
-        const expanded = toggle.getAttribute('aria-expanded') === 'true';
-        toggle.setAttribute('aria-expanded', !expanded);
-        menu.classList.toggle('aperto', !expanded);
-    });
+    const modalCopy = {
+        branch: {
+            title: 'Cambiare sede?',
+            message: 'Hai già dei prodotti nel carrello per un\'altra sede. Cambiando sede ora, il tuo carrello attuale verrà svuotato. Vuoi procedere?',
+            confirm: 'Sì, svuota e cambia'
+        },
+        logout: {
+            title: 'Uscire dall\'account?',
+            message: 'Sei sicuro di voler uscire dal tuo account?',
+            confirm: 'Sì, esci'
+        }
+    };
 
-    const options = menu.querySelectorAll('.sede-opzione');
-    options.forEach(option => {
-        option.addEventListener('click', function (e) {
-            const isCurrent = option.closest('li').classList.contains('corrente');
-            if (isCurrent) {
-                e.preventDefault();
-                toggle.setAttribute('aria-expanded', 'false');
-                menu.classList.remove('aperto');
+    function impostaContenutoModale(tipo) {
+        const copy = modalCopy[tipo] || modalCopy.branch;
+        modalTitolo.textContent = copy.title;
+        modalMessaggio.textContent = copy.message;
+        btnConferma.textContent = copy.confirm;
+    }
+
+    function apriMenu() {
+        if (!hasBranchDropdown) return;
+        toggle.setAttribute('aria-expanded', 'true');
+        menu.hidden = false;
+        menu.classList.add('aperto');
+    }
+
+    function chiudiMenu(returnFocus = false) {
+        if (!hasBranchDropdown) return;
+        toggle.setAttribute('aria-expanded', 'false');
+        menu.classList.remove('aperto');
+        menu.hidden = true;
+        if (returnFocus) {
+            toggle.focus();
+        }
+    }
+
+    function apriModal() {
+        lastFocusedElement = document.activeElement;
+        modal.hidden = false;
+        modal.setAttribute('aria-hidden', 'false');
+        modal.classList.add('mostra');
+        window.setTimeout(function () {
+            if (btnAnnulla) {
+                btnAnnulla.focus();
+            } else if (btnConferma) {
+                btnConferma.focus();
+            }
+        }, 0);
+    }
+
+    function chiudiModal(returnFocus = true, clearPendingAction = true) {
+        modal.classList.remove('mostra');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.hidden = true;
+        if (clearPendingAction) {
+            pendingModalAction = null;
+        }
+        if (returnFocus && lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+        }
+    }
+
+    function buildReturnUrl(targetSlug) {
+        const returnUrl = new URL(window.location.href);
+        const pageName = returnUrl.pathname.split('/').pop() || 'index.php';
+
+        returnUrl.searchParams.delete('ajax');
+        returnUrl.searchParams.delete('force');
+
+        if (pageName === 'prodotti.php' || pageName === 'sedi.php') {
+            returnUrl.searchParams.set('sede', targetSlug);
+        } else {
+            returnUrl.searchParams.delete('sede');
+        }
+
+        return returnUrl.toString();
+    }
+
+    async function cambiaSede(option, force = false) {
+        const targetSlug = option.dataset.sedeSlug || '';
+        const switchUrl = new URL(option.dataset.switchUrl || option.href, window.location.origin);
+        switchUrl.searchParams.set('ajax', '1');
+
+        if (force) {
+            switchUrl.searchParams.set('force', '1');
+        } else {
+            switchUrl.searchParams.delete('force');
+        }
+
+        try {
+            const response = await fetch(switchUrl.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await response.json();
+
+            if (!data.ok) {
+                mostraNotifica(data.message || 'Impossibile cambiare sede.', 'error');
                 return;
             }
 
-            const cartCount = parseInt(body.dataset.cartCount || '0', 10);
-            if (cartCount > 0) {
-                e.preventDefault();
-                const url = new URL(option.href, window.location.origin);
-                url.searchParams.set('force', '1');
-                targetUrl = url.toString();
-                modal.classList.add('mostra');
-                
-                // Chiudi il dropdown
-                toggle.setAttribute('aria-expanded', 'false');
-                menu.classList.remove('aperto');
+            window.location.href = buildReturnUrl(targetSlug);
+        } catch (err) {
+            console.error('Errore cambio sede:', err);
+            window.location.href = force ? switchUrl.toString() : option.href;
+        }
+    }
+
+    if (hasBranchDropdown) {
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const expanded = toggle.getAttribute('aria-expanded') === 'true';
+            if (expanded) {
+                chiudiMenu();
+            } else {
+                apriMenu();
             }
         });
-    });
+
+        const options = menu.querySelectorAll('.sede-opzione');
+        options.forEach(option => {
+            option.addEventListener('click', function (e) {
+                const isCurrent = option.closest('li').classList.contains('corrente');
+                if (isCurrent) {
+                    e.preventDefault();
+                    chiudiMenu(true);
+                    return;
+                }
+
+                const cartCount = parseInt(body.dataset.cartCount || '0', 10);
+                if (cartCount > 0) {
+                    e.preventDefault();
+                    targetOption = option;
+                    impostaContenutoModale('branch');
+                    pendingModalAction = async function () {
+                        await cambiaSede(targetOption, true);
+                        targetOption = null;
+                    };
+                    chiudiMenu();
+                    apriModal();
+                    return;
+                }
+
+                e.preventDefault();
+                cambiaSede(option);
+            });
+        });
+    }
 
     if (btnAnnulla) {
         btnAnnulla.addEventListener('click', () => {
-            modal.classList.remove('mostra');
-            targetUrl = '';
+            chiudiModal();
+            targetOption = null;
         });
     }
 
     if (btnConferma) {
-        btnConferma.addEventListener('click', () => {
-            if (targetUrl) {
-                window.location.href = targetUrl;
+        btnConferma.addEventListener('click', async () => {
+            if (pendingModalAction) {
+                const action = pendingModalAction;
+                pendingModalAction = null;
+                chiudiModal(false, false);
+                await action();
             }
         });
     }
@@ -613,23 +1014,57 @@ function inizializzaHeaderSede() {
     // Chiudi modale se si clicca fuori dal contenuto
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.classList.remove('mostra');
-            targetUrl = '';
+            chiudiModal();
+            targetOption = null;
         }
     });
 
+    modal.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab' || modal.hidden) return;
+
+        const focusabili = modal.querySelectorAll('button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
+        if (focusabili.length === 0) return;
+
+        const primo = focusabili[0];
+        const ultimo = focusabili[focusabili.length - 1];
+
+        if (e.shiftKey && document.activeElement === primo) {
+            e.preventDefault();
+            ultimo.focus();
+        } else if (!e.shiftKey && document.activeElement === ultimo) {
+            e.preventDefault();
+            primo.focus();
+        }
+    });
+
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function (e) {
+            const cartCount = parseInt(body.dataset.cartCount || '0', 10);
+            e.preventDefault();
+            impostaContenutoModale('logout');
+
+            if (cartCount > 0) {
+                modalMessaggio.textContent = 'Hai ancora dei prodotti nel carrello. Uscendo ora potresti interrompere il tuo flusso di acquisto. Vuoi davvero uscire?';
+            }
+
+            pendingModalAction = async function () {
+                window.location.href = logoutLink.href;
+            };
+            apriModal();
+        });
+    }
+
     document.addEventListener('click', function (e) {
-        if (!menu.contains(e.target) && !toggle.contains(e.target)) {
-            toggle.setAttribute('aria-expanded', 'false');
-            menu.classList.remove('aperto');
+        if (hasBranchDropdown && !menu.contains(e.target) && !toggle.contains(e.target)) {
+            chiudiMenu();
         }
     });
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            toggle.setAttribute('aria-expanded', 'false');
-            menu.classList.remove('aperto');
-            modal.classList.remove('mostra');
+            chiudiMenu();
+            chiudiModal();
+            targetOption = null;
         }
     });
 }

@@ -95,9 +95,9 @@
                                     data-branch-hours="<?php echo htmlspecialchars($branch['hours_compact'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
                                     data-branch-map="<?php echo htmlspecialchars($branch['map_embed_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                                     <strong><?php echo htmlspecialchars($branch['city'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                                    <span><?php echo htmlspecialchars($branch['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span class="sede-indirizzo"><?php echo htmlspecialchars($branch['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
                                     <?php if ($isActive): ?>
-                                        <span class="sede-attiva-label">(Attiva per ordini)</span>
+                                        <span class="badge-corrente">Attiva</span>
                                     <?php endif; ?>
                                 </button>
                             </li>

@@ -57,22 +57,33 @@ if (isset($pdo) && $pdo instanceof \PDO) {
 </head>
 
 <body data-cart-count="<?php echo $headerCartCount; ?>">
+    <a class="skip-link" href="#content">Vai al contenuto</a>
     <header>
         <div class="contenitore">
             <div class="brand-wrap">
-                <span class="brand">
-                    <a href="index.php">Smash Burger</a>
-                </span>
+                <?php if (!empty($isHomepage)): ?>
+                    <p class="brand">Smash Burger</p>
+                <?php else: ?>
+                    <p class="brand">
+                        <a href="index.php">Smash Burger</a>
+                    </p>
+                <?php endif; ?>
 
                 <?php if (!empty($headerSelectedBranch)): ?>
                     <div class="header-sede-dropdown">
-                        <button id="sede-dropdown-toggle" class="brand-sede" type="button" aria-expanded="false" aria-haspopup="true">
+                        <button
+                            id="sede-dropdown-toggle"
+                            class="brand-sede"
+                            type="button"
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-controls="sede-dropdown-menu">
                             <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
                             <svg class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" aria-labelledby="sede-dropdown-toggle">
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" aria-labelledby="sede-dropdown-toggle" hidden>
                             <p class="sede-dropdown-titolo">Scegli la tua sede</p>
                             <ul>
                                 <?php foreach ($headerAllBranches as $hb): 
@@ -81,6 +92,7 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
                                         <a href="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>" 
                                            class="sede-opzione"
+                                           data-switch-url="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>"
                                            data-sede-slug="<?php echo htmlspecialchars($hb['slug'], ENT_QUOTES, 'UTF-8'); ?>"
                                            data-sede-name="<?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?>">
                                             <strong><?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
@@ -107,9 +119,9 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                         $isActive = isset($currentPage) && $currentPage === $href;
                         $isCart = ($label === 'Carrello');
                     ?>
-                        <li class="<?php echo $isActive ? 'attivo' : ''; ?>" <?php echo $isActive ? 'aria-current="page"' : ''; ?>>
+                        <li class="<?php echo $isActive ? 'attivo' : ''; ?>">
                             <?php if ($isActive): ?>
-                                <span class="nav-item-wrap">
+                                <span class="nav-item-wrap" aria-current="page">
                                     <?php echo htmlspecialchars($label); ?>
                                     <?php if ($isCart): ?>
                                         <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
@@ -118,7 +130,10 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                                     <?php endif; ?>
                                 </span>
                             <?php else: ?>
-                                <a href="<?php echo htmlspecialchars($href); ?>" class="nav-item-wrap">
+                                <a
+                                    href="<?php echo htmlspecialchars($href); ?>"
+                                    class="nav-item-wrap"
+                                    <?php echo $href === 'logout.php' ? 'data-confirm-logout="true"' : ''; ?>>
                                     <?php echo htmlspecialchars($label); ?>
                                     <?php if ($isCart): ?>
                                         <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
@@ -140,10 +155,18 @@ if (isset($pdo) && $pdo instanceof \PDO) {
     </header>
 
     <!-- Modal Cambio Sede -->
-    <div id="modal-cambio-sede" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titolo">
+    <div
+        id="modal-cambio-sede"
+        class="modal-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-titolo"
+        aria-describedby="modal-messaggio"
+        aria-hidden="true"
+        hidden>
         <div class="modal-content">
             <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
-            <p class="modal-messaggio">
+            <p id="modal-messaggio" class="modal-messaggio">
                 Hai già dei prodotti nel carrello per un'altra sede. 
                 Cambiando sede ora, il tuo carrello attuale verrà svuotato. Vuoi procedere?
             </p>

@@ -3,7 +3,19 @@ require_once __DIR__ . '/includes/resources.php';
 
 require_login();
 
-$utente = current_user();
+$sessionUser = current_user();
+$utente = auth_get_user_by_id($pdo, (int) ($sessionUser['id'] ?? 0));
+
+if ($utente === null) {
+    logout_user();
+    flash_set('error', 'Sessione utente non valida. Effettua di nuovo l\'accesso.');
+    header('Location: login.php');
+    exit;
+}
+
+$_SESSION['user']['username'] = (string) $utente['username'];
+$_SESSION['user']['email'] = (string) $utente['email'];
+$_SESSION['user']['role'] = (string) $utente['role'];
 $orders = orders_get_for_user($pdo, (int) $utente['id']);
 $flash = flash_get();
 

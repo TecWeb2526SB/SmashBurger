@@ -45,9 +45,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($isAjax) {
-        if ($result['ok'] && $action === 'add_product') {
+        if ($result['ok']) {
             $summary = cart_get_summary($pdo, $userId, $selectedBranchId);
-            $result['cart_count'] = $summary['items_count'] ?? 0;
+            $result['cart_count'] = (int) ($summary['items_count'] ?? 0);
+            $result['cart_total_formatted'] = money_eur((int) ($summary['total_cents'] ?? 0));
+            $result['cart_is_empty'] = empty($summary['items']);
+
+            if ($action === 'update_item' || $action === 'remove_item') {
+                $itemId = (int) ($_POST['item_id'] ?? 0);
+                foreach ($summary['items'] as $summaryItem) {
+                    if ((int) $summaryItem['id'] !== $itemId) {
+                        continue;
+                    }
+
+                    $result['item'] = [
+                        'id' => (int) $summaryItem['id'],
+                        'quantity' => (int) $summaryItem['quantity'],
+                        'line_total_formatted' => money_eur((int) $summaryItem['line_total_cents']),
+                    ];
+                    break;
+                }
+            }
         }
         header('Content-Type: application/json');
         echo json_encode($result);
