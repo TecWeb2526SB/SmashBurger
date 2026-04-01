@@ -20,6 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrfTokenForm = $_POST['csrf_token'] ?? null;
     $identifier = trim((string) ($_POST['identifier'] ?? ''));
     $password = (string) ($_POST['password'] ?? '');
+    $lookupIdentifier = '';
 
     if (!csrf_is_valid($csrfTokenForm)) {
         $errori['generale'] = 'Sessione scaduta o richiesta non valida. Ricarica la pagina e riprova.';
@@ -44,11 +45,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lookupIdentifier = filter_var(auth_normalize_email($identifier), FILTER_VALIDATE_EMAIL)
             ? auth_normalize_email($identifier)
             : $identifier;
+        $rateLimitStatus = login_rate_limit_get_status($lookupIdentifier);
+
+        if (!$rateLimitStatus['allowed']) {
+            $errori['generale'] = $rateLimitStatus['message'];
+        }
+    }
+
+    if (empty($errori)) {
         $utente = auth_get_user_for_login($pdo, $lookupIdentifier);
 
         if (!$utente || !password_verify($password, (string) $utente['password_hash'])) {
-            $errori['generale'] = 'Credenziali non valide.';
+            login_rate_limit_register_failure($lookupIdentifier);
+            $rateLimitStatus = login_rate_limit_get_status($lookupIdentifier);
+            $errori['generale'] = $rateLimitStatus['allowed']
+                ? 'Credenziali non valide.'
+                : $rateLimitStatus['message'];
         } else {
+            login_rate_limit_clear_identifier($lookupIdentifier);
+            login_rate_limit_clear_identifier((string) ($utente['username'] ?? ''));
+            login_rate_limit_clear_identifier((string) ($utente['email'] ?? ''));
+
             if (password_needs_rehash((string) $utente['password_hash'], PASSWORD_DEFAULT)) {
                 $nuovoHash = password_hash($password, PASSWORD_DEFAULT);
                 auth_update_user_password($pdo, (int) $utente['id'], $nuovoHash);

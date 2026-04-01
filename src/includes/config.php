@@ -23,7 +23,37 @@ define('PDO_OPTIONS', [
     PDO::ATTR_EMULATE_PREPARES   => false,
 ]);
 
+// Protezione base delle sessioni in ambienti reali.
+define('LOGIN_RATE_LIMIT_WINDOW_SECONDS', 900);
+define('LOGIN_RATE_LIMIT_MAX_ATTEMPTS_PER_IP', 12);
+define('LOGIN_RATE_LIMIT_MAX_ATTEMPTS_PER_IDENTIFIER', 6);
+define('LOGIN_RATE_LIMIT_BLOCK_SECONDS', 900);
+
+$sessionIsSecure = false;
+$httpsValue = strtolower((string) ($_SERVER['HTTPS'] ?? ''));
+$forwardedProto = strtolower(trim(explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''))[0] ?? ''));
+
+if ($httpsValue === 'on' || $httpsValue === '1' || $forwardedProto === 'https') {
+    $sessionIsSecure = true;
+}
+
 // Sessione applicativa (necessaria per CSRF e stato utente)
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    ini_set('session.cookie_httponly', '1');
+    ini_set('session.cookie_secure', $sessionIsSecure ? '1' : '0');
+    ini_set('session.cookie_samesite', 'Lax');
+    ini_set('session.gc_maxlifetime', '7200');
+
+    session_name('smashburger_session');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => $sessionIsSecure,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }

@@ -190,6 +190,10 @@
         min-height: 17rem;
     }
 
+    .legal-grid {
+        grid-template-columns: 1fr;
+    }
+
     .azioni-carrello {
         flex-direction: column;
         align-items: stretch;
