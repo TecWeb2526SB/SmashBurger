@@ -1,0 +1,12 @@
+{
+  "name": "Smash Burger Original",
+  "short_name": "SmashBurger",
+  "description": "Ordina online il tuo smash burger e ritira nella sede piu vicina.",
+  "lang": "it-IT",
+  "start_url": "/index.php",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#c0392b",
+  "orientation": "portrait-primary"
+}

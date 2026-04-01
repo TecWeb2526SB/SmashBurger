@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Disallow: /area_personale.php
+Disallow: /carrello.php
+Disallow: /checkout.php
+Disallow: /checkout_ritiro.php
+Disallow: /checkout_pagamento.php
+Disallow: /profilo.php
+Disallow: /logout.php
+
+Sitemap: https://www.smashburger.it/sitemap.xml

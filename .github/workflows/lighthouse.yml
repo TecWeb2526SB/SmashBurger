@@ -79,10 +79,25 @@ jobs:
             node -e '
               const fs = require("fs");
               const report = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              console.log(`Page title: ${report.finalDisplayedUrl || report.finalUrl}`);
               const scores = Object.entries(report.categories)
                 .map(([key, value]) => `${key}: ${Math.round((value.score || 0) * 100)}`)
                 .join(" | ");
               console.log(scores);
+              const failing = Object.values(report.audits)
+                .filter((audit) => audit.scoreDisplayMode !== "notApplicable" && audit.score !== null && audit.score < 1)
+                .sort((a, b) => (a.score ?? 1) - (b.score ?? 1))
+                .slice(0, 8);
+              if (failing.length > 0) {
+                console.log("Top audits below 100:");
+                for (const audit of failing) {
+                  const score = Math.round((audit.score || 0) * 100);
+                  console.log(`- ${audit.id}: ${score} | ${audit.title}`);
+                }
+              } else {
+                console.log("All applicable audits scored 100.");
+              }
+              console.log("");
             ' "${report}"
           done
 

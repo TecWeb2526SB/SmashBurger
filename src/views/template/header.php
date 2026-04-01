@@ -40,6 +40,7 @@ if (isset($pdo) && $pdo instanceof \PDO) {
         content="<?php echo htmlspecialchars($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>">
     <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away">
     <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#c0392b">
 
     <script>
         (function () {
@@ -53,7 +54,8 @@ if (isset($pdo) && $pdo instanceof \PDO) {
     </script>
 
     <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
-    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+    <link rel="manifest" href="site.webmanifest">
 </head>
 
 <body data-cart-count="<?php echo $headerCartCount; ?>">

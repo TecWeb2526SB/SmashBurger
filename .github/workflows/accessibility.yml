@@ -77,11 +77,39 @@ jobs:
 
       - name: Run Pa11y on key pages
         run: |
+          mkdir -p .tmp/pa11y
           for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php; do
             url="http://127.0.0.1:8080/${page}"
             echo "Checking accessibility for ${url}"
-            pa11y --config pa11y-config.json "${url}"
+            report=".tmp/pa11y/${page%.php}.json"
+            status=0
+            pa11y --config pa11y-config.json --reporter json "${url}" > "${report}" || status=$?
+            node -e '
+              const fs = require("fs");
+              const items = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              console.log(`Issues found: ${items.length}`);
+              if (items.length === 0) {
+                console.log("No accessibility issues detected by Pa11y.");
+              } else {
+                for (const item of items.slice(0, 10)) {
+                  console.log(`- [${item.type}] ${item.message}`);
+                  if (item.selector) console.log(`  selector: ${item.selector}`);
+                  if (item.context) console.log(`  context: ${item.context.replace(/\s+/g, " ").trim()}`);
+                }
+              }
+              console.log("");
+            ' "${report}"
+            if [ "${status}" -ne 0 ]; then
+              exit "${status}"
+            fi
           done
+
+      - name: Upload Pa11y reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pa11y-reports
+          path: .tmp/pa11y
 
       - name: Print application logs on failure
         if: failure()
