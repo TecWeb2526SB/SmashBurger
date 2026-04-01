@@ -1235,6 +1235,10 @@ footer a:focus-visible {
     display: none !important;
 }
 
+.mostra-password .icona-password.is-hidden {
+    display: none !important;
+}
+
 .mostra-password.is-active .icona-password-chiusa {
     display: none !important;
 }

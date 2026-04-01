@@ -245,11 +245,11 @@ function inizializzaTogglePassword() {
             bottone.classList.toggle('is-active', visibile);
 
             if (iconaChiusa) {
-                iconaChiusa.hidden = visibile;
+                iconaChiusa.classList.toggle('is-hidden', visibile);
             }
 
             if (iconaAperta) {
-                iconaAperta.hidden = !visibile;
+                iconaAperta.classList.toggle('is-hidden', !visibile);
             }
         }
 

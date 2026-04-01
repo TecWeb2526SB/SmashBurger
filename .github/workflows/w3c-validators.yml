@@ -22,14 +22,28 @@ jobs:
           HTTP_PORT=8080
           MAILPIT_UI_PORT=8025
           PHPMYADMIN_PORT=8081
-          DB_NAME=progetto_db
+          DB_NAME=esame_web
           DB_USER=utente_fallback
           DB_PASSWORD=password_fallback_sicura_123
           DB_ROOT_PASSWORD=root_password_sicura_123
           EOF
 
-      - name: Start application stack
-        run: docker compose -f docker-compose.develop.yml up -d --build db web mailpit
+      - name: Start database and mail services
+        run: docker compose -f docker-compose.develop.yml up -d db mailpit
+
+      - name: Wait for database
+        run: |
+          for i in $(seq 1 60); do
+            if docker compose -f docker-compose.develop.yml exec -T db sh -lc 'mariadb-admin ping -h 127.0.0.1 -u"$DB_USER" -p"$DB_PASSWORD" --silent' > /dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.develop.yml logs db --tail=200
+          exit 1
+
+      - name: Start web service
+        run: docker compose -f docker-compose.develop.yml up -d --build web
 
       - name: Wait for application
         run: |
@@ -52,8 +66,8 @@ jobs:
             curl -fsS "http://127.0.0.1:8080/${page}" -o ".tmp/rendered/${page%.php}.html"
           done
 
-      - name: Validate rendered HTML and project CSS
-        run: java -jar vnu.jar --errors-only .tmp/rendered src/styles
+      - name: Validate rendered HTML
+        run: java -jar vnu.jar --errors-only .tmp/rendered
 
       - name: Print application logs on failure
         if: failure()

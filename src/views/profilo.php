@@ -104,7 +104,7 @@
                                 <circle cx="12" cy="12" r="3" />
                                 <path d="M4 4l16 16" />
                             </svg>
-                            <svg class="icona-password icona-password-aperta" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden>
+                            <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
@@ -163,7 +163,7 @@
                                 <circle cx="12" cy="12" r="3" />
                                 <path d="M4 4l16 16" />
                             </svg>
-                            <svg class="icona-password icona-password-aperta" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden>
+                            <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
@@ -193,7 +193,7 @@
                                 <circle cx="12" cy="12" r="3" />
                                 <path d="M4 4l16 16" />
                             </svg>
-                            <svg class="icona-password icona-password-aperta" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden>
+                            <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
@@ -223,7 +223,7 @@
                                 <circle cx="12" cy="12" r="3" />
                                 <path d="M4 4l16 16" />
                             </svg>
-                            <svg class="icona-password icona-password-aperta" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden>
+                            <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
                                 <circle cx="12" cy="12" r="3" />
                             </svg>
