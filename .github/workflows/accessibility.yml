@@ -2,38 +2,77 @@ name: Accessibility checks (Pa11y)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main, develop]
   pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   pa11y:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install Node and Pa11y
+      - name: Create CI environment file
         run: |
-          sudo apt-get update
-          npm install -g pa11y
-          # Non serve installare puppeteer separatamente se usi pa11y globale,
-          # ma se vuoi essere sicuro delle dipendenze puoi lasciarlo o usare 'npm ci' se hai un package.json.
+          cat > .env <<'EOF'
+          HTTP_PORT=8080
+          MAILPIT_UI_PORT=8025
+          PHPMYADMIN_PORT=8081
+          DB_NAME=progetto_db
+          DB_USER=utente_fallback
+          DB_PASSWORD=password_fallback_sicura_123
+          DB_ROOT_PASSWORD=root_password_sicura_123
+          EOF
 
-      - name: Create Pa11y Config
-        # Creiamo un file di configurazione per disabilitare la sandbox di Chrome
-        run: |
-          echo '{"chromeLaunchConfig": {"args": ["--no-sandbox", "--disable-setuid-sandbox"]}}' > pa11y-config.json
+      - name: Start application stack
+        run: docker compose -f docker-compose.develop.yml up -d --build db web mailpit
 
-      - name: Run Pa11y on all HTML files
+      - name: Wait for application
         run: |
-          echo "Searching for all HTML files..."
-          # Il flag --config dice a Pa11y di usare le opzioni create sopra
-          find . -name "*.html" -print0 | while IFS= read -r -d '' file; do
-            echo "------------------------------------------------------------"
-            echo "Checking accessibility for: $file"
-            echo "------------------------------------------------------------"
-            pa11y --config pa11y-config.json "file://$(realpath "$file")"
-            echo "Done."
-            echo
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+              exit 0
+            fi
+            sleep 2
           done
+          docker compose -f docker-compose.develop.yml logs web --tail=200
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Pa11y
+        run: npm install -g pa11y
+
+      - name: Create Pa11y config
+        run: |
+          cat > pa11y-config.json <<'EOF'
+          {
+            "chromeLaunchConfig": {
+              "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+            },
+            "standard": "WCAG2AA"
+          }
+          EOF
+
+      - name: Run Pa11y on key pages
+        run: |
+          for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php; do
+            url="http://127.0.0.1:8080/${page}"
+            echo "Checking accessibility for ${url}"
+            pa11y --config pa11y-config.json "${url}"
+          done
+
+      - name: Print application logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.develop.yml logs web --tail=200
+
+      - name: Stop application stack
+        if: always()
+        run: docker compose -f docker-compose.develop.yml down -v

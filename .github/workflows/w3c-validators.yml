@@ -2,30 +2,63 @@ name: W3C Validators (HTML + CSS)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main, develop]
   pull_request:
-    branches: [ "main" ]
+    branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Install VNU (HTML Validator)
+      - name: Create CI environment file
         run: |
-          curl -L https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
+          cat > .env <<'EOF'
+          HTTP_PORT=8080
+          MAILPIT_UI_PORT=8025
+          PHPMYADMIN_PORT=8081
+          DB_NAME=progetto_db
+          DB_USER=utente_fallback
+          DB_PASSWORD=password_fallback_sicura_123
+          DB_ROOT_PASSWORD=root_password_sicura_123
+          EOF
 
-      - name: Validate HTML only
+      - name: Start application stack
+        run: docker compose -f docker-compose.develop.yml up -d --build db web mailpit
+
+      - name: Wait for application
         run: |
-          find . -name "*.html" -print0 | xargs -0 java -jar vnu.jar --errors-only
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.develop.yml logs web --tail=200
+          exit 1
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - name: Install VNU checker
+        run: curl -fsSL https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
 
-      - name: Validate CSS (W3C)
+      - name: Render public pages for validation
         run: |
-          npm install -g css-validator
-          find . -name "*.css" -exec css-validator {} \;
+          mkdir -p .tmp/rendered
+          for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php mappa.php; do
+            curl -fsS "http://127.0.0.1:8080/${page}" -o ".tmp/rendered/${page%.php}.html"
+          done
+
+      - name: Validate rendered HTML and project CSS
+        run: java -jar vnu.jar --errors-only .tmp/rendered src/styles
+
+      - name: Print application logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.develop.yml logs web --tail=200
+
+      - name: Stop application stack
+        if: always()
+        run: docker compose -f docker-compose.develop.yml down -v

@@ -1,42 +1,88 @@
-name: Lighthouse CI - log only
+name: Lighthouse CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main, develop]
   pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install Node tools
+      - name: Create CI environment file
         run: |
-          npm install -g lighthouse serve
+          cat > .env <<'EOF'
+          HTTP_PORT=8080
+          MAILPIT_UI_PORT=8025
+          PHPMYADMIN_PORT=8081
+          DB_NAME=progetto_db
+          DB_USER=utente_fallback
+          DB_PASSWORD=password_fallback_sicura_123
+          DB_ROOT_PASSWORD=root_password_sicura_123
+          EOF
 
-      - name: Start static server
+      - name: Start application stack
+        run: docker compose -f docker-compose.develop.yml up -d --build db web mailpit
+
+      - name: Wait for application
         run: |
-          serve -s . -l 8080 &
-          sleep 3
-
-      - name: Run Lighthouse on all HTML files and print scores
-        run: |
-          for f in $(find . -name "*.html"); do
-            url="http://localhost:8080/${f#./}"
-            echo "------------------------------------------------------------"
-            echo "Running Lighthouse on: $url"
-            echo "------------------------------------------------------------"
-
-            # Esegue Lighthouse e prende output JSON in memoria
-            npx lighthouse "$url" --output=json --quiet --chrome-flags="--headless --no-sandbox" > lhci_tmp.json
-
-            # Legge JSON e stampa punteggi
-            node -e "
-              const fs = require('fs');
-              const data = JSON.parse(fs.readFileSync('lhci_tmp.json'));
-              const cats = data.categories;
-              for (const c in cats) { console.log(c + ': ' + cats[c].score); }
-            "
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+              exit 0
+            fi
+            sleep 2
           done
+          docker compose -f docker-compose.develop.yml logs web --tail=200
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Lighthouse
+        run: npm install -g lighthouse
+
+      - name: Run Lighthouse on key pages
+        run: |
+          mkdir -p .tmp/lighthouse
+          for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php; do
+            url="http://127.0.0.1:8080/${page}"
+            report=".tmp/lighthouse/${page%.php}.json"
+            echo "Running Lighthouse on ${url}"
+            lighthouse "${url}" \
+              --output=json \
+              --output-path="${report}" \
+              --quiet \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+            node -e '
+              const fs = require("fs");
+              const report = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+              const scores = Object.entries(report.categories)
+                .map(([key, value]) => `${key}: ${Math.round((value.score || 0) * 100)}`)
+                .join(" | ");
+              console.log(scores);
+            ' "${report}"
+          done
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .tmp/lighthouse
+
+      - name: Print application logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.develop.yml logs web --tail=200
+
+      - name: Stop application stack
+        if: always()
+        run: docker compose -f docker-compose.develop.yml down -v
