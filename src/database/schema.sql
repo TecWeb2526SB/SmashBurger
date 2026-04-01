@@ -27,8 +27,10 @@ SET FOREIGN_KEY_CHECKS = 1;
 CREATE TABLE users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(160) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+    email_verified_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
@@ -261,10 +263,10 @@ CREATE TABLE payment_transactions (
     INDEX idx_payment_transactions_order (order_id)
 ) ENGINE=InnoDB;
 
-INSERT INTO users (username, password_hash, role)
+INSERT INTO users (username, email, password_hash, role, email_verified_at)
 VALUES
-    ('admin', '$2y$10$TuGSbILQNQipwO6uiHAz0uxgmt.21iLrD/Wmv9DNXbpEwjkIuf2LS', 'admin'),
-    ('user', '$2y$10$/vM6p.rHEgV2uspgXG5uHegXCxoWmthYDWfXRNuPAhwf5VjgC5nQa', 'user');
+    ('admin', 'admin@smashburger.it', '$2y$10$TuGSbILQNQipwO6uiHAz0uxgmt.21iLrD/Wmv9DNXbpEwjkIuf2LS', 'admin', NOW()),
+    ('user', 'user@smashburger.it', '$2y$10$/vM6p.rHEgV2uspgXG5uHegXCxoWmthYDWfXRNuPAhwf5VjgC5nQa', 'user', NOW());
 
 INSERT INTO brand_contacts (brand_name, support_email, info_phone, order_phone, instagram_url)
 VALUES

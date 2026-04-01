@@ -66,9 +66,18 @@
     }
 
     #menu-principale a {
-        display: block;
+        display: flex;
+        width: 100%;
+    }
+
+    #menu-principale .nav-item-wrap {
+        display: flex;
+        width: 100%;
         padding-block: var(--spazio-xs);
-        border-bottom: none;
+    }
+
+    #menu-principale .nav-item-wrap::after {
+        bottom: -0.1rem;
     }
 
     /* --- Theme toggle --- */
@@ -88,6 +97,33 @@
 
     .checkout-shell {
         grid-template-columns: 1fr;
+    }
+
+    .account-hero-card,
+    .ordine-card-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .account-section-head,
+    .ordine-card-head {
+        align-items: start;
+    }
+
+    .ordine-card-head {
+        flex-direction: column;
+    }
+
+    .account-section-head,
+    .account-action-row,
+    .account-empty-actions {
+        flex-direction: column;
+    }
+
+    .account-action-row .bottone-primario,
+    .account-action-row .bottone-secondario,
+    .account-empty-actions .bottone-primario,
+    .account-empty-actions .bottone-secondario {
+        width: 100%;
     }
 
     .checkout-step-list {

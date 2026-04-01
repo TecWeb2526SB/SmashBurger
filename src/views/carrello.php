@@ -41,33 +41,77 @@
                             <th scope="col">Azioni</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="carrello-righe">
                         <?php foreach ($carrello['items'] as $item): ?>
-                            <tr>
+                            <tr data-cart-item-id="<?php echo (int) $item['id']; ?>">
                                 <th scope="row"><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
                                 <td><?php echo money_eur((int) $item['unit_price_cents']); ?></td>
                                 <td>
-                                    <form class="inline-form" method="POST" action="carrello.php">
+                                    <form class="inline-form" method="POST" action="carrello.php" data-cart-update-form>
                                         <input type="hidden" name="csrf_token"
                                             value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                                         <input type="hidden" name="action" value="update_item">
                                         <input type="hidden" name="item_id" value="<?php echo (int) $item['id']; ?>">
                                         <input type="hidden" name="redirect_to" value="carrello.php">
-                                        <label class="sr-only" for="qty-<?php echo (int) $item['id']; ?>">Quantita</label>
-                                        <input id="qty-<?php echo (int) $item['id']; ?>" type="number" name="quantity" min="0" max="20"
-                                            value="<?php echo (int) $item['quantity']; ?>">
-                                        <button type="submit">Aggiorna</button>
+                                        <div class="cart-quantity-stepper" data-cart-stepper>
+                                            <button
+                                                type="button"
+                                                class="cart-quantity-button"
+                                                data-quantity-step="-1"
+                                                aria-label="Diminuisci quantita"
+                                                aria-controls="qty-display-<?php echo (int) $item['id']; ?>">
+                                                -
+                                            </button>
+                                            <span
+                                                id="qty-display-<?php echo (int) $item['id']; ?>"
+                                                class="cart-quantity-display"
+                                                data-cart-quantity-display
+                                                role="spinbutton"
+                                                tabindex="0"
+                                                aria-label="Quantita di <?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?>"
+                                                aria-valuenow="<?php echo (int) $item['quantity']; ?>"
+                                                aria-valuemin="0"
+                                                aria-valuemax="100">
+                                                <?php echo (int) $item['quantity']; ?>
+                                            </span>
+                                            <input
+                                                type="hidden"
+                                                name="quantity"
+                                                value="<?php echo (int) $item['quantity']; ?>"
+                                                data-cart-quantity-input
+                                                data-current-quantity="<?php echo (int) $item['quantity']; ?>"
+                                                data-min="0"
+                                                data-max="100">
+                                            <button
+                                                type="button"
+                                                class="cart-quantity-button"
+                                                data-quantity-step="1"
+                                                aria-label="Aumenta quantita"
+                                                aria-controls="qty-display-<?php echo (int) $item['id']; ?>">
+                                                +
+                                            </button>
+                                        </div>
+                                        <noscript>
+                                            <label class="sr-only" for="qty-<?php echo (int) $item['id']; ?>">Quantita</label>
+                                            <input id="qty-<?php echo (int) $item['id']; ?>" type="number" name="quantity" min="0" max="100" value="<?php echo (int) $item['quantity']; ?>">
+                                            <button type="submit">Aggiorna</button>
+                                        </noscript>
                                     </form>
                                 </td>
-                                <td><?php echo money_eur((int) $item['line_total_cents']); ?></td>
+                                <td data-cart-line-total><?php echo money_eur((int) $item['line_total_cents']); ?></td>
                                 <td>
-                                    <form class="inline-form" method="POST" action="carrello.php">
+                                    <form class="inline-form" method="POST" action="carrello.php" data-cart-remove-form>
                                         <input type="hidden" name="csrf_token"
                                             value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                                         <input type="hidden" name="action" value="remove_item">
                                         <input type="hidden" name="item_id" value="<?php echo (int) $item['id']; ?>">
                                         <input type="hidden" name="redirect_to" value="carrello.php">
-                                        <button type="submit">Rimuovi</button>
+                                        <button type="submit" class="cart-remove-button" aria-label="Rimuovi prodotto dal carrello">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                <path d="M9 3h6m-9 4h12m-1 0-.7 11.2a2 2 0 0 1-2 1.8H9.7a2 2 0 0 1-2-1.8L7 7m3 4v5m4-5v5" />
+                                            </svg>
+                                            <span class="sr-only">Rimuovi</span>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
@@ -77,7 +121,7 @@
             </div>
 
             <p class="totale-carrello">
-                Totale ordine: <strong><?php echo money_eur((int) $carrello['total_cents']); ?></strong>
+                Totale ordine: <strong id="carrello-totale-valore"><?php echo money_eur((int) $carrello['total_cents']); ?></strong>
             </p>
 
             <div class="azioni-carrello-footer">

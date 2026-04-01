@@ -4,7 +4,7 @@
  *
  * Variabili attese dal controller:
  *   $errori          array   Errori di validazione
- *   $valoreUsername  string  Valore username da ripopolare dopo errore
+ *   $valoreIdentificativo string Valore username/email da ripopolare dopo errore
  *   $flash           ?array  Messaggio flash opzionale
  *   $csrfToken   string  Token CSRF della sessione
  */
@@ -32,20 +32,21 @@
                     value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 
                 <div class="campo-gruppo">
-                    <label for="username">Username</label>
+                    <label for="identifier">Username o email</label>
                     <input
                         type="text"
-                        id="username"
-                        name="username"
-                        value="<?php echo $valoreUsername ?? ''; ?>"
+                        id="identifier"
+                        name="identifier"
+                        value="<?php echo $valoreIdentificativo ?? ''; ?>"
                         required
+                        aria-required="true"
                         minlength="3"
-                        maxlength="50"
+                        maxlength="160"
                         autocomplete="username"
-                        aria-describedby="username-errore"
-                        <?php echo isset($errori['username']) ? 'aria-invalid="true"' : ''; ?>>
-                    <span id="username-errore" class="campo-errore" <?php echo empty($errori['username']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['username'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                        aria-describedby="identifier-errore"
+                        <?php echo isset($errori['identifier']) ? 'aria-invalid="true"' : ''; ?>>
+                    <span id="identifier-errore" class="campo-errore" <?php echo empty($errori['identifier']) ? 'hidden' : ''; ?>>
+                        <?php echo htmlspecialchars($errori['identifier'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                     </span>
                 </div>
 
@@ -57,12 +58,21 @@
                             id="password"
                             name="password"
                             required
+                            aria-required="true"
                             autocomplete="current-password"
                             aria-describedby="password-errore"
                             <?php echo isset($errori['password']) ? 'aria-invalid="true"' : ''; ?>>
                         <button type="button" class="mostra-password" aria-pressed="false"
-                            aria-label="Mostra password">
-                            <span aria-hidden="true">Vedi</span>
+                            aria-label="Tieni premuto per mostrare la password">
+                            <svg class="icona-password icona-password-chiusa" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
+                                <circle cx="12" cy="12" r="3" />
+                                <path d="M4 4l16 16" />
+                            </svg>
+                            <svg class="icona-password icona-password-aperta" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden>
+                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
                         </button>
                     </div>
                     <span id="password-errore" class="campo-errore" <?php echo empty($errori['password']) ? 'hidden' : ''; ?>>

@@ -811,9 +811,13 @@ function cart_get_summary(PDO $pdo, int $userId, ?int $branchId = null): array
 
 function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity = 1, ?int $branchId = null): array
 {
+    $maxQuantity = 100;
+
     if ($quantity < 1) {
         return ['ok' => false, 'message' => 'Quantita non valida.'];
     }
+
+    $quantity = min($quantity, $maxQuantity);
 
     $selectedBranch = $branchId !== null ? branch_get_by_id($pdo, $branchId) : branch_get_selected($pdo);
     $branchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;
@@ -873,7 +877,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
     $existingItem = $itemStmt->fetch();
 
     if ($existingItem) {
-        $newQty = (int) $existingItem['quantity'] + $quantity;
+        $newQty = min($maxQuantity, (int) $existingItem['quantity'] + $quantity);
         $unit = (int) $existingItem['unit_price_cents'];
         $line = $unit * $newQty;
         $updateStmt = $pdo->prepare(
@@ -914,6 +918,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
 
 function cart_update_item_qty(PDO $pdo, int $userId, int $itemId, int $quantity, ?int $branchId = null): array
 {
+    $maxQuantity = 100;
     $active = cart_get_active_row($pdo, $userId);
     if ($active === null) {
         return ['ok' => false, 'message' => 'Carrello non trovato.'];
@@ -946,6 +951,8 @@ function cart_update_item_qty(PDO $pdo, int $userId, int $itemId, int $quantity,
         $deleteStmt->execute(['id' => $itemId]);
         return ['ok' => true, 'message' => 'Prodotto rimosso dal carrello.'];
     }
+
+    $quantity = min($quantity, $maxQuantity);
 
     $unit = (int) $item['unit_price_cents'];
     $line = $unit * $quantity;

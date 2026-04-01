@@ -9,10 +9,45 @@
  */
 ?>
 
-<section aria-labelledby="titolo-area-personale">
+<?php
+$numeroOrdini = count($orders);
+$ultimoOrdine = $orders[0] ?? null;
+?>
+
+<section class="account-page" aria-labelledby="titolo-area-personale">
     <div class="contenitore">
-        <h1 id="titolo-area-personale">Area personale</h1>
-        <p>Ciao <strong><?php echo htmlspecialchars($utente['username'], ENT_QUOTES, 'UTF-8'); ?></strong>.</p>
+        <div class="account-hero-card" aria-labelledby="titolo-area-personale">
+            <div class="account-hero-copy">
+                <span class="home-eyebrow">Il tuo spazio SmashBurger</span>
+                <h1 id="titolo-area-personale">Area personale</h1>
+                <p class="account-hero-text">
+                    Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout piu pulito e immediato.
+                </p>
+                <div class="account-action-row">
+                    <a class="bottone-primario" href="profilo.php">Gestisci account</a>
+                    <a class="bottone-secondario" href="carrello.php">Apri il carrello</a>
+                </div>
+            </div>
+
+            <aside class="account-summary-box" aria-labelledby="titolo-riepilogo-personale">
+                <h2 id="titolo-riepilogo-personale">In breve</h2>
+                <ul class="account-summary-list">
+                    <li><span>Username</span><strong><?php echo htmlspecialchars($utente['username'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                    <li><span>Email</span><strong><?php echo htmlspecialchars((string) $utente['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                    <li><span>Ordini totali</span><strong><?php echo (int) $numeroOrdini; ?></strong></li>
+                    <li>
+                        <span><?php echo $ultimoOrdine !== null ? 'Ultimo ordine' : 'Prossimo passo'; ?></span>
+                        <strong>
+                            <?php if ($ultimoOrdine !== null): ?>
+                                <?php echo htmlspecialchars((string) $ultimoOrdine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php else: ?>
+                                Scegli il tuo primo menu
+                            <?php endif; ?>
+                        </strong>
+                    </li>
+                </ul>
+            </aside>
+        </div>
 
         <?php if (!empty($flash)): ?>
             <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
@@ -20,48 +55,76 @@
             </div>
         <?php endif; ?>
 
-        <p>
-            <a href="carrello.php">Vai al carrello</a> |
-            <a href="prodotti.php">Sfoglia il catalogo</a>
-        </p>
-
-        <h2>Storico ordini</h2>
+        <div class="account-section-head">
+            <div>
+                <span class="account-panel-kicker">Ordini</span>
+                <h2>Storico ordini</h2>
+            </div>
+            <p class="checkout-muted">Tieni sotto controllo stato, ritiro e dettagli di ogni ordine in un colpo d'occhio.</p>
+        </div>
 
         <?php if (empty($orders)): ?>
-            <p>Non hai ancora effettuato ordini.</p>
+            <article class="checkout-card account-empty-state">
+                <h3>Nessun ordine ancora</h3>
+                <p>Quando effettuerai il primo acquisto troverai qui tutti i dettagli, dal riepilogo prodotti allo stato del pagamento.</p>
+                <div class="account-empty-actions">
+                    <a class="bottone-primario" href="prodotti.php">Inizia dal catalogo</a>
+                    <a class="bottone-secondario" href="sedi.php">Scegli una sede</a>
+                </div>
+            </article>
         <?php else: ?>
-            <?php foreach ($orders as $ordine): ?>
-                <article class="ordine-card" aria-labelledby="ordine-<?php echo (int) $ordine['id']; ?>">
-                    <h3 id="ordine-<?php echo (int) $ordine['id']; ?>">
-                        Ordine <?php echo htmlspecialchars($ordine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
-                    </h3>
-                    <p>
-                        Stato: <strong><?php echo htmlspecialchars($ordine['order_status'], ENT_QUOTES, 'UTF-8'); ?></strong> |
-                        Pagamento: <strong><?php echo htmlspecialchars($ordine['payment_status'], ENT_QUOTES, 'UTF-8'); ?></strong> |
-                        Metodo: <strong><?php echo htmlspecialchars($ordine['payment_method'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                    </p>
-                    <p>
-                        Tipo: <?php echo htmlspecialchars($ordine['fulfillment_type'], ENT_QUOTES, 'UTF-8'); ?> |
-                        Sede: <strong><?php echo htmlspecialchars($ordine['branch_name_snapshot'], ENT_QUOTES, 'UTF-8'); ?></strong> |
-                        Totale: <strong><?php echo money_eur((int) $ordine['total_cents']); ?></strong>
-                    </p>
+            <div class="account-orders-grid">
+                <?php foreach ($orders as $ordine): ?>
+                    <article class="ordine-card" aria-labelledby="ordine-<?php echo (int) $ordine['id']; ?>">
+                        <div class="ordine-card-head">
+                            <div>
+                                <p class="ordine-card-eyebrow">Ordine</p>
+                                <h3 id="ordine-<?php echo (int) $ordine['id']; ?>">
+                                    <?php echo htmlspecialchars($ordine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
+                                </h3>
+                            </div>
+                            <strong class="ordine-card-total"><?php echo money_eur((int) $ordine['total_cents']); ?></strong>
+                        </div>
 
-                    <?php if (!empty($ordine['pickup_at'])): ?>
-                        <p>Ritiro previsto: <?php echo htmlspecialchars((string) $ordine['pickup_at'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <?php endif; ?>
-
-                    <?php if (!empty($ordine['items'])): ?>
-                        <ul class="riepilogo-lista">
-                            <?php foreach ($ordine['items'] as $item): ?>
-                                <li>
-                                    <span><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity']; ?></span>
-                                    <strong><?php echo money_eur((int) $item['line_total_cents']); ?></strong>
-                                </li>
-                            <?php endforeach; ?>
+                        <ul class="ordine-pill-list" aria-label="Stato ordine">
+                            <li>Stato: <strong><?php echo htmlspecialchars($ordine['order_status'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                            <li>Pagamento: <strong><?php echo htmlspecialchars($ordine['payment_status'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                            <li>Metodo: <strong><?php echo htmlspecialchars($ordine['payment_method'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
                         </ul>
-                    <?php endif; ?>
-                </article>
-            <?php endforeach; ?>
+
+                        <dl class="ordine-card-meta">
+                            <div>
+                                <dt>Ritiro</dt>
+                                <dd><?php echo htmlspecialchars($ordine['fulfillment_type'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                            </div>
+                            <div>
+                                <dt>Sede</dt>
+                                <dd><?php echo htmlspecialchars($ordine['branch_name_snapshot'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                            </div>
+                            <div>
+                                <dt>Ritiro previsto</dt>
+                                <dd>
+                                    <?php echo !empty($ordine['pickup_at']) ? htmlspecialchars((string) $ordine['pickup_at'], ENT_QUOTES, 'UTF-8') : 'Da definire'; ?>
+                                </dd>
+                            </div>
+                        </dl>
+
+                        <?php if (!empty($ordine['items'])): ?>
+                            <div class="ordine-card-items">
+                                <h4>Dettaglio prodotti</h4>
+                                <ul class="riepilogo-lista">
+                                    <?php foreach ($ordine['items'] as $item): ?>
+                                        <li>
+                                            <span><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity']; ?></span>
+                                            <strong><?php echo money_eur((int) $item['line_total_cents']); ?></strong>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
+                    </article>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
     </div>
 </section>
