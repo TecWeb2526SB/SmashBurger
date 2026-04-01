@@ -39,7 +39,7 @@ $csrfToken = csrf_token();
             
             <div class="hero-panel-wrap">
                 <div class="hero-panel">
-                    <h3>Ordinare è semplice</h3>
+                    <h2>Ordinare è semplice</h2>
                     <p>Scegli i tuoi prodotti preferiti, indica l'orario di ritiro e paga in sicurezza online.</p>
                     <div class="hero-panel-note">
                         Disponibile in tutte le nostre <a href="sedi.php">sedi</a>.
@@ -56,7 +56,7 @@ $csrfToken = csrf_token();
         
         <div class="menu-preview-grid">
             <article class="menu-preview-card" aria-labelledby="best-1">
-                <h3>Classic Smash</h3>
+                <h3 id="best-1">Classic Smash</h3>
                 <p>Doppio smash, cheddar, cipolla, salsa signature.</p>
                 <span class="prezzo">10,90 EUR</span>
                 
@@ -73,7 +73,7 @@ $csrfToken = csrf_token();
             </article>
 
             <article class="menu-preview-card" aria-labelledby="best-2">
-                <h3>Bacon Smash</h3>
+                <h3 id="best-2">Bacon Smash</h3>
                 <p>Doppio smash con bacon croccante e cheddar.</p>
                 <span class="prezzo">12,50 EUR</span>
                 
@@ -90,7 +90,7 @@ $csrfToken = csrf_token();
             </article>
 
             <article class="menu-preview-card" aria-labelledby="best-3">
-                <h3>Onion Smash</h3>
+                <h3 id="best-3">Onion Smash</h3>
                 <p>Smash burger con cipolle caramellate alla piastra.</p>
                 <span class="prezzo">11,50 EUR</span>
                 

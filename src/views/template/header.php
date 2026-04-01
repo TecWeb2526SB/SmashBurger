@@ -83,7 +83,7 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                                 <path d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" aria-labelledby="sede-dropdown-toggle" hidden>
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" hidden>
                             <p class="sede-dropdown-titolo">Scegli la tua sede</p>
                             <ul>
                                 <?php foreach ($headerAllBranches as $hb): 
