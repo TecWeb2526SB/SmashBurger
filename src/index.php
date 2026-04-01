@@ -1,23 +1,25 @@
-<!DOCTYPE html>
-<html lang="it">
-    <head>
-        <title>TecWeb</title>
-        <link rel="icon" href="">
+<?php
+/**
+ * index.php: Entry point principale (Controller) per la homepage di SmashBurger.
+ * Carica le risorse globali, le view e i template necessari.
+ */
 
-        <meta charset="utf-8">
+// 1. Includi il file delle risorse centrale
+require_once __DIR__ . '/includes/resources.php';
 
-        <link rel="stylesheet" href="styles/stile.css" media="screen"> 
-    </head>
-    <body>
-        <header>
+$selectedBranch = branch_get_selected($pdo);
 
-        </header>
-        <main id="content">
-            <h1>Start</h1>
-        </main>
-        <footer>
+// 2. Definizione variabili specifiche per la pagina
+$pageTitle = 'Home - Smash Burger Original | Il vero gusto dello smash';
+$pageDescription = 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina online e ritira in sede.';
+$isHomepage = true;       // Usa <h1> per il brand solo nella home
+$currentPage = 'index.php'; // Indica la voce attiva nel menu principale
 
-        </footer>
-        <script src="scripts/script.js"></script>
-    </body>
-</html>
+// 3. Caricamento della struttura della pagina (Template)
+include_once __DIR__ . '/views/template/header.php';
+
+// 4. Caricamento del contenuto specifico (View)
+include_once __DIR__ . '/views/homepage.php';
+
+// 5. Caricamento del footer comune
+include_once __DIR__ . '/views/template/footer.php';

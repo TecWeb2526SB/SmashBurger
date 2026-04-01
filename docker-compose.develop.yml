@@ -1,0 +1,76 @@
+services:
+  # 1. Apache + PHP: Web Server integrato
+  web:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: webapp_apache
+    env_file:
+      - .env
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    networks:
+      - frontend_net
+      - backend_net
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+      - mailpit
+
+  # 2. Database SQL (MariaDB 11)
+  db:
+    image: mariadb:11
+    container_name: webapp_mariadb
+    restart: unless-stopped
+    expose:
+      - "3306"
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-progetto_db}
+      MARIADB_USER: ${DB_USER:-utente_fallback}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-password_fallback_sicura_123}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password_sicura_123}
+    networks:
+      - backend_net
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./src/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+
+  # 3. Mailpit: Simulatore Email
+  mailpit:
+    image: axllent/mailpit
+    container_name: webapp_mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    expose:
+      - "1025"
+    networks:
+      - frontend_net
+      - backend_net
+
+  # 4. phpMyAdmin: Interfaccia Gestione Database
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: webapp_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "${PHPMYADMIN_PORT:-8081}:80"
+    environment:
+      PMA_HOST: db
+      PMA_ARBITRARY: 1
+    networks:
+      - frontend_net
+      - backend_net
+    depends_on:
+      - db
+
+networks:
+  frontend_net:
+    driver: bridge
+  backend_net:
+    driver: bridge
+    internal: true
+
+volumes:
+  db_data:

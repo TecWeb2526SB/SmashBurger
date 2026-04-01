@@ -1,0 +1,158 @@
+<?php
+/**
+ * header.php: Intestazione comune a tutte le pagine.
+ */
+
+$vResources = file_exists(__DIR__ . '/../../styles/resources.css')
+    ? filemtime(__DIR__ . '/../../styles/resources.css')
+    : time();
+
+$headerSelectedBranch = null;
+$headerAllBranches = [];
+$headerCartCount = 0;
+
+if (isset($pdo) && $pdo instanceof \PDO) {
+    if (function_exists('branch_get_selected')) {
+        try {
+            $headerSelectedBranch = branch_get_selected($pdo);
+            if (function_exists('branches_get_all')) {
+                $headerAllBranches = branches_get_all($pdo);
+            }
+        } catch (\Throwable $e) {
+            $headerSelectedBranch = null;
+        }
+    }
+    
+    if (function_exists('is_logged_in') && is_logged_in()) {
+        $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
+        $headerCartCount = $headerCart['items_count'] ?? 0;
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="it" xml:lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($pageTitle ?? 'Smash Burger Original'); ?></title>
+    <meta name="description"
+        content="<?php echo htmlspecialchars($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>">
+    <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away">
+    <meta name="color-scheme" content="light dark">
+
+    <script>
+        (function () {
+            var t = localStorage.getItem('smashburger-tema');
+            if (t === 'scuro' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('tema-scuro');
+            } else if (t === 'chiaro') {
+                document.documentElement.classList.add('tema-chiaro');
+            }
+        }());
+    </script>
+
+    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
+    <link rel="shortcut icon" href="images/favicon.ico">
+</head>
+
+<body data-cart-count="<?php echo $headerCartCount; ?>">
+    <header>
+        <div class="contenitore">
+            <div class="brand-wrap">
+                <span class="brand">
+                    <a href="index.php">Smash Burger</a>
+                </span>
+
+                <?php if (!empty($headerSelectedBranch)): ?>
+                    <div class="header-sede-dropdown">
+                        <button id="sede-dropdown-toggle" class="brand-sede" type="button" aria-expanded="false" aria-haspopup="true">
+                            <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
+                            <svg class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M6 9l6 6 6-6" />
+                            </svg>
+                        </button>
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" aria-labelledby="sede-dropdown-toggle">
+                            <p class="sede-dropdown-titolo">Scegli la tua sede</p>
+                            <ul>
+                                <?php foreach ($headerAllBranches as $hb): 
+                                    $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
+                                ?>
+                                    <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
+                                        <a href="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>" 
+                                           class="sede-opzione"
+                                           data-sede-slug="<?php echo htmlspecialchars($hb['slug'], ENT_QUOTES, 'UTF-8'); ?>"
+                                           data-sede-name="<?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <strong><?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                            <span class="sede-indirizzo"><?php echo htmlspecialchars($hb['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <?php if ($isCurrent): ?>
+                                                <span class="badge-corrente">Attiva</span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principale">
+                Menu
+            </button>
+
+            <nav id="menu-principale" aria-label="Navigazione principale">
+                <ul>
+                    <?php foreach ($navItems as $label => $href):
+                        $isActive = isset($currentPage) && $currentPage === $href;
+                        $isCart = ($label === 'Carrello');
+                    ?>
+                        <li class="<?php echo $isActive ? 'attivo' : ''; ?>" <?php echo $isActive ? 'aria-current="page"' : ''; ?>>
+                            <?php if ($isActive): ?>
+                                <span class="nav-item-wrap">
+                                    <?php echo htmlspecialchars($label); ?>
+                                    <?php if ($isCart): ?>
+                                        <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
+                                            <?php echo $headerCartCount; ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </span>
+                            <?php else: ?>
+                                <a href="<?php echo htmlspecialchars($href); ?>" class="nav-item-wrap">
+                                    <?php echo htmlspecialchars($label); ?>
+                                    <?php if ($isCart): ?>
+                                        <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
+                                            <?php echo $headerCartCount; ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </a>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </nav>
+
+            <div class="header-azioni">
+                <button id="theme-toggle" type="button" aria-pressed="false"
+                    aria-label="Attiva modalità scura">Cambia tema</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modal Cambio Sede -->
+    <div id="modal-cambio-sede" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-titolo">
+        <div class="modal-content">
+            <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
+            <p class="modal-messaggio">
+                Hai già dei prodotti nel carrello per un'altra sede. 
+                Cambiando sede ora, il tuo carrello attuale verrà svuotato. Vuoi procedere?
+            </p>
+            <div class="modal-azioni">
+                <button type="button" class="modal-bottone modal-bottone-annulla" id="modal-annulla">Annulla</button>
+                <button type="button" class="modal-bottone modal-bottone-conferma" id="modal-conferma">Sì, svuota e cambia</button>
+            </div>
+        </div>
+    </div>
+
+    <main id="content">
+        <?php include_once __DIR__ . '/breadcrumb.php'; ?>
