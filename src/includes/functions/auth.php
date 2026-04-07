@@ -285,10 +285,18 @@ function auth_get_branch_managers(PDO $pdo): array
 function auth_get_branch_manager_by_id(PDO $pdo, int $userId): ?array
 {
     $stmt = $pdo->prepare(
-        'SELECT id, username, email, role, managed_branch_id, is_active
-         FROM users
-         WHERE id = :id
-           AND role = "branch_manager"
+        'SELECT
+            u.id,
+            u.username,
+            u.email,
+            u.role,
+            u.managed_branch_id,
+            u.is_active,
+            b.name AS managed_branch_name
+         FROM users u
+         LEFT JOIN branches b ON b.id = u.managed_branch_id
+         WHERE u.id = :id
+           AND u.role = "branch_manager"
          LIMIT 1'
     );
     $stmt->execute(['id' => $userId]);
@@ -296,7 +304,6 @@ function auth_get_branch_manager_by_id(PDO $pdo, int $userId): ?array
 
     return $row ?: null;
 }
-
 function auth_branch_manager_exists_for_branch(PDO $pdo, int $branchId, ?int $excludeUserId = null): bool
 {
     $sql = 'SELECT id
@@ -388,4 +395,10 @@ function auth_toggle_branch_manager(PDO $pdo, int $userId, bool $isActive): void
         'is_active' => $isActive ? 1 : 0,
         'id' => $userId,
     ]);
+}
+
+function auth_delete_user(PDO $pdo, int $userId): void
+{
+    $stmt = $pdo->prepare('DELETE FROM users WHERE id = :id LIMIT 1');
+    $stmt->execute(['id' => $userId]);
 }

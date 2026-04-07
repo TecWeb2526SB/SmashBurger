@@ -2190,6 +2190,8 @@ html.tema-scuro .account-summary-box {
 
 .admin-section {
     scroll-margin-top: 6rem;
+    display: grid;
+    gap: var(--spazio-lg);
 }
 
 .admin-kpi-grid,
@@ -2254,7 +2256,7 @@ html.tema-scuro .account-summary-box {
 .admin-page .admin-branch-card h4,
 .admin-page .admin-bar-value,
 .admin-page .admin-bar-label strong {
-    color: #f3f3f3;
+    color: var(--colore-testo);
 }
 
 .admin-branch-switcher {
@@ -2279,7 +2281,7 @@ html.tema-scuro .account-summary-box {
 
 .admin-branch-card.is-selected {
     border-color: rgba(192, 57, 43, 0.46);
-    background: linear-gradient(180deg, rgba(192, 57, 43, 0.18), #111111);
+    background: linear-gradient(180deg, rgba(192, 57, 43, 0.18), var(--colore-sfondo));
 }
 
 .admin-branch-card h4 {
@@ -2378,7 +2380,7 @@ html.tema-scuro .account-summary-box {
 
 .admin-stack-list {
     display: grid;
-    gap: var(--spazio-sm);
+    gap: var(--spazio-md);
 }
 
 .admin-detail-card {

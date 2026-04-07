@@ -854,6 +854,11 @@ function inizializzaHeaderSede() {
             title: 'Uscire dall\'account?',
             message: 'Sei sicuro di voler uscire dal tuo account?',
             confirm: 'Sì, esci'
+        },
+        delete: {
+            title: 'Eliminare credenziali?',
+            message: 'Sei sicuro di voler eliminare definitivamente queste credenziali? L\'operazione non è reversibile.',
+            confirm: 'Sì, elimina'
         }
     };
 
@@ -1054,6 +1059,22 @@ function inizializzaHeaderSede() {
             apriModal();
         });
     }
+
+    // Gestione universale per tasti di cancellazione che richiedono modal
+    document.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('[data-confirm-delete="true"]');
+        if (!deleteBtn) return;
+
+        e.preventDefault();
+        const form = deleteBtn.closest('form');
+        if (!form) return;
+
+        impostaContenutoModale('delete');
+        pendingModalAction = async function() {
+            form.submit();
+        };
+        apriModal();
+    });
 
     document.addEventListener('click', function (e) {
         if (hasBranchDropdown && !menu.contains(e.target) && !toggle.contains(e.target)) {

@@ -34,6 +34,22 @@
  *   $branchManagers
  */
 
+$csrfToken = $csrfToken ?? '';
+$inventoryItems = $inventoryItems ?? [];
+$kpis = $kpis ?? [];
+$topProducts = $topProducts ?? [];
+$salesTrend = $salesTrend ?? [];
+$categoryMix = $categoryMix ?? [];
+$templates = $templates ?? [];
+$supplyOrders = $supplyOrders ?? [];
+$policies = $policies ?? [];
+$recentCustomerOrders = $recentCustomerOrders ?? [];
+$branchComparison = $branchComparison ?? [];
+$globalCatalog = $globalCatalog ?? [];
+$categories = $categories ?? [];
+$branchManagers = $branchManagers ?? [];
+$backgroundMessages = $backgroundMessages ?? [];
+
 $maxTrendRevenue = 0;
 foreach ($salesTrend as $trendItem) {
     $maxTrendRevenue = max($maxTrendRevenue, (int) $trendItem['revenue_cents']);
@@ -1003,115 +1019,153 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
         <?php endif; ?>
 
         <?php if ($currentSection === 'team' && $canManageBranchManagers): ?>
-        <?php if ($canManageBranchManagers): ?>
             <section id="sezione-team" class="admin-section" aria-labelledby="titolo-team-admin">
                 <h2 id="titolo-team-admin" class="sr-only">Manager di filiale</h2>
 
-                <div class="checkout-card admin-panel-card">
-                    <div class="admin-inline-actions">
-                        <a class="bottone-primario" href="admin_team.php?modalita=nuovo">Nuovo manager</a>
-                        <?php if ($teamMode !== 'list'): ?>
-                            <a class="bottone-secondario" href="admin_team.php">Torna all elenco</a>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details' || $teamMode === 'review'): ?>
+                    <div class="checkout-shell">
+                        <div class="checkout-main">
+                            <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details'): ?>
+                                <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'admin_team.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-manager-form">
+                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="hidden" name="action" value="save_details">
+                                    <input type="hidden" name="manager_id" value="<?php echo (int) ($draft['id'] ?? 0); ?>">
 
-                <?php if ($teamMode !== 'list'): ?>
-                    <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'admin_team.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-manager-form">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="save_branch_manager">
-                        <?php if ($teamMode === 'edit' && $editingManager !== null): ?>
-                            <input type="hidden" name="manager_id" value="<?php echo (int) $editingManager['id']; ?>">
-                        <?php endif; ?>
+                                    <div class="account-panel-head">
+                                        <span class="account-panel-kicker">Passo 1 di 2</span>
+                                        <h3 id="titolo-manager-form"><?php echo ($draft['id'] ?? 0) > 0 ? 'Modifica credenziali manager' : 'Crea nuove credenziali manager'; ?></h3>
+                                        <p class="checkout-muted">Inserisci i dati principali. Potrai rivedere tutto nel passaggio successivo.</p>
+                                    </div>
 
-                        <div class="account-panel-head">
-                            <span class="account-panel-kicker"><?php echo $teamMode === 'edit' ? 'Modifica manager' : 'Nuovo manager'; ?></span>
-                            <h3 id="titolo-manager-form"><?php echo $teamMode === 'edit' ? 'Aggiorna credenziali di filiale' : 'Crea credenziali di filiale'; ?></h3>
-                            <p class="checkout-muted">Puoi usare il pattern richiesto: <code>manager.padova</code> / <code>manager_padova</code>.</p>
-                        </div>
-
-                        <div class="admin-inline-grid">
-                            <div class="campo-gruppo">
-                                <label for="manager-username">Username</label>
-                                <input type="text" id="manager-username" name="username" required aria-required="true" maxlength="50" value="<?php echo htmlspecialchars((string) ($editingManager['username'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                            </div>
-                            <div class="campo-gruppo">
-                                <label for="manager-email">Email</label>
-                                <input type="email" id="manager-email" name="email" required aria-required="true" maxlength="160" value="<?php echo htmlspecialchars((string) ($editingManager['email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                            </div>
-                        </div>
-
-                        <div class="admin-inline-grid">
-                            <div class="campo-gruppo">
-                                <label for="manager-password"><?php echo $teamMode === 'edit' ? 'Nuova password' : 'Password'; ?></label>
-                                <input type="password" id="manager-password" name="password" <?php echo $teamMode === 'create' ? 'required aria-required="true"' : ''; ?> minlength="8" autocomplete="new-password" placeholder="<?php echo $teamMode === 'edit' ? 'Lascia vuoto per non cambiarla' : 'manager_padova'; ?>">
-                            </div>
-                            <div class="campo-gruppo">
-                                <label for="manager-branch">Filiale</label>
-                                <select id="manager-branch" name="managed_branch_id" required aria-required="true">
-                                    <option value="">Seleziona la filiale</option>
-                                    <?php foreach ($allBranches as $branch): ?>
-                                        <option value="<?php echo (int) $branch['id']; ?>" <?php echo (int) $branch['id'] === (int) ($editingManager['managed_branch_id'] ?? 0) ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars((string) $branch['name'], ENT_QUOTES, 'UTF-8'); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="checkout-navigation checkout-navigation--solo-azione">
-                            <button class="bottone-primario" type="submit"><?php echo $teamMode === 'edit' ? 'Salva credenziali' : 'Crea manager'; ?></button>
-                        </div>
-                    </form>
-                <?php endif; ?>
-
-                <article class="checkout-card admin-panel-card">
-                    <div class="account-panel-head">
-                        <span class="account-panel-kicker">Manager correnti</span>
-                        <h3>Credenziali attive o revocate</h3>
-                    </div>
-
-                    <?php if (empty($branchManagers)): ?>
-                        <p class="checkout-muted">Nessun manager di filiale configurato.</p>
-                    <?php else: ?>
-                        <div class="admin-stack-list">
-                            <?php foreach ($branchManagers as $manager): ?>
-                                <article class="admin-detail-card">
-                                    <div class="ordine-card-head">
-                                        <div>
-                                            <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) ($manager['managed_branch_name'] ?? 'Filiale non assegnata'), ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <h4><?php echo htmlspecialchars((string) $manager['username'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                    <div class="admin-form-grid">
+                                        <div class="campo-gruppo">
+                                            <label for="manager-username">Username</label>
+                                            <input type="text" id="manager-username" name="username" required aria-required="true" maxlength="50" value="<?php echo htmlspecialchars((string) ($draft['username'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                                         </div>
-                                        <span class="admin-status-pill <?php echo (int) $manager['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
-                                            <?php echo (int) $manager['is_active'] === 1 ? 'Attivo' : 'Revocato'; ?>
-                                        </span>
+                                        <div class="campo-gruppo">
+                                            <label for="manager-email">Email</label>
+                                            <input type="email" id="manager-email" name="email" required aria-required="true" maxlength="160" value="<?php echo htmlspecialchars((string) ($draft['email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-form-grid">
+                                        <div class="campo-gruppo">
+                                            <label for="manager-password"><?php echo ($draft['id'] ?? 0) > 0 ? 'Nuova password (opzionale)' : 'Password'; ?> <span class="campo-suggerimento">(minimo 8 caratteri)</span></label>
+                                            <input type="password" id="manager-password" name="password" <?php echo ($draft['id'] ?? 0) === 0 ? 'required aria-required="true"' : ''; ?> minlength="8" autocomplete="new-password" aria-describedby="manager-password-suggerimento">
+                                            <p id="manager-password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, ! @ # $ % &amp;</p>
+                                        </div>
+                                        <div class="campo-gruppo">
+                                            <label for="manager-branch">Filiale assegnata</label>
+                                            <select id="manager-branch" name="managed_branch_id" required aria-required="true">
+                                                <option value="">Seleziona la filiale</option>
+                                                <?php foreach ($allBranches as $branch): ?>
+                                                    <option value="<?php echo (int) $branch['id']; ?>" <?php echo (int) $branch['id'] === (int) ($draft['managed_branch_id'] ?? 0) ? 'selected' : ''; ?>>
+                                                        <?php echo htmlspecialchars((string) $branch['name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="checkout-navigation">
+                                        <a class="bottone-secondario" href="admin_team.php?reset=1">&larr; Annulla</a>
+                                        <button class="bottone-primario" type="submit">Vai al riepilogo &rarr;</button>
+                                    </div>
+                                </form>
+                            <?php elseif ($teamMode === 'review'): ?>
+                                <div class="checkout-card checkout-form">
+                                    <div class="account-panel-head">
+                                        <span class="account-panel-kicker">Passo 2 di 2</span>
+                                        <h3>Riepilogo credenziali</h3>
+                                        <p class="checkout-muted">Controlla la correttezza dei dati prima di confermare l'operazione.</p>
                                     </div>
 
                                     <ul class="riepilogo-lista">
-                                        <li><span>Email</span><strong><?php echo htmlspecialchars((string) $manager['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Filiale</span><strong><?php echo htmlspecialchars((string) ($manager['managed_branch_name'] ?? 'Non assegnata'), ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Credenziale standard</span><strong><?php echo htmlspecialchars((string) $manager['username'], ENT_QUOTES, 'UTF-8'); ?> / manager_<?php echo htmlspecialchars((string) ($manager['managed_branch_slug'] ?? 'filiale'), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Username</span><strong><?php echo htmlspecialchars((string) $draft['username'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Email</span><strong><?php echo htmlspecialchars((string) $draft['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Filiale</span><strong><?php echo htmlspecialchars((string) $draft['managed_branch_name'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Password</span><strong><?php echo ($draft['password'] !== '') ? '******** (Modificata)' : 'Invariata'; ?></strong></li>
                                     </ul>
 
-                                    <div class="admin-inline-actions">
-                                        <a class="bottone-secondario" href="admin_team.php?modifica=<?php echo (int) $manager['id']; ?>">Modifica credenziali</a>
-                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'admin_team.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
+                                    <div class="checkout-navigation">
+                                        <a class="bottone-secondario" href="admin_team.php?<?php echo ($draft['id'] > 0) ? 'modifica='.$draft['id'] : 'modalita=nuovo'; ?>">&larr; Torna alla modifica</a>
+                                        <form method="POST" action="admin_team.php" class="admin-inline-form">
                                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                                            <input type="hidden" name="action" value="toggle_branch_manager">
-                                            <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
-                                            <input type="hidden" name="is_active" value="<?php echo (int) $manager['is_active'] === 1 ? '0' : '1'; ?>">
-                                            <button class="bottone-secondario" type="submit">
-                                                <?php echo (int) $manager['is_active'] === 1 ? 'Revoca accesso' : 'Riattiva accesso'; ?>
-                                            </button>
+                                            <input type="hidden" name="action" value="confirm_manager">
+                                            <button class="bottone-primario" type="submit">Conferma e salva</button>
                                         </form>
                                     </div>
-                                </article>
-                            <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
-                </article>
+
+                        <aside class="checkout-card account-side" aria-labelledby="titolo-note-team">
+                            <h2 id="titolo-note-team">Suggerimenti</h2>
+                            <ul class="riepilogo-lista">
+                                <li><span>Password</span><strong>8+ caratteri</strong></li>
+                                <li><span>Ammessi</span><strong>lettere, numeri, ! @ # $ % &amp;</strong></li>
+                            </ul>
+                            <p class="checkout-muted account-note">I manager associati a una filiale possono gestire il catalogo, l'inventario e le forniture di quella sede.</p>
+                        </aside>
+                    </div>
+                <?php else: ?>
+                    <article class="checkout-card admin-panel-card">
+                        <div class="account-panel-head">
+                            <div class="admin-inline-actions" style="justify-content: space-between; width: 100%;">
+                                <div>
+                                    <span class="account-panel-kicker">Manager correnti</span>
+                                    <h3>Credenziali attive o revocate</h3>
+                                </div>
+                                <a class="bottone-primario" href="admin_team.php?modalita=nuovo&amp;reset=1">Nuovo manager</a>
+                            </div>
+                        </div>
+
+                        <?php if (empty($branchManagers)): ?>
+                            <p class="checkout-muted">Nessun manager di filiale configurato.</p>
+                        <?php else: ?>
+                            <div class="admin-stack-list">
+                                <?php foreach ($branchManagers as $manager): ?>
+                                    <article class="admin-detail-card">
+                                        <div class="ordine-card-head">
+                                            <div>
+                                                <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) ($manager['managed_branch_name'] ?? 'Filiale non assegnata'), ENT_QUOTES, 'UTF-8'); ?></p>
+                                                <h4><?php echo htmlspecialchars((string) $manager['username'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            </div>
+                                            <span class="admin-status-pill <?php echo (int) $manager['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
+                                                <?php echo (int) $manager['is_active'] === 1 ? 'Attivo' : 'Revocato'; ?>
+                                            </span>
+                                        </div>
+
+                                        <ul class="riepilogo-lista">
+                                            <li><span>Email</span><strong><?php echo htmlspecialchars((string) $manager['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                            <li><span>Filiale</span><strong><?php echo htmlspecialchars((string) ($manager['managed_branch_name'] ?? 'Non assegnata'), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        </ul>
+
+                                        <div class="admin-inline-actions">
+                                            <a class="bottone-secondario" href="admin_team.php?modifica=<?php echo (int) $manager['id']; ?>&amp;reset=1">Modifica credenziali</a>
+                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'admin_team.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                <input type="hidden" name="action" value="toggle_branch_manager">
+                                                <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
+                                                <input type="hidden" name="is_active" value="<?php echo (int) $manager['is_active'] === 1 ? '0' : '1'; ?>">
+                                                <button class="bottone-secondario" type="submit">
+                                                    <?php echo (int) $manager['is_active'] === 1 ? 'Revoca accesso' : 'Riattiva accesso'; ?>
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'admin_team.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                <input type="hidden" name="action" value="delete_branch_manager">
+                                                <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
+                                                <button class="bottone-primario" type="submit" data-confirm-delete="true">Elimina credenziali</button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </article>
+                <?php endif; ?>
             </section>
-        <?php endif; ?>
         <?php endif; ?>
 
         <?php if ($currentSection === 'ricevute'): ?>

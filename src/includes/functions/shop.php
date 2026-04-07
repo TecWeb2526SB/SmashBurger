@@ -597,11 +597,14 @@ function catalog_get(PDO $pdo, ?int $branchId = null): array
                     LEFT JOIN branch_products bp
                         ON bp.product_id = p.id AND bp.branch_id = :branch_id
                     LEFT JOIN branch_inventory bi
-                        ON bi.product_id = p.id AND bi.branch_id = :branch_id
+                        ON bi.product_id = p.id AND bi.branch_id = :branch_id_2
                     ORDER BY p.category_id ASC, p.name ASC';
 
     $productsStmt = $pdo->prepare($productsSql);
-    $productsStmt->execute(['branch_id' => $branchId]);
+    $productsStmt->execute([
+        'branch_id' => $branchId,
+        'branch_id_2' => $branchId
+    ]);
 
     $byCategory = [];
     foreach ($productsStmt->fetchAll() as $product) {

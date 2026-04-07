@@ -148,15 +148,6 @@ $ultimoOrdine = $orders[0] ?? null;
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-        <?php elseif (!empty($canAccessAdminPanel)): ?>
-            <article class="checkout-card account-empty-state">
-                <h3>Area interna attiva</h3>
-                <p>Per i profili admin e manager lo storico ordini cliente non viene mostrato qui. Le attivita operative e analitiche sono raccolte nel pannello controllo.</p>
-                <div class="account-empty-actions">
-                    <a class="bottone-primario" href="admin.php">Apri il controllo</a>
-                    <a class="bottone-secondario" href="profilo.php">Gestisci account</a>
-                </div>
-            </article>
-        <?php endif; ?>
+    <?php endif; ?>
     </div>
 </section>

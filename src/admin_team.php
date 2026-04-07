@@ -21,14 +21,21 @@ foreach ($sectionLinks as $sectionLink) {
 $csrfToken = csrf_token();
 $flash = null;
 $backgroundMessages = [];
-$teamMode = 'list';
+$teamMode = 'list'; // list, create_details, edit_details, review
 $editingManager = null;
+$draft = null;
 
 $requestedMode = trim((string) ($_GET['modalita'] ?? ''));
 $requestedManagerId = (int) ($_GET['modifica'] ?? 0);
+$requestedStep = trim((string) ($_GET['step'] ?? 'dettagli'));
+
+$flowKey = 'admin_team_flow';
+if (isset($_GET['reset']) && $_GET['reset'] === '1') {
+    unset($_SESSION[$flowKey]);
+}
 
 if ($requestedMode === 'nuovo') {
-    $teamMode = 'create';
+    $teamMode = ($requestedStep === 'riepilogo') ? 'review' : 'create_details';
 } elseif ($requestedManagerId > 0) {
     $editingManager = auth_get_branch_manager_by_id($pdo, $requestedManagerId);
     if ($editingManager === null) {
@@ -36,7 +43,31 @@ if ($requestedMode === 'nuovo') {
         header('Location: ' . ($sectionUrls['team'] ?? 'admin_team.php'));
         exit;
     }
-    $teamMode = 'edit';
+    $teamMode = ($requestedStep === 'riepilogo') ? 'review' : 'edit_details';
+}
+
+$draft = $_SESSION[$flowKey]['draft'] ?? null;
+if (!is_array($draft) && ($teamMode === 'create_details' || $teamMode === 'edit_details')) {
+    if ($editingManager !== null) {
+        $draft = [
+            'id' => $editingManager['id'],
+            'username' => $editingManager['username'],
+            'email' => $editingManager['email'],
+            'managed_branch_id' => $editingManager['managed_branch_id'],
+            'managed_branch_name' => $editingManager['managed_branch_name'],
+            'password' => '', // Non mostriamo la vecchia password
+        ];
+    } else {
+        $draft = [
+            'id' => 0,
+            'username' => '',
+            'email' => '',
+            'managed_branch_id' => '',
+            'managed_branch_name' => '',
+            'password' => '',
+        ];
+    }
+    $_SESSION[$flowKey] = ['draft' => $draft];
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -49,15 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = (string) ($_POST['action'] ?? '');
     $managerId = (int) ($_POST['manager_id'] ?? 0);
-    $redirectAfterPost = $sectionUrls['team'] ?? 'admin_team.php';
-    if ($action === 'save_branch_manager' && $managerId > 0) {
-        $redirectAfterPost .= '?modifica=' . $managerId;
-    } elseif ($action === 'save_branch_manager') {
-        $redirectAfterPost .= '?modalita=nuovo';
-    }
 
     try {
-        if ($action === 'save_branch_manager') {
+        if ($action === 'save_details') {
             $username = trim((string) ($_POST['username'] ?? ''));
             $email = auth_normalize_email((string) ($_POST['email'] ?? ''));
             $password = (string) ($_POST['password'] ?? '');
@@ -66,95 +91,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($username === '' || !auth_is_valid_username($username)) {
                 throw new RuntimeException('Username manager non valido.');
             }
-
             if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 throw new RuntimeException('Email manager non valida.');
             }
-
-            if ($branchId <= 0 || branch_get_by_id($pdo, $branchId) === null) {
+            if ($branchId <= 0) {
                 throw new RuntimeException('Seleziona una filiale valida per il manager.');
             }
+            
+            $branch = branch_get_by_id($pdo, $branchId);
+            if ($branch === null) {
+                throw new RuntimeException('Filiale non trovata.');
+            }
 
-            if ($managerId > 0) {
-                $existingManager = auth_get_branch_manager_by_id($pdo, $managerId);
-                if ($existingManager === null) {
-                    throw new RuntimeException('Manager di filiale non trovato.');
+            // Validazione duplicati immediata per feedback rapido
+            if (auth_username_exists($pdo, $username, $managerId)) {
+                throw new RuntimeException('Username gia in uso.');
+            }
+            if (auth_email_exists($pdo, $email, $managerId)) {
+                throw new RuntimeException('Email gia in uso.');
+            }
+
+            if ($managerId === 0 || $password !== '') {
+                if (mb_strlen($password) < 8) {
+                    throw new RuntimeException('La password deve contenere almeno 8 caratteri.');
                 }
-
-                if (auth_username_exists($pdo, $username, $managerId)) {
-                    throw new RuntimeException('Username gia in uso.');
+                if (!auth_is_valid_password($password)) {
+                    throw new RuntimeException('La password puo contenere solo lettere, numeri e questi simboli: ! @ # $ % &');
                 }
+            }
 
-                if (auth_email_exists($pdo, $email, $managerId)) {
-                    throw new RuntimeException('Email gia in uso.');
-                }
+            $draft = [
+                'id' => $managerId,
+                'username' => $username,
+                'email' => $email,
+                'managed_branch_id' => $branchId,
+                'managed_branch_name' => $branch['name'],
+                'password' => $password,
+            ];
+            $_SESSION[$flowKey] = ['draft' => $draft];
 
-                if (auth_branch_manager_exists_for_branch($pdo, $branchId, $managerId)) {
-                    throw new RuntimeException('Esiste gia un manager attivo associato a questa filiale.');
-                }
+            header('Location: admin_team.php?' . http_build_query(array_filter([
+                'modifica' => $managerId > 0 ? $managerId : null,
+                'modalita' => $managerId === 0 ? 'nuovo' : null,
+                'step' => 'riepilogo'
+            ])));
+            exit;
+        } elseif ($action === 'confirm_manager') {
+            if (!$draft) throw new RuntimeException('Dati sessione non trovati.');
 
-                $passwordHash = null;
-                if ($password !== '') {
-                    if (mb_strlen($password) < 8 || !auth_is_valid_password($password)) {
-                        throw new RuntimeException('Password manager non valida. Usa almeno 8 caratteri con lettere, numeri, underscore o simboli consentiti.');
-                    }
-                    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-                }
+            $passwordHash = null;
+            if ($draft['password'] !== '') {
+                $passwordHash = password_hash($draft['password'], PASSWORD_DEFAULT);
+            }
 
-                auth_update_branch_manager($pdo, $managerId, $username, $email, $branchId, $passwordHash);
+            if ($draft['id'] > 0) {
+                auth_update_branch_manager($pdo, $draft['id'], $draft['username'], $draft['email'], $draft['managed_branch_id'], $passwordHash);
                 flash_set('success', 'Credenziali manager aggiornate.');
             } else {
-                if (mb_strlen($password) < 8 || !auth_is_valid_password($password)) {
-                    throw new RuntimeException('Password manager non valida. Usa almeno 8 caratteri con lettere, numeri, underscore o simboli consentiti.');
-                }
-
-                if (auth_username_exists($pdo, $username)) {
-                    throw new RuntimeException('Username gia in uso.');
-                }
-
-                if (auth_email_exists($pdo, $email)) {
-                    throw new RuntimeException('Email gia in uso.');
-                }
-
-                if (auth_branch_manager_exists_for_branch($pdo, $branchId)) {
-                    throw new RuntimeException('Esiste gia un manager associato a questa filiale.');
-                }
-
-                auth_create_branch_manager($pdo, $username, $email, password_hash($password, PASSWORD_DEFAULT), $branchId);
+                auth_create_branch_manager($pdo, $draft['username'], $draft['email'], $passwordHash, $draft['managed_branch_id']);
                 flash_set('success', 'Manager di filiale creato con successo.');
-                $redirectAfterPost = $sectionUrls['team'] ?? 'admin_team.php';
             }
+
+            unset($_SESSION[$flowKey]);
+            header('Location: ' . ($sectionUrls['team'] ?? 'admin_team.php'));
+            exit;
         } elseif ($action === 'toggle_branch_manager') {
             $managerId = (int) ($_POST['manager_id'] ?? 0);
             $isActive = (string) ($_POST['is_active'] ?? '0') === '1';
             auth_toggle_branch_manager($pdo, $managerId, $isActive);
             flash_set('success', $isActive ? 'Manager riattivato.' : 'Credenziali manager revocate.');
-            $redirectAfterPost = $sectionUrls['team'] ?? 'admin_team.php';
-        } else {
-            throw new RuntimeException('Azione manager non riconosciuta.');
+            header('Location: ' . ($sectionUrls['team'] ?? 'admin_team.php'));
+            exit;
+        } elseif ($action === 'delete_branch_manager') {
+            $managerId = (int) ($_POST['manager_id'] ?? 0);
+            auth_delete_user($pdo, $managerId);
+            flash_set('success', 'Credenziali manager eliminate definitivamente.');
+            header('Location: ' . ($sectionUrls['team'] ?? 'admin_team.php'));
+            exit;
         }
     } catch (\Throwable $e) {
         flash_set('error', $e->getMessage());
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
+        exit;
     }
-
-    header('Location: ' . $redirectAfterPost);
-    exit;
 }
 
 $flash = flash_get();
-$inventoryItems = [];
-$globalCatalog = [];
-$categories = [];
 $branchManagers = auth_get_branch_managers($pdo);
-$templates = [];
-$supplyOrders = [];
-$policies = [];
-$recentCustomerOrders = [];
-$branchComparison = [];
-$topProducts = [];
-$salesTrend = [];
-$categoryMix = [];
-$kpis = analytics_get_branch_kpis($pdo, $selectedBranchId);
+$allBranches = branches_get_all($pdo);
 
 $pageTitle = 'Manager controllo - Smash Burger Original';
 $pageDescription = 'Gestione centralizzata delle credenziali manager di filiale.';
@@ -162,8 +186,14 @@ $currentPage = 'admin.php';
 $breadcrumb = [
     ['Home', 'index.php'],
     ['Controllo', 'admin.php'],
-    ['Manager', null],
 ];
+
+if ($teamMode === 'create_details' || $teamMode === 'edit_details' || $teamMode === 'review') {
+    $breadcrumb[] = ['Manager', 'admin_team.php'];
+    $breadcrumb[] = [$teamMode === 'review' ? 'Riepilogo' : 'Modifica credenziali', null];
+} else {
+    $breadcrumb[] = ['Manager', null];
+}
 
 include_once __DIR__ . '/views/template/header.php';
 include_once __DIR__ . '/views/admin.php';
