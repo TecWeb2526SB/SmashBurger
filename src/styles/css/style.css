@@ -2149,7 +2149,7 @@ html.tema-scuro .account-summary-box {
 }
 
 .admin-page-head {
-    margin-bottom: 0;
+    margin-bottom: var(--spazio-lg);
 }
 
 .admin-page-head h1 {
@@ -2157,7 +2157,7 @@ html.tema-scuro .account-summary-box {
 }
 
 .admin-section-nav {
-    margin-bottom: 0;
+    margin-bottom: var(--spazio-lg);
 }
 
 .admin-section-nav ul {
@@ -2173,10 +2173,11 @@ html.tema-scuro .account-summary-box {
     padding: 0.55rem 0.9rem;
     border: var(--bordo-standard);
     border-radius: 999px;
-    background-color: #111111;
-    color: #f3f3f3;
+    background-color: var(--colore-sfondo-alt);
+    color: var(--colore-testo);
     text-decoration: none;
     box-shadow: var(--ombra-leggera);
+    transition: var(--transizione-base);
 }
 
 .admin-section-nav a.is-active,
@@ -2202,17 +2203,17 @@ html.tema-scuro .account-summary-box {
 .admin-product-media-grid,
 .admin-product-review-grid {
     display: grid;
-    gap: var(--spazio-md);
+    gap: var(--spazio-lg);
     grid-template-columns: 1fr;
 }
 
 .admin-kpi-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin-bottom: var(--spazio-md);
+    margin-bottom: var(--spazio-lg);
 }
 
 .admin-panel-card {
-    gap: var(--spazio-md);
+    gap: var(--spazio-lg);
 }
 
 .admin-page .account-summary-box,
@@ -2220,10 +2221,12 @@ html.tema-scuro .account-summary-box {
 .admin-page .checkout-card,
 .admin-page .admin-detail-card,
 .admin-page .admin-branch-card {
-    background: #111111;
-    color: #f3f3f3;
-    border-color: rgba(255, 255, 255, 0.14);
-    padding: 1.2rem;
+    background: var(--colore-sfondo);
+    color: var(--colore-testo);
+    border: var(--bordo-standard);
+    padding: 1.5rem;
+    box-shadow: var(--ombra-leggera);
+    border-radius: var(--raggio-card);
 }
 
 .admin-page .account-summary-list span,
@@ -2232,7 +2235,7 @@ html.tema-scuro .account-summary-box {
 .admin-page .admin-mini-stats dt,
 .admin-page .admin-bar-label span,
 .admin-page .admin-status-pill.is-muted {
-    color: #c7c7c7;
+    color: var(--colore-testo-leggero);
 }
 
 .admin-page .campo-gruppo label,
@@ -2240,7 +2243,7 @@ html.tema-scuro .account-summary-box {
 .admin-page .checkout-fieldset label,
 .admin-page .checkout-option-note,
 .admin-page code {
-    color: #f3f3f3;
+    color: var(--colore-testo);
 }
 
 .admin-page .account-summary-box strong,
@@ -2424,7 +2427,8 @@ html.tema-scuro .account-summary-box {
     padding: 0.2rem 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--colore-bordo);
-    background-color: #111111;
+    background-color: var(--colore-sfondo-alt);
+    color: var(--colore-testo);
     font-size: 0.88rem;
     font-weight: 700;
 }
@@ -2456,27 +2460,14 @@ html.tema-scuro .account-summary-box {
 .admin-page .campo-gruppo input,
 .admin-page .campo-gruppo select,
 .admin-page .campo-gruppo textarea {
-    background-color: #ffffff;
-    color: #111111;
-    border-color: rgba(255, 255, 255, 0.24);
+    background-color: var(--colore-sfondo);
+    color: var(--colore-testo);
+    border: var(--bordo-standard);
 }
 
 .admin-page .campo-gruppo input::placeholder,
 .admin-page .campo-gruppo textarea::placeholder {
-    color: #737373;
-}
-
-.tema-scuro .admin-page .campo-gruppo input,
-.tema-scuro .admin-page .campo-gruppo select,
-.tema-scuro .admin-page .campo-gruppo textarea {
-    background-color: #161616;
-    color: #f3f3f3;
-    border-color: rgba(255, 255, 255, 0.16);
-}
-
-.tema-scuro .admin-page .campo-gruppo input::placeholder,
-.tema-scuro .admin-page .campo-gruppo textarea::placeholder {
-    color: #a3a3a3;
+    color: var(--colore-testo-leggero);
 }
 
 .admin-page .ordine-card-head,
