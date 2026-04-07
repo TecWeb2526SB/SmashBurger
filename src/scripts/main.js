@@ -925,6 +925,7 @@ function inizializzaHeaderSede() {
 
     async function cambiaSede(option, force = false) {
         const targetSlug = option.dataset.sedeSlug || '';
+        const returnUrl = option.dataset.returnUrl || buildReturnUrl(targetSlug);
         const switchUrl = new URL(option.dataset.switchUrl || option.href, window.location.origin);
         switchUrl.searchParams.set('ajax', '1');
 
@@ -945,10 +946,10 @@ function inizializzaHeaderSede() {
                 return;
             }
 
-            window.location.href = buildReturnUrl(targetSlug);
+            window.location.href = returnUrl;
         } catch (err) {
             console.error('Errore cambio sede:', err);
-            window.location.href = force ? switchUrl.toString() : option.href;
+            window.location.href = force ? switchUrl.toString() : (returnUrl || option.href);
         }
     }
 
@@ -1129,6 +1130,75 @@ function inizializzaCheckoutPagamento() {
 }
 
 /* ==========================================================================
+   10. RICEVUTE - STAMPA
+   ========================================================================== */
+
+function inizializzaStampaRicevuta() {
+    const triggers = document.querySelectorAll('[data-print-trigger="true"]');
+    if (triggers.length === 0) return;
+
+    triggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+            window.print();
+        });
+    });
+}
+
+/* ==========================================================================
+   11. CATALOGO ADMIN - PREVIEW IMMAGINE E FUOCO
+   ========================================================================== */
+
+function inizializzaAdminCatalogoProdotto() {
+    const uploadInput = document.querySelector('[data-image-upload-input="true"]');
+    const preview = document.querySelector('[data-image-focus-preview="true"]');
+    const emptyState = document.querySelector('[data-image-focus-empty="true"]');
+    const focusX = document.querySelector('[data-image-focus-x="true"]');
+    const focusY = document.querySelector('[data-image-focus-y="true"]');
+    const focusXOutput = document.querySelector('[data-image-focus-x-output="true"]');
+    const focusYOutput = document.querySelector('[data-image-focus-y-output="true"]');
+
+    if (!focusX || !focusY) return;
+
+    function aggiornaAnteprima() {
+        if (preview) {
+            preview.style.objectPosition = `${focusX.value}% ${focusY.value}%`;
+        }
+
+        if (focusXOutput) {
+            focusXOutput.textContent = focusX.value;
+        }
+
+        if (focusYOutput) {
+            focusYOutput.textContent = focusY.value;
+        }
+    }
+
+    if (uploadInput && preview) {
+        uploadInput.addEventListener('change', function () {
+            const file = uploadInput.files && uploadInput.files[0] ? uploadInput.files[0] : null;
+            if (!file || !file.type.startsWith('image/')) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.addEventListener('load', function () {
+                preview.src = String(reader.result || '');
+                preview.removeAttribute('hidden');
+                if (emptyState) {
+                    emptyState.setAttribute('hidden', '');
+                }
+                aggiornaAnteprima();
+            });
+            reader.readAsDataURL(file);
+        });
+    }
+
+    focusX.addEventListener('input', aggiornaAnteprima);
+    focusY.addEventListener('input', aggiornaAnteprima);
+    aggiornaAnteprima();
+}
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -1146,4 +1216,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaMappaSedi();
     inizializzaCheckoutRitiro();
     inizializzaCheckoutPagamento();
+    inizializzaStampaRicevuta();
+    inizializzaAdminCatalogoProdotto();
 });

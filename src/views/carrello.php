@@ -10,6 +10,16 @@
  */
 ?>
 
+<?php
+$hasUnavailableItems = false;
+foreach ($carrello['items'] as $cartItemCheck) {
+    if ((int) ($cartItemCheck['is_available'] ?? 1) !== 1) {
+        $hasUnavailableItems = true;
+        break;
+    }
+}
+?>
+
 <section aria-labelledby="titolo-carrello">
     <div class="contenitore">
         <h1 id="titolo-carrello">Il tuo carrello</h1>
@@ -29,6 +39,12 @@
             <p>Il tuo carrello e vuoto.</p>
             <p><a class="bottone-primario" href="prodotti.php">Vai al catalogo</a></p>
         <?php else: ?>
+            <?php if ($hasUnavailableItems): ?>
+                <div class="alert error">
+                    Alcuni prodotti non sono piu disponibili o non appartengono piu al catalogo della sede corrente. Aggiorna il carrello prima di procedere al checkout.
+                </div>
+            <?php endif; ?>
+
             <div class="tabella-wrapper">
                 <table class="tabella-carrello">
                     <caption class="sr-only">Prodotti presenti nel carrello</caption>
@@ -44,7 +60,12 @@
                     <tbody id="carrello-righe">
                         <?php foreach ($carrello['items'] as $item): ?>
                             <tr data-cart-item-id="<?php echo (int) $item['id']; ?>">
-                                <th scope="row"><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
+                                <th scope="row">
+                                    <?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php if ((int) ($item['is_available'] ?? 1) !== 1): ?>
+                                        <span class="disponibilita-ko">Non disponibile per questa sede.</span>
+                                    <?php endif; ?>
+                                </th>
                                 <td><?php echo money_eur((int) $item['unit_price_cents']); ?></td>
                                 <td>
                                     <form class="inline-form" method="POST" action="carrello.php" data-cart-update-form>
@@ -132,7 +153,11 @@
                     <input type="hidden" name="redirect_to" value="carrello.php">
                     <button type="submit" class="bottone-secondario">Svuota carrello</button>
                 </form>
-                <a class="bottone-primario" href="checkout.php">Procedi al checkout</a>
+                <?php if ($hasUnavailableItems): ?>
+                    <span class="bottone-primario bottone-disabilitato" aria-disabled="true">Procedi al checkout</span>
+                <?php else: ?>
+                    <a class="bottone-primario" href="checkout.php">Procedi al checkout</a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>

@@ -6,6 +6,8 @@
  *   $utente array
  *   $orders array
  *   $flash  ?array
+ *   $canAccessAdminPanel bool
+ *   $showCustomerOrders bool
  */
 ?>
 
@@ -21,11 +23,20 @@ $ultimoOrdine = $orders[0] ?? null;
                 <span class="home-eyebrow">Il tuo spazio SmashBurger</span>
                 <h1 id="titolo-area-personale">Area personale</h1>
                 <p class="account-hero-text">
-                    Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout piu pulito e immediato.
+                    <?php if (!empty($showCustomerOrders)): ?>
+                        Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout piu pulito e immediato.
+                    <?php else: ?>
+                        Aggiorna le credenziali e accedi rapidamente agli strumenti interni senza mischiare l area operativa con lo storico ordini cliente.
+                    <?php endif; ?>
                 </p>
                 <div class="account-action-row">
                     <a class="bottone-primario" href="profilo.php">Gestisci account</a>
-                    <a class="bottone-secondario" href="carrello.php">Apri il carrello</a>
+                    <?php if (can_place_customer_orders()): ?>
+                        <a class="bottone-secondario" href="carrello.php">Apri il carrello</a>
+                    <?php endif; ?>
+                    <?php if (!empty($canAccessAdminPanel)): ?>
+                        <a class="bottone-secondario" href="admin.php">Pannello controllo</a>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -34,12 +45,14 @@ $ultimoOrdine = $orders[0] ?? null;
                 <ul class="account-summary-list">
                     <li><span>Username</span><strong><?php echo htmlspecialchars($utente['username'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
                     <li><span>Email</span><strong><?php echo htmlspecialchars((string) $utente['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li><span>Ordini totali</span><strong><?php echo (int) $numeroOrdini; ?></strong></li>
+                    <li><span><?php echo !empty($showCustomerOrders) ? 'Ordini totali' : 'Ruolo'; ?></span><strong><?php echo !empty($showCustomerOrders) ? (int) $numeroOrdini : htmlspecialchars(role_label((string) $utente['role']), ENT_QUOTES, 'UTF-8'); ?></strong></li>
                     <li>
-                        <span><?php echo $ultimoOrdine !== null ? 'Ultimo ordine' : 'Prossimo passo'; ?></span>
+                        <span><?php echo !empty($showCustomerOrders) && $ultimoOrdine !== null ? 'Ultimo ordine' : 'Prossimo passo'; ?></span>
                         <strong>
-                            <?php if ($ultimoOrdine !== null): ?>
+                            <?php if (!empty($showCustomerOrders) && $ultimoOrdine !== null): ?>
                                 <?php echo htmlspecialchars((string) $ultimoOrdine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php elseif (!empty($canAccessAdminPanel)): ?>
+                                Apri il controllo
                             <?php else: ?>
                                 Scegli il tuo primo menu
                             <?php endif; ?>
@@ -55,21 +68,26 @@ $ultimoOrdine = $orders[0] ?? null;
             </div>
         <?php endif; ?>
 
-        <div class="account-section-head">
-            <div>
-                <span class="account-panel-kicker">Ordini</span>
-                <h2>Storico ordini</h2>
+        <?php if (!empty($showCustomerOrders)): ?>
+            <div class="account-section-head">
+                <div>
+                    <span class="account-panel-kicker">Ordini</span>
+                    <h2>Storico ordini</h2>
+                </div>
+                <p class="checkout-muted">Tieni sotto controllo stato, ritiro e dettagli di ogni ordine in un colpo d'occhio.</p>
             </div>
-            <p class="checkout-muted">Tieni sotto controllo stato, ritiro e dettagli di ogni ordine in un colpo d'occhio.</p>
-        </div>
 
         <?php if (empty($orders)): ?>
             <article class="checkout-card account-empty-state">
                 <h3>Nessun ordine ancora</h3>
                 <p>Quando effettuerai il primo acquisto troverai qui tutti i dettagli, dal riepilogo prodotti allo stato del pagamento.</p>
                 <div class="account-empty-actions">
-                    <a class="bottone-primario" href="prodotti.php">Inizia dal catalogo</a>
-                    <a class="bottone-secondario" href="sedi.php">Scegli una sede</a>
+                    <?php if (can_place_customer_orders()): ?>
+                        <a class="bottone-primario" href="prodotti.php">Inizia dal catalogo</a>
+                        <a class="bottone-secondario" href="sedi.php">Scegli una sede</a>
+                    <?php elseif (!empty($canAccessAdminPanel)): ?>
+                        <a class="bottone-primario" href="admin.php">Apri il pannello controllo</a>
+                    <?php endif; ?>
                 </div>
             </article>
         <?php else: ?>
@@ -122,9 +140,23 @@ $ultimoOrdine = $orders[0] ?? null;
                                 </ul>
                             </div>
                         <?php endif; ?>
+
+                        <div class="admin-inline-actions">
+                            <a class="bottone-secondario" href="ricevuta.php?tipo=ordine&amp;id=<?php echo (int) $ordine['id']; ?>">Apri ricevuta</a>
+                        </div>
                     </article>
                 <?php endforeach; ?>
             </div>
+        <?php endif; ?>
+        <?php elseif (!empty($canAccessAdminPanel)): ?>
+            <article class="checkout-card account-empty-state">
+                <h3>Area interna attiva</h3>
+                <p>Per i profili admin e manager lo storico ordini cliente non viene mostrato qui. Le attivita operative e analitiche sono raccolte nel pannello controllo.</p>
+                <div class="account-empty-actions">
+                    <a class="bottone-primario" href="admin.php">Apri il controllo</a>
+                    <a class="bottone-secondario" href="profilo.php">Gestisci account</a>
+                </div>
+            </article>
         <?php endif; ?>
     </div>
 </section>

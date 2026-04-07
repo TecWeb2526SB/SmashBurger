@@ -16,8 +16,12 @@ if ($utente === null) {
 $_SESSION['user']['username'] = (string) $utente['username'];
 $_SESSION['user']['email'] = (string) $utente['email'];
 $_SESSION['user']['role'] = (string) $utente['role'];
-$orders = orders_get_for_user($pdo, (int) $utente['id']);
+$_SESSION['user']['managed_branch_id'] = isset($utente['managed_branch_id']) ? (int) $utente['managed_branch_id'] : null;
+$_SESSION['user']['is_active'] = isset($utente['is_active']) ? (int) $utente['is_active'] : 1;
+$showCustomerOrders = can_place_customer_orders();
+$orders = $showCustomerOrders ? orders_get_for_user($pdo, (int) $utente['id']) : [];
 $flash = flash_get();
+$canAccessAdminPanel = can_access_admin_panel();
 
 $pageTitle       = 'Area personale - Smash Burger Original';
 $pageDescription = 'Gestisci il tuo account, i tuoi ordini e le tue preferenze Smash Burger.';

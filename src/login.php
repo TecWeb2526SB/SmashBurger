@@ -61,6 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errori['generale'] = $rateLimitStatus['allowed']
                 ? 'Credenziali non valide.'
                 : $rateLimitStatus['message'];
+        } elseif ((int) ($utente['is_active'] ?? 1) !== 1) {
+            $errori['generale'] = 'Questo account è stato disattivato. Contatta l amministrazione centrale.';
         } else {
             login_rate_limit_clear_identifier($lookupIdentifier);
             login_rate_limit_clear_identifier((string) ($utente['username'] ?? ''));

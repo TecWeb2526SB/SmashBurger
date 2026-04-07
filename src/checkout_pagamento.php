@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/resources.php';
 
-require_login();
+require_customer_order_access();
 
 $utente = current_user();
 $userId = (int) $utente['id'];

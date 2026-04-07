@@ -199,7 +199,7 @@
                             </svg>
                         </button>
                     </div>
-                    <p id="profilo-new-password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, ! @ # $ % &amp;</p>
+                    <p id="profilo-new-password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, underscore (_) e ! @ # $ % &amp;</p>
                     <span id="profilo-new-password-errore" class="campo-errore" <?php echo empty($erroriPassword['new_password']) ? 'hidden' : ''; ?>>
                         <?php echo htmlspecialchars($erroriPassword['new_password'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
                     </span>
@@ -244,7 +244,7 @@
                 <ul class="riepilogo-lista">
                     <li><span>Password attuale</span><strong>Richiesta</strong></li>
                     <li><span>Lunghezza minima</span><strong>8 caratteri</strong></li>
-                    <li><span>Caratteri ammessi</span><strong>Lettere, numeri, ! @ # $ % &amp;</strong></li>
+                    <li><span>Caratteri ammessi</span><strong>Lettere, numeri, underscore (_) e ! @ # $ % &amp;</strong></li>
                 </ul>
                 <p class="checkout-muted account-note">Una password piu lunga e unica rende l'accesso piu solido e semplice da gestire nel tempo.</p>
             </aside>

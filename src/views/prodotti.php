@@ -11,6 +11,7 @@
  *   $csrfToken         string Token CSRF
  */
 $csrfToken = csrf_token();
+$internalAccountBrowsing = function_exists('is_logged_in') && is_logged_in() && function_exists('can_place_customer_orders') && !can_place_customer_orders();
 ?>
 
 <section id="intestazione-prodotti" aria-labelledby="titolo-prodotti">
@@ -35,6 +36,16 @@ $csrfToken = csrf_token();
         <div class="contenitore">
             <div class="alert error">
                 <?php echo htmlspecialchars($branchWarning, ENT_QUOTES, 'UTF-8'); ?>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
+
+<?php if ($internalAccountBrowsing): ?>
+    <section aria-label="Avviso account interno">
+        <div class="contenitore">
+            <div class="alert info">
+                Stai consultando il catalogo con un account interno. Per i profili admin e manager l acquisto diretto e disabilitato.
             </div>
         </div>
     </section>
@@ -69,7 +80,8 @@ $csrfToken = csrf_token();
                             <article class="scheda-prodotto" aria-labelledby="prod-<?php echo (int) $prodotto['id']; ?>">
                                 <?php if (!empty($prodotto['image_path'])): ?>
                                     <img src="<?php echo htmlspecialchars($prodotto['image_path'], ENT_QUOTES, 'UTF-8'); ?>"
-                                        alt="Immagine di <?php echo htmlspecialchars($prodotto['name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        alt="Immagine di <?php echo htmlspecialchars($prodotto['name'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        style="object-position: <?php echo (int) ($prodotto['image_focus_x'] ?? 50); ?>% <?php echo (int) ($prodotto['image_focus_y'] ?? 50); ?>%;">
                                 <?php else: ?>
                                     <div class="scheda-prodotto-placeholder" aria-hidden="true">No image</div>
                                 <?php endif; ?>
@@ -93,7 +105,7 @@ $csrfToken = csrf_token();
                                     <div class="scheda-prodotto-azioni">
                                         <p class="prezzo"><?php echo money_eur((int) $prodotto['price_cents']); ?></p>
 
-                                        <?php if ((int) $prodotto['is_available'] === 1): ?>
+                                        <?php if ((int) $prodotto['is_available'] === 1 && !$internalAccountBrowsing): ?>
                                             <form method="POST" action="carrello.php">
                                                 <input type="hidden" name="csrf_token"
                                                     value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
@@ -105,6 +117,8 @@ $csrfToken = csrf_token();
                                                 <input type="hidden" name="redirect_to" value="prodotti.php">
                                                 <button type="submit" class="bottone-primario">Aggiungi al carrello</button>
                                             </form>
+                                        <?php elseif ($internalAccountBrowsing): ?>
+                                            <p class="disponibilita-ko">Ordine disabilitato per account interni.</p>
                                         <?php else: ?>
                                             <p class="disponibilita-ko">Temporaneamente non disponibile.</p>
                                         <?php endif; ?>
