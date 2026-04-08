@@ -83,7 +83,7 @@ function require_customer_order_access(string $redirectTo = 'area_personale.php'
     exit;
 }
 
-function login_user(array $user): void
+function login_user(array $user, bool $regenerateSessionId = true): void
 {
     $_SESSION['user'] = [
         'id' => (int) ($user['id'] ?? 0),
@@ -93,7 +93,10 @@ function login_user(array $user): void
         'managed_branch_id' => isset($user['managed_branch_id']) ? (int) $user['managed_branch_id'] : null,
         'is_active' => isset($user['is_active']) ? (int) $user['is_active'] : 1,
     ];
-    session_regenerate_id(true);
+
+    if ($regenerateSessionId) {
+        session_regenerate_id(true);
+    }
 }
 
 function logout_user(): void

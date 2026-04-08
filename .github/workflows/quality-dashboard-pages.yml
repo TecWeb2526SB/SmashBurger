@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish-dashboard:
+  build:
     if: >
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 15
 
     env:
-      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
       TARGET_BRANCH: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref_name }}
       TARGET_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_sha || '' }}
 
@@ -49,19 +49,27 @@ jobs:
 
       - name: Download workflow summaries
         run: |
+          set -eu
           mkdir -p .tmp/pages-source/lighthouse .tmp/pages-source/pa11y .tmp/pages-source/w3c .tmp/pages-source/authenticated
+
+          api_get() {
+            curl -fsSL \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com$1"
+          }
 
           download_artifact() {
             workflow_file="$1"
             artifact_name="$2"
             target_dir="$3"
 
-            json="$(gh api "/repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow_file}/runs?branch=${TARGET_BRANCH}&status=completed&per_page=20")"
+            runs_json="$(api_get "/repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow_file}/runs?branch=${TARGET_BRANCH}&status=completed&per_page=20")"
 
             if [ -n "${TARGET_SHA}" ]; then
-              run_id="$(printf '%s' "${json}" | jq -r --arg sha "${TARGET_SHA}" '.workflow_runs | map(select(.head_sha == $sha)) | first | .id // empty')"
+              run_id="$(printf '%s' "${runs_json}" | jq -r --arg sha "${TARGET_SHA}" '.workflow_runs | map(select(.head_sha == $sha)) | first | .id // empty')"
             else
-              run_id="$(printf '%s' "${json}" | jq -r '.workflow_runs | first | .id // empty')"
+              run_id="$(printf '%s' "${runs_json}" | jq -r '.workflow_runs | first | .id // empty')"
             fi
 
             if [ -z "${run_id}" ]; then
@@ -69,9 +77,25 @@ jobs:
               return 0
             fi
 
+            artifacts_json="$(api_get "/repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100")"
+            archive_url="$(printf '%s' "${artifacts_json}" | jq -r --arg name "${artifact_name}" '.artifacts | map(select(.name == $name and .expired == false)) | first | .archive_download_url // empty')"
+
+            if [ -z "${archive_url}" ]; then
+              echo "Artifact ${artifact_name} not available for run ${run_id}."
+              return 0
+            fi
+
             rm -rf "${target_dir}"
             mkdir -p "${target_dir}"
-            gh run download "${run_id}" -n "${artifact_name}" -D "${target_dir}" || true
+
+            curl -fsSL \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "${archive_url}" \
+              -o "${target_dir}/artifact.zip"
+
+            unzip -oq "${target_dir}/artifact.zip" -d "${target_dir}"
+            rm -f "${target_dir}/artifact.zip"
           }
 
           download_artifact "lighthouse.yml" "lighthouse-reports" ".tmp/pages-source/lighthouse"
@@ -96,6 +120,17 @@ jobs:
         with:
           path: .tmp/quality-dashboard
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

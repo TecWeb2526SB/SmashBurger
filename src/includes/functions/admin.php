@@ -123,7 +123,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
         exit;
     }
 
-    login_user($utente);
+    login_user($utente, false);
 
     $isGeneralAdmin = (string) $utente['role'] === 'admin';
     $isBranchManager = (string) $utente['role'] === 'branch_manager';

@@ -105,7 +105,7 @@ if ($utente === null) {
     exit;
 }
 
-login_user($utente);
+login_user($utente, false);
 
 if (!is_general_admin()) {
     flash_set('error', 'Solo l admin centrale può gestire il catalogo globale.');

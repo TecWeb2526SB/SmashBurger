@@ -13,7 +13,7 @@ if ($utente === null) {
     exit;
 }
 
-login_user($utente);
+login_user($utente, false);
 
 $receiptType = trim((string) ($_GET['tipo'] ?? 'ordine'));
 $receiptId = (int) ($_GET['id'] ?? 0);
