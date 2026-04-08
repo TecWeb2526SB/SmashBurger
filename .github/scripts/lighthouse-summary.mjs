@@ -25,6 +25,18 @@ const categoryLabels = {
     'best-practices': 'Best practices',
     seo: 'SEO',
 };
+const deEmphasizedAuditIds = new Set([
+    'network-dependency-tree-insight',
+    'render-blocking-requests',
+    'network-server-latency',
+    'diagnostics',
+    'forced-reflow-insight',
+]);
+const deEmphasizedAuditTitles = new Set([
+    'Network dependency tree',
+    'Render blocking requests',
+    'Forced reflow',
+]);
 
 const issueMap = new Map();
 const pageResults = [];
@@ -55,7 +67,7 @@ for (const page of pages) {
             : Math.round(score * 100);
     }
 
-    const failingAudits = Object.values(report.audits || {})
+    const rankedAudits = Object.values(report.audits || {})
         .filter((audit) => {
             if (!audit || typeof audit !== 'object') {
                 return false;
@@ -68,8 +80,18 @@ for (const page of pages) {
 
             return audit.score !== null && typeof audit.score === 'number' && audit.score < 0.9;
         })
-        .sort((a, b) => (a.score ?? 1) - (b.score ?? 1))
-        .slice(0, 5);
+        .sort((a, b) => {
+            const aPriorityPenalty = deEmphasizedAuditIds.has(a.id) || deEmphasizedAuditTitles.has(a.title) ? 1 : 0;
+            const bPriorityPenalty = deEmphasizedAuditIds.has(b.id) || deEmphasizedAuditTitles.has(b.title) ? 1 : 0;
+
+            if (aPriorityPenalty !== bPriorityPenalty) {
+                return aPriorityPenalty - bPriorityPenalty;
+            }
+
+            return (a.score ?? 1) - (b.score ?? 1);
+        });
+
+    const failingAudits = rankedAudits.slice(0, 5);
 
     for (const audit of failingAudits) {
         focusAreas.push(audit.title);

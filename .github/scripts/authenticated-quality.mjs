@@ -22,10 +22,34 @@ fs.mkdirSync(path.join(outputDir, 'headers'), { recursive: true });
 
 const profiles = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
+function collectSetCookies(headers) {
+    if (!headers) {
+        return [];
+    }
+
+    if (typeof headers.getSetCookie === 'function') {
+        const cookies = headers.getSetCookie().filter(Boolean);
+        if (cookies.length > 0) {
+            return cookies;
+        }
+    }
+
+    const singleHeader = typeof headers.get === 'function'
+        ? headers.get('set-cookie')
+        : null;
+
+    if (!singleHeader) {
+        return [];
+    }
+
+    return singleHeader
+        .split(/,(?=\s*[^;,=\s]+=[^;,]+)/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+}
+
 function updateCookieJar(cookieJar, response) {
-    const setCookies = typeof response.headers.getSetCookie === 'function'
-        ? response.headers.getSetCookie()
-        : [];
+    const setCookies = collectSetCookies(response.headers);
 
     for (const item of setCookies) {
         const [pair] = item.split(';');
@@ -53,6 +77,14 @@ function extractCsrfToken(html) {
 
 function runCommand(command, args, options = {}) {
     return new Promise((resolve) => {
+        let settled = false;
+        const finish = (result) => {
+            if (!settled) {
+                settled = true;
+                resolve(result);
+            }
+        };
+
         const child = spawn(command, args, {
             cwd: process.cwd(),
             env: process.env,
@@ -71,8 +103,16 @@ function runCommand(command, args, options = {}) {
             stderr += chunk.toString();
         });
 
+        child.on('error', (error) => {
+            finish({
+                code: 1,
+                stdout,
+                stderr: `${stderr}${error.message}\n`,
+            });
+        });
+
         child.on('close', (code) => {
-            resolve({ code: code ?? 1, stdout, stderr });
+            finish({ code: code ?? 1, stdout, stderr });
         });
     });
 }
@@ -124,7 +164,7 @@ async function loginProfile(profile) {
     }
 
     const cookie = cookieHeader(jar);
-    if (!cookie.includes('PHPSESSID=')) {
+    if (jar.size === 0 || cookie === '') {
         throw new Error(`Cookie di sessione non trovato per ${profile.role}`);
     }
 

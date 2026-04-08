@@ -1,8 +1,5 @@
 name: Lighthouse CI
 
-permissions:
-  contents: write
-
 on:
   push:
     branches: [main, develop]
@@ -130,20 +127,6 @@ jobs:
         with:
           name: lighthouse-reports
           path: .tmp/lighthouse
-
-      - name: Update README with Lighthouse snapshot
-        if: always() && github.event_name == 'push' && (github.ref_name == 'develop' || github.ref_name == 'main')
-        run: |
-          node .github/scripts/update-readme-lighthouse.mjs --readme=README.md --summary=.tmp/lighthouse/summary.json
-          if git diff --quiet -- README.md; then
-            echo "README already up to date."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md
-          git commit -m "docs: update Lighthouse snapshot [skip ci]"
-          git push origin HEAD:${GITHUB_REF_NAME}
 
       - name: Fail workflow if Lighthouse execution broke
         if: always() && steps.lighthouse_run.outputs.failed == '1'
