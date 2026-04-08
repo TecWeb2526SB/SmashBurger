@@ -20,7 +20,6 @@ jobs:
         run: |
           cat > .env <<'EOF'
           HTTP_PORT=8080
-          MAILPIT_UI_PORT=8025
           PHPMYADMIN_PORT=8081
           DB_NAME=esame_web
           DB_USER=utente_fallback
@@ -28,8 +27,8 @@ jobs:
           DB_ROOT_PASSWORD=root_password_sicura_123
           EOF
 
-      - name: Start database and mail services
-        run: docker compose -f docker-compose.develop.yml up -d db mailpit
+      - name: Start database service
+        run: docker compose -f docker-compose.develop.yml up -d db
 
       - name: Wait for database
         run: |
@@ -61,6 +60,13 @@ jobs:
         with:
           node-version: 20
 
+      - name: Discover public pages from sitemap
+        run: |
+          mkdir -p .tmp/pa11y
+          node .github/scripts/public-pages.mjs --format=text > .tmp/public-pages.txt
+          echo "Pages under test:"
+          cat .tmp/public-pages.txt
+
       - name: Install Pa11y
         run: npm install -g pa11y
 
@@ -75,10 +81,12 @@ jobs:
           }
           EOF
 
-      - name: Run Pa11y on key pages
+      - name: Run Pa11y on public pages
+        id: pa11y_run
         run: |
-          mkdir -p .tmp/pa11y
-          for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php; do
+          set +e
+          failed=0
+          while IFS= read -r page; do
             url="http://127.0.0.1:8080/${page}"
             echo "Checking accessibility for ${url}"
             report=".tmp/pa11y/${page%.php}.json"
@@ -100,9 +108,15 @@ jobs:
               console.log("");
             ' "${report}"
             if [ "${status}" -ne 0 ]; then
-              exit "${status}"
+              failed=1
             fi
-          done
+          done < .tmp/public-pages.txt
+          echo "failed=${failed}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build Pa11y summary
+        if: always()
+        run: node .github/scripts/pa11y-summary.mjs --reports-dir=.tmp/pa11y --pages-file=.tmp/public-pages.txt --output-json=.tmp/pa11y/summary.json --step-summary="${GITHUB_STEP_SUMMARY}"
 
       - name: Upload Pa11y reports
         if: always()
@@ -110,6 +124,10 @@ jobs:
         with:
           name: pa11y-reports
           path: .tmp/pa11y
+
+      - name: Fail workflow if accessibility issues were found
+        if: always() && steps.pa11y_run.outputs.failed == '1'
+        run: exit 1
 
       - name: Print application logs on failure
         if: failure()

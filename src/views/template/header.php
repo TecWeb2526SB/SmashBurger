@@ -104,7 +104,10 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                     'admin_automatico.php',
                                     'admin_ricevute.php',
                                 ];
-                                $currentHeaderPage = (string) ($currentPage ?? 'index.php');
+                                $currentScriptName = basename((string) ($_SERVER['PHP_SELF'] ?? ''));
+                                $currentHeaderPage = $currentScriptName !== ''
+                                    ? $currentScriptName
+                                    : (string) ($currentPage ?? 'index.php');
                                 $returnBasePage = 'index.php';
                                 if (in_array($currentHeaderPage, ['prodotti.php', 'sedi.php'], true)) {
                                     $returnBasePage = $currentHeaderPage;
@@ -115,14 +118,29 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                 } elseif ($currentHeaderPage !== '') {
                                     $returnBasePage = $currentHeaderPage;
                                 }
+
+                                $returnQueryParams = [];
+                                foreach ($_GET as $paramKey => $paramValue) {
+                                    if (!is_string($paramKey) || in_array($paramKey, ['ajax', 'force'], true)) {
+                                        continue;
+                                    }
+
+                                    if (is_scalar($paramValue)) {
+                                        $returnQueryParams[$paramKey] = (string) $paramValue;
+                                    }
+                                }
                                 ?>
                                 <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
                                     $switchUrl = 'prodotti.php?sede=' . rawurlencode((string) $hb['slug']);
-                                    $returnUrl = $returnBasePage;
+                                    $returnParams = $returnQueryParams;
                                     if (in_array($returnBasePage, ['prodotti.php', 'sedi.php'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
-                                        $returnUrl .= '?sede=' . rawurlencode((string) $hb['slug']);
+                                        $returnParams['sede'] = (string) $hb['slug'];
+                                    } else {
+                                        unset($returnParams['sede']);
                                     }
+                                    $returnQuery = http_build_query($returnParams);
+                                    $returnUrl = $returnBasePage . ($returnQuery !== '' ? '?' . $returnQuery : '');
                                 ?>
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
                                         <a href="<?php echo htmlspecialchars($switchUrl, ENT_QUOTES, 'UTF-8'); ?>"

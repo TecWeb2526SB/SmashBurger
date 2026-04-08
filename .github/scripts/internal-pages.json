@@ -1,0 +1,35 @@
+[
+  {
+    "role": "user",
+    "identifier": "user",
+    "password": "user",
+    "pages": [
+      "area_personale.php",
+      "profilo.php",
+      "carrello.php"
+    ]
+  },
+  {
+    "role": "branch_manager",
+    "identifier": "manager.padova",
+    "password": "manager_padova",
+    "pages": [
+      "admin.php",
+      "admin_catalogo.php",
+      "admin_inventario.php",
+      "admin_forniture.php"
+    ]
+  },
+  {
+    "role": "admin",
+    "identifier": "admin",
+    "password": "admin",
+    "pages": [
+      "admin.php",
+      "admin_catalogo.php",
+      "admin_inventario.php",
+      "admin_forniture.php",
+      "admin_team.php"
+    ]
+  }
+]

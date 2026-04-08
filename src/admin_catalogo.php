@@ -17,6 +17,90 @@ $productsById = admin_build_products_lookup($inventoryItems);
 $globalCatalog = catalog_get_all_products_with_branch_usage($pdo);
 $categories = categories_get_all($pdo);
 
+$catalogSelectedCategoryId = max(0, (int) ($_GET['categoria'] ?? 0));
+$categoriesById = [];
+$catalogCategoryCounts = [];
+foreach ($categories as $category) {
+    $categoryId = (int) $category['id'];
+    $categoriesById[$categoryId] = $category;
+    $catalogCategoryCounts[$categoryId] = 0;
+}
+
+if ($catalogSelectedCategoryId > 0 && !isset($categoriesById[$catalogSelectedCategoryId])) {
+    $catalogSelectedCategoryId = 0;
+}
+
+foreach ($inventoryItems as $inventoryItem) {
+    $categoryId = (int) ($inventoryItem['category_id'] ?? 0);
+    if (isset($catalogCategoryCounts[$categoryId])) {
+        $catalogCategoryCounts[$categoryId]++;
+    }
+}
+
+$filteredGlobalCatalog = array_values(array_filter(
+    $globalCatalog,
+    static function (array $product) use ($catalogSelectedCategoryId): bool {
+        return $catalogSelectedCategoryId <= 0
+            || (int) ($product['category_id'] ?? 0) === $catalogSelectedCategoryId;
+    }
+));
+
+$filteredInventoryItems = array_values(array_filter(
+    $inventoryItems,
+    static function (array $inventoryItem) use ($catalogSelectedCategoryId): bool {
+        return $catalogSelectedCategoryId <= 0
+            || (int) ($inventoryItem['category_id'] ?? 0) === $catalogSelectedCategoryId;
+    }
+));
+
+$catalogBaseParams = [];
+if ($isGeneralAdmin) {
+    $catalogBaseParams['sede'] = $selectedBranchSlug;
+}
+if ($catalogSelectedCategoryId > 0) {
+    $catalogBaseParams['categoria'] = $catalogSelectedCategoryId;
+}
+
+$sectionUrls['catalogo'] = 'admin_catalogo.php'
+    . (!empty($catalogBaseParams) ? '?' . http_build_query($catalogBaseParams) : '');
+
+$catalogCategoryLinks = [[
+    'label' => 'Tutte',
+    'href' => 'admin_catalogo.php'
+        . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : ''),
+    'is_active' => $catalogSelectedCategoryId === 0,
+    'count' => count($inventoryItems),
+]];
+
+foreach ($categories as $category) {
+    $categoryId = (int) $category['id'];
+    $params = $isGeneralAdmin ? ['sede' => $selectedBranchSlug] : [];
+    $params['categoria'] = $categoryId;
+
+    $catalogCategoryLinks[] = [
+        'label' => (string) $category['name'],
+        'href' => 'admin_catalogo.php?' . http_build_query($params),
+        'is_active' => $catalogSelectedCategoryId === $categoryId,
+        'count' => (int) ($catalogCategoryCounts[$categoryId] ?? 0),
+    ];
+}
+
+$catalogMetrics = [
+    'global_total' => count($filteredGlobalCatalog),
+    'branch_total' => count($filteredInventoryItems),
+    'branch_available' => count(array_filter(
+        $filteredInventoryItems,
+        static function (array $inventoryItem): bool {
+            return (int) ($inventoryItem['is_listed'] ?? 0) === 1
+                && (int) ($inventoryItem['is_available_for_sale'] ?? 0) === 1;
+        }
+    )),
+];
+
+$catalogSelectedCategoryLabel = $catalogSelectedCategoryId > 0
+    ? (string) ($categoriesById[$catalogSelectedCategoryId]['name'] ?? 'Categoria')
+    : 'Tutte le categorie';
+
 $csrfToken = csrf_token();
 $flash = null;
 $backgroundMessages = [];

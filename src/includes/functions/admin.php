@@ -156,7 +156,16 @@ function admin_panel_bootstrap_context(PDO $pdo): array
         }
 
         if ($selectedBranch === null) {
+            $selectedBranch = branch_get_selected($pdo);
+        }
+
+        if ($selectedBranch === null) {
             $selectedBranch = $allBranches[0] ?? null;
+        }
+
+        if ($selectedBranch !== null) {
+            $_SESSION['selected_branch_id'] = (int) $selectedBranch['id'];
+            $_SESSION['selected_branch_slug'] = (string) $selectedBranch['slug'];
         }
     }
 
@@ -852,6 +861,9 @@ function inventory_get_branch_products(PDO $pdo, int $branchId): array
             p.id AS product_id,
             p.name AS product_name,
             p.slug AS product_slug,
+            p.category_id,
+            p.price_cents AS base_price_cents,
+            p.allergens,
             p.image_path,
             p.image_focus_x,
             p.image_focus_y,

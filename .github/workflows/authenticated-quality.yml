@@ -1,4 +1,4 @@
-name: W3C Validators (HTML + CSS)
+name: Authenticated internal quality
 
 on:
   push:
@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  validate:
+  authenticated-quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Checkout repository
@@ -60,52 +60,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install VNU checker
-        run: curl -fsSL https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
+      - name: Install Lighthouse and Pa11y
+        run: npm install -g lighthouse pa11y
 
-      - name: Discover public pages from sitemap
-        run: |
-          mkdir -p .tmp/w3c/rendered .tmp/w3c/reports
-          node .github/scripts/public-pages.mjs --format=text > .tmp/public-pages.txt
-          echo "Pages under test:"
-          cat .tmp/public-pages.txt
+      - name: Run authenticated quality checks
+        run: node .github/scripts/authenticated-quality.mjs --base-url=http://127.0.0.1:8080 --config=.github/scripts/internal-pages.json --output-dir=.tmp/authenticated-quality --summary-json=.tmp/authenticated-quality/summary.json --step-summary="${GITHUB_STEP_SUMMARY}"
 
-      - name: Render public pages for validation
-        run: |
-          while IFS= read -r page; do
-            curl -fsS "http://127.0.0.1:8080/${page}" -o ".tmp/w3c/rendered/${page%.php}.html"
-          done < .tmp/public-pages.txt
-
-      - name: Validate rendered HTML
-        id: w3c_run
-        run: |
-          set +e
-          failed=0
-          while IFS= read -r page; do
-            report=".tmp/w3c/reports/${page%.php}.txt"
-            java -jar vnu.jar --errors-only ".tmp/w3c/rendered/${page%.php}.html" > "${report}" 2>&1
-            status=$?
-            if [ "${status}" -ne 0 ]; then
-              failed=1
-            fi
-          done < .tmp/public-pages.txt
-          echo "failed=${failed}" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Build W3C summary
-        if: always()
-        run: node .github/scripts/w3c-summary.mjs --reports-dir=.tmp/w3c/reports --pages-file=.tmp/public-pages.txt --output-json=.tmp/w3c/summary.json --step-summary="${GITHUB_STEP_SUMMARY}"
-
-      - name: Upload W3C reports
+      - name: Upload authenticated quality reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: w3c-reports
-          path: .tmp/w3c
-
-      - name: Fail workflow if validation errors were found
-        if: always() && steps.w3c_run.outputs.failed == '1'
-        run: exit 1
+          name: authenticated-quality-reports
+          path: .tmp/authenticated-quality
 
       - name: Print application logs on failure
         if: failure()

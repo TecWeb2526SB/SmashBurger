@@ -49,6 +49,16 @@ $globalCatalog = $globalCatalog ?? [];
 $categories = $categories ?? [];
 $branchManagers = $branchManagers ?? [];
 $backgroundMessages = $backgroundMessages ?? [];
+$catalogSelectedCategoryId = $catalogSelectedCategoryId ?? 0;
+$catalogSelectedCategoryLabel = $catalogSelectedCategoryLabel ?? 'Tutte le categorie';
+$catalogCategoryLinks = $catalogCategoryLinks ?? [];
+$filteredGlobalCatalog = $filteredGlobalCatalog ?? $globalCatalog;
+$filteredInventoryItems = $filteredInventoryItems ?? $inventoryItems;
+$catalogMetrics = $catalogMetrics ?? [
+    'global_total' => count($filteredGlobalCatalog),
+    'branch_total' => count($filteredInventoryItems),
+    'branch_available' => 0,
+];
 
 $maxTrendRevenue = 0;
 foreach ($salesTrend as $trendItem) {
@@ -141,22 +151,40 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 
                     <div class="admin-branch-comparison">
                         <?php foreach ($branchComparison as $comparison): ?>
-                            <article class="admin-branch-card<?php echo (int) $comparison['branch']['id'] === (int) $selectedBranch['id'] ? ' is-selected' : ''; ?>">
-                                <h4><?php echo htmlspecialchars((string) $comparison['branch']['name'], ENT_QUOTES, 'UTF-8'); ?></h4>
-                                <dl class="admin-mini-stats">
-                                    <div>
-                                        <dt>Ricavi</dt>
-                                        <dd><?php echo money_eur((int) $comparison['kpis']['revenue_cents']); ?></dd>
+                            <?php
+                            $comparisonBranch = $comparison['branch'];
+                            $isComparisonSelected = (int) $comparisonBranch['id'] === (int) $selectedBranch['id'];
+                            $comparisonHref = admin_panel_section_url(
+                                'dashboard',
+                                (string) ($comparisonBranch['slug'] ?? ''),
+                                $isGeneralAdmin,
+                                $canManageBranchManagers
+                            );
+                            ?>
+                            <article class="admin-branch-card<?php echo $isComparisonSelected ? ' is-selected' : ''; ?>">
+                                <a
+                                    class="admin-branch-card-link"
+                                    href="<?php echo htmlspecialchars($comparisonHref, ENT_QUOTES, 'UTF-8'); ?>"
+                                    <?php echo $isComparisonSelected ? 'aria-current="true"' : ''; ?>>
+                                    <div class="admin-branch-card-head">
+                                        <h4><?php echo htmlspecialchars((string) $comparisonBranch['name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                        <span class="admin-branch-card-cta"><?php echo $isComparisonSelected ? 'In focus' : 'Apri dashboard'; ?></span>
                                     </div>
-                                    <div>
-                                        <dt>Margine</dt>
-                                        <dd><?php echo money_eur((int) $comparison['kpis']['gross_margin_cents']); ?></dd>
-                                    </div>
-                                    <div>
-                                        <dt>Alert stock</dt>
-                                        <dd><?php echo (int) $comparison['kpis']['stock_alerts']; ?></dd>
-                                    </div>
-                                </dl>
+                                    <dl class="admin-mini-stats">
+                                        <div>
+                                            <dt>Ricavi</dt>
+                                            <dd><?php echo money_eur((int) $comparison['kpis']['revenue_cents']); ?></dd>
+                                        </div>
+                                        <div>
+                                            <dt>Margine</dt>
+                                            <dd><?php echo money_eur((int) $comparison['kpis']['gross_margin_cents']); ?></dd>
+                                        </div>
+                                        <div>
+                                            <dt>Alert stock</dt>
+                                            <dd><?php echo (int) $comparison['kpis']['stock_alerts']; ?></dd>
+                                        </div>
+                                    </dl>
+                                </a>
                             </article>
                         <?php endforeach; ?>
                     </div>
@@ -174,7 +202,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <?php if (empty($salesTrend)): ?>
                         <p class="checkout-muted">Nessun dato vendite disponibile.</p>
                     <?php else: ?>
-                        <ul class="admin-bar-list" aria-label="Ricavi giornalieri">
+                        <ul class="admin-bar-list admin-bar-list--trend-grid" aria-label="Ricavi giornalieri">
                             <?php foreach ($salesTrend as $trendItem): ?>
                                 <?php
                                 $barWidth = $maxTrendRevenue > 0
@@ -183,13 +211,14 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 ?>
                                 <li>
                                     <div class="admin-bar-label">
+                                        <span class="admin-trend-day">Data</span>
                                         <strong><?php echo htmlspecialchars((string) $trendItem['label'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                                        <span><?php echo (int) $trendItem['orders_count']; ?> ordini</span>
                                     </div>
+                                    <strong class="admin-bar-value"><?php echo money_eur((int) $trendItem['revenue_cents']); ?></strong>
                                     <div class="admin-bar-track" aria-hidden="true">
                                         <span class="admin-bar-fill" style="width: <?php echo $barWidth; ?>%;"></span>
                                     </div>
-                                    <strong class="admin-bar-value"><?php echo money_eur((int) $trendItem['revenue_cents']); ?></strong>
+                                    <span class="admin-trend-orders"><?php echo (int) $trendItem['orders_count']; ?> ordini</span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -267,49 +296,116 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
         <section id="sezione-catalogo" class="admin-section" aria-labelledby="titolo-catalogo-admin">
             <h2 id="titolo-catalogo-admin" class="sr-only">Catalogo globale e catalogo di filiale</h2>
 
+            <article class="checkout-card admin-panel-card admin-catalog-toolbar">
+                <div class="admin-catalog-toolbar-head">
+                    <div>
+                        <span class="account-panel-kicker">Filtro categoria</span>
+                        <h3><?php echo htmlspecialchars((string) $catalogSelectedCategoryLabel, ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <p class="checkout-muted">Riduci il rumore visivo e confronta globale e sede sulla stessa categoria senza perdere dettaglio operativo.</p>
+                    </div>
+                    <div class="admin-catalog-summary" aria-label="Riepilogo catalogo filtrato">
+                        <?php if ($canManageGlobalCatalog): ?>
+                            <article>
+                                <span>Prodotti globali</span>
+                                <strong><?php echo (int) ($catalogMetrics['global_total'] ?? 0); ?></strong>
+                            </article>
+                        <?php endif; ?>
+                        <article>
+                            <span>Prodotti sede</span>
+                            <strong><?php echo (int) ($catalogMetrics['branch_total'] ?? 0); ?></strong>
+                        </article>
+                        <article>
+                            <span>Disponibili ora</span>
+                            <strong><?php echo (int) ($catalogMetrics['branch_available'] ?? 0); ?></strong>
+                        </article>
+                    </div>
+                </div>
+
+                <?php if (!empty($catalogCategoryLinks)): ?>
+                    <nav class="admin-filter-nav" aria-label="Filtra catalogo per categoria">
+                        <ul class="admin-filter-chips">
+                            <?php foreach ($catalogCategoryLinks as $categoryLink): ?>
+                                <li>
+                                    <a
+                                        class="<?php echo !empty($categoryLink['is_active']) ? 'is-active' : ''; ?>"
+                                        href="<?php echo htmlspecialchars((string) $categoryLink['href'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <span><?php echo htmlspecialchars((string) $categoryLink['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <strong><?php echo (int) ($categoryLink['count'] ?? 0); ?></strong>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </nav>
+                <?php endif; ?>
+            </article>
+
             <div class="admin-form-grid admin-form-grid--double">
                 <?php if ($canManageGlobalCatalog): ?>
                     <article class="checkout-card admin-panel-card">
-                        <div class="account-panel-head">
-                            <span class="account-panel-kicker">Catalogo globale</span>
-                            <h3>Prodotti condivisi</h3>
-                            <p class="checkout-muted">Ogni nuovo prodotto creato qui diventa disponibile per tutte le filiali, che poi possono decidere se esporlo localmente.</p>
-                        </div>
-
-                        <div class="admin-inline-actions">
+                        <div class="account-panel-head account-panel-head--split">
+                            <div>
+                                <span class="account-panel-kicker">Catalogo globale</span>
+                                <h3>Prodotti condivisi</h3>
+                                <p class="checkout-muted">Ogni nuovo prodotto creato qui diventa disponibile per tutte le filiali, che poi possono decidere se esporlo localmente.</p>
+                            </div>
                             <a class="bottone-primario" href="admin_catalogo_prodotto.php">Nuovo prodotto</a>
                         </div>
 
-                        <div class="admin-stack-list">
-                            <?php foreach ($globalCatalog as $product): ?>
-                                <article class="admin-detail-card">
-                                    <div class="ordine-card-head">
-                                        <div>
-                                            <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $product['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <h4><?php echo htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                        <?php if (empty($filteredGlobalCatalog)): ?>
+                            <p class="checkout-muted">Nessun prodotto globale corrisponde al filtro selezionato.</p>
+                        <?php else: ?>
+                            <div class="admin-stack-list admin-stack-list--catalog">
+                                <?php foreach ($filteredGlobalCatalog as $product): ?>
+                                    <article class="admin-detail-card admin-catalog-card">
+                                        <div class="admin-catalog-card-head">
+                                            <div>
+                                                <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $product['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                                <h4><?php echo htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            </div>
+                                            <div class="admin-catalog-card-price">
+                                                <strong class="ordine-card-total"><?php echo money_eur((int) $product['price_cents']); ?></strong>
+                                                <span class="admin-status-pill <?php echo (int) ($product['is_available'] ?? 0) === 1 ? 'is-success' : 'is-muted'; ?>">
+                                                    <?php echo (int) ($product['is_available'] ?? 0) === 1 ? 'Attivo' : 'Sospeso'; ?>
+                                                </span>
+                                            </div>
                                         </div>
-                                        <strong class="ordine-card-total"><?php echo money_eur((int) $product['price_cents']); ?></strong>
-                                    </div>
 
-                                    <p class="checkout-muted"><?php echo htmlspecialchars((string) $product['description'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                        <p class="checkout-muted admin-catalog-description"><?php echo htmlspecialchars((string) $product['description'], ENT_QUOTES, 'UTF-8'); ?></p>
 
-                                    <ul class="riepilogo-lista">
-                                        <li><span>Slug</span><strong><?php echo htmlspecialchars((string) $product['slug'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Filiali che lo espongono</span><strong><?php echo (int) $product['listed_branches_count']; ?></strong></li>
-                                    </ul>
+                                        <ul class="admin-tag-list admin-tag-list--compact">
+                                            <li>Slug: <?php echo htmlspecialchars((string) $product['slug'], ENT_QUOTES, 'UTF-8'); ?></li>
+                                            <li>Filiali attive: <?php echo (int) $product['listed_branches_count']; ?></li>
+                                            <li>Filiali configurate: <?php echo (int) $product['configured_branches_count']; ?></li>
+                                            <li>Allergeni: <?php echo htmlspecialchars((string) ($product['allergens'] !== '' ? $product['allergens'] : 'Nessuno dichiarato'), ENT_QUOTES, 'UTF-8'); ?></li>
+                                        </ul>
 
-                                    <div class="admin-inline-actions">
-                                        <a class="bottone-secondario" href="admin_catalogo_prodotto.php?id=<?php echo (int) $product['id']; ?>">Modifica prodotto</a>
-                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'admin_catalogo.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                                            <input type="hidden" name="action" value="delete_product">
-                                            <input type="hidden" name="product_id" value="<?php echo (int) $product['id']; ?>">
-                                            <button class="bottone-secondario" type="submit">Elimina</button>
-                                        </form>
-                                    </div>
-                                </article>
-                            <?php endforeach; ?>
-                        </div>
+                                        <div class="admin-inline-actions admin-inline-actions--split">
+                                            <a
+                                                class="bottone-secondario admin-icon-button"
+                                                href="admin_catalogo_prodotto.php?id=<?php echo (int) $product['id']; ?>"
+                                                aria-label="Modifica prodotto">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                    <path d="M4 20h4l10-10a2.1 2.1 0 0 0-4-4L4 16v4" />
+                                                    <path d="m13.5 6.5 4 4" />
+                                                </svg>
+                                                <span class="sr-only">Modifica prodotto</span>
+                                            </a>
+                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'admin_catalogo.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                <input type="hidden" name="action" value="delete_product">
+                                                <input type="hidden" name="product_id" value="<?php echo (int) $product['id']; ?>">
+                                                <button class="bottone-secondario admin-icon-button" type="submit" aria-label="Elimina prodotto">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                                        <path d="M9 3h6m-9 4h12m-1 0-.7 11.2a2 2 0 0 1-2 1.8H9.7a2 2 0 0 1-2-1.8L7 7m3 4v5m4-5v5" />
+                                                    </svg>
+                                                    <span class="sr-only">Elimina prodotto</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </article>
                 <?php endif; ?>
 
@@ -320,57 +416,79 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                         <p class="checkout-muted">Ogni filiale può aggiungere il prodotto al proprio catalogo oppure lasciarlo nascosto. Se è presente ma finito o sospeso, resta visibile come non disponibile.</p>
                     </div>
 
-                    <div class="admin-stack-list">
-                        <?php foreach ($inventoryItems as $inventoryItem): ?>
-                            <article class="admin-detail-card">
-                                <div class="ordine-card-head">
-                                    <div>
-                                        <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                        <h4><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
-                                    </div>
-                                    <span class="admin-status-pill <?php echo (int) $inventoryItem['is_listed'] === 1 ? ((int) $inventoryItem['is_available_for_sale'] === 1 ? 'is-success' : 'is-warning') : 'is-muted'; ?>">
-                                        <?php if ((int) $inventoryItem['is_listed'] !== 1): ?>
-                                            Nascosto
-                                        <?php elseif ((int) $inventoryItem['is_available_for_sale'] === 1): ?>
-                                            Disponibile
-                                        <?php else: ?>
-                                            Non disponibile
-                                        <?php endif; ?>
-                                    </span>
-                                </div>
-
-                                <ul class="riepilogo-lista">
-                                    <li><span>Prezzo sede</span><strong><?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?></strong></li>
-                                    <li><span>Stock attuale</span><strong><?php echo (int) $inventoryItem['on_hand_qty']; ?></strong></li>
-                                    <li><span>In arrivo</span><strong><?php echo (int) $inventoryItem['pending_supply_qty']; ?></strong></li>
-                                </ul>
-
-                                <?php if ($canModifyBranchOperations): ?>
-                                    <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'admin_catalogo.php'), ENT_QUOTES, 'UTF-8'); ?>" class="checkout-form">
-                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                                        <input type="hidden" name="action" value="branch_catalog_state">
-                                        <input type="hidden" name="product_id" value="<?php echo (int) $inventoryItem['product_id']; ?>">
-
-                                        <fieldset class="checkout-fieldset">
-                                            <legend>Stato nel catalogo locale</legend>
-                                            <label>
-                                                <input type="checkbox" name="is_listed" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 ? 'checked' : ''; ?>>
-                                                Mostra nel catalogo della filiale
-                                            </label>
-                                            <label>
-                                                <input type="checkbox" name="is_available" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 && (int) $inventoryItem['branch_availability_flag'] === 1 ? 'checked' : ''; ?>>
-                                                Segna come disponibile
-                                            </label>
-                                        </fieldset>
-
-                                        <div class="checkout-navigation checkout-navigation--solo-azione">
-                                            <button class="bottone-secondario" type="submit">Aggiorna stato</button>
+                    <?php if (empty($filteredInventoryItems)): ?>
+                        <p class="checkout-muted">Nessun prodotto di sede corrisponde al filtro selezionato.</p>
+                    <?php else: ?>
+                        <div class="admin-stack-list admin-stack-list--catalog">
+                            <?php foreach ($filteredInventoryItems as $inventoryItem): ?>
+                                <article class="admin-detail-card admin-catalog-card admin-catalog-card--branch">
+                                    <div class="admin-catalog-card-head">
+                                        <div>
+                                            <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                            <h4><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
                                         </div>
-                                    </form>
-                                <?php endif; ?>
-                            </article>
-                        <?php endforeach; ?>
-                    </div>
+                                        <div class="admin-catalog-card-price">
+                                            <strong class="ordine-card-total"><?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?></strong>
+                                            <span class="admin-status-pill <?php echo (int) $inventoryItem['is_listed'] === 1 ? ((int) $inventoryItem['is_available_for_sale'] === 1 ? 'is-success' : 'is-warning') : 'is-muted'; ?>">
+                                                <?php if ((int) $inventoryItem['is_listed'] !== 1): ?>
+                                                    Nascosto
+                                                <?php elseif ((int) $inventoryItem['is_available_for_sale'] === 1): ?>
+                                                    Disponibile
+                                                <?php else: ?>
+                                                    Non disponibile
+                                                <?php endif; ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="admin-catalog-metrics" aria-label="Dettagli operativi prodotto">
+                                        <article>
+                                            <span>Stock attuale</span>
+                                            <strong><?php echo (int) $inventoryItem['on_hand_qty']; ?></strong>
+                                        </article>
+                                        <article>
+                                            <span>In arrivo</span>
+                                            <strong><?php echo (int) $inventoryItem['pending_supply_qty']; ?></strong>
+                                        </article>
+                                        <article>
+                                            <span>Prezzo sede</span>
+                                            <strong><?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?></strong>
+                                        </article>
+                                    </div>
+
+                                    <ul class="admin-tag-list admin-tag-list--compact">
+                                        <li>Prezzo base: <?php echo money_eur((int) $inventoryItem['base_price_cents']); ?></li>
+                                        <li>Disponibilità locale: <?php echo (int) $inventoryItem['branch_availability_flag'] === 1 ? 'Abilitata' : 'Disattivata'; ?></li>
+                                        <li>Allergeni: <?php echo htmlspecialchars((string) ($inventoryItem['allergens'] !== '' ? $inventoryItem['allergens'] : 'Nessuno dichiarato'), ENT_QUOTES, 'UTF-8'); ?></li>
+                                    </ul>
+
+                                    <?php if ($canModifyBranchOperations): ?>
+                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'admin_catalogo.php'), ENT_QUOTES, 'UTF-8'); ?>" class="checkout-form admin-catalog-form">
+                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" name="action" value="branch_catalog_state">
+                                            <input type="hidden" name="product_id" value="<?php echo (int) $inventoryItem['product_id']; ?>">
+
+                                            <fieldset class="checkout-fieldset admin-catalog-fieldset">
+                                                <legend>Stato nel catalogo locale</legend>
+                                                <label>
+                                                    <input type="checkbox" name="is_listed" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 ? 'checked' : ''; ?>>
+                                                    Mostra nel catalogo della filiale
+                                                </label>
+                                                <label>
+                                                    <input type="checkbox" name="is_available" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 && (int) $inventoryItem['branch_availability_flag'] === 1 ? 'checked' : ''; ?>>
+                                                    Segna come disponibile
+                                                </label>
+                                            </fieldset>
+
+                                            <div class="checkout-navigation checkout-navigation--solo-azione">
+                                                <button class="bottone-secondario" type="submit">Aggiorna stato</button>
+                                            </div>
+                                        </form>
+                                    <?php endif; ?>
+                                </article>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </article>
             </div>
         </section>
@@ -1110,14 +1228,12 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     </div>
                 <?php else: ?>
                     <article class="checkout-card admin-panel-card">
-                        <div class="account-panel-head">
-                            <div class="admin-inline-actions" style="justify-content: space-between; width: 100%;">
-                                <div>
-                                    <span class="account-panel-kicker">Manager correnti</span>
-                                    <h3>Credenziali attive o revocate</h3>
-                                </div>
-                                <a class="bottone-primario" href="admin_team.php?modalita=nuovo&amp;reset=1">Nuovo manager</a>
+                        <div class="account-panel-head account-panel-head--split">
+                            <div>
+                                <span class="account-panel-kicker">Manager correnti</span>
+                                <h3>Credenziali attive o revocate</h3>
                             </div>
+                            <a class="bottone-primario" href="admin_team.php?modalita=nuovo&amp;reset=1">Nuovo manager</a>
                         </div>
 
                         <?php if (empty($branchManagers)): ?>

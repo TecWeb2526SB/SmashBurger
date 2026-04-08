@@ -6,6 +6,10 @@ Sito del progetto TecWeb.
 ![Accessibility Check](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/accessibility.yml/badge.svg)
 ![Lighthouse CI](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/lighthouse.yml/badge.svg)
 
-
 Sito disponibile su:  
 https://github.com/TecWeb2526SB/SmashBurger
+
+<!-- ci:lighthouse:start -->
+## Quality Snapshot
+Ultimo aggiornamento automatico dai workflow GitHub Actions.
+<!-- ci:lighthouse:end -->

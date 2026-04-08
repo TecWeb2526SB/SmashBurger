@@ -810,14 +810,15 @@ function cart_get_summary(PDO $pdo, int $userId, ?int $branchId = null): array
             COALESCE(bp.is_listed, 0) AS is_listed
          FROM cart_items ci
          INNER JOIN products p ON p.id = ci.product_id
-         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id
-         LEFT JOIN branch_inventory bi ON bi.product_id = p.id AND bi.branch_id = :branch_id
+         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id_bp
+         LEFT JOIN branch_inventory bi ON bi.product_id = p.id AND bi.branch_id = :branch_id_bi
          WHERE ci.cart_id = :cart_id
          ORDER BY ci.id ASC'
     );
     $itemsStmt->execute([
         'cart_id' => $cartId,
-        'branch_id' => $cartBranchId,
+        'branch_id_bp' => $cartBranchId,
+        'branch_id_bi' => $cartBranchId,
     ]);
     $items = $itemsStmt->fetchAll();
 
@@ -878,14 +879,15 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
             CASE WHEN bi.product_id IS NULL THEN 0 ELSE 1 END AS has_inventory_row,
             COALESCE(bp.is_listed, 0) AS is_listed
          FROM products p
-         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id
-         LEFT JOIN branch_inventory bi ON bi.product_id = p.id AND bi.branch_id = :branch_id
+         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id_bp
+         LEFT JOIN branch_inventory bi ON bi.product_id = p.id AND bi.branch_id = :branch_id_bi
          WHERE p.id = :id
          LIMIT 1'
     );
     $productStmt->execute([
         'id' => $productId,
-        'branch_id' => $branchId,
+        'branch_id_bp' => $branchId,
+        'branch_id_bi' => $branchId,
     ]);
     $product = $productStmt->fetch();
 
