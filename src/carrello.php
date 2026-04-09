@@ -74,8 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     flash_set($result['ok'] ? 'success' : 'error', $result['message']);
     
-    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello.php');
     $allowedRedirects = ['carrello.php', 'prodotti.php'];
+    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello.php');
+    if (!in_array($redirectTo, $allowedRedirects, true)) {
+        $redirectTo = 'carrello.php';
+    }
 
     header('Location: ' . $redirectTo);
     exit;

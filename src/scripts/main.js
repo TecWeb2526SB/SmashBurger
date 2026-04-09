@@ -621,13 +621,12 @@ function inizializzaAjaxCart() {
                 quantityDisplay.addEventListener('keydown', function (e) {
                     const min = Number.parseInt(quantityInput.dataset.min || '0', 10);
                     const max = Number.parseInt(quantityInput.dataset.max || '100', 10);
-                    const currentValue = clampQuantity(quantityInput.value);
-                    let nextValue = currentValue;
+                    let nextValue;
 
                     if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
-                        nextValue = currentValue - 1;
+                        nextValue = clampQuantity(quantityInput.value) - 1;
                     } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
-                        nextValue = currentValue + 1;
+                        nextValue = clampQuantity(quantityInput.value) + 1;
                     } else if (e.key === 'Home') {
                         nextValue = min;
                     } else if (e.key === 'End') {

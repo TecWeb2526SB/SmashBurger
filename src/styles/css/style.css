@@ -46,6 +46,7 @@
     /* Focus */
     --outline-focus: 3px solid #c0392b;
     --outline-offset: 3px;
+    --touch-target-min: 2.75rem;
 
     /* Transizioni */
     --transizione-base: 150ms ease;
@@ -886,6 +887,7 @@ footer a:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: var(--touch-target-min);
     background-color: var(--colore-accento);
     color: #ffffff;
     border: 1px solid transparent;
@@ -930,6 +932,7 @@ footer a:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: var(--touch-target-min);
     background-color: var(--colore-sfondo);
     color: var(--colore-testo);
     border: var(--bordo-standard);
@@ -1213,7 +1216,7 @@ footer a:focus-visible {
 }
 
 .campo-password-wrapper input {
-    padding-right: 3rem;
+    padding-right: 3.75rem;
 }
 
 .mostra-password {
@@ -1222,8 +1225,8 @@ footer a:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2rem;
-    height: 2rem;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
     background: none;
     border: none;
     cursor: pointer;
@@ -1390,7 +1393,7 @@ footer a:focus-visible {
 
 .cart-quantity-stepper {
     display: inline-grid;
-    grid-template-columns: 2.5rem minmax(3rem, 4rem) 2.5rem;
+    grid-template-columns: var(--touch-target-min) minmax(3.25rem, 4rem) var(--touch-target-min);
     align-items: stretch;
     gap: 0.35rem;
     background-color: var(--colore-sfondo);
@@ -1400,8 +1403,8 @@ footer a:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 2.5rem;
-    min-width: 3rem;
+    min-height: var(--touch-target-min);
+    min-width: 3.25rem;
     font-weight: 700;
     color: var(--colore-testo);
     text-align: center;
@@ -1421,7 +1424,8 @@ footer a:focus-visible {
     font-size: 1.1rem;
     font-weight: 700;
     padding: 0;
-    min-height: 2.5rem;
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
     transition: color var(--transizione-base), background-color var(--transizione-base);
 }
 
@@ -1453,8 +1457,8 @@ footer a:focus-visible {
 }
 
 .cart-remove-button {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: var(--touch-target-min);
+    height: var(--touch-target-min);
     padding: 0;
     justify-content: center;
 }
