@@ -1220,6 +1220,146 @@ function inizializzaAdminCatalogoProdotto() {
 }
 
 /* ==========================================================================
+   12. BUILDER FORNITURE - RIGHE DINAMICHE
+   ========================================================================== */
+
+function inizializzaAdminSupplyBuilder() {
+    const repeatableLists = document.querySelectorAll('[data-repeatable-list]');
+    if (repeatableLists.length === 0) return;
+
+    const valutaFormatter = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR'
+    });
+
+    repeatableLists.forEach(function (list) {
+        const rowsContainer = list.querySelector('[data-repeatable-rows]');
+        const addButton = list.querySelector('[data-repeatable-add]');
+        const template = list.querySelector('template[data-repeatable-template]');
+        if (!rowsContainer || !addButton || !template) return;
+
+        let nextIndex = Number.parseInt(list.dataset.nextIndex || '0', 10);
+        if (Number.isNaN(nextIndex) || nextIndex < 0) {
+            nextIndex = rowsContainer.querySelectorAll('[data-repeatable-row]').length;
+        }
+
+        function aggiornaCostoRiga(row) {
+            const select = row.querySelector('select[data-product-select]');
+            const output = row.querySelector('[data-product-cost-output]');
+            if (!select || !output) return;
+
+            const defaultMessage = output.dataset.defaultMessage || '';
+            const missingMessage = output.dataset.missingMessage || defaultMessage;
+            const selectedOption = select.options[select.selectedIndex];
+            const unitCost = Number.parseInt((selectedOption && selectedOption.dataset.unitCost) || '0', 10);
+
+            if (!select.value) {
+                output.textContent = defaultMessage;
+                return;
+            }
+
+            if (Number.isFinite(unitCost) && unitCost > 0) {
+                output.textContent = `Costo filiale applicato automaticamente: ${valutaFormatter.format(unitCost / 100)}`;
+                return;
+            }
+
+            output.textContent = missingMessage;
+        }
+
+        function svuotaRiga(row) {
+            row.querySelectorAll('input, select, textarea').forEach(function (field) {
+                if (field.tagName === 'SELECT') {
+                    field.selectedIndex = 0;
+                    return;
+                }
+
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    field.checked = false;
+                    return;
+                }
+
+                field.value = '';
+            });
+        }
+
+        function aggiornaStatoRighe() {
+            const rows = Array.from(rowsContainer.querySelectorAll('[data-repeatable-row]'));
+
+            rows.forEach(function (row, index) {
+                const label = row.querySelector('[data-repeatable-label]');
+                const removeButton = row.querySelector('[data-repeatable-remove]');
+
+                if (label) {
+                    const prefix = label.dataset.labelPrefix || 'Prodotto';
+                    label.textContent = `${prefix} ${index + 1}`;
+                }
+
+                if (removeButton) {
+                    const isDisabled = rows.length <= 1;
+                    removeButton.disabled = isDisabled;
+                    removeButton.setAttribute('aria-disabled', String(isDisabled));
+                }
+
+                aggiornaCostoRiga(row);
+            });
+        }
+
+        function collegaRiga(row) {
+            const removeButton = row.querySelector('[data-repeatable-remove]');
+            const productSelect = row.querySelector('select[data-product-select]');
+
+            if (removeButton) {
+                removeButton.addEventListener('click', function () {
+                    const rows = rowsContainer.querySelectorAll('[data-repeatable-row]');
+
+                    if (rows.length <= 1) {
+                        svuotaRiga(row);
+                        aggiornaStatoRighe();
+                        return;
+                    }
+
+                    row.remove();
+                    aggiornaStatoRighe();
+                });
+            }
+
+            if (productSelect) {
+                productSelect.addEventListener('change', function () {
+                    aggiornaCostoRiga(row);
+                });
+            }
+        }
+
+        addButton.addEventListener('click', function () {
+            const markup = template.innerHTML.split('__INDEX__').join(String(nextIndex));
+            nextIndex += 1;
+            list.dataset.nextIndex = String(nextIndex);
+
+            const fragment = document.createRange().createContextualFragment(markup);
+            const newRows = Array.from(fragment.querySelectorAll('[data-repeatable-row]'));
+            rowsContainer.appendChild(fragment);
+
+            newRows.forEach(function (row) {
+                collegaRiga(row);
+            });
+
+            aggiornaStatoRighe();
+
+            const firstField = rowsContainer.querySelector('[data-repeatable-row]:last-child select, [data-repeatable-row]:last-child input');
+            if (firstField) {
+                firstField.focus();
+            }
+        });
+
+        rowsContainer.querySelectorAll('[data-repeatable-row]').forEach(function (row) {
+            collegaRiga(row);
+        });
+
+        aggiornaStatoRighe();
+    });
+}
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -1239,4 +1379,5 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaCheckoutPagamento();
     inizializzaStampaRicevuta();
     inizializzaAdminCatalogoProdotto();
+    inizializzaAdminSupplyBuilder();
 });

@@ -12,7 +12,7 @@ foreach ($sectionLinks as $sectionLink) {
     $sectionUrls[(string) $sectionLink['section']] = (string) $sectionLink['href'];
 }
 
-$inventoryItems = inventory_get_branch_products($pdo, $selectedBranchId);
+$inventoryItems = admin_prepare_supply_products($pdo, $selectedBranchId, inventory_get_branch_products($pdo, $selectedBranchId));
 $productsById = admin_build_products_lookup($inventoryItems);
 $csrfToken = csrf_token();
 $flash = null;
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $frequency = (string) ($_POST['frequency'] ?? 'weekly');
             $nextRunAtSql = parse_local_datetime_to_sql((string) ($_POST['next_run_at'] ?? ''));
             $notes = trim((string) ($_POST['notes'] ?? ''));
-            $items = admin_extract_supply_items($_POST, 'template', $productsById);
+            $items = admin_extract_supply_items($pdo, $selectedBranchId, $_POST, 'template', $productsById);
 
             supply_create_template($pdo, $selectedBranchId, (int) $utente['id'], $templateName, $frequency, (string) $nextRunAtSql, $items, $notes);
             flash_set('success', 'Fornitura standard programmata con successo.');
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $scheduledForSql = parse_local_datetime_to_sql((string) ($_POST['scheduled_for'] ?? ''));
             $notes = trim((string) ($_POST['notes'] ?? ''));
             $supplierName = trim((string) ($_POST['supplier_name'] ?? 'Centro forniture SmashBurger'));
-            $items = admin_extract_supply_items($_POST, 'extra', $productsById);
+            $items = admin_extract_supply_items($pdo, $selectedBranchId, $_POST, 'extra', $productsById);
             $status = $scheduledForSql !== null ? 'scheduled' : 'ordered';
 
             supply_create_order($pdo, $selectedBranchId, (int) $utente['id'], 'extraordinary', $status, $items, $scheduledForSql, null, $notes, $supplierName);

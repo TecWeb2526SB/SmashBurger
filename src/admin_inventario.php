@@ -28,48 +28,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if (!$canModifyBranchOperations) {
-            throw new RuntimeException('Solo il manager della filiale puo rettificare l inventario.');
+            throw new RuntimeException('Solo il manager della filiale puo modificare inventario e prezzi locali.');
+        }
+
+        $action = (string) ($_POST['action'] ?? '');
+        if ($action !== 'update_branch_pricing') {
+            throw new RuntimeException('Azione inventario non riconosciuta.');
         }
 
         $productId = (int) ($_POST['product_id'] ?? 0);
-        $quantityDelta = (int) ($_POST['quantity_delta'] ?? 0);
-        $unitCostCents = max(0, (int) ($_POST['unit_cost_cents'] ?? 0));
-        $notes = trim((string) ($_POST['notes'] ?? ''));
-
         if ($productId <= 0 || !isset($productsById[$productId])) {
-            throw new RuntimeException('Seleziona un prodotto valido per la rettifica inventario.');
+            throw new RuntimeException('Seleziona un prodotto valido per il prezzo di filiale.');
         }
 
-        if ($quantityDelta === 0) {
-            throw new RuntimeException('Inserisci una variazione quantita diversa da zero.');
+        $branchPriceCents = admin_parse_money_to_cents((string) ($_POST['sale_price'] ?? ''));
+        if ($branchPriceCents <= 0) {
+            throw new RuntimeException('Inserisci un prezzo di filiale valido.');
         }
 
-        $pdo->beginTransaction();
-        inventory_adjust_stock(
+        $product = $productsById[$productId];
+        $basePriceCents = (int) ($product['base_price_cents'] ?? 0);
+        $priceOverride = $branchPriceCents === $basePriceCents ? null : $branchPriceCents;
+
+        branch_catalog_set_product_state(
             $pdo,
             $selectedBranchId,
             $productId,
-            $quantityDelta,
-            'manual_adjustment',
-            'manual',
-            null,
-            $notes !== '' ? $notes : 'Rettifica manuale inventario da pannello manager.',
-            (int) $utente['id'],
-            $quantityDelta > 0 ? $unitCostCents : null
+            (int) ($product['is_listed'] ?? 0) === 1,
+            (int) ($product['branch_availability_flag'] ?? 0) === 1,
+            $priceOverride
         );
-        $pdo->commit();
 
-        try {
-            auto_reorder_evaluate_branch($pdo, $selectedBranchId, (int) $utente['id']);
-        } catch (\Throwable $autoReorderException) {
-            error_log('Errore auto-riordino dopo rettifica inventario: ' . $autoReorderException->getMessage());
-        }
-
-        flash_set('success', 'Inventario aggiornato con successo.');
+        flash_set(
+            'success',
+            $priceOverride === null
+                ? 'Prezzo filiale riallineato al prezzo base del catalogo.'
+                : 'Prezzo filiale aggiornato con successo.'
+        );
     } catch (\Throwable $e) {
-        if ($pdo->inTransaction()) {
-            $pdo->rollBack();
-        }
         flash_set('error', $e->getMessage());
     }
 
@@ -81,6 +77,7 @@ $flash = flash_get();
 $backgroundMessages = admin_panel_background_messages($pdo, $isBranchManager, $selectedBranchId, (int) $utente['id']);
 $inventoryItems = inventory_get_branch_products($pdo, $selectedBranchId);
 $kpis = analytics_get_branch_kpis($pdo, $selectedBranchId);
+$inventoryAdjustmentUrl = admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin);
 
 $globalCatalog = [];
 $categories = [];

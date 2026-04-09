@@ -100,7 +100,11 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                     'admin.php',
                                     'admin_catalogo.php',
                                     'admin_inventario.php',
+                                    'admin_inventario_rettifica.php',
                                     'admin_forniture.php',
+                                    'admin_forniture_standard.php',
+                                    'admin_forniture_straordinaria.php',
+                                    'admin_forniture_automatico.php',
                                     'admin_automatico.php',
                                     'admin_ricevute.php',
                                 ];

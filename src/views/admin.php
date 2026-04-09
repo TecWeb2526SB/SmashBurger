@@ -59,6 +59,18 @@ $catalogMetrics = $catalogMetrics ?? [
     'branch_total' => count($filteredInventoryItems),
     'branch_available' => 0,
 ];
+$catalogListedCount = 0;
+$catalogUnavailableCount = 0;
+foreach ($filteredInventoryItems as $filteredInventoryItem) {
+    if ((int) ($filteredInventoryItem['is_listed'] ?? 0) === 1) {
+        $catalogListedCount++;
+    }
+
+    if ((int) ($filteredInventoryItem['is_listed'] ?? 0) === 1 && (int) ($filteredInventoryItem['is_available_for_sale'] ?? 0) !== 1) {
+        $catalogUnavailableCount++;
+    }
+}
+$catalogHiddenCount = max(0, count($filteredInventoryItems) - $catalogListedCount);
 
 $maxTrendRevenue = 0;
 foreach ($salesTrend as $trendItem) {
@@ -74,6 +86,69 @@ $maxCategoryRevenue = 0;
 foreach ($categoryMix as $categoryItem) {
     $maxCategoryRevenue = max($maxCategoryRevenue, (int) $categoryItem['revenue_cents']);
 }
+
+$inventoryProductCount = count($inventoryItems);
+$inventoryAvailableCount = 0;
+$inventoryBelowThresholdCount = 0;
+$inventoryPendingUnits = 0;
+$inventoryPendingProductsCount = 0;
+foreach ($inventoryItems as $inventoryItemSummary) {
+    $pendingSupplyQty = max(0, (int) ($inventoryItemSummary['pending_supply_qty'] ?? 0));
+    $inventoryPendingUnits += $pendingSupplyQty;
+
+    if ($pendingSupplyQty > 0) {
+        $inventoryPendingProductsCount++;
+    }
+
+    if (!empty($inventoryItemSummary['is_available_for_sale'])) {
+        $inventoryAvailableCount++;
+    }
+
+    if (!empty($inventoryItemSummary['is_below_threshold'])) {
+        $inventoryBelowThresholdCount++;
+    }
+}
+
+$activeTemplatesCount = 0;
+foreach ($templates as $templateSummary) {
+    if ((int) ($templateSummary['is_active'] ?? 0) === 1) {
+        $activeTemplatesCount++;
+    }
+}
+
+$openSupplyOrdersCount = 0;
+$scheduledSupplyOrdersCount = 0;
+$receivedSupplyOrdersCount = 0;
+foreach ($supplyOrders as $supplyOrderSummary) {
+    $supplyOrderStatus = (string) ($supplyOrderSummary['status'] ?? '');
+
+    if (in_array($supplyOrderStatus, ['draft', 'scheduled', 'ordered'], true)) {
+        $openSupplyOrdersCount++;
+    }
+
+    if ($supplyOrderStatus === 'scheduled') {
+        $scheduledSupplyOrdersCount++;
+    }
+
+    if ($supplyOrderStatus === 'received') {
+        $receivedSupplyOrdersCount++;
+    }
+}
+
+$activePoliciesCount = 0;
+foreach ($policies as $policySummary) {
+    if ((int) ($policySummary['is_active'] ?? 0) === 1) {
+        $activePoliciesCount++;
+    }
+}
+
+$standardSupplyBuilderUrl = admin_supply_builder_url('standard', $selectedBranchSlug, $isGeneralAdmin);
+$extraSupplyBuilderUrl = admin_supply_builder_url('extra', $selectedBranchSlug, $isGeneralAdmin);
+$automaticSupplyBuilderUrl = admin_supply_builder_url('automatic', $selectedBranchSlug, $isGeneralAdmin);
+$inventoryAdjustmentUrl = $inventoryAdjustmentUrl ?? admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin);
+$inventoryAdjustmentModes = function_exists('admin_inventory_adjustment_modes')
+    ? admin_inventory_adjustment_modes()
+    : [];
 
 $frequencyLabels = supply_frequency_options();
 $teamMode = $teamMode ?? 'list';
@@ -339,6 +414,55 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                 <?php endif; ?>
             </article>
 
+            <?php if ($canModifyBranchOperations): ?>
+                <article class="checkout-card admin-panel-card admin-catalog-price-panel">
+                    <div class="admin-catalog-price-layout">
+                        <div class="admin-catalog-price-main">
+                            <div class="account-panel-head">
+                                <span class="account-panel-kicker">Prezzo cliente</span>
+                                <h3>Aggiorna il prezzo finale della filiale</h3>
+                                <p class="checkout-muted">Imposta il prezzo locale mostrato al cliente per la referenza selezionata.</p>
+                            </div>
+
+                            <form class="checkout-form admin-inventory-price-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'admin_catalogo.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate>
+                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="hidden" name="action" value="update_branch_pricing">
+
+                                <div class="admin-catalog-price-form-grid">
+                                    <div class="campo-gruppo">
+                                        <label for="catalog-price-product-id">Prodotto</label>
+                                        <select id="catalog-price-product-id" name="product_id" required aria-required="true">
+                                            <option value="">Seleziona un prodotto</option>
+                                            <?php foreach ($inventoryItems as $inventoryItem): ?>
+                                                <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
+                                                    <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                    (attuale <?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
+                                    <div class="campo-gruppo">
+                                        <label for="catalog-sale-price">Prezzo filiale (EUR)</label>
+                                        <input type="text" id="catalog-sale-price" name="sale_price" inputmode="decimal" placeholder="Es. 8,90" required aria-required="true">
+                                    </div>
+
+                                    <div class="admin-catalog-price-actions">
+                                        <button class="bottone-secondario" type="submit">Salva prezzo filiale</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <article class="admin-catalog-price-side" aria-label="Suggerimento prezzo filiale">
+                            <span class="account-panel-kicker">Suggerimento</span>
+                            <h3>Usa il prezzo finale visto dal cliente</h3>
+                            <p class="checkout-muted">Se inserisci lo stesso importo del catalogo base, la sede torna al prezzo globale senza mantenere override locali.</p>
+                        </article>
+                    </div>
+                </article>
+            <?php endif; ?>
+
             <div class="admin-form-grid admin-form-grid--double">
                 <?php if ($canManageGlobalCatalog): ?>
                     <article class="checkout-card admin-panel-card">
@@ -413,7 +537,22 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <div class="account-panel-head">
                         <span class="account-panel-kicker">Catalogo sede</span>
                         <h3>Presenza prodotto in <?php echo htmlspecialchars((string) $selectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                        <p class="checkout-muted">Ogni filiale può aggiungere il prodotto al proprio catalogo oppure lasciarlo nascosto. Se è presente ma finito o sospeso, resta visibile come non disponibile.</p>
+                        <p class="checkout-muted">Qui gestisci solo come il prodotto si presenta al cliente nella filiale: presenza nel menu e possibilità di ordinazione.</p>
+                    </div>
+
+                    <div class="admin-catalog-state-grid" aria-label="Riepilogo catalogo locale">
+                        <article>
+                            <span>Visibili nel menu</span>
+                            <strong><?php echo (int) $catalogListedCount; ?></strong>
+                        </article>
+                        <article>
+                            <span>Nascosti</span>
+                            <strong><?php echo (int) $catalogHiddenCount; ?></strong>
+                        </article>
+                        <article>
+                            <span>Visibili ma non ordinabili</span>
+                            <strong><?php echo (int) $catalogUnavailableCount; ?></strong>
+                        </article>
                     </div>
 
                     <?php if (empty($filteredInventoryItems)): ?>
@@ -426,39 +565,13 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         <div>
                                             <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
                                             <h4><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
-                                        </div>
-                                        <div class="admin-catalog-card-price">
-                                            <strong class="ordine-card-total"><?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?></strong>
-                                            <span class="admin-status-pill <?php echo (int) $inventoryItem['is_listed'] === 1 ? ((int) $inventoryItem['is_available_for_sale'] === 1 ? 'is-success' : 'is-warning') : 'is-muted'; ?>">
-                                                <?php if ((int) $inventoryItem['is_listed'] !== 1): ?>
-                                                    Nascosto
-                                                <?php elseif ((int) $inventoryItem['is_available_for_sale'] === 1): ?>
-                                                    Disponibile
-                                                <?php else: ?>
-                                                    Non disponibile
-                                                <?php endif; ?>
-                                            </span>
+                                            <p class="checkout-muted admin-catalog-description">
+                                                <?php echo htmlspecialchars((string) (($inventoryItem['description'] ?? '') !== '' ? $inventoryItem['description'] : 'Scheda cliente senza descrizione estesa.'), ENT_QUOTES, 'UTF-8'); ?>
+                                            </p>
                                         </div>
                                     </div>
 
-                                    <div class="admin-catalog-metrics" aria-label="Dettagli operativi prodotto">
-                                        <article>
-                                            <span>Stock attuale</span>
-                                            <strong><?php echo (int) $inventoryItem['on_hand_qty']; ?></strong>
-                                        </article>
-                                        <article>
-                                            <span>In arrivo</span>
-                                            <strong><?php echo (int) $inventoryItem['pending_supply_qty']; ?></strong>
-                                        </article>
-                                        <article>
-                                            <span>Prezzo sede</span>
-                                            <strong><?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?></strong>
-                                        </article>
-                                    </div>
-
-                                    <ul class="admin-tag-list admin-tag-list--compact">
-                                        <li>Prezzo base: <?php echo money_eur((int) $inventoryItem['base_price_cents']); ?></li>
-                                        <li>Disponibilità locale: <?php echo (int) $inventoryItem['branch_availability_flag'] === 1 ? 'Abilitata' : 'Disattivata'; ?></li>
+                                    <ul class="admin-tag-list admin-tag-list--compact admin-tag-list--catalog-meta">
                                         <li>Allergeni: <?php echo htmlspecialchars((string) ($inventoryItem['allergens'] !== '' ? $inventoryItem['allergens'] : 'Nessuno dichiarato'), ENT_QUOTES, 'UTF-8'); ?></li>
                                     </ul>
 
@@ -468,15 +581,21 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                             <input type="hidden" name="action" value="branch_catalog_state">
                                             <input type="hidden" name="product_id" value="<?php echo (int) $inventoryItem['product_id']; ?>">
 
-                                            <fieldset class="checkout-fieldset admin-catalog-fieldset">
-                                                <legend>Stato nel catalogo locale</legend>
-                                                <label>
+                                            <fieldset class="checkout-fieldset admin-catalog-fieldset admin-catalog-fieldset--single">
+                                                <legend>Stato locale</legend>
+                                                <label class="admin-catalog-toggle">
                                                     <input type="checkbox" name="is_listed" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 ? 'checked' : ''; ?>>
-                                                    Mostra nel catalogo della filiale
+                                                    <span class="admin-catalog-toggle-copy">
+                                                        <strong>Visibile nel menu</strong>
+                                                        <span>Mostra il prodotto ai clienti della filiale.</span>
+                                                    </span>
                                                 </label>
-                                                <label>
+                                                <label class="admin-catalog-toggle">
                                                     <input type="checkbox" name="is_available" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 && (int) $inventoryItem['branch_availability_flag'] === 1 ? 'checked' : ''; ?>>
-                                                    Segna come disponibile
+                                                    <span class="admin-catalog-toggle-copy">
+                                                        <strong>Ordinabile</strong>
+                                                        <span>Permetti al cliente di completare l'ordine.</span>
+                                                    </span>
                                                 </label>
                                             </fieldset>
 
@@ -498,53 +617,77 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
         <section id="sezione-inventario" class="admin-section" aria-labelledby="titolo-inventario">
             <h2 id="titolo-inventario" class="sr-only">Inventario per unità di prodotto</h2>
 
-            <div class="admin-form-grid">
-                <?php if ($canModifyBranchOperations): ?>
-                    <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['inventario'] ?? 'admin_inventario.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-rettifica-inventario">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="adjust_inventory">
+            <article class="checkout-card admin-section-hero">
+                <div class="admin-section-hero-copy">
+                    <span class="account-panel-kicker">Magazzino</span>
+                    <h3>Stock, prezzo locale e copertura operativa in un solo quadro</h3>
+                    <p class="checkout-muted">Inventario raccoglie i dati di sede che non devono stare in Catalogo: quantità disponibili, merce in arrivo, prezzo locale, valore stock e rettifiche guidate.</p>
+                </div>
+                <div class="admin-section-hero-stats" aria-label="Indicatori inventario">
+                    <article class="admin-section-stat">
+                        <span>Referenze monitorate</span>
+                        <strong><?php echo (int) $inventoryProductCount; ?></strong>
+                    </article>
+                    <article class="admin-section-stat">
+                        <span>Acquistabili ora</span>
+                        <strong><?php echo (int) $inventoryAvailableCount; ?></strong>
+                    </article>
+                    <article class="admin-section-stat">
+                        <span>Unità in arrivo</span>
+                        <strong><?php echo (int) $inventoryPendingUnits; ?></strong>
+                    </article>
+                    <article class="admin-section-stat">
+                        <span>Alert soglia</span>
+                        <strong><?php echo (int) $inventoryBelowThresholdCount; ?></strong>
+                    </article>
+                </div>
+            </article>
 
-                        <div class="account-panel-head">
-                            <span class="account-panel-kicker">Azione rapida</span>
-                            <h3 id="titolo-rettifica-inventario">Rettifica inventario</h3>
-                            <p class="checkout-muted">Usa quantità positive per caricare merce, negative per scaricare o correggere manualmente.</p>
-                        </div>
+            <div class="checkout-shell admin-action-shell">
+                <div class="admin-action-stack">
+                    <?php if ($canModifyBranchOperations): ?>
+                        <article class="checkout-card admin-panel-card">
+                            <div class="account-panel-head">
+                                <span class="account-panel-kicker">Rettifiche</span>
+                                <h3 id="titolo-rettifica-inventario">Apri il flusso giusto</h3>
+                                <p class="checkout-muted">La rettifica non vive più dentro un form generico: scegli il tipo di intervento e continua in una pagina dedicata con breadcrumb, ritorno rapido e blocchi orizzontali più leggibili.</p>
+                            </div>
 
-                        <div class="campo-gruppo">
-                            <label for="inventory-product-id">Prodotto</label>
-                            <select id="inventory-product-id" name="product_id" required aria-required="true">
-                                <option value="">Seleziona un prodotto</option>
-                                <?php foreach ($inventoryItems as $inventoryItem): ?>
-                                    <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
-                                        <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
-                                    </option>
+                            <div class="admin-adjustment-launch-grid">
+                                <?php foreach ($inventoryAdjustmentModes as $modeKey => $modeItem): ?>
+                                    <article class="admin-adjustment-launch-card">
+                                        <div class="admin-adjustment-launch-copy">
+                                            <span class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) ($modeItem['label'] ?? 'Modalita'), ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <h4><?php echo htmlspecialchars((string) ($modeItem['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            <p class="checkout-muted"><?php echo htmlspecialchars((string) ($modeItem['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                                        </div>
+                                        <div class="admin-adjustment-launch-actions">
+                                            <a class="bottone-primario" href="<?php echo htmlspecialchars(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, (string) $modeKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                                Apri flusso
+                                            </a>
+                                        </div>
+                                    </article>
                                 <?php endforeach; ?>
-                            </select>
-                        </div>
-
-                        <div class="admin-inline-grid">
-                            <div class="campo-gruppo">
-                                <label for="inventory-quantity-delta">Variazione quantità</label>
-                                <input type="number" id="inventory-quantity-delta" name="quantity_delta" required aria-required="true" step="1">
                             </div>
-                            <div class="campo-gruppo">
-                                <label for="inventory-unit-cost">Costo unitario centesimi</label>
-                                <input type="number" id="inventory-unit-cost" name="unit_cost_cents" min="0" step="1" value="0">
+                        </article>
+
+                    <?php else: ?>
+                        <article class="checkout-card admin-panel-card">
+                            <div class="account-panel-head">
+                                <span class="account-panel-kicker">Vista centrale</span>
+                                <h3>Controllo inventario in sola lettura</h3>
+                                <p class="checkout-muted">Come admin centrale puoi monitorare quantità, prezzo locale, valore stock e soglie della filiale selezionata. La rettifica resta riservata al manager della sede.</p>
                             </div>
-                        </div>
+                            <ul class="riepilogo-lista">
+                                <li><span>Referenze monitorate</span><strong><?php echo (int) $inventoryProductCount; ?></strong></li>
+                                <li><span>Acquistabili</span><strong><?php echo (int) $inventoryAvailableCount; ?></strong></li>
+                                <li><span>In arrivo</span><strong><?php echo (int) $inventoryPendingProductsCount; ?> referenze</strong></li>
+                            </ul>
+                        </article>
+                    <?php endif; ?>
+                </div>
 
-                        <div class="campo-gruppo">
-                            <label for="inventory-notes">Nota operativa</label>
-                            <textarea id="inventory-notes" name="notes" rows="3"></textarea>
-                        </div>
-
-                        <div class="checkout-navigation checkout-navigation--solo-azione">
-                            <button class="bottone-primario" type="submit">Salva rettifica</button>
-                        </div>
-                    </form>
-                <?php endif; ?>
-
-                <aside class="checkout-card account-side">
+                <aside class="checkout-card account-side admin-action-side">
                     <div class="account-panel-head">
                         <span class="account-panel-kicker">Sintesi</span>
                         <h3>Stato stock</h3>
@@ -552,61 +695,94 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <ul class="riepilogo-lista">
                         <li><span>Unità a stock</span><strong><?php echo (int) $kpis['inventory_units']; ?></strong></li>
                         <li><span>Valore inventario</span><strong><?php echo money_eur((int) $kpis['inventory_value_cents']); ?></strong></li>
+                        <li><span>Unità in arrivo</span><strong><?php echo (int) $inventoryPendingUnits; ?></strong></li>
                         <li><span>Prodotti sotto soglia</span><strong><?php echo (int) $kpis['stock_alerts']; ?></strong></li>
                     </ul>
                     <p class="checkout-muted account-note">
-                        La disponibilità online della sede ora dipende anche dallo stock residuo: se un prodotto finisce, non risulta più acquistabile.
+                        La disponibilità online della sede segue lo stock residuo: quando una referenza finisce o resta senza copertura sufficiente, lo stato qui sotto lo rende subito evidente.
                     </p>
                 </aside>
             </div>
 
-            <div class="checkout-card admin-panel-card">
-                <div class="account-panel-head">
-                    <span class="account-panel-kicker">Dettaglio</span>
-                    <h3>Disponibilità per prodotto</h3>
-                    <p class="checkout-muted">Quantità presenti, merce in arrivo, valore stock e stato rispetto alla soglia automatica.</p>
+            <article class="checkout-card admin-panel-card">
+                <div class="account-panel-head account-panel-head--split">
+                    <div>
+                        <span class="account-panel-kicker">Dettaglio</span>
+                        <h3>Disponibilità per prodotto</h3>
+                        <p class="checkout-muted">Quantità presenti, merce in arrivo, valore stock e stato rispetto alla soglia automatica.</p>
+                    </div>
+                    <ul class="admin-tag-list admin-tag-list--compact" aria-label="Sintesi disponibilità inventario">
+                        <li><?php echo (int) $inventoryAvailableCount; ?> acquistabili</li>
+                        <li><?php echo (int) $inventoryBelowThresholdCount; ?> alert</li>
+                        <li><?php echo (int) $inventoryPendingProductsCount; ?> in arrivo</li>
+                    </ul>
                 </div>
 
-                <div class="admin-table-wrap">
-                    <table class="admin-table">
-                        <caption class="sr-only">Inventario della filiale per prodotto</caption>
-                        <thead>
-                            <tr>
-                                <th scope="col">Prodotto</th>
-                                <th scope="col">Categoria</th>
-                                <th scope="col">In sede</th>
-                                <th scope="col">In arrivo</th>
-                                <th scope="col">Valore stock</th>
-                                <th scope="col">Soglia</th>
-                                <th scope="col">Stato</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($inventoryItems as $inventoryItem): ?>
+                <?php if (empty($inventoryItems)): ?>
+                    <p class="checkout-muted">Nessun prodotto di filiale disponibile per il monitoraggio inventario.</p>
+                <?php else: ?>
+                    <div class="admin-table-wrap">
+                        <table class="admin-table">
+                            <caption class="sr-only">Inventario della filiale per prodotto</caption>
+                            <thead>
                                 <tr>
-                                    <th scope="row"><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
-                                    <td><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                    <td><?php echo (int) $inventoryItem['on_hand_qty']; ?></td>
-                                    <td><?php echo (int) $inventoryItem['pending_supply_qty']; ?></td>
-                                    <td><?php echo money_eur((int) $inventoryItem['stock_value_cents']); ?></td>
-                                    <td><?php echo (int) $inventoryItem['threshold_qty']; ?></td>
-                                    <td>
-                                        <span class="admin-status-pill <?php echo !empty($inventoryItem['is_below_threshold']) ? 'is-warning' : (!empty($inventoryItem['is_available_for_sale']) ? 'is-success' : 'is-muted'); ?>">
-                                            <?php if (!empty($inventoryItem['is_below_threshold'])): ?>
-                                                Sotto soglia
-                                            <?php elseif (!empty($inventoryItem['is_available_for_sale'])): ?>
-                                                Disponibile
-                                            <?php else: ?>
-                                                Non acquistabile
-                                            <?php endif; ?>
-                                        </span>
-                                    </td>
+                                    <th scope="col">Prodotto</th>
+                                    <th scope="col">In sede</th>
+                                    <th scope="col">In arrivo</th>
+                                    <th scope="col">Prezzo filiale</th>
+                                    <th scope="col">Costo medio</th>
+                                    <th scope="col">Valore stock</th>
+                                    <th scope="col">Soglia</th>
+                                    <th scope="col">Stato</th>
+                                    <?php if ($canModifyBranchOperations): ?>
+                                        <th scope="col">Azioni</th>
+                                    <?php endif; ?>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($inventoryItems as $inventoryItem): ?>
+                                    <tr>
+                                        <th scope="row">
+                                            <div class="admin-table-primary">
+                                                <strong><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                                <span><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            </div>
+                                        </th>
+                                        <td><?php echo (int) $inventoryItem['on_hand_qty']; ?></td>
+                                        <td><?php echo (int) $inventoryItem['pending_supply_qty']; ?></td>
+                                        <td><?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?></td>
+                                        <td><?php echo money_eur((int) $inventoryItem['average_unit_cost_cents']); ?></td>
+                                        <td><?php echo money_eur((int) $inventoryItem['stock_value_cents']); ?></td>
+                                        <td><?php echo (int) $inventoryItem['threshold_qty']; ?></td>
+                                        <td>
+                                            <span class="admin-status-pill <?php echo !empty($inventoryItem['manual_unavailable']) ? 'is-muted' : (!empty($inventoryItem['is_below_threshold']) ? 'is-warning' : (!empty($inventoryItem['is_available_for_sale']) ? 'is-success' : 'is-muted')); ?>">
+                                                <?php if (!empty($inventoryItem['manual_unavailable'])): ?>
+                                                    Bloccato
+                                                <?php elseif (!empty($inventoryItem['is_below_threshold'])): ?>
+                                                    Sotto soglia
+                                                <?php elseif (!empty($inventoryItem['is_available_for_sale'])): ?>
+                                                    Copertura ok
+                                                <?php else: ?>
+                                                    Non acquistabile
+                                                <?php endif; ?>
+                                            </span>
+                                        </td>
+                                        <?php if ($canModifyBranchOperations): ?>
+                                            <td>
+                                                <div class="admin-table-actions">
+                                                    <a class="bottone-secondario" href="<?php echo htmlspecialchars(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, 'conteggio', (int) $inventoryItem['product_id']), ENT_QUOTES, 'UTF-8'); ?>">
+                                                        Rettifica
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        <?php endif; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </article>
         </section>
         <?php endif; ?>
 
@@ -614,141 +790,168 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
         <section id="sezione-forniture" class="admin-section" aria-labelledby="titolo-forniture">
             <h2 id="titolo-forniture" class="sr-only">Forniture standard e straordinarie</h2>
 
-            <?php if ($canModifyBranchOperations): ?>
-                <div class="admin-form-grid admin-form-grid--double">
-                    <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'admin_forniture.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-template-fornitura">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="create_standard_template">
-
-                        <div class="account-panel-head">
-                            <span class="account-panel-kicker">Ricorrenza</span>
-                            <h3 id="titolo-template-fornitura">Programma una fornitura standard</h3>
-                            <p class="checkout-muted">Definisci una cadenza ricorrente e fino a tre prodotti per il template iniziale.</p>
-                        </div>
-
-                        <div class="campo-gruppo">
-                            <label for="template-name">Nome template</label>
-                            <input type="text" id="template-name" name="template_name" required aria-required="true" maxlength="120">
-                        </div>
-
-                        <div class="admin-inline-grid">
-                            <div class="campo-gruppo">
-                                <label for="template-frequency">Frequenza</label>
-                                <select id="template-frequency" name="frequency" required aria-required="true">
-                                    <?php foreach (supply_frequency_options() as $value => $label): ?>
-                                        <option value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="campo-gruppo">
-                                <label for="template-next-run">Prima esecuzione</label>
-                                <input type="datetime-local" id="template-next-run" name="next_run_at" required aria-required="true">
-                            </div>
-                        </div>
-
-                        <fieldset class="checkout-fieldset">
-                            <legend>Prodotti inclusi</legend>
-                            <?php for ($rowIndex = 0; $rowIndex < 3; $rowIndex++): ?>
-                                <div class="admin-item-row">
-                                    <div class="campo-gruppo">
-                                        <label for="template-product-<?php echo $rowIndex; ?>">Prodotto <?php echo $rowIndex + 1; ?></label>
-                                        <select id="template-product-<?php echo $rowIndex; ?>" name="template_product_id[]">
-                                            <option value="">Seleziona</option>
-                                            <?php foreach ($inventoryItems as $inventoryItem): ?>
-                                                <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
-                                                    <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <div class="campo-gruppo">
-                                        <label for="template-quantity-<?php echo $rowIndex; ?>">Quantità</label>
-                                        <input type="number" id="template-quantity-<?php echo $rowIndex; ?>" name="template_quantity[]" min="0" step="1">
-                                    </div>
-                                    <div class="campo-gruppo">
-                                        <label for="template-cost-<?php echo $rowIndex; ?>">Costo unitario centesimi</label>
-                                        <input type="number" id="template-cost-<?php echo $rowIndex; ?>" name="template_unit_cost_cents[]" min="0" step="1">
-                                    </div>
-                                </div>
-                            <?php endfor; ?>
-                        </fieldset>
-
-                        <div class="campo-gruppo">
-                            <label for="template-notes">Note</label>
-                            <textarea id="template-notes" name="notes" rows="3"></textarea>
-                        </div>
-
-                        <div class="checkout-navigation checkout-navigation--solo-azione">
-                            <button class="bottone-primario" type="submit">Salva fornitura standard</button>
-                        </div>
-                    </form>
-
-                    <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'admin_forniture.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-extra-fornitura">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                        <input type="hidden" name="action" value="create_extra_supply">
-
-                        <div class="account-panel-head">
-                            <span class="account-panel-kicker">Una tantum</span>
-                            <h3 id="titolo-extra-fornitura">Programma una fornitura straordinaria</h3>
-                            <p class="checkout-muted">Crea un ordine manuale fuori template, utile per picchi di domanda o correzioni rapide.</p>
-                        </div>
-
-                        <div class="admin-inline-grid">
-                            <div class="campo-gruppo">
-                                <label for="extra-supplier-name">Fornitore</label>
-                                <input type="text" id="extra-supplier-name" name="supplier_name" maxlength="120" value="Centro forniture SmashBurger">
-                            </div>
-                            <div class="campo-gruppo">
-                                <label for="extra-scheduled-for">Consegna prevista</label>
-                                <input type="datetime-local" id="extra-scheduled-for" name="scheduled_for">
-                            </div>
-                        </div>
-
-                        <fieldset class="checkout-fieldset">
-                            <legend>Prodotti inclusi</legend>
-                            <?php for ($rowIndex = 0; $rowIndex < 3; $rowIndex++): ?>
-                                <div class="admin-item-row">
-                                    <div class="campo-gruppo">
-                                        <label for="extra-product-<?php echo $rowIndex; ?>">Prodotto <?php echo $rowIndex + 1; ?></label>
-                                        <select id="extra-product-<?php echo $rowIndex; ?>" name="extra_product_id[]">
-                                            <option value="">Seleziona</option>
-                                            <?php foreach ($inventoryItems as $inventoryItem): ?>
-                                                <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
-                                                    <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <div class="campo-gruppo">
-                                        <label for="extra-quantity-<?php echo $rowIndex; ?>">Quantità</label>
-                                        <input type="number" id="extra-quantity-<?php echo $rowIndex; ?>" name="extra_quantity[]" min="0" step="1">
-                                    </div>
-                                    <div class="campo-gruppo">
-                                        <label for="extra-cost-<?php echo $rowIndex; ?>">Costo unitario centesimi</label>
-                                        <input type="number" id="extra-cost-<?php echo $rowIndex; ?>" name="extra_unit_cost_cents[]" min="0" step="1">
-                                    </div>
-                                </div>
-                            <?php endfor; ?>
-                        </fieldset>
-
-                        <div class="campo-gruppo">
-                            <label for="extra-notes">Note</label>
-                            <textarea id="extra-notes" name="notes" rows="3"></textarea>
-                        </div>
-
-                        <div class="checkout-navigation checkout-navigation--solo-azione">
-                            <button class="bottone-primario" type="submit">Registra fornitura straordinaria</button>
-                        </div>
-                    </form>
+            <article class="checkout-card admin-section-hero">
+                <div class="admin-section-hero-copy">
+                    <span class="account-panel-kicker">Studio flussi</span>
+                    <h3>Controllo forniture costruito a blocchi</h3>
+                    <p class="checkout-muted">La sezione operativa ora prova a ragionare come un workflow builder: scegli uno scenario, leggi il flusso dall'alto verso il basso e apri i parametri del singolo blocco solo quando devi modificarlo.</p>
                 </div>
+                <div class="admin-section-hero-stats" aria-label="Indicatori forniture">
+                    <article class="admin-section-stat">
+                        <span>Template attivi</span>
+                        <strong><?php echo (int) $activeTemplatesCount; ?></strong>
+                    </article>
+                    <article class="admin-section-stat">
+                        <span>Forniture aperte</span>
+                        <strong><?php echo (int) $openSupplyOrdersCount; ?></strong>
+                    </article>
+                    <article class="admin-section-stat">
+                        <span>Ricezioni completate</span>
+                        <strong><?php echo (int) $receivedSupplyOrdersCount; ?></strong>
+                    </article>
+                    <article class="admin-section-stat">
+                        <span>Policy attive</span>
+                        <strong><?php echo (int) $activePoliciesCount; ?></strong>
+                    </article>
+                </div>
+            </article>
+
+            <?php if ($canModifyBranchOperations): ?>
+                <div class="admin-builder-suite">
+                    <section class="admin-builder-suite-intro">
+                        <div class="admin-builder-suite-copy admin-builder-suite-copy--full">
+                            <span class="account-panel-kicker">Studio flussi</span>
+                            <h3>Scegli il builder giusto</h3>
+                            <p class="checkout-muted">Questo è un unico blocco di gestione per le forniture della filiale. Parti da qui, apri il builder corretto e lavora poi nella pagina dedicata con breadcrumb, ritorno rapido e linguaggio coerente con il checkout.</p>
+                            <p class="checkout-muted account-note">Il costo di approvvigionamento non è più richiesto al manager: il sistema usa automaticamente il valore registrato per la filiale.</p>
+                        </div>
+                    </section>
+
+                    <div class="admin-builder-hub">
+                        <article class="checkout-card admin-builder-card">
+                            <div class="admin-builder-card-main">
+                                <div class="account-panel-head">
+                                    <span class="account-panel-kicker">Scenario 1</span>
+                                    <h3>Routine ricorrente</h3>
+                                    <p class="checkout-muted">Pagina dedicata per costruire template ricorrenti come un flusso: trigger, righe prodotto dinamiche e conferma finale.</p>
+                                </div>
+
+                                <ol class="admin-builder-step-list">
+                                    <li>Imposta nome, frequenza e primo avvio del template.</li>
+                                    <li>Aggiungi prodotti con +, rimuovili con x e lascia il costo al database della sede.</li>
+                                    <li>Salva il flusso e ritrovalo nella lista template qui sotto.</li>
+                                </ol>
+                            </div>
+
+                            <div class="admin-builder-card-side">
+                                <span class="admin-status-pill <?php echo $activeTemplatesCount > 0 ? 'is-success' : 'is-muted'; ?>">
+                                    <?php echo $activeTemplatesCount > 0 ? $activeTemplatesCount . ' attivi' : 'Nessun template'; ?>
+                                </span>
+
+                                <ul class="admin-builder-meta-list" aria-label="Punti chiave routine ricorrente">
+                                    <li>Prodotti illimitati</li>
+                                    <li>Costo filiale automatico</li>
+                                    <li>Pattern simile al checkout</li>
+                                </ul>
+
+                                <div class="checkout-navigation checkout-navigation--solo-azione admin-builder-card-cta">
+                                    <a class="bottone-primario" href="<?php echo htmlspecialchars($standardSupplyBuilderUrl, ENT_QUOTES, 'UTF-8'); ?>">Apri builder routine</a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="checkout-card admin-builder-card">
+                            <div class="admin-builder-card-main">
+                                <div class="account-panel-head">
+                                    <span class="account-panel-kicker">Scenario 2</span>
+                                    <h3>Intervento una tantum</h3>
+                                    <p class="checkout-muted">Percorso separato per urgenze o reintegri fuori programma, con focus solo sulle righe davvero necessarie.</p>
+                                </div>
+
+                                <ol class="admin-builder-step-list">
+                                    <li>Definisci fornitore e consegna prevista solo se servono.</li>
+                                    <li>Compila la lista prodotti con quantità dinamiche, senza toccare i costi.</li>
+                                    <li>Registra l ordine e ritrovalo nello storico operativo.</li>
+                                </ol>
+                            </div>
+
+                            <div class="admin-builder-card-side">
+                                <span class="admin-status-pill <?php echo $openSupplyOrdersCount > 0 ? 'is-warning' : 'is-success'; ?>">
+                                    <?php echo $openSupplyOrdersCount > 0 ? $openSupplyOrdersCount . ' aperte' : 'Nessuna aperta'; ?>
+                                </span>
+
+                                <ul class="admin-builder-meta-list" aria-label="Punti chiave intervento una tantum">
+                                    <li>Focus su urgenze</li>
+                                    <li>Righe aggiungibili al volo</li>
+                                    <li>Storico subito disponibile</li>
+                                </ul>
+
+                                <div class="checkout-navigation checkout-navigation--solo-azione admin-builder-card-cta">
+                                    <a class="bottone-primario" href="<?php echo htmlspecialchars($extraSupplyBuilderUrl, ENT_QUOTES, 'UTF-8'); ?>">Apri builder urgente</a>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="checkout-card admin-builder-card">
+                            <div class="admin-builder-card-main">
+                                <div class="account-panel-head">
+                                    <span class="account-panel-kicker">Scenario 3</span>
+                                    <h3>Automazione stock</h3>
+                                    <p class="checkout-muted">Builder dedicato alle policy di riordino, con trigger, controlli anti-duplicazione e output finale separati.</p>
+                                </div>
+
+                                <ol class="admin-builder-step-list">
+                                    <li>Scegli la referenza e la soglia minima di attenzione.</li>
+                                    <li>Configura cooldown e massimo in arrivo per evitare sovrapposizioni.</li>
+                                    <li>Decidi se produrre una bozza o un ordine automatico.</li>
+                                </ol>
+                            </div>
+
+                            <div class="admin-builder-card-side">
+                                <span class="admin-status-pill <?php echo $activePoliciesCount > 0 ? 'is-success' : 'is-muted'; ?>">
+                                    <?php echo $activePoliciesCount > 0 ? $activePoliciesCount . ' attive' : 'Nessuna policy'; ?>
+                                </span>
+
+                                <ul class="admin-builder-meta-list" aria-label="Punti chiave automazione stock">
+                                    <li>Trigger dedicati</li>
+                                    <li>Controllo riordini</li>
+                                    <li>Esecuzione manuale disponibile</li>
+                                </ul>
+
+                                <div class="checkout-navigation checkout-navigation--solo-azione admin-builder-card-cta">
+                                    <a class="bottone-primario" href="<?php echo htmlspecialchars($automaticSupplyBuilderUrl, ENT_QUOTES, 'UTF-8'); ?>">Apri builder automazione</a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            <?php else: ?>
+                <article class="checkout-card admin-panel-card">
+                    <div class="account-panel-head">
+                        <span class="account-panel-kicker">Vista centrale</span>
+                        <h3>Approvvigionamento in sola lettura</h3>
+                        <p class="checkout-muted">Come admin centrale puoi consultare il nuovo hub forniture e i suoi indicatori, ma i builder operativi restano disponibili solo al manager della sede.</p>
+                    </div>
+                    <ul class="riepilogo-lista">
+                        <li><span>Template attivi</span><strong><?php echo (int) $activeTemplatesCount; ?></strong></li>
+                        <li><span>Forniture aperte</span><strong><?php echo (int) $openSupplyOrdersCount; ?></strong></li>
+                        <li><span>Policy attive</span><strong><?php echo (int) $activePoliciesCount; ?></strong></li>
+                    </ul>
+                </article>
             <?php endif; ?>
 
             <div class="admin-form-grid admin-form-grid--double">
                 <article class="checkout-card admin-panel-card">
-                    <div class="account-panel-head">
-                        <span class="account-panel-kicker">Template</span>
-                        <h3>Forniture standard attive</h3>
-                        <p class="checkout-muted">Ogni template genera automaticamente una nuova fornitura quando arriva la prossima esecuzione.</p>
+                    <div class="account-panel-head account-panel-head--split">
+                        <div>
+                            <span class="account-panel-kicker">Template</span>
+                            <h3>Forniture standard attive</h3>
+                            <p class="checkout-muted">Ogni template genera automaticamente una nuova fornitura quando arriva la prossima esecuzione.</p>
+                        </div>
+                        <ul class="admin-tag-list admin-tag-list--compact" aria-label="Sintesi template">
+                            <li><?php echo (int) $activeTemplatesCount; ?> attivi</li>
+                            <li><?php echo max(0, count($templates) - $activeTemplatesCount); ?> sospesi</li>
+                        </ul>
                     </div>
 
                     <?php if (empty($templates)): ?>
@@ -800,12 +1003,87 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                         </div>
                     <?php endif; ?>
                 </article>
+            </div>
 
+            <div class="admin-form-grid">
                 <article class="checkout-card admin-panel-card">
-                    <div class="account-panel-head">
-                        <span class="account-panel-kicker">Ordini fornitura</span>
-                        <h3>Storico operativo</h3>
-                        <p class="checkout-muted">Bozze, ordini programmati, ricezioni concluse e documenti disponibili.</p>
+                    <div class="account-panel-head account-panel-head--split">
+                        <div>
+                            <span class="account-panel-kicker">Ordine automatico</span>
+                            <h3>Politiche di riordino</h3>
+                            <p class="checkout-muted">Soglie minime, quantità di riordino e cooldown per evitare duplicazioni di approvvigionamento.</p>
+                        </div>
+                        <ul class="admin-tag-list admin-tag-list--compact" aria-label="Sintesi policy riordino">
+                            <li><?php echo (int) $activePoliciesCount; ?> attive</li>
+                            <li><?php echo max(0, count($policies) - $activePoliciesCount); ?> sospese</li>
+                        </ul>
+                    </div>
+
+                    <?php if (empty($policies)): ?>
+                        <p class="checkout-muted">Nessuna policy di ordine automatico configurata.</p>
+                    <?php else: ?>
+                        <div class="admin-table-wrap">
+                            <table class="admin-table">
+                                <caption class="sr-only">Policy di ordine automatico per prodotto</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Prodotto</th>
+                                        <th scope="col">Stock attuale</th>
+                                        <th scope="col">Soglia</th>
+                                        <th scope="col">Riordino</th>
+                                        <th scope="col">Cooldown</th>
+                                        <th scope="col">Modalità</th>
+                                        <th scope="col">Stato</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($policies as $policy): ?>
+                                        <tr>
+                                            <th scope="row"><?php echo htmlspecialchars((string) $policy['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
+                                            <td><?php echo (int) $policy['on_hand_qty']; ?></td>
+                                            <td><?php echo (int) $policy['threshold_qty']; ?></td>
+                                            <td><?php echo (int) $policy['reorder_qty']; ?></td>
+                                            <td><?php echo (int) $policy['cooldown_hours']; ?>h</td>
+                                            <td><?php echo htmlspecialchars((string) $policy['mode'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td>
+                                                <div class="admin-inline-actions">
+                                                    <span class="admin-status-pill <?php echo (int) $policy['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
+                                                        <?php echo (int) $policy['is_active'] === 1 ? 'Attiva' : 'Sospesa'; ?>
+                                                    </span>
+                                                    <?php if ($canModifyBranchOperations): ?>
+                                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'admin_forniture.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
+                                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                            <input type="hidden" name="action" value="toggle_policy">
+                                                            <input type="hidden" name="policy_id" value="<?php echo (int) $policy['id']; ?>">
+                                                            <input type="hidden" name="is_active" value="<?php echo (int) $policy['is_active'] === 1 ? '0' : '1'; ?>">
+                                                            <button class="bottone-secondario" type="submit">
+                                                                <?php echo (int) $policy['is_active'] === 1 ? 'Sospendi' : 'Riattiva'; ?>
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </article>
+            </div>
+
+            <div class="admin-form-grid">
+                <article class="checkout-card admin-panel-card">
+                    <div class="account-panel-head account-panel-head--split">
+                        <div>
+                            <span class="account-panel-kicker">Ordini fornitura</span>
+                            <h3>Storico operativo</h3>
+                            <p class="checkout-muted">Bozze, ordini programmati, ricezioni concluse e documenti disponibili.</p>
+                        </div>
+                        <ul class="admin-tag-list admin-tag-list--compact" aria-label="Sintesi storico forniture">
+                            <li><?php echo (int) $openSupplyOrdersCount; ?> aperte</li>
+                            <li><?php echo (int) $receivedSupplyOrdersCount; ?> ricevute</li>
+                        </ul>
                     </div>
 
                     <?php if (empty($supplyOrders)): ?>
@@ -860,130 +1138,6 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </div>
                                 </article>
                             <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </article>
-            </div>
-
-            <div class="admin-form-grid">
-                <article class="checkout-card admin-panel-card">
-                    <div class="account-panel-head">
-                        <span class="account-panel-kicker">Ordine automatico</span>
-                        <h3>Politiche di riordino</h3>
-                        <p class="checkout-muted">Soglie minime, quantità di riordino e cooldown per evitare duplicazioni di approvvigionamento.</p>
-                    </div>
-
-                    <?php if ($canModifyBranchOperations): ?>
-                        <form class="checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'admin_forniture.php'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-policy-auto">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                            <input type="hidden" name="action" value="create_policy">
-
-                            <div class="account-panel-head">
-                                <h4 id="titolo-policy-auto">Configura o aggiorna una policy</h4>
-                                <p class="checkout-muted">Se la stessa referenza è già presente, la regola viene aggiornata con i nuovi valori.</p>
-                            </div>
-
-                            <div class="campo-gruppo">
-                                <label for="policy-product-id">Prodotto</label>
-                                <select id="policy-product-id" name="product_id" required aria-required="true">
-                                    <option value="">Seleziona un prodotto</option>
-                                    <?php foreach ($inventoryItems as $inventoryItem): ?>
-                                        <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
-                                            <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-
-                            <div class="admin-inline-grid admin-inline-grid--triple">
-                                <div class="campo-gruppo">
-                                    <label for="policy-threshold">Soglia minima</label>
-                                    <input type="number" id="policy-threshold" name="threshold_qty" required aria-required="true" min="1" step="1">
-                                </div>
-                                <div class="campo-gruppo">
-                                    <label for="policy-reorder">Quantità riordino</label>
-                                    <input type="number" id="policy-reorder" name="reorder_qty" required aria-required="true" min="1" step="1">
-                                </div>
-                                <div class="campo-gruppo">
-                                    <label for="policy-cooldown">Cooldown ore</label>
-                                    <input type="number" id="policy-cooldown" name="cooldown_hours" min="0" step="1" value="6">
-                                </div>
-                            </div>
-
-                            <div class="admin-inline-grid">
-                                <div class="campo-gruppo">
-                                    <label for="policy-max-pending">Massimo in arrivo</label>
-                                    <input type="number" id="policy-max-pending" name="max_pending_qty" min="0" step="1" value="0">
-                                </div>
-                                <div class="campo-gruppo">
-                                    <label for="policy-mode">Modalità</label>
-                                    <select id="policy-mode" name="mode">
-                                        <option value="draft">Genera bozza</option>
-                                        <option value="auto-order">Registra ordine</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="checkout-navigation checkout-navigation--solo-azione">
-                                <button class="bottone-primario" type="submit">Salva policy</button>
-                            </div>
-                        </form>
-
-                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'admin_forniture.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                            <input type="hidden" name="action" value="run_auto_reorder">
-                            <button class="bottone-secondario" type="submit">Esegui controllo ora</button>
-                        </form>
-                    <?php endif; ?>
-
-                    <?php if (empty($policies)): ?>
-                        <p class="checkout-muted">Nessuna policy di ordine automatico configurata.</p>
-                    <?php else: ?>
-                        <div class="admin-table-wrap">
-                            <table class="admin-table">
-                                <caption class="sr-only">Policy di ordine automatico per prodotto</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Prodotto</th>
-                                        <th scope="col">Stock attuale</th>
-                                        <th scope="col">Soglia</th>
-                                        <th scope="col">Riordino</th>
-                                        <th scope="col">Cooldown</th>
-                                        <th scope="col">Modalità</th>
-                                        <th scope="col">Stato</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($policies as $policy): ?>
-                                        <tr>
-                                            <th scope="row"><?php echo htmlspecialchars((string) $policy['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
-                                            <td><?php echo (int) $policy['on_hand_qty']; ?></td>
-                                            <td><?php echo (int) $policy['threshold_qty']; ?></td>
-                                            <td><?php echo (int) $policy['reorder_qty']; ?></td>
-                                            <td><?php echo (int) $policy['cooldown_hours']; ?>h</td>
-                                            <td><?php echo htmlspecialchars((string) $policy['mode'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td>
-                                                <div class="admin-inline-actions">
-                                                    <span class="admin-status-pill <?php echo (int) $policy['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
-                                                        <?php echo (int) $policy['is_active'] === 1 ? 'Attiva' : 'Sospesa'; ?>
-                                                    </span>
-                                                    <?php if ($canModifyBranchOperations): ?>
-                                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'admin_forniture.php'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                                                            <input type="hidden" name="action" value="toggle_policy">
-                                                            <input type="hidden" name="policy_id" value="<?php echo (int) $policy['id']; ?>">
-                                                            <input type="hidden" name="is_active" value="<?php echo (int) $policy['is_active'] === 1 ? '0' : '1'; ?>">
-                                                            <button class="bottone-secondario" type="submit">
-                                                                <?php echo (int) $policy['is_active'] === 1 ? 'Sospendi' : 'Riattiva'; ?>
-                                                            </button>
-                                                        </form>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
                         </div>
                     <?php endif; ?>
                 </article>

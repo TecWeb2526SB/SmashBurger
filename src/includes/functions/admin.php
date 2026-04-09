@@ -109,6 +109,98 @@ function admin_panel_build_navigation(
     return $items;
 }
 
+function admin_panel_branch_query_params(?string $branchSlug, bool $isGeneralAdmin): array
+{
+    if (!$isGeneralAdmin || !is_string($branchSlug) || $branchSlug === '') {
+        return [];
+    }
+
+    return ['sede' => $branchSlug];
+}
+
+function admin_panel_build_path(string $path, array $params = []): string
+{
+    $filteredParams = [];
+
+    foreach ($params as $key => $value) {
+        if (!is_string($key) || $key === '' || $value === null || $value === '') {
+            continue;
+        }
+
+        $filteredParams[$key] = (string) $value;
+    }
+
+    $query = http_build_query($filteredParams);
+
+    return $path . ($query !== '' ? '?' . $query : '');
+}
+
+function admin_supply_builder_pages(): array
+{
+    return [
+        'standard' => [
+            'path' => 'admin_forniture_standard.php',
+            'kicker' => 'Scenario 1',
+            'title' => 'Routine ricorrente',
+            'description' => 'Builder guidato per template settimanali, quindicinali o mensili con righe prodotto espandibili.',
+            'breadcrumb' => 'Routine ricorrente',
+            'submit_label' => 'Salva fornitura standard',
+        ],
+        'extra' => [
+            'path' => 'admin_forniture_straordinaria.php',
+            'kicker' => 'Scenario 2',
+            'title' => 'Intervento una tantum',
+            'description' => 'Builder manuale per urgenze e integrazioni fuori programma, con righe prodotto aggiungibili al volo.',
+            'breadcrumb' => 'Intervento una tantum',
+            'submit_label' => 'Registra fornitura straordinaria',
+        ],
+        'automatic' => [
+            'path' => 'admin_forniture_automatico.php',
+            'kicker' => 'Scenario 3',
+            'title' => 'Automazione stock',
+            'description' => 'Builder per configurare trigger, controlli e output del riordino automatico della filiale.',
+            'breadcrumb' => 'Automazione stock',
+            'submit_label' => 'Salva policy',
+        ],
+    ];
+}
+
+function admin_supply_builder_meta(string $builderKey): array
+{
+    $pages = admin_supply_builder_pages();
+
+    return $pages[$builderKey] ?? $pages['standard'];
+}
+
+function admin_supply_builder_url(string $builderKey, ?string $branchSlug, bool $isGeneralAdmin): string
+{
+    $meta = admin_supply_builder_meta($builderKey);
+
+    return admin_panel_build_path(
+        (string) $meta['path'],
+        admin_panel_branch_query_params($branchSlug, $isGeneralAdmin)
+    );
+}
+
+function admin_inventory_adjustment_url(
+    ?string $branchSlug,
+    bool $isGeneralAdmin,
+    ?string $mode = null,
+    ?int $productId = null
+): string {
+    $params = admin_panel_branch_query_params($branchSlug, $isGeneralAdmin);
+
+    if (is_string($mode) && $mode !== '') {
+        $params['modo'] = $mode;
+    }
+
+    if (is_int($productId) && $productId > 0) {
+        $params['prodotto'] = (string) $productId;
+    }
+
+    return admin_panel_build_path('admin_inventario_rettifica.php', $params);
+}
+
 function admin_panel_bootstrap_context(PDO $pdo): array
 {
     require_admin_panel_access();
@@ -226,20 +318,396 @@ function admin_build_products_lookup(array $inventoryItems): array
     return $productsById;
 }
 
-function admin_extract_supply_items(array $payload, string $prefix, array $productsById): array
+function admin_supply_item_rows_default(int $count = 1): array
+{
+    $count = max(1, $count);
+    $rows = [];
+
+    for ($index = 0; $index < $count; $index++) {
+        $rows[] = [
+            'product_id' => '',
+            'quantity' => '',
+        ];
+    }
+
+    return $rows;
+}
+
+function admin_supply_item_rows_from_payload(array $payload, string $prefix): array
+{
+    $productIds = array_values((array) ($payload[$prefix . '_product_id'] ?? []));
+    $quantities = array_values((array) ($payload[$prefix . '_quantity'] ?? []));
+    $rowCount = max(1, count($productIds), count($quantities));
+    $rows = [];
+
+    for ($index = 0; $index < $rowCount; $index++) {
+        $productId = (int) ($productIds[$index] ?? 0);
+        $quantity = (int) ($quantities[$index] ?? 0);
+
+        $rows[] = [
+            'product_id' => $productId > 0 ? (string) $productId : '',
+            'quantity' => $quantity > 0 ? (string) $quantity : '',
+        ];
+    }
+
+    while (count($rows) > 1) {
+        $lastRow = $rows[array_key_last($rows)] ?? ['product_id' => '', 'quantity' => ''];
+        if (($lastRow['product_id'] ?? '') !== '' || ($lastRow['quantity'] ?? '') !== '') {
+            break;
+        }
+
+        array_pop($rows);
+    }
+
+    return $rows !== [] ? array_values($rows) : admin_supply_item_rows_default();
+}
+
+function admin_supply_standard_default_draft(): array
+{
+    return [
+        'template_name' => '',
+        'frequency' => 'weekly',
+        'next_run_at' => '',
+        'notes' => '',
+        'items' => admin_supply_item_rows_default(),
+    ];
+}
+
+function admin_supply_standard_draft_from_payload(array $payload): array
+{
+    return [
+        'template_name' => trim((string) ($payload['template_name'] ?? '')),
+        'frequency' => (string) ($payload['frequency'] ?? 'weekly'),
+        'next_run_at' => trim((string) ($payload['next_run_at'] ?? '')),
+        'notes' => trim((string) ($payload['notes'] ?? '')),
+        'items' => admin_supply_item_rows_from_payload($payload, 'template'),
+    ];
+}
+
+function admin_supply_extra_default_draft(): array
+{
+    return [
+        'supplier_name' => 'Centro forniture SmashBurger',
+        'scheduled_for' => '',
+        'notes' => '',
+        'items' => admin_supply_item_rows_default(),
+    ];
+}
+
+function admin_supply_extra_draft_from_payload(array $payload): array
+{
+    $supplierName = trim((string) ($payload['supplier_name'] ?? ''));
+
+    return [
+        'supplier_name' => $supplierName !== '' ? $supplierName : 'Centro forniture SmashBurger',
+        'scheduled_for' => trim((string) ($payload['scheduled_for'] ?? '')),
+        'notes' => trim((string) ($payload['notes'] ?? '')),
+        'items' => admin_supply_item_rows_from_payload($payload, 'extra'),
+    ];
+}
+
+function admin_supply_policy_default_draft(): array
+{
+    return [
+        'product_id' => '',
+        'threshold_qty' => '',
+        'reorder_qty' => '',
+        'cooldown_hours' => '6',
+        'max_pending_qty' => '0',
+        'mode' => 'draft',
+    ];
+}
+
+function admin_supply_policy_draft_from_payload(array $payload): array
+{
+    return [
+        'product_id' => (int) ($payload['product_id'] ?? 0) > 0 ? (string) ((int) ($payload['product_id'] ?? 0)) : '',
+        'threshold_qty' => (int) ($payload['threshold_qty'] ?? 0) > 0 ? (string) ((int) ($payload['threshold_qty'] ?? 0)) : '',
+        'reorder_qty' => (int) ($payload['reorder_qty'] ?? 0) > 0 ? (string) ((int) ($payload['reorder_qty'] ?? 0)) : '',
+        'cooldown_hours' => (string) max(0, (int) ($payload['cooldown_hours'] ?? 6)),
+        'max_pending_qty' => (string) max(0, (int) ($payload['max_pending_qty'] ?? 0)),
+        'mode' => (string) ($payload['mode'] ?? 'draft'),
+    ];
+}
+
+function admin_inventory_adjustment_modes(): array
+{
+    return [
+        'carico' => [
+            'label' => 'Carico merce',
+            'title' => 'Registra un carico',
+            'description' => 'Aggiungi unità quando entra nuova merce o correggi una mancanza di carico precedente.',
+            'submit_label' => 'Conferma carico',
+        ],
+        'scarico' => [
+            'label' => 'Scarico o scarto',
+            'title' => 'Registra uno scarico',
+            'description' => 'Rimuovi unità per scarto, deterioramento, reso o rettifica negativa di fine turno.',
+            'submit_label' => 'Conferma scarico',
+        ],
+        'conteggio' => [
+            'label' => 'Conteggio fisico',
+            'title' => 'Allinea al conteggio reale',
+            'description' => 'Inserisci la quantità reale trovata in magazzino e lascia al sistema il calcolo della differenza.',
+            'submit_label' => 'Allinea inventario',
+        ],
+    ];
+}
+
+function admin_inventory_adjustment_default_draft(string $mode = 'carico', int $productId = 0): array
+{
+    $modes = admin_inventory_adjustment_modes();
+    if (!isset($modes[$mode])) {
+        $mode = 'carico';
+    }
+
+    return [
+        'mode' => $mode,
+        'product_id' => $productId > 0 ? (string) $productId : '',
+        'quantity' => '',
+        'counted_qty' => '',
+        'notes' => '',
+    ];
+}
+
+function admin_inventory_adjustment_draft_from_payload(array $payload): array
+{
+    $mode = trim((string) ($payload['mode'] ?? 'carico'));
+    $modes = admin_inventory_adjustment_modes();
+    if (!isset($modes[$mode])) {
+        $mode = 'carico';
+    }
+
+    return [
+        'mode' => $mode,
+        'product_id' => (int) ($payload['product_id'] ?? 0) > 0 ? (string) ((int) ($payload['product_id'] ?? 0)) : '',
+        'quantity' => (int) ($payload['quantity'] ?? 0) > 0 ? (string) ((int) ($payload['quantity'] ?? 0)) : '',
+        'counted_qty' => (string) max(0, (int) ($payload['counted_qty'] ?? 0)),
+        'notes' => trim((string) ($payload['notes'] ?? '')),
+    ];
+}
+
+function inventory_resolve_adjustment_unit_cost_cents(PDO $pdo, int $branchId, array $product): int
+{
+    $currentAverage = (int) ($product['average_unit_cost_cents'] ?? 0);
+    if ($currentAverage > 0) {
+        return $currentAverage;
+    }
+
+    return max(
+        0,
+        inventory_resolve_supply_unit_cost_cents(
+            $pdo,
+            $branchId,
+            (int) ($product['product_id'] ?? 0),
+            $product
+        )
+    );
+}
+
+function inventory_apply_manual_adjustment_flow(
+    PDO $pdo,
+    int $branchId,
+    int $userId,
+    array $draft,
+    array $productsById
+): void {
+    $mode = (string) ($draft['mode'] ?? 'carico');
+    $modes = admin_inventory_adjustment_modes();
+
+    if (!isset($modes[$mode])) {
+        throw new RuntimeException('Modalita di rettifica inventario non valida.');
+    }
+
+    $productId = (int) ($draft['product_id'] ?? 0);
+    if ($productId <= 0 || !isset($productsById[$productId])) {
+        throw new RuntimeException('Seleziona un prodotto valido per la rettifica inventario.');
+    }
+
+    $product = $productsById[$productId];
+    $quantity = max(0, (int) ($draft['quantity'] ?? 0));
+    $countedQty = max(0, (int) ($draft['counted_qty'] ?? 0));
+    $currentQty = (int) ($product['on_hand_qty'] ?? 0);
+    $notes = trim((string) ($draft['notes'] ?? ''));
+    $quantityDelta = 0;
+    $defaultNote = 'Rettifica manuale inventario da pannello manager.';
+
+    if ($mode === 'carico') {
+        if ($quantity <= 0) {
+            throw new RuntimeException('Inserisci una quantita positiva per il carico.');
+        }
+
+        $quantityDelta = $quantity;
+        $defaultNote = 'Carico manuale inventario.';
+    } elseif ($mode === 'scarico') {
+        if ($quantity <= 0) {
+            throw new RuntimeException('Inserisci una quantita positiva per lo scarico.');
+        }
+
+        $quantityDelta = -$quantity;
+        $defaultNote = 'Scarico manuale inventario.';
+    } else {
+        $quantityDelta = $countedQty - $currentQty;
+        $defaultNote = 'Allineamento inventario a conteggio fisico.';
+
+        if ($quantityDelta === 0) {
+            throw new RuntimeException('Il conteggio inserito coincide gia con la quantita registrata.');
+        }
+    }
+
+    $pdo->beginTransaction();
+
+    try {
+        inventory_adjust_stock(
+            $pdo,
+            $branchId,
+            $productId,
+            $quantityDelta,
+            'manual_adjustment',
+            'manual',
+            null,
+            $notes !== '' ? $notes : $defaultNote,
+            $userId,
+            $quantityDelta > 0 ? inventory_resolve_adjustment_unit_cost_cents($pdo, $branchId, $product) : null
+        );
+        $pdo->commit();
+    } catch (\Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
+
+    try {
+        auto_reorder_evaluate_branch($pdo, $branchId, $userId);
+    } catch (\Throwable $autoReorderException) {
+        error_log('Errore auto-riordino dopo rettifica inventario: ' . $autoReorderException->getMessage());
+    }
+}
+
+function inventory_resolve_supply_unit_cost_cents(PDO $pdo, int $branchId, int $productId, ?array $productRow = null): int
+{
+    $candidate = (int) (($productRow['supply_unit_cost_cents'] ?? $productRow['average_unit_cost_cents'] ?? 0));
+    if ($candidate > 0) {
+        return $candidate;
+    }
+
+    inventory_ensure_row($pdo, $branchId, $productId);
+
+    $inventoryStmt = $pdo->prepare(
+        'SELECT average_unit_cost_cents
+         FROM branch_inventory
+         WHERE branch_id = :branch_id AND product_id = :product_id
+         LIMIT 1'
+    );
+    $inventoryStmt->execute([
+        'branch_id' => $branchId,
+        'product_id' => $productId,
+    ]);
+    $inventoryCost = (int) $inventoryStmt->fetchColumn();
+    if ($inventoryCost > 0) {
+        return $inventoryCost;
+    }
+
+    $orderStmt = $pdo->prepare(
+        'SELECT soi.unit_cost_cents
+         FROM supply_order_items soi
+         INNER JOIN supply_orders so ON so.id = soi.supply_order_id
+         WHERE so.branch_id = :branch_id
+           AND soi.product_id = :product_id
+           AND soi.unit_cost_cents > 0
+         ORDER BY
+            CASE WHEN so.received_at IS NULL THEN 1 ELSE 0 END ASC,
+            so.received_at DESC,
+            so.created_at DESC,
+            soi.id DESC
+         LIMIT 1'
+    );
+    $orderStmt->execute([
+        'branch_id' => $branchId,
+        'product_id' => $productId,
+    ]);
+    $orderCost = (int) $orderStmt->fetchColumn();
+    if ($orderCost > 0) {
+        $updateInventory = $pdo->prepare(
+            'UPDATE branch_inventory
+             SET average_unit_cost_cents = :average_unit_cost_cents,
+                 updated_at = NOW()
+             WHERE branch_id = :branch_id AND product_id = :product_id'
+        );
+        $updateInventory->execute([
+            'average_unit_cost_cents' => $orderCost,
+            'branch_id' => $branchId,
+            'product_id' => $productId,
+        ]);
+
+        return $orderCost;
+    }
+
+    $templateStmt = $pdo->prepare(
+        'SELECT sti.unit_cost_cents
+         FROM supply_template_items sti
+         INNER JOIN supply_templates st ON st.id = sti.template_id
+         WHERE st.branch_id = :branch_id
+           AND sti.product_id = :product_id
+           AND sti.unit_cost_cents > 0
+         ORDER BY st.updated_at DESC, sti.id DESC
+         LIMIT 1'
+    );
+    $templateStmt->execute([
+        'branch_id' => $branchId,
+        'product_id' => $productId,
+    ]);
+    $templateCost = (int) $templateStmt->fetchColumn();
+    if ($templateCost > 0) {
+        $updateInventory = $pdo->prepare(
+            'UPDATE branch_inventory
+             SET average_unit_cost_cents = :average_unit_cost_cents,
+                 updated_at = NOW()
+             WHERE branch_id = :branch_id AND product_id = :product_id'
+        );
+        $updateInventory->execute([
+            'average_unit_cost_cents' => $templateCost,
+            'branch_id' => $branchId,
+            'product_id' => $productId,
+        ]);
+
+        return $templateCost;
+    }
+
+    return 0;
+}
+
+function admin_prepare_supply_products(PDO $pdo, int $branchId, array $inventoryItems): array
+{
+    foreach ($inventoryItems as &$inventoryItem) {
+        $resolvedUnitCost = inventory_resolve_supply_unit_cost_cents(
+            $pdo,
+            $branchId,
+            (int) ($inventoryItem['product_id'] ?? 0),
+            $inventoryItem
+        );
+
+        $inventoryItem['supply_unit_cost_cents'] = $resolvedUnitCost;
+        $inventoryItem['has_supply_unit_cost'] = $resolvedUnitCost > 0;
+    }
+    unset($inventoryItem);
+
+    return $inventoryItems;
+}
+
+function admin_extract_supply_items(PDO $pdo, int $branchId, array $payload, string $prefix, array $productsById): array
 {
     $productIds = (array) ($payload[$prefix . '_product_id'] ?? []);
     $quantities = (array) ($payload[$prefix . '_quantity'] ?? []);
-    $unitCosts = (array) ($payload[$prefix . '_unit_cost_cents'] ?? []);
-    $rowCount = max(count($productIds), count($quantities), count($unitCosts));
+    $rowCount = max(count($productIds), count($quantities));
     $items = [];
 
     for ($index = 0; $index < $rowCount; $index++) {
         $productId = (int) ($productIds[$index] ?? 0);
         $quantity = (int) ($quantities[$index] ?? 0);
-        $unitCostCents = (int) ($unitCosts[$index] ?? 0);
 
-        if ($productId <= 0 && $quantity <= 0 && $unitCostCents <= 0) {
+        if ($productId <= 0 && $quantity <= 0) {
             continue;
         }
 
@@ -251,13 +719,18 @@ function admin_extract_supply_items(array $payload, string $prefix, array $produ
             throw new RuntimeException('La quantita di fornitura deve essere maggiore di zero.');
         }
 
-        if ($unitCostCents < 0) {
-            throw new RuntimeException('Il costo unitario non puo essere negativo.');
+        $product = $productsById[$productId];
+        $unitCostCents = inventory_resolve_supply_unit_cost_cents($pdo, $branchId, $productId, $product);
+
+        if ($unitCostCents <= 0) {
+            throw new RuntimeException(
+                'Il costo filiale di ' . (string) $product['product_name'] . ' non e definito. Completa prima la base costi della sede.'
+            );
         }
 
         $items[] = [
             'product_id' => $productId,
-            'product_name' => (string) $productsById[$productId]['product_name'],
+            'product_name' => (string) $product['product_name'],
             'quantity' => $quantity,
             'unit_cost_cents' => $unitCostCents,
         ];
@@ -273,6 +746,18 @@ function admin_slugify(string $value): string
     $value = trim($value, '-');
 
     return $value !== '' ? $value : 'prodotto';
+}
+
+function admin_parse_money_to_cents(string $value): int
+{
+    $normalized = str_replace([' ', "\xc2\xa0"], '', trim($value));
+    $normalized = str_replace(',', '.', $normalized);
+
+    if ($normalized === '' || !preg_match('/^\d+(?:\.\d{1,2})?$/', $normalized)) {
+        throw new RuntimeException('Inserisci un importo valido usando al massimo due decimali.');
+    }
+
+    return (int) round(((float) $normalized) * 100);
 }
 
 function categories_get_all(PDO $pdo): array
@@ -861,6 +1346,7 @@ function inventory_get_branch_products(PDO $pdo, int $branchId): array
             p.id AS product_id,
             p.name AS product_name,
             p.slug AS product_slug,
+            p.description,
             p.category_id,
             p.price_cents AS base_price_cents,
             p.allergens,

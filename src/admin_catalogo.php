@@ -136,6 +136,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ? ($isAvailable ? 'Prodotto aggiunto e reso disponibile nel catalogo di filiale.' : 'Prodotto presente nel catalogo di filiale ma segnato come non disponibile.')
                     : 'Prodotto nascosto dal catalogo della filiale.'
             );
+        } elseif ($action === 'update_branch_pricing') {
+            if (!$canModifyBranchOperations) {
+                throw new RuntimeException('Solo il manager della filiale puo modificare il prezzo locale.');
+            }
+
+            $productId = (int) ($_POST['product_id'] ?? 0);
+            if ($productId <= 0 || !isset($productsById[$productId])) {
+                throw new RuntimeException('Prodotto non valido per il prezzo di filiale.');
+            }
+
+            $branchPriceCents = admin_parse_money_to_cents((string) ($_POST['sale_price'] ?? ''));
+            if ($branchPriceCents <= 0) {
+                throw new RuntimeException('Inserisci un prezzo di filiale valido.');
+            }
+
+            $product = $productsById[$productId];
+            $basePriceCents = (int) ($product['base_price_cents'] ?? 0);
+            $priceOverride = $branchPriceCents === $basePriceCents ? null : $branchPriceCents;
+
+            branch_catalog_set_product_state(
+                $pdo,
+                $selectedBranchId,
+                $productId,
+                (int) ($product['is_listed'] ?? 0) === 1,
+                (int) ($product['branch_availability_flag'] ?? 0) === 1,
+                $priceOverride
+            );
+
+            flash_set(
+                'success',
+                $priceOverride === null
+                    ? 'Prezzo filiale riallineato al prezzo base del catalogo.'
+                    : 'Prezzo filiale aggiornato con successo.'
+            );
         } elseif ($action === 'delete_product') {
             if (!$canManageGlobalCatalog) {
                 throw new RuntimeException('Solo l admin centrale puo eliminare prodotti dal catalogo globale.');
