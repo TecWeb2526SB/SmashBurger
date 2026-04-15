@@ -70,7 +70,7 @@ function can_place_customer_orders(): bool
     return current_user_role() === 'user';
 }
 
-function require_customer_order_access(string $redirectTo = 'area_personale.php'): void
+function require_customer_order_access(string $redirectTo = 'account'): void
 {
     require_login();
 
@@ -105,7 +105,7 @@ function logout_user(): void
     session_regenerate_id(true);
 }
 
-function require_login(string $redirectTo = 'login.php'): void
+function require_login(string $redirectTo = 'accedi'): void
 {
     if (is_logged_in()) {
         return;
@@ -116,7 +116,7 @@ function require_login(string $redirectTo = 'login.php'): void
     exit;
 }
 
-function require_admin_panel_access(string $redirectTo = 'area_personale.php'): void
+function require_admin_panel_access(string $redirectTo = 'account'): void
 {
     require_login();
 

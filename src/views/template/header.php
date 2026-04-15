@@ -74,7 +74,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                     <p class="brand">Smash Burger</p>
                 <?php else: ?>
                     <p class="brand">
-                        <a href="index.php">Smash Burger</a>
+                        <a href="./">Smash Burger</a>
                     </p>
                 <?php endif; ?>
 
@@ -97,28 +97,27 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                             <ul>
                                 <?php
                                 $adminBranchPages = [
-                                    'admin.php',
-                                    'admin_catalogo.php',
-                                    'admin_inventario.php',
-                                    'admin_inventario_rettifica.php',
-                                    'admin_forniture.php',
-                                    'admin_forniture_standard.php',
-                                    'admin_forniture_straordinaria.php',
-                                    'admin_forniture_automatico.php',
-                                    'admin_automatico.php',
-                                    'admin_ricevute.php',
+                                    'controllo',
+                                    'controllo-catalogo',
+                                    'controllo-catalogo-prodotto',
+                                    'controllo-inventario',
+                                    'controllo-inventario-rettifica',
+                                    'controllo-forniture',
+                                    'controllo-forniture-standard',
+                                    'controllo-forniture-straordinaria',
+                                    'controllo-forniture-automatico',
+                                    'controllo-manager',
                                 ];
-                                $currentScriptName = basename((string) ($_SERVER['PHP_SELF'] ?? ''));
-                                $currentHeaderPage = $currentScriptName !== ''
-                                    ? $currentScriptName
-                                    : (string) ($currentPage ?? 'index.php');
-                                $returnBasePage = 'index.php';
-                                if (in_array($currentHeaderPage, ['prodotti.php', 'sedi.php'], true)) {
+                                $requestPath = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+                                $currentRequestPage = $requestPath !== '' ? basename($requestPath) : './';
+                                $currentHeaderPage = (string) ($currentPage ?? $currentRequestPage);
+                                $returnBasePage = './';
+                                if (in_array($currentHeaderPage, ['prodotti', 'sedi'], true)) {
                                     $returnBasePage = $currentHeaderPage;
                                 } elseif (in_array($currentHeaderPage, $adminBranchPages, true)) {
                                     $returnBasePage = $currentHeaderPage;
-                                } elseif (str_starts_with($currentHeaderPage, 'admin')) {
-                                    $returnBasePage = 'admin.php';
+                                } elseif (str_starts_with($currentHeaderPage, 'controllo')) {
+                                    $returnBasePage = 'controllo';
                                 } elseif ($currentHeaderPage !== '') {
                                     $returnBasePage = $currentHeaderPage;
                                 }
@@ -136,9 +135,9 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                 ?>
                                 <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
-                                    $switchUrl = 'prodotti.php?sede=' . rawurlencode((string) $hb['slug']);
+                                    $switchUrl = 'prodotti?sede=' . rawurlencode((string) $hb['slug']);
                                     $returnParams = $returnQueryParams;
-                                    if (in_array($returnBasePage, ['prodotti.php', 'sedi.php'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
+                                    if (in_array($returnBasePage, ['prodotti', 'sedi'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
                                         $returnParams['sede'] = (string) $hb['slug'];
                                     } else {
                                         unset($returnParams['sede']);
@@ -191,7 +190,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                 <a
                                     href="<?php echo htmlspecialchars($href); ?>"
                                     class="nav-item-wrap"
-                                    <?php echo $href === 'logout.php' ? 'data-confirm-logout="true"' : ''; ?>>
+                                    <?php echo $href === 'esci' ? 'data-confirm-logout="true"' : ''; ?>>
                                     <?php echo htmlspecialchars($label); ?>
                                     <?php if ($isCart): ?>
                                         <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">

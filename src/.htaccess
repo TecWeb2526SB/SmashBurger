@@ -11,7 +11,29 @@ ErrorDocument 500 /errors/500.php
 RewriteEngine On
 
 # Assicuriamoci che Apache segua i link simbolici (spesso richiesto per mod_rewrite)
-Options +FollowSymLinks
+Options +FollowSymLinks -MultiViews
+
+# Canonicalizziamo la homepage
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteRule ^index$ / [R=301,L,NE]
+
+RewriteCond %{THE_REQUEST} \s/+index\.php(?:[?\s]|$) [NC]
+RewriteRule ^index\.php$ / [R=301,L,NE]
+
+# Canonicalizziamo gli URL root-level .php verso la versione senza estensione
+# Solo su GET/HEAD per non alterare eventuali POST legacy.
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/+([A-Za-z0-9_-]+)\.php(?:[?\s]|$) [NC]
+RewriteRule ^([A-Za-z0-9_-]+)\.php$ /$1 [R=301,L,NE]
+
+# Lasciamo invariati file e directory reali (css, js, txt, xml, immagini, ecc.)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Riscriviamo internamente solo i controller root-level senza estensione
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([A-Za-z0-9_-]+)$ $1.php [L,QSA]
 
 # Regola: Se il file o la directory richiesti non esistono fisicamente sul server...
 # RewriteCond %{REQUEST_FILENAME} !-f

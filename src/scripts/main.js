@@ -85,7 +85,7 @@ function inizializzaTema() {
 }
 
 /* ==========================================================================
-   2. FILTRO CATEGORIE — solo su prodotti.php
+   2. FILTRO CATEGORIE — solo su prodotti
    ========================================================================== */
 
 function inizializzaFiltroProdotti() {
@@ -409,7 +409,7 @@ function mostraNotifica(messaggio, tipo = 'success') {
 }
 
 function inizializzaAjaxCart() {
-    const forms = document.querySelectorAll('form[action="carrello.php"]');
+    const forms = document.querySelectorAll('form[action="carrello"]');
     if (forms.length === 0) return;
     const body = document.body;
     const totaleCarrello = document.getElementById('carrello-totale-valore');
@@ -453,7 +453,7 @@ function inizializzaAjaxCart() {
                 formData.append('ajax', '1');
 
                 try {
-                    const response = await fetch('carrello.php', {
+                    const response = await fetch('carrello', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -545,7 +545,7 @@ function inizializzaAjaxCart() {
                 setStepperBusy(true);
 
                 try {
-                    const response = await fetch('carrello.php', {
+                    const response = await fetch('carrello', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -653,7 +653,7 @@ function inizializzaAjaxCart() {
                 formData.append('ajax', '1');
 
                 try {
-                    const response = await fetch('carrello.php', {
+                    const response = await fetch('carrello', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -913,12 +913,13 @@ function inizializzaHeaderSede() {
 
     function buildReturnUrl(targetSlug) {
         const returnUrl = new URL(window.location.href);
-        const pageName = returnUrl.pathname.split('/').pop() || 'index.php';
+        const normalizedPath = returnUrl.pathname.replace(/^\/+|\/+$/g, '');
+        const pageName = normalizedPath === '' ? './' : normalizedPath.split('/').pop();
 
         returnUrl.searchParams.delete('ajax');
         returnUrl.searchParams.delete('force');
 
-        if (pageName === 'prodotti.php' || pageName === 'sedi.php') {
+        if (pageName === 'prodotti' || pageName === 'sedi') {
             returnUrl.searchParams.set('sede', targetSlug);
         } else {
             returnUrl.searchParams.delete('sede');

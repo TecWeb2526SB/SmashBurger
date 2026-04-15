@@ -13,47 +13,47 @@ $canAccessAdminPanel = $isLoggedIn && in_array($sessionRole, ['admin', 'branch_m
 $canPlaceOrders = !$isLoggedIn || $sessionRole === 'user';
 
 $navItems = [
-    'Home'              => 'index.php',
-    'I nostri prodotti' => 'prodotti.php',
-    'Servizi'           => 'servizi.php',
-    'Chi siamo'         => 'sedi.php',
+    'Home'              => './',
+    'I nostri prodotti' => 'prodotti',
+    'Servizi'           => 'servizi',
+    'Chi siamo'         => 'sedi',
 ];
 
 if ($isLoggedIn) {
-    $navItems['Area personale'] = 'area_personale.php';
+    $navItems['Area personale'] = 'account';
     if ($canAccessAdminPanel) {
-        $navItems['Controllo'] = 'admin.php';
+        $navItems['Controllo'] = 'controllo';
     }
     if ($canPlaceOrders) {
-        $navItems['Carrello'] = 'carrello.php';
+        $navItems['Carrello'] = 'carrello';
     }
-    $navItems['Esci'] = 'logout.php';
+    $navItems['Esci'] = 'esci';
 } else {
-    $navItems['Accedi'] = 'login.php';
+    $navItems['Accedi'] = 'accedi';
 }
 
 $siteMapItems = [
-    'Home'                   => 'index.php',
-    'I nostri prodotti'      => 'prodotti.php',
-    'Servizi'                => 'servizi.php',
-    'Chi siamo e le sedi'    => 'sedi.php',
-    'Accedi'                 => 'login.php',
-    'Registrazione'          => 'registrazione.php',
-    'Privacy Policy'         => 'policy.php',
-    'Accessibilita'          => 'accessibilita.php',
-    'Mappa del sito'         => 'mappa.php',
+    'Home'                   => './',
+    'I nostri prodotti'      => 'prodotti',
+    'Servizi'                => 'servizi',
+    'Chi siamo e le sedi'    => 'sedi',
+    'Accedi'                 => 'accedi',
+    'Registrazione'          => 'registrati',
+    'Privacy Policy'         => 'privacy',
+    'Accessibilita'          => 'accessibilita',
+    'Mappa del sito'         => 'mappa-sito',
 ];
 
 if ($isLoggedIn) {
     unset($siteMapItems['Accedi'], $siteMapItems['Registrazione']);
-    $siteMapItems['Area personale'] = 'area_personale.php';
+    $siteMapItems['Area personale'] = 'account';
     if ($canPlaceOrders) {
-        $siteMapItems['Carrello'] = 'carrello.php';
-        $siteMapItems['Checkout'] = 'checkout.php';
+        $siteMapItems['Carrello'] = 'carrello';
+        $siteMapItems['Checkout'] = 'checkout';
     }
     if ($canAccessAdminPanel) {
-        $siteMapItems['Pannello controllo'] = 'admin.php';
+        $siteMapItems['Pannello controllo'] = 'controllo';
     }
-    $siteMapItems['Profilo account'] = 'profilo.php';
-    $siteMapItems['Esci'] = 'logout.php';
+    $siteMapItems['Profilo account'] = 'account-profilo';
+    $siteMapItems['Esci'] = 'esci';
 }

@@ -18,7 +18,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
     $sections = [
         'dashboard' => [
             'label' => 'Panoramica',
-            'path' => 'admin.php',
+            'path' => 'controllo',
             'uses_branch' => true,
             'title' => 'Panoramica',
             'kicker' => 'Panoramica',
@@ -26,7 +26,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
         ],
         'catalogo' => [
             'label' => 'Catalogo',
-            'path' => 'admin_catalogo.php',
+            'path' => 'controllo-catalogo',
             'uses_branch' => true,
             'title' => 'Catalogo',
             'kicker' => 'Catalogo',
@@ -34,7 +34,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
         ],
         'inventario' => [
             'label' => 'Inventario',
-            'path' => 'admin_inventario.php',
+            'path' => 'controllo-inventario',
             'uses_branch' => true,
             'title' => 'Inventario',
             'kicker' => 'Magazzino',
@@ -42,7 +42,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
         ],
         'forniture' => [
             'label' => 'Forniture',
-            'path' => 'admin_forniture.php',
+            'path' => 'controllo-forniture',
             'uses_branch' => true,
             'title' => 'Forniture',
             'kicker' => 'Approvvigionamento',
@@ -53,7 +53,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
     if ($canManageBranchManagers) {
         $sections['team'] = [
             'label' => 'Manager',
-            'path' => 'admin_team.php',
+            'path' => 'controllo-manager',
             'uses_branch' => false,
             'title' => 'Manager filiale',
             'kicker' => 'Credenziali',
@@ -139,7 +139,7 @@ function admin_supply_builder_pages(): array
 {
     return [
         'standard' => [
-            'path' => 'admin_forniture_standard.php',
+            'path' => 'controllo-forniture-standard',
             'kicker' => 'Scenario 1',
             'title' => 'Routine ricorrente',
             'description' => 'Builder guidato per template settimanali, quindicinali o mensili con righe prodotto espandibili.',
@@ -147,7 +147,7 @@ function admin_supply_builder_pages(): array
             'submit_label' => 'Salva fornitura standard',
         ],
         'extra' => [
-            'path' => 'admin_forniture_straordinaria.php',
+            'path' => 'controllo-forniture-straordinaria',
             'kicker' => 'Scenario 2',
             'title' => 'Intervento una tantum',
             'description' => 'Builder manuale per urgenze e integrazioni fuori programma, con righe prodotto aggiungibili al volo.',
@@ -155,7 +155,7 @@ function admin_supply_builder_pages(): array
             'submit_label' => 'Registra fornitura straordinaria',
         ],
         'automatic' => [
-            'path' => 'admin_forniture_automatico.php',
+            'path' => 'controllo-forniture-automatico',
             'kicker' => 'Scenario 3',
             'title' => 'Automazione stock',
             'description' => 'Builder per configurare trigger, controlli e output del riordino automatico della filiale.',
@@ -198,7 +198,7 @@ function admin_inventory_adjustment_url(
         $params['prodotto'] = (string) $productId;
     }
 
-    return admin_panel_build_path('admin_inventario_rettifica.php', $params);
+    return admin_panel_build_path('controllo-inventario-rettifica', $params);
 }
 
 function admin_panel_bootstrap_context(PDO $pdo): array
@@ -211,7 +211,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
     if ($utente === null) {
         logout_user();
         flash_set('error', 'Sessione amministrativa non valida. Effettua di nuovo l accesso.');
-        header('Location: login.php');
+        header('Location: accedi');
         exit;
     }
 
@@ -226,7 +226,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
     if (empty($allBranches)) {
         flash_set('error', 'Nessuna sede disponibile per il pannello di controllo.');
-        header('Location: area_personale.php');
+        header('Location: account');
         exit;
     }
 
@@ -239,7 +239,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
         if ($selectedBranch === null) {
             flash_set('error', 'Il tuo account manager non e associato a una filiale valida.');
-            header('Location: area_personale.php');
+            header('Location: account');
             exit;
         }
     } else {
@@ -263,7 +263,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
     if ($selectedBranch === null) {
         flash_set('error', 'Impossibile determinare la filiale in analisi.');
-        header('Location: area_personale.php');
+        header('Location: account');
         exit;
     }
 

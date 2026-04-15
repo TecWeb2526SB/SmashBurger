@@ -18,7 +18,7 @@ http_response_code(500);
         <div class="contenitore">
             <h1>500</h1>
             <p>Qualcosa &egrave; andato storto nei nostri server. Stiamo lavorando per risolvere il problema.</p>
-            <p><a href="../index.php">Torna alla home</a></p>
+            <p><a href="../">Torna alla home</a></p>
         </div>
     </main>
 
