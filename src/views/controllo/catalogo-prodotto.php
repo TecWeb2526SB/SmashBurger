@@ -104,7 +104,7 @@ $isReviewStep = $currentStep === 'riepilogo';
 
                         <div class="checkout-navigation">
                             <a class="bottone-secondario" href="controllo-catalogo">&larr; Annulla</a>
-                            <button class="bottone-primario" type="submit">Vai all immagine &rarr;</button>
+                            <button class="bottone-primario" type="submit">Vai all'immagine &rarr;</button>
                         </div>
                     </form>
                 <?php elseif ($currentStep === 'immagine'): ?>
@@ -115,7 +115,7 @@ $isReviewStep = $currentStep === 'riepilogo';
 
                         <div class="account-panel-head">
                             <span class="account-panel-kicker">Passo 2 di 3</span>
-                            <h2 id="titolo-step-immagine">Scegli l immagine e regola l inquadratura</h2>
+                            <h2 id="titolo-step-immagine">Scegli l'immagine e regola l'inquadratura</h2>
                             <p class="checkout-muted">Il ritaglio resta leggero e non distruttivo: salviamo il punto focale per far “cadere bene” l immagine nelle card del catalogo.</p>
                         </div>
 

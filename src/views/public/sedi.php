@@ -15,7 +15,7 @@
         <h1 id="titolo-sedi">Chi siamo e le nostre sedi</h1>
         <p class="chi-siamo-lead">
             Smash Burger Original nasce in Veneto con una promessa semplice: burger fatti al momento,
-            ingredienti selezionati e qualita costante in ogni sede.
+            ingredienti selezionati e qualità costante in ogni sede.
         </p>
 
         <div class="chi-siamo-grid">
@@ -28,18 +28,18 @@
             </article>
 
             <article class="chi-siamo-card">
-                <h2>Qualita e trasparenza</h2>
+                <h2>Qualità e trasparenza</h2>
                 <p>
-                    Tracciamo disponibilita e menu in modo dinamico per sede: quello che vedi online
-                    e allineato al punto vendita selezionato, inclusi orari e note di ritiro.
+                    Tracciamo disponibilità e menu in modo dinamico per sede: quello che vedi online
+                    è allineato al punto vendita selezionato, inclusi orari e note di ritiro.
                 </p>
             </article>
 
             <article class="chi-siamo-card">
                 <h2>Esperienza locale</h2>
                 <p>
-                    Ogni sede e integrata nel proprio territorio con team dedicato e servizio uniforme.
-                    Dal ritiro immediato al ritiro programmato, l esperienza resta semplice e affidabile.
+                    Ogni sede è integrata nel proprio territorio con team dedicato e servizio uniforme.
+                    Dal ritiro immediato al ritiro programmato, l'esperienza resta semplice e affidabile.
                 </p>
             </article>
         </div>
