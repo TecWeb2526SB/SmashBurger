@@ -4,9 +4,9 @@
     "identifier": "user",
     "password": "user",
     "pages": [
-      "area_personale.php",
-      "profilo.php",
-      "carrello.php"
+      "account",
+      "account-profilo",
+      "carrello"
     ]
   },
   {
@@ -14,10 +14,10 @@
     "identifier": "manager.padova",
     "password": "manager_padova",
     "pages": [
-      "admin.php",
-      "admin_catalogo.php",
-      "admin_inventario.php",
-      "admin_forniture.php"
+      "controllo",
+      "controllo-catalogo",
+      "controllo-inventario",
+      "controllo-forniture"
     ]
   },
   {
@@ -25,11 +25,11 @@
     "identifier": "admin",
     "password": "admin",
     "pages": [
-      "admin.php",
-      "admin_catalogo.php",
-      "admin_inventario.php",
-      "admin_forniture.php",
-      "admin_team.php"
+      "controllo",
+      "controllo-catalogo",
+      "controllo-inventario",
+      "controllo-forniture",
+      "controllo-manager"
     ]
   }
 ]

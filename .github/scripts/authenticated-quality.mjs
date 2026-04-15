@@ -14,6 +14,8 @@ const configPath = path.resolve(process.cwd(), argMap['--config'] || '.github/sc
 const outputDir = path.resolve(process.cwd(), argMap['--output-dir'] || '.tmp/authenticated-quality');
 const summaryPath = path.resolve(process.cwd(), argMap['--summary-json'] || path.join(outputDir, 'summary.json'));
 const stepSummaryPath = argMap['--step-summary'] || '';
+const loginPath = 'accedi';
+const accountLandingPath = '/account';
 
 fs.mkdirSync(outputDir, { recursive: true });
 fs.mkdirSync(path.join(outputDir, 'lighthouse'), { recursive: true });
@@ -127,12 +129,12 @@ function runCommand(command, args, options = {}) {
 
 async function loginProfile(profile) {
     const jar = new Map();
-    const loginPageResponse = await fetch(`${baseUrl}/login.php`, {
+    const loginPageResponse = await fetch(`${baseUrl}/${loginPath}`, {
         redirect: 'manual',
     });
 
     if (!loginPageResponse.ok) {
-        throw new Error(`Impossibile aprire login.php per ${profile.role}: HTTP ${loginPageResponse.status}`);
+        throw new Error(`Impossibile aprire ${loginPath} per ${profile.role}: HTTP ${loginPageResponse.status}`);
     }
 
     updateCookieJar(jar, loginPageResponse);
@@ -149,7 +151,7 @@ async function loginProfile(profile) {
         password: profile.password,
     });
 
-    const loginResponse = await fetch(`${baseUrl}/login.php`, {
+    const loginResponse = await fetch(`${baseUrl}/${loginPath}`, {
         method: 'POST',
         redirect: 'manual',
         headers: {
@@ -167,7 +169,8 @@ async function loginProfile(profile) {
     }
 
     const location = loginResponse.headers.get('location') || '';
-    if (!location.includes('area_personale.php')) {
+    const resolvedPath = new URL(location, `${baseUrl}/`).pathname.replace(/\/+$/, '') || '/';
+    if (resolvedPath !== accountLandingPath) {
         throw new Error(`Redirect inatteso dopo login per ${profile.role}: ${location || 'nessuno'}`);
     }
 
@@ -228,7 +231,7 @@ for (const profile of profiles) {
         fs.writeFileSync(headersPath, `${JSON.stringify({ Cookie: cookieHeader(cookieJar) }, null, 2)}\n`);
 
         for (const page of profile.pages) {
-            const url = `${baseUrl}/${page}`;
+            const url = new URL(page, `${baseUrl}/`).toString();
             const result = {
                 role: profile.role,
                 page,

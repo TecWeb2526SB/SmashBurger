@@ -3383,16 +3383,17 @@ html.tema-chiaro .admin-supply-cost-note {
 .admin-catalog-toolbar-head {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: end;
 }
 
 .admin-catalog-summary {
     display: grid;
     gap: 0.75rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-width: min(100%, 20rem);
-    align-self: end;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    min-width: min(100%, 32rem);
+    max-width: 34rem;
+    align-self: center;
 }
 
 .admin-catalog-state-grid {
@@ -4068,7 +4069,11 @@ html.tema-scuro .admin-status-pill.is-warning::before {
 }
 
 .admin-product-back-form {
-    margin-top: var(--spazio-sm);
+    margin-top: 0;
+}
+
+.admin-product-step-actions {
+    margin-top: var(--spazio-lg);
 }
 
 .admin-product-preview-card,

@@ -47,7 +47,7 @@ jobs:
       - name: Wait for application
         run: |
           for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+            if curl -fsS http://127.0.0.1:8080/ > /dev/null; then
               exit 0
             fi
             sleep 2
@@ -87,9 +87,15 @@ jobs:
           set +e
           failed=0
           while IFS= read -r page; do
-            url="http://127.0.0.1:8080/${page}"
+            slug="${page#/}"
+            slug="${slug%/}"
+            if [ -z "${slug}" ]; then
+              slug="home"
+            fi
+            slug="${slug//\//__}"
+            url="http://127.0.0.1:8080${page}"
             echo "Checking accessibility for ${url}"
-            report=".tmp/pa11y/${page%.php}.json"
+            report=".tmp/pa11y/${slug}.json"
             status=0
             pa11y --config pa11y-config.json --reporter json "${url}" > "${report}" || status=$?
             node -e '

@@ -38,11 +38,22 @@ const deEmphasizedAuditTitles = new Set([
     'Forced reflow',
 ]);
 
+function pageToReportSlug(page) {
+    const normalizedPage = String(page).trim();
+    if (normalizedPage === '' || normalizedPage === '/') {
+        return 'home';
+    }
+
+    return normalizedPage
+        .replace(/^\/+|\/+$/g, '')
+        .replace(/\//g, '__');
+}
+
 const issueMap = new Map();
 const pageResults = [];
 
 for (const page of pages) {
-    const slug = page.replace(/\.php$/, '');
+    const slug = pageToReportSlug(page);
     const reportPath = path.join(reportsDir, `${slug}.json`);
 
     if (!fs.existsSync(reportPath)) {

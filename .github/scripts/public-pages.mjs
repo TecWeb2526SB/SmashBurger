@@ -16,8 +16,8 @@ const pages = [];
 for (const match of matches) {
     try {
         const url = new URL(match[1]);
-        const page = path.posix.basename(url.pathname);
-        if (page.endsWith('.php') && !pages.includes(page)) {
+        const page = url.pathname.replace(/\/+$/, '') || '/';
+        if (!pages.includes(page)) {
             pages.push(page);
         }
     } catch (error) {
@@ -26,7 +26,7 @@ for (const match of matches) {
 }
 
 if (pages.length === 0) {
-    throw new Error(`No PHP pages found in sitemap: ${sitemapPath}`);
+    throw new Error(`No public pages found in sitemap: ${sitemapPath}`);
 }
 
 if (format === 'json') {

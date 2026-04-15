@@ -47,7 +47,7 @@ jobs:
       - name: Wait for application
         run: |
           for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+            if curl -fsS http://127.0.0.1:8080/ > /dev/null; then
               exit 0
             fi
             sleep 2
@@ -76,8 +76,14 @@ jobs:
           set +e
           failed=0
           while IFS= read -r page; do
-            url="http://127.0.0.1:8080/${page}"
-            report=".tmp/lighthouse/${page%.php}.json"
+            slug="${page#/}"
+            slug="${slug%/}"
+            if [ -z "${slug}" ]; then
+              slug="home"
+            fi
+            slug="${slug//\//__}"
+            url="http://127.0.0.1:8080${page}"
+            report=".tmp/lighthouse/${slug}.json"
             echo "Running Lighthouse on ${url}"
             lighthouse "${url}" \
               --output=json \

@@ -18,11 +18,22 @@ const pages = fs.readFileSync(pagesFile, 'utf8')
     .map((line) => line.trim())
     .filter(Boolean);
 
+function pageToReportSlug(page) {
+    const normalizedPage = String(page).trim();
+    if (normalizedPage === '' || normalizedPage === '/') {
+        return 'home';
+    }
+
+    return normalizedPage
+        .replace(/^\/+|\/+$/g, '')
+        .replace(/\//g, '__');
+}
+
 const messageMap = new Map();
 const pageResults = [];
 
 for (const page of pages) {
-    const slug = page.replace(/\.php$/, '');
+    const slug = pageToReportSlug(page);
     const reportPath = path.join(reportsDir, `${slug}.json`);
 
     if (!fs.existsSync(reportPath)) {
