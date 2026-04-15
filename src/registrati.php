@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mb_strlen($password) < 8) {
         $errori['password'] = 'La password deve contenere almeno 8 caratteri.';
     } elseif (!auth_is_valid_password($password)) {
-        $errori['password'] = 'La password puo contenere solo lettere, numeri e questi simboli: ! @ # $ % &';
+        $errori['password'] = 'La password puo contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
     }
 
     if ($conferma === '') {

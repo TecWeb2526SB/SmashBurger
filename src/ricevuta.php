@@ -72,8 +72,6 @@ if ($receiptType === 'fornitura') {
     }
 
     $isOwner = (int) $receipt['user_id'] === (int) $utente['id'];
-    $canViewBranchOrder = false;
-
     if (!$isOwner) {
         flash_set('error', 'Non puoi consultare la ricevuta richiesta.');
         header('Location: account');
@@ -86,7 +84,7 @@ $pageDescription = 'Ricevuta stampabile ordine cliente o ricezione fornitura.';
 $currentPage = $receiptType === 'fornitura' ? 'controllo' : 'account';
 $breadcrumb = [
     ['Home', './'],
-    [$receiptType === 'fornitura' || (!empty($canViewBranchOrder) && !$isOwner) ? 'Controllo' : 'Area personale', $backHref],
+    [$receiptType === 'fornitura' ? 'Controllo' : 'Area personale', $backHref],
     ['Ricevuta', null],
 ];
 

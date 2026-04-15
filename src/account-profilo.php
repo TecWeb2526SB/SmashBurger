@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (mb_strlen($formPassword['new_password']) < 8) {
             $erroriPassword['new_password'] = 'La nuova password deve contenere almeno 8 caratteri.';
         } elseif (!auth_is_valid_password($formPassword['new_password'])) {
-            $erroriPassword['new_password'] = 'La nuova password puo contenere solo lettere, numeri e questi simboli: ! @ # $ % &';
+            $erroriPassword['new_password'] = 'La nuova password puo contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
         } elseif (hash_equals($formPassword['current_password'], $formPassword['new_password'])) {
             $erroriPassword['new_password'] = 'La nuova password deve essere diversa da quella attuale.';
         }

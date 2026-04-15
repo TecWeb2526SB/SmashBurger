@@ -87,6 +87,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = auth_normalize_email((string) ($_POST['email'] ?? ''));
             $password = (string) ($_POST['password'] ?? '');
             $branchId = (int) ($_POST['managed_branch_id'] ?? 0);
+            $branch = $branchId > 0 ? branch_get_by_id($pdo, $branchId) : null;
+
+            $draft = [
+                'id' => $managerId,
+                'username' => $username,
+                'email' => $email,
+                'managed_branch_id' => $branchId,
+                'managed_branch_name' => $branch['name'] ?? '',
+                'password' => $password,
+            ];
+            $_SESSION[$flowKey] = ['draft' => $draft];
 
             if ($username === '' || !auth_is_valid_username($username)) {
                 throw new RuntimeException('Username manager non valido.');
@@ -97,8 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($branchId <= 0) {
                 throw new RuntimeException('Seleziona una filiale valida per il manager.');
             }
-            
-            $branch = branch_get_by_id($pdo, $branchId);
+
             if ($branch === null) {
                 throw new RuntimeException('Filiale non trovata.');
             }
@@ -116,18 +126,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     throw new RuntimeException('La password deve contenere almeno 8 caratteri.');
                 }
                 if (!auth_is_valid_password($password)) {
-                    throw new RuntimeException('La password puo contenere solo lettere, numeri e questi simboli: ! @ # $ % &');
+                    throw new RuntimeException('La password puo contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &');
                 }
             }
 
-            $draft = [
-                'id' => $managerId,
-                'username' => $username,
-                'email' => $email,
-                'managed_branch_id' => $branchId,
-                'managed_branch_name' => $branch['name'],
-                'password' => $password,
-            ];
+            $draft['managed_branch_name'] = $branch['name'];
             $_SESSION[$flowKey] = ['draft' => $draft];
 
             header('Location: controllo-manager?' . http_build_query(array_filter([
@@ -171,7 +174,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } catch (\Throwable $e) {
         flash_set('error', $e->getMessage());
-        header('Location: ' . $_SERVER['HTTP_REFERER']);
+
+        $redirectTo = (string) ($sectionUrls['team'] ?? 'controllo-manager');
+        if ($action === 'save_details') {
+            $redirectParams = ['step' => 'dettagli'];
+            if ($managerId > 0) {
+                $redirectParams['modifica'] = $managerId;
+            } else {
+                $redirectParams['modalita'] = 'nuovo';
+            }
+            $redirectTo .= '?' . http_build_query($redirectParams);
+        } elseif ($action === 'confirm_manager' && is_array($draft)) {
+            $redirectParams = ['step' => 'riepilogo'];
+            if ((int) ($draft['id'] ?? 0) > 0) {
+                $redirectParams['modifica'] = (int) $draft['id'];
+            } else {
+                $redirectParams['modalita'] = 'nuovo';
+            }
+            $redirectTo .= '?' . http_build_query($redirectParams);
+        }
+
+        header('Location: ' . $redirectTo);
         exit;
     }
 }

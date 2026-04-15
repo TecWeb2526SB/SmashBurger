@@ -11,8 +11,9 @@
 ?>
 
 <?php
+$cartItems = (array) ($carrello['items'] ?? []);
 $hasUnavailableItems = false;
-foreach ($carrello['items'] as $cartItemCheck) {
+foreach ($cartItems as $cartItemCheck) {
     if ((int) ($cartItemCheck['is_available'] ?? 1) !== 1) {
         $hasUnavailableItems = true;
         break;
@@ -35,7 +36,7 @@ foreach ($carrello['items'] as $cartItemCheck) {
             </div>
         <?php endif; ?>
 
-        <?php if (empty($carrello['items'])): ?>
+        <?php if (empty($cartItems)): ?>
             <p>Il tuo carrello e vuoto.</p>
             <p><a class="bottone-primario" href="prodotti">Vai al catalogo</a></p>
         <?php else: ?>
@@ -58,7 +59,7 @@ foreach ($carrello['items'] as $cartItemCheck) {
                         </tr>
                     </thead>
                     <tbody id="carrello-righe">
-                        <?php foreach ($carrello['items'] as $item): ?>
+                        <?php foreach ($cartItems as $item): ?>
                             <tr data-cart-item-id="<?php echo (int) $item['id']; ?>">
                                 <th scope="row">
                                     <?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?>

@@ -45,7 +45,7 @@ $internalAccountBrowsing = function_exists('is_logged_in') && is_logged_in() && 
     <section aria-label="Avviso account interno">
         <div class="contenitore">
             <div class="alert info">
-                Stai consultando il catalogo con un account interno. Per i profili admin e manager l acquisto diretto e disabilitato.
+                Stai consultando il catalogo con un account interno. Per i profili admin e manager l'ordine diretto non e disponibile.
             </div>
         </div>
     </section>
