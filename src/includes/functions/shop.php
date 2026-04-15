@@ -583,10 +583,10 @@ function catalog_get(PDO $pdo, ?int $branchId = null): array
                             WHEN COALESCE(bi.manual_unavailable, 0) = 1 THEN 0
                             WHEN bp.is_available IS NULL
                                 THEN CASE
-                                    WHEN p.is_available = 1 AND (bi.product_id IS NULL OR bi.on_hand_qty > 0) THEN 1
+                                    WHEN p.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                                     ELSE 0
                                 END
-                            WHEN p.is_available = 1 AND bp.is_available = 1 AND (bi.product_id IS NULL OR bi.on_hand_qty > 0) THEN 1
+                            WHEN p.is_available = 1 AND bp.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                             ELSE 0
                         END AS is_available,
                         COALESCE(bp.price_cents_override, p.price_cents) AS price_cents,
@@ -800,10 +800,10 @@ function cart_get_summary(PDO $pdo, int $userId, ?int $branchId = null): array
                 WHEN COALESCE(bi.manual_unavailable, 0) = 1 THEN 0
                 WHEN bp.is_available IS NULL
                     THEN CASE
-                        WHEN p.is_available = 1 AND (bi.product_id IS NULL OR bi.on_hand_qty > 0) THEN 1
+                        WHEN p.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                         ELSE 0
                     END
-                WHEN p.is_available = 1 AND bp.is_available = 1 AND (bi.product_id IS NULL OR bi.on_hand_qty > 0) THEN 1
+                WHEN p.is_available = 1 AND bp.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                 ELSE 0
             END AS is_available,
             COALESCE(bi.on_hand_qty, 0) AS inventory_qty,
@@ -869,10 +869,10 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
                 WHEN COALESCE(bi.manual_unavailable, 0) = 1 THEN 0
                 WHEN bp.is_available IS NULL
                     THEN CASE
-                        WHEN p.is_available = 1 AND (bi.product_id IS NULL OR bi.on_hand_qty > 0) THEN 1
+                        WHEN p.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                         ELSE 0
                     END
-                WHEN p.is_available = 1 AND bp.is_available = 1 AND (bi.product_id IS NULL OR bi.on_hand_qty > 0) THEN 1
+                WHEN p.is_available = 1 AND bp.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                 ELSE 0
             END AS is_available,
             COALESCE(bi.on_hand_qty, 0) AS inventory_qty,
@@ -924,7 +924,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
 
     if ($existingItem) {
         $newQty = min($maxQuantity, (int) $existingItem['quantity'] + $quantity);
-        if ((int) ($product['has_inventory_row'] ?? 0) === 1 && $newQty > (int) $product['inventory_qty']) {
+        if ((int) ($product['has_inventory_row'] ?? 0) !== 1 || $newQty > (int) $product['inventory_qty']) {
             return [
                 'ok' => false,
                 'message' => 'Disponibilita limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unita di ' . $product['name'] . '.',
@@ -945,7 +945,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
             'id' => (int) $existingItem['id'],
         ]);
     } else {
-        if ((int) ($product['has_inventory_row'] ?? 0) === 1 && $quantity > (int) $product['inventory_qty']) {
+        if ((int) ($product['has_inventory_row'] ?? 0) !== 1 || $quantity > (int) $product['inventory_qty']) {
             return [
                 'ok' => false,
                 'message' => 'Disponibilita limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unita di ' . $product['name'] . '.',
@@ -1020,7 +1020,7 @@ function cart_update_item_qty(PDO $pdo, int $userId, int $itemId, int $quantity,
 
     $quantity = min($quantity, $maxQuantity);
 
-    if ((int) ($item['has_inventory_row'] ?? 0) === 1 && $quantity > (int) $item['inventory_qty']) {
+    if ((int) ($item['has_inventory_row'] ?? 0) !== 1 || $quantity > (int) $item['inventory_qty']) {
         return [
             'ok' => false,
             'message' => 'Disponibilita limitata: in sede restano ' . (int) $item['inventory_qty'] . ' unita di ' . $item['product_name'] . '.',
