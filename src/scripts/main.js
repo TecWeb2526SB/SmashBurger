@@ -85,7 +85,7 @@ function inizializzaTema() {
 }
 
 /* ==========================================================================
-   2. FILTRO CATEGORIE — solo su prodotti.php
+   2. FILTRO CATEGORIE — solo su prodotti
    ========================================================================== */
 
 function inizializzaFiltroProdotti() {
@@ -409,7 +409,7 @@ function mostraNotifica(messaggio, tipo = 'success') {
 }
 
 function inizializzaAjaxCart() {
-    const forms = document.querySelectorAll('form[action="carrello.php"]');
+    const forms = document.querySelectorAll('form[action="carrello"]');
     if (forms.length === 0) return;
     const body = document.body;
     const totaleCarrello = document.getElementById('carrello-totale-valore');
@@ -453,7 +453,7 @@ function inizializzaAjaxCart() {
                 formData.append('ajax', '1');
 
                 try {
-                    const response = await fetch('carrello.php', {
+                    const response = await fetch('carrello', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -545,7 +545,7 @@ function inizializzaAjaxCart() {
                 setStepperBusy(true);
 
                 try {
-                    const response = await fetch('carrello.php', {
+                    const response = await fetch('carrello', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -621,13 +621,12 @@ function inizializzaAjaxCart() {
                 quantityDisplay.addEventListener('keydown', function (e) {
                     const min = Number.parseInt(quantityInput.dataset.min || '0', 10);
                     const max = Number.parseInt(quantityInput.dataset.max || '100', 10);
-                    const currentValue = clampQuantity(quantityInput.value);
-                    let nextValue = currentValue;
+                    let nextValue;
 
                     if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
-                        nextValue = currentValue - 1;
+                        nextValue = clampQuantity(quantityInput.value) - 1;
                     } else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
-                        nextValue = currentValue + 1;
+                        nextValue = clampQuantity(quantityInput.value) + 1;
                     } else if (e.key === 'Home') {
                         nextValue = min;
                     } else if (e.key === 'End') {
@@ -654,7 +653,7 @@ function inizializzaAjaxCart() {
                 formData.append('ajax', '1');
 
                 try {
-                    const response = await fetch('carrello.php', {
+                    const response = await fetch('carrello', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -854,6 +853,11 @@ function inizializzaHeaderSede() {
             title: 'Uscire dall\'account?',
             message: 'Sei sicuro di voler uscire dal tuo account?',
             confirm: 'Sì, esci'
+        },
+        delete: {
+            title: 'Eliminare credenziali?',
+            message: 'Sei sicuro di voler eliminare definitivamente queste credenziali? L\'operazione non è reversibile.',
+            confirm: 'Sì, elimina'
         }
     };
 
@@ -909,12 +913,13 @@ function inizializzaHeaderSede() {
 
     function buildReturnUrl(targetSlug) {
         const returnUrl = new URL(window.location.href);
-        const pageName = returnUrl.pathname.split('/').pop() || 'index.php';
+        const normalizedPath = returnUrl.pathname.replace(/^\/+|\/+$/g, '');
+        const pageName = normalizedPath === '' ? './' : normalizedPath.split('/').pop();
 
         returnUrl.searchParams.delete('ajax');
         returnUrl.searchParams.delete('force');
 
-        if (pageName === 'prodotti.php' || pageName === 'sedi.php') {
+        if (pageName === 'prodotti' || pageName === 'sedi') {
             returnUrl.searchParams.set('sede', targetSlug);
         } else {
             returnUrl.searchParams.delete('sede');
@@ -925,6 +930,7 @@ function inizializzaHeaderSede() {
 
     async function cambiaSede(option, force = false) {
         const targetSlug = option.dataset.sedeSlug || '';
+        const returnUrl = option.dataset.returnUrl || buildReturnUrl(targetSlug);
         const switchUrl = new URL(option.dataset.switchUrl || option.href, window.location.origin);
         switchUrl.searchParams.set('ajax', '1');
 
@@ -945,10 +951,10 @@ function inizializzaHeaderSede() {
                 return;
             }
 
-            window.location.href = buildReturnUrl(targetSlug);
+            window.location.href = returnUrl;
         } catch (err) {
             console.error('Errore cambio sede:', err);
-            window.location.href = force ? switchUrl.toString() : option.href;
+            window.location.href = force ? switchUrl.toString() : (returnUrl || option.href);
         }
     }
 
@@ -1054,6 +1060,22 @@ function inizializzaHeaderSede() {
         });
     }
 
+    // Gestione universale per tasti di cancellazione che richiedono modal
+    document.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('[data-confirm-delete="true"]');
+        if (!deleteBtn) return;
+
+        e.preventDefault();
+        const form = deleteBtn.closest('form');
+        if (!form) return;
+
+        impostaContenutoModale('delete');
+        pendingModalAction = async function() {
+            form.submit();
+        };
+        apriModal();
+    });
+
     document.addEventListener('click', function (e) {
         if (hasBranchDropdown && !menu.contains(e.target) && !toggle.contains(e.target)) {
             chiudiMenu();
@@ -1129,6 +1151,215 @@ function inizializzaCheckoutPagamento() {
 }
 
 /* ==========================================================================
+   10. RICEVUTE - STAMPA
+   ========================================================================== */
+
+function inizializzaStampaRicevuta() {
+    const triggers = document.querySelectorAll('[data-print-trigger="true"]');
+    if (triggers.length === 0) return;
+
+    triggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+            window.print();
+        });
+    });
+}
+
+/* ==========================================================================
+   11. CATALOGO ADMIN - PREVIEW IMMAGINE E FUOCO
+   ========================================================================== */
+
+function inizializzaAdminCatalogoProdotto() {
+    const uploadInput = document.querySelector('[data-image-upload-input="true"]');
+    const preview = document.querySelector('[data-image-focus-preview="true"]');
+    const emptyState = document.querySelector('[data-image-focus-empty="true"]');
+    const focusX = document.querySelector('[data-image-focus-x="true"]');
+    const focusY = document.querySelector('[data-image-focus-y="true"]');
+    const focusXOutput = document.querySelector('[data-image-focus-x-output="true"]');
+    const focusYOutput = document.querySelector('[data-image-focus-y-output="true"]');
+
+    if (!focusX || !focusY) return;
+
+    function aggiornaAnteprima() {
+        if (preview) {
+            preview.style.objectPosition = `${focusX.value}% ${focusY.value}%`;
+        }
+
+        if (focusXOutput) {
+            focusXOutput.textContent = focusX.value;
+        }
+
+        if (focusYOutput) {
+            focusYOutput.textContent = focusY.value;
+        }
+    }
+
+    if (uploadInput && preview) {
+        uploadInput.addEventListener('change', function () {
+            const file = uploadInput.files && uploadInput.files[0] ? uploadInput.files[0] : null;
+            if (!file || !file.type.startsWith('image/')) {
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.addEventListener('load', function () {
+                preview.src = String(reader.result || '');
+                preview.removeAttribute('hidden');
+                if (emptyState) {
+                    emptyState.setAttribute('hidden', '');
+                }
+                aggiornaAnteprima();
+            });
+            reader.readAsDataURL(file);
+        });
+    }
+
+    focusX.addEventListener('input', aggiornaAnteprima);
+    focusY.addEventListener('input', aggiornaAnteprima);
+    aggiornaAnteprima();
+}
+
+/* ==========================================================================
+   12. BUILDER FORNITURE - RIGHE DINAMICHE
+   ========================================================================== */
+
+function inizializzaAdminSupplyBuilder() {
+    const repeatableLists = document.querySelectorAll('[data-repeatable-list]');
+    if (repeatableLists.length === 0) return;
+
+    const valutaFormatter = new Intl.NumberFormat('it-IT', {
+        style: 'currency',
+        currency: 'EUR'
+    });
+
+    repeatableLists.forEach(function (list) {
+        const rowsContainer = list.querySelector('[data-repeatable-rows]');
+        const addButton = list.querySelector('[data-repeatable-add]');
+        const template = list.querySelector('template[data-repeatable-template]');
+        if (!rowsContainer || !addButton || !template) return;
+
+        let nextIndex = Number.parseInt(list.dataset.nextIndex || '0', 10);
+        if (Number.isNaN(nextIndex) || nextIndex < 0) {
+            nextIndex = rowsContainer.querySelectorAll('[data-repeatable-row]').length;
+        }
+
+        function aggiornaCostoRiga(row) {
+            const select = row.querySelector('select[data-product-select]');
+            const output = row.querySelector('[data-product-cost-output]');
+            if (!select || !output) return;
+
+            const defaultMessage = output.dataset.defaultMessage || '';
+            const missingMessage = output.dataset.missingMessage || defaultMessage;
+            const selectedOption = select.options[select.selectedIndex];
+            const unitCost = Number.parseInt((selectedOption && selectedOption.dataset.unitCost) || '0', 10);
+
+            if (!select.value) {
+                output.textContent = defaultMessage;
+                return;
+            }
+
+            if (Number.isFinite(unitCost) && unitCost > 0) {
+                output.textContent = `Costo filiale applicato automaticamente: ${valutaFormatter.format(unitCost / 100)}`;
+                return;
+            }
+
+            output.textContent = missingMessage;
+        }
+
+        function svuotaRiga(row) {
+            row.querySelectorAll('input, select, textarea').forEach(function (field) {
+                if (field.tagName === 'SELECT') {
+                    field.selectedIndex = 0;
+                    return;
+                }
+
+                if (field.type === 'checkbox' || field.type === 'radio') {
+                    field.checked = false;
+                    return;
+                }
+
+                field.value = '';
+            });
+        }
+
+        function aggiornaStatoRighe() {
+            const rows = Array.from(rowsContainer.querySelectorAll('[data-repeatable-row]'));
+
+            rows.forEach(function (row, index) {
+                const label = row.querySelector('[data-repeatable-label]');
+                const removeButton = row.querySelector('[data-repeatable-remove]');
+
+                if (label) {
+                    const prefix = label.dataset.labelPrefix || 'Prodotto';
+                    label.textContent = `${prefix} ${index + 1}`;
+                }
+
+                if (removeButton) {
+                    const isDisabled = rows.length <= 1;
+                    removeButton.disabled = isDisabled;
+                    removeButton.setAttribute('aria-disabled', String(isDisabled));
+                }
+
+                aggiornaCostoRiga(row);
+            });
+        }
+
+        function collegaRiga(row) {
+            const removeButton = row.querySelector('[data-repeatable-remove]');
+            const productSelect = row.querySelector('select[data-product-select]');
+
+            if (removeButton) {
+                removeButton.addEventListener('click', function () {
+                    const rows = rowsContainer.querySelectorAll('[data-repeatable-row]');
+
+                    if (rows.length <= 1) {
+                        svuotaRiga(row);
+                        aggiornaStatoRighe();
+                        return;
+                    }
+
+                    row.remove();
+                    aggiornaStatoRighe();
+                });
+            }
+
+            if (productSelect) {
+                productSelect.addEventListener('change', function () {
+                    aggiornaCostoRiga(row);
+                });
+            }
+        }
+
+        addButton.addEventListener('click', function () {
+            const markup = template.innerHTML.split('__INDEX__').join(String(nextIndex));
+            nextIndex += 1;
+            list.dataset.nextIndex = String(nextIndex);
+
+            const fragment = document.createRange().createContextualFragment(markup);
+            const newRows = Array.from(fragment.querySelectorAll('[data-repeatable-row]'));
+            rowsContainer.appendChild(fragment);
+
+            newRows.forEach(function (row) {
+                collegaRiga(row);
+            });
+
+            aggiornaStatoRighe();
+
+            const firstField = rowsContainer.querySelector('[data-repeatable-row]:last-child select, [data-repeatable-row]:last-child input');
+            if (firstField) {
+                firstField.focus();
+            }
+        });
+
+        rowsContainer.querySelectorAll('[data-repeatable-row]').forEach(function (row) {
+            collegaRiga(row);
+        });
+
+        aggiornaStatoRighe();
+    });
+}
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -1146,4 +1377,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaMappaSedi();
     inizializzaCheckoutRitiro();
     inizializzaCheckoutPagamento();
+    inizializzaStampaRicevuta();
+    inizializzaAdminCatalogoProdotto();
+    inizializzaAdminSupplyBuilder();
 });

@@ -20,7 +20,6 @@ jobs:
         run: |
           cat > .env <<'EOF'
           HTTP_PORT=8080
-          MAILPIT_UI_PORT=8025
           PHPMYADMIN_PORT=8081
           DB_NAME=esame_web
           DB_USER=utente_fallback
@@ -28,8 +27,8 @@ jobs:
           DB_ROOT_PASSWORD=root_password_sicura_123
           EOF
 
-      - name: Start database and mail services
-        run: docker compose -f docker-compose.develop.yml up -d db mailpit
+      - name: Start database service
+        run: docker compose -f docker-compose.develop.yml up -d db
 
       - name: Wait for database
         run: |
@@ -48,7 +47,7 @@ jobs:
       - name: Wait for application
         run: |
           for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+            if curl -fsS http://127.0.0.1:8080/ > /dev/null; then
               exit 0
             fi
             sleep 2
@@ -61,21 +60,42 @@ jobs:
         with:
           node-version: 20
 
+      - name: Discover public pages from sitemap
+        run: |
+          mkdir -p .tmp/lighthouse
+          node .github/scripts/public-pages.mjs --format=text > .tmp/public-pages.txt
+          echo "Pages under test:"
+          cat .tmp/public-pages.txt
+
       - name: Install Lighthouse
         run: npm install -g lighthouse
 
-      - name: Run Lighthouse on key pages
+      - name: Run Lighthouse on public pages
+        id: lighthouse_run
         run: |
-          mkdir -p .tmp/lighthouse
-          for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php; do
-            url="http://127.0.0.1:8080/${page}"
-            report=".tmp/lighthouse/${page%.php}.json"
+          set +e
+          failed=0
+          while IFS= read -r page; do
+            slug="${page#/}"
+            slug="${slug%/}"
+            if [ -z "${slug}" ]; then
+              slug="home"
+            fi
+            slug="${slug//\//__}"
+            url="http://127.0.0.1:8080${page}"
+            report=".tmp/lighthouse/${slug}.json"
             echo "Running Lighthouse on ${url}"
             lighthouse "${url}" \
               --output=json \
               --output-path="${report}" \
               --quiet \
               --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+            status=$?
+            if [ "${status}" -ne 0 ]; then
+              failed=1
+              echo "Lighthouse execution failed for ${page}"
+              continue
+            fi
             node -e '
               const fs = require("fs");
               const report = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
@@ -99,7 +119,13 @@ jobs:
               }
               console.log("");
             ' "${report}"
-          done
+          done < .tmp/public-pages.txt
+          echo "failed=${failed}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build Lighthouse summary
+        if: always()
+        run: node .github/scripts/lighthouse-summary.mjs --reports-dir=.tmp/lighthouse --pages-file=.tmp/public-pages.txt --output-json=.tmp/lighthouse/summary.json --step-summary="${GITHUB_STEP_SUMMARY}"
 
       - name: Upload Lighthouse reports
         if: always()
@@ -107,6 +133,10 @@ jobs:
         with:
           name: lighthouse-reports
           path: .tmp/lighthouse
+
+      - name: Fail workflow if Lighthouse execution broke
+        if: always() && steps.lighthouse_run.outputs.failed == '1'
+        run: exit 1
 
       - name: Print application logs on failure
         if: failure()

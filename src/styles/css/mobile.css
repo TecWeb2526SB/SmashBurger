@@ -136,8 +136,23 @@
     }
 
     .checkout-navigation {
-        flex-direction: column;
-        align-items: stretch;
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-navigation--solo-azione .bottone-primario,
+    .checkout-navigation--solo-azione .bottone-secondario {
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    .admin-builder-card .checkout-navigation--solo-azione .bottone-primario,
+    .admin-builder-card .checkout-navigation--solo-azione .bottone-secondario,
+    .admin-repeatable-add {
+        width: 100%;
+    }
+
+    .admin-repeatable-row-head {
+        align-items: flex-start;
     }
 
     .branch-switcher {

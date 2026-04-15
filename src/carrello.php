@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/resources.php';
 
-require_login();
+require_customer_order_access();
 
 $utente = current_user();
 $userId = (int) $utente['id'];
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrfTokenForm = $_POST['csrf_token'] ?? null;
     if (!csrf_is_valid($csrfTokenForm)) {
         flash_set('error', 'Sessione scaduta o richiesta non valida.');
-        header('Location: carrello.php');
+        header('Location: carrello');
         exit;
     }
 
@@ -74,8 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     flash_set($result['ok'] ? 'success' : 'error', $result['message']);
     
-    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello.php');
-    $allowedRedirects = ['carrello.php', 'prodotti.php'];
+    $allowedRedirects = ['./', 'carrello', 'prodotti'];
+    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello');
+    if (!in_array($redirectTo, $allowedRedirects, true)) {
+        $redirectTo = 'carrello';
+    }
 
     header('Location: ' . $redirectTo);
     exit;
@@ -86,8 +89,8 @@ $flash = flash_get();
 
 $pageTitle       = 'Carrello - Smash Burger Original';
 $pageDescription = 'Visualizza e gestisci i prodotti nel tuo carrello Smash Burger.';
-$currentPage     = 'carrello.php';
-$breadcrumb      = [['Home', 'index.php'], ['Carrello', null]];
+$currentPage     = 'carrello';
+$breadcrumb      = [['Home', './'], ['Carrello', null]];
 include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/carrello.php';
+include_once __DIR__ . '/views/checkout/carrello.php';
 include_once __DIR__ . '/views/template/footer.php';

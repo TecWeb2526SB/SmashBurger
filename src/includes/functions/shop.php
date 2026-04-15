@@ -575,24 +575,43 @@ function catalog_get(PDO $pdo, ?int $branchId = null): array
                         p.name,
                         p.description,
                         p.image_path,
+                        p.image_focus_x,
+                        p.image_focus_y,
                         p.allergens,
                         CASE
-                            WHEN bp.is_available IS NULL THEN p.is_available
-                            WHEN p.is_available = 1 AND bp.is_available = 1 THEN 1
+                            WHEN COALESCE(bp.is_listed, 0) <> 1 THEN 0
+                            WHEN COALESCE(bi.manual_unavailable, 0) = 1 THEN 0
+                            WHEN bp.is_available IS NULL
+                                THEN CASE
+                                    WHEN p.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
+                                    ELSE 0
+                                END
+                            WHEN p.is_available = 1 AND bp.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                             ELSE 0
                         END AS is_available,
                         COALESCE(bp.price_cents_override, p.price_cents) AS price_cents,
-                        COALESCE(bp.pickup_eta_minutes, 15) AS pickup_eta_minutes
+                        COALESCE(bp.pickup_eta_minutes, 15) AS pickup_eta_minutes,
+                        COALESCE(bi.on_hand_qty, 0) AS inventory_qty,
+                        COALESCE(bp.is_listed, 0) AS is_listed
                     FROM products p
                     LEFT JOIN branch_products bp
                         ON bp.product_id = p.id AND bp.branch_id = :branch_id
+                    LEFT JOIN branch_inventory bi
+                        ON bi.product_id = p.id AND bi.branch_id = :branch_id_2
                     ORDER BY p.category_id ASC, p.name ASC';
 
     $productsStmt = $pdo->prepare($productsSql);
-    $productsStmt->execute(['branch_id' => $branchId]);
+    $productsStmt->execute([
+        'branch_id' => $branchId,
+        'branch_id_2' => $branchId
+    ]);
 
     $byCategory = [];
     foreach ($productsStmt->fetchAll() as $product) {
+        if ($branchId > 0 && (int) ($product['is_listed'] ?? 0) !== 1) {
+            continue;
+        }
+
         $categoryId = (int) $product['category_id'];
         if (!isset($byCategory[$categoryId])) {
             $byCategory[$categoryId] = [];
@@ -777,19 +796,29 @@ function cart_get_summary(PDO $pdo, int $userId, ?int $branchId = null): array
             p.image_path,
             p.allergens,
             CASE
-                WHEN bp.is_available IS NULL THEN p.is_available
-                WHEN p.is_available = 1 AND bp.is_available = 1 THEN 1
+                WHEN COALESCE(bp.is_listed, 0) <> 1 THEN 0
+                WHEN COALESCE(bi.manual_unavailable, 0) = 1 THEN 0
+                WHEN bp.is_available IS NULL
+                    THEN CASE
+                        WHEN p.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
+                        ELSE 0
+                    END
+                WHEN p.is_available = 1 AND bp.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                 ELSE 0
-            END AS is_available
+            END AS is_available,
+            COALESCE(bi.on_hand_qty, 0) AS inventory_qty,
+            COALESCE(bp.is_listed, 0) AS is_listed
          FROM cart_items ci
          INNER JOIN products p ON p.id = ci.product_id
-         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id
+         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id_bp
+         LEFT JOIN branch_inventory bi ON bi.product_id = p.id AND bi.branch_id = :branch_id_bi
          WHERE ci.cart_id = :cart_id
          ORDER BY ci.id ASC'
     );
     $itemsStmt->execute([
         'cart_id' => $cartId,
-        'branch_id' => $cartBranchId,
+        'branch_id_bp' => $cartBranchId,
+        'branch_id_bi' => $cartBranchId,
     ]);
     $items = $itemsStmt->fetchAll();
 
@@ -811,6 +840,10 @@ function cart_get_summary(PDO $pdo, int $userId, ?int $branchId = null): array
 
 function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity = 1, ?int $branchId = null): array
 {
+    if (function_exists('can_place_customer_orders') && !can_place_customer_orders()) {
+        return ['ok' => false, 'message' => 'Gli account amministrativi e manager non possono aggiungere prodotti al carrello.'];
+    }
+
     $maxQuantity = 100;
 
     if ($quantity < 1) {
@@ -832,18 +865,29 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
             p.name,
             COALESCE(bp.price_cents_override, p.price_cents) AS effective_price_cents,
             CASE
-                WHEN bp.is_available IS NULL THEN p.is_available
-                WHEN p.is_available = 1 AND bp.is_available = 1 THEN 1
+                WHEN COALESCE(bp.is_listed, 0) <> 1 THEN 0
+                WHEN COALESCE(bi.manual_unavailable, 0) = 1 THEN 0
+                WHEN bp.is_available IS NULL
+                    THEN CASE
+                        WHEN p.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
+                        ELSE 0
+                    END
+                WHEN p.is_available = 1 AND bp.is_available = 1 AND bi.product_id IS NOT NULL AND bi.on_hand_qty > 0 THEN 1
                 ELSE 0
-            END AS is_available
+            END AS is_available,
+            COALESCE(bi.on_hand_qty, 0) AS inventory_qty,
+            CASE WHEN bi.product_id IS NULL THEN 0 ELSE 1 END AS has_inventory_row,
+            COALESCE(bp.is_listed, 0) AS is_listed
          FROM products p
-         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id
+         LEFT JOIN branch_products bp ON bp.product_id = p.id AND bp.branch_id = :branch_id_bp
+         LEFT JOIN branch_inventory bi ON bi.product_id = p.id AND bi.branch_id = :branch_id_bi
          WHERE p.id = :id
          LIMIT 1'
     );
     $productStmt->execute([
         'id' => $productId,
-        'branch_id' => $branchId,
+        'branch_id_bp' => $branchId,
+        'branch_id_bi' => $branchId,
     ]);
     $product = $productStmt->fetch();
 
@@ -854,7 +898,9 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
     if ((int) $product['is_available'] !== 1) {
         return [
             'ok' => false,
-            'message' => 'Prodotto non disponibile nella sede selezionata.',
+            'message' => (int) ($product['is_listed'] ?? 0) === 1
+                ? 'Prodotto non disponibile nella sede selezionata.'
+                : 'Prodotto non presente nel catalogo della sede selezionata.',
         ];
     }
 
@@ -878,6 +924,12 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
 
     if ($existingItem) {
         $newQty = min($maxQuantity, (int) $existingItem['quantity'] + $quantity);
+        if ((int) ($product['has_inventory_row'] ?? 0) !== 1 || $newQty > (int) $product['inventory_qty']) {
+            return [
+                'ok' => false,
+                'message' => 'Disponibilita limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unita di ' . $product['name'] . '.',
+            ];
+        }
         $unit = (int) $existingItem['unit_price_cents'];
         $line = $unit * $newQty;
         $updateStmt = $pdo->prepare(
@@ -893,6 +945,12 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
             'id' => (int) $existingItem['id'],
         ]);
     } else {
+        if ((int) ($product['has_inventory_row'] ?? 0) !== 1 || $quantity > (int) $product['inventory_qty']) {
+            return [
+                'ok' => false,
+                'message' => 'Disponibilita limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unita di ' . $product['name'] . '.',
+            ];
+        }
         $unit = (int) $product['effective_price_cents'];
         $line = $unit * $quantity;
         $insertStmt = $pdo->prepare(
@@ -926,9 +984,17 @@ function cart_update_item_qty(PDO $pdo, int $userId, int $itemId, int $quantity,
     $cartId = (int) $active['id'];
 
     $stmt = $pdo->prepare(
-        'SELECT ci.id, ci.cart_id, ci.unit_price_cents
+        'SELECT
+            ci.id,
+            ci.cart_id,
+            ci.unit_price_cents,
+            p.name AS product_name,
+            COALESCE(bi.on_hand_qty, 0) AS inventory_qty,
+            CASE WHEN bi.product_id IS NULL THEN 0 ELSE 1 END AS has_inventory_row
          FROM cart_items ci
          INNER JOIN carts c ON c.id = ci.cart_id
+         INNER JOIN products p ON p.id = ci.product_id
+         LEFT JOIN branch_inventory bi ON bi.branch_id = c.branch_id AND bi.product_id = ci.product_id
          WHERE ci.id = :item_id
            AND c.user_id = :user_id
            AND c.id = :cart_id
@@ -953,6 +1019,13 @@ function cart_update_item_qty(PDO $pdo, int $userId, int $itemId, int $quantity,
     }
 
     $quantity = min($quantity, $maxQuantity);
+
+    if ((int) ($item['has_inventory_row'] ?? 0) !== 1 || $quantity > (int) $item['inventory_qty']) {
+        return [
+            'ok' => false,
+            'message' => 'Disponibilita limitata: in sede restano ' . (int) $item['inventory_qty'] . ' unita di ' . $item['product_name'] . '.',
+        ];
+    }
 
     $unit = (int) $item['unit_price_cents'];
     $line = $unit * $quantity;
@@ -1098,6 +1171,10 @@ function order_place(
     string $pickupAtRaw = '',
     ?int $branchId = null
 ): array {
+    if (function_exists('can_place_customer_orders') && !can_place_customer_orders()) {
+        return ['ok' => false, 'message' => 'Gli account amministrativi e manager non possono effettuare ordini cliente.'];
+    }
+
     $selectedBranch = $branchId !== null ? branch_get_by_id($pdo, $branchId) : branch_get_selected($pdo);
     $branchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;
 
@@ -1109,6 +1186,18 @@ function order_place(
     if (empty($cart['items'])) {
         return ['ok' => false, 'message' => 'Il carrello e vuoto.'];
     }
+
+    foreach ($cart['items'] as $cartItem) {
+        if ((int) ($cartItem['is_available'] ?? 0) !== 1) {
+            return [
+                'ok' => false,
+                'message' => (int) ($cartItem['is_listed'] ?? 0) === 1
+                    ? 'Nel carrello e presente un prodotto che non e piu disponibile per questa sede. Aggiorna il carrello e riprova.'
+                    : 'Nel carrello e presente un prodotto che non appartiene piu al catalogo della sede selezionata. Aggiorna il carrello e riprova.',
+            ];
+        }
+    }
+
     $cartBranchId = (int) ($cart['branch']['id'] ?? 0);
     if ($cartBranchId !== $branchId) {
         return [
@@ -1164,20 +1253,27 @@ function order_place(
         ]);
         $orderId = (int) $pdo->lastInsertId();
 
+        $costSnapshots = [];
+        if ($paymentResult['success']) {
+            $costSnapshots = inventory_consume_for_order($pdo, $branchId, $cart['items'], $orderId, $userId);
+        }
+
         $itemStmt = $pdo->prepare(
             'INSERT INTO order_items
-                (order_id, product_id, product_name, quantity, unit_price_cents, line_total_cents, allergens_snapshot, created_at)
+                (order_id, product_id, product_name, quantity, unit_price_cents, line_total_cents, unit_cost_snapshot_cents, allergens_snapshot, created_at)
              VALUES
-                (:order_id, :product_id, :product_name, :quantity, :unit_price_cents, :line_total_cents, :allergens_snapshot, NOW())'
+                (:order_id, :product_id, :product_name, :quantity, :unit_price_cents, :line_total_cents, :unit_cost_snapshot_cents, :allergens_snapshot, NOW())'
         );
         foreach ($cart['items'] as $item) {
+            $productId = (int) $item['product_id'];
             $itemStmt->execute([
                 'order_id' => $orderId,
-                'product_id' => (int) $item['product_id'],
+                'product_id' => $productId,
                 'product_name' => (string) $item['product_name'],
                 'quantity' => (int) $item['quantity'],
                 'unit_price_cents' => (int) $item['unit_price_cents'],
                 'line_total_cents' => (int) $item['line_total_cents'],
+                'unit_cost_snapshot_cents' => $costSnapshots[$productId] ?? null,
                 'allergens_snapshot' => (string) ($item['allergens'] ?? ''),
             ]);
         }
@@ -1212,12 +1308,25 @@ function order_place(
         }
 
         $pdo->commit();
+
+        if ($paymentResult['success']) {
+            try {
+                auto_reorder_evaluate_branch($pdo, $branchId, $userId);
+            } catch (\Throwable $autoReorderException) {
+                error_log('Errore auto-riordino branch ' . $branchId . ': ' . $autoReorderException->getMessage());
+            }
+        }
     } catch (\Throwable $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
         error_log('Errore creazione ordine: ' . $e->getMessage());
-        return ['ok' => false, 'message' => 'Errore interno durante il checkout.'];
+        return [
+            'ok' => false,
+            'message' => $e instanceof RuntimeException
+                ? $e->getMessage()
+                : 'Errore interno durante il checkout.',
+        ];
     }
 
     return [

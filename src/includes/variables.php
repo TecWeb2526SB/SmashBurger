@@ -8,39 +8,52 @@
 $appName    = 'SmashBurger';
 $appVersion = '1.0.0';
 $isLoggedIn = isset($_SESSION['user']) && isset($_SESSION['user']['id']);
+$sessionRole = (string) ($_SESSION['user']['role'] ?? 'user');
+$canAccessAdminPanel = $isLoggedIn && in_array($sessionRole, ['admin', 'branch_manager'], true);
+$canPlaceOrders = !$isLoggedIn || $sessionRole === 'user';
 
 $navItems = [
-    'Home'              => 'index.php',
-    'I nostri prodotti' => 'prodotti.php',
-    'Servizi'           => 'servizi.php',
-    'Chi siamo'         => 'sedi.php',
+    'Home'              => './',
+    'I nostri prodotti' => 'prodotti',
+    'Servizi'           => 'servizi',
+    'Chi siamo'         => 'sedi',
 ];
 
 if ($isLoggedIn) {
-    $navItems['Area personale'] = 'area_personale.php';
-    $navItems['Carrello'] = 'carrello.php';
-    $navItems['Esci'] = 'logout.php';
+    $navItems['Area personale'] = 'account';
+    if ($canAccessAdminPanel) {
+        $navItems['Controllo'] = 'controllo';
+    }
+    if ($canPlaceOrders) {
+        $navItems['Carrello'] = 'carrello';
+    }
+    $navItems['Esci'] = 'esci';
 } else {
-    $navItems['Accedi'] = 'login.php';
+    $navItems['Accedi'] = 'accedi';
 }
 
 $siteMapItems = [
-    'Home'                   => 'index.php',
-    'I nostri prodotti'      => 'prodotti.php',
-    'Servizi'                => 'servizi.php',
-    'Chi siamo e le sedi'    => 'sedi.php',
-    'Accedi'                 => 'login.php',
-    'Registrazione'          => 'registrazione.php',
-    'Privacy Policy'         => 'policy.php',
-    'Accessibilita'          => 'accessibilita.php',
-    'Mappa del sito'         => 'mappa.php',
+    'Home'                   => './',
+    'I nostri prodotti'      => 'prodotti',
+    'Servizi'                => 'servizi',
+    'Chi siamo e le sedi'    => 'sedi',
+    'Accedi'                 => 'accedi',
+    'Registrazione'          => 'registrati',
+    'Privacy Policy'         => 'privacy',
+    'Accessibilita'          => 'accessibilita',
+    'Mappa del sito'         => 'mappa-sito',
 ];
 
 if ($isLoggedIn) {
     unset($siteMapItems['Accedi'], $siteMapItems['Registrazione']);
-    $siteMapItems['Carrello'] = 'carrello.php';
-    $siteMapItems['Checkout'] = 'checkout.php';
-    $siteMapItems['Area personale'] = 'area_personale.php';
-    $siteMapItems['Profilo account'] = 'profilo.php';
-    $siteMapItems['Esci'] = 'logout.php';
+    $siteMapItems['Area personale'] = 'account';
+    if ($canPlaceOrders) {
+        $siteMapItems['Carrello'] = 'carrello';
+        $siteMapItems['Checkout'] = 'checkout';
+    }
+    if ($canAccessAdminPanel) {
+        $siteMapItems['Pannello controllo'] = 'controllo';
+    }
+    $siteMapItems['Profilo account'] = 'account-profilo';
+    $siteMapItems['Esci'] = 'esci';
 }

@@ -19,7 +19,7 @@ http_response_code(403);
         <div class="contenitore">
             <h1>403</h1>
             <p>Non hai i permessi necessari per visualizzare questa risorsa.</p>
-            <p><a href="../index.php">Torna alla home</a></p>
+            <p><a href="../">Torna alla home</a></p>
         </div>
     </main>
 

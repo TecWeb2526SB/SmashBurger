@@ -10,6 +10,9 @@ $vResources = file_exists(__DIR__ . '/../../styles/resources.css')
 $headerSelectedBranch = null;
 $headerAllBranches = [];
 $headerCartCount = 0;
+$headerCanPlaceOrders = function_exists('can_place_customer_orders')
+    ? (!function_exists('is_logged_in') || !is_logged_in() || can_place_customer_orders())
+    : true;
 
 if (isset($pdo) && $pdo instanceof \PDO) {
     if (function_exists('branch_get_selected')) {
@@ -22,11 +25,15 @@ if (isset($pdo) && $pdo instanceof \PDO) {
             $headerSelectedBranch = null;
         }
     }
-    
-    if (function_exists('is_logged_in') && is_logged_in()) {
+
+    if ($headerCanPlaceOrders && function_exists('is_logged_in') && is_logged_in()) {
         $headerCart = cart_get_summary($pdo, (int)$_SESSION['user']['id']);
         $headerCartCount = $headerCart['items_count'] ?? 0;
     }
+}
+
+if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranch['id'])) {
+    $headerSelectedBranch = $selectedBranch;
 }
 ?>
 <!DOCTYPE html>
@@ -67,7 +74,7 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                     <p class="brand">Smash Burger</p>
                 <?php else: ?>
                     <p class="brand">
-                        <a href="index.php">Smash Burger</a>
+                        <a href="./">Smash Burger</a>
                     </p>
                 <?php endif; ?>
 
@@ -88,13 +95,61 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                         <div id="sede-dropdown-menu" class="sede-dropdown-menu" hidden>
                             <p class="sede-dropdown-titolo">Scegli la tua sede</p>
                             <ul>
-                                <?php foreach ($headerAllBranches as $hb): 
+                                <?php
+                                $adminBranchPages = [
+                                    'controllo',
+                                    'controllo-catalogo',
+                                    'controllo-catalogo-prodotto',
+                                    'controllo-inventario',
+                                    'controllo-inventario-rettifica',
+                                    'controllo-forniture',
+                                    'controllo-forniture-standard',
+                                    'controllo-forniture-straordinaria',
+                                    'controllo-forniture-automatico',
+                                    'controllo-manager',
+                                ];
+                                $requestPath = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
+                                $currentRequestPage = $requestPath !== '' ? basename($requestPath) : './';
+                                $currentHeaderPage = (string) ($currentPage ?? $currentRequestPage);
+                                $returnBasePage = './';
+                                if (in_array($currentHeaderPage, ['prodotti', 'sedi'], true)) {
+                                    $returnBasePage = $currentHeaderPage;
+                                } elseif (in_array($currentHeaderPage, $adminBranchPages, true)) {
+                                    $returnBasePage = $currentHeaderPage;
+                                } elseif (str_starts_with($currentHeaderPage, 'controllo')) {
+                                    $returnBasePage = 'controllo';
+                                } elseif ($currentHeaderPage !== '') {
+                                    $returnBasePage = $currentHeaderPage;
+                                }
+
+                                $returnQueryParams = [];
+                                foreach ($_GET as $paramKey => $paramValue) {
+                                    if (!is_string($paramKey) || in_array($paramKey, ['ajax', 'force'], true)) {
+                                        continue;
+                                    }
+
+                                    if (is_scalar($paramValue)) {
+                                        $returnQueryParams[$paramKey] = (string) $paramValue;
+                                    }
+                                }
+                                ?>
+                                <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
+                                    $switchUrl = 'prodotti?sede=' . rawurlencode((string) $hb['slug']);
+                                    $returnParams = $returnQueryParams;
+                                    if (in_array($returnBasePage, ['prodotti', 'sedi'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
+                                        $returnParams['sede'] = (string) $hb['slug'];
+                                    } else {
+                                        unset($returnParams['sede']);
+                                    }
+                                    $returnQuery = http_build_query($returnParams);
+                                    $returnUrl = $returnBasePage . ($returnQuery !== '' ? '?' . $returnQuery : '');
                                 ?>
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
-                                        <a href="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>" 
+                                        <a href="<?php echo htmlspecialchars($switchUrl, ENT_QUOTES, 'UTF-8'); ?>"
                                            class="sede-opzione"
-                                           data-switch-url="prodotti.php?sede=<?php echo rawurlencode($hb['slug']); ?>"
+                                           data-switch-url="<?php echo htmlspecialchars($switchUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                           data-return-url="<?php echo htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8'); ?>"
                                            data-sede-slug="<?php echo htmlspecialchars($hb['slug'], ENT_QUOTES, 'UTF-8'); ?>"
                                            data-sede-name="<?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?>">
                                             <strong><?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
@@ -135,7 +190,7 @@ if (isset($pdo) && $pdo instanceof \PDO) {
                                 <a
                                     href="<?php echo htmlspecialchars($href); ?>"
                                     class="nav-item-wrap"
-                                    <?php echo $href === 'logout.php' ? 'data-confirm-logout="true"' : ''; ?>>
+                                    <?php echo $href === 'esci' ? 'data-confirm-logout="true"' : ''; ?>>
                                     <?php echo htmlspecialchars($label); ?>
                                     <?php if ($isCart): ?>
                                         <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">

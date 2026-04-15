@@ -3,7 +3,7 @@
  * breadcrumb.php: Componente breadcrumb riutilizzabile.
  *
  * Variabile attesa dal controller:
- *   $breadcrumb  array  Es: [['Home', 'index.php'], ['Servizi', null]]
+ *   $breadcrumb  array  Es: [['Home', './'], ['Servizi', null]]
  *                       L'ultimo elemento ha href null → pagina corrente.
  */
 if (empty($breadcrumb)) return;

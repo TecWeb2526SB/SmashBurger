@@ -20,7 +20,6 @@ jobs:
         run: |
           cat > .env <<'EOF'
           HTTP_PORT=8080
-          MAILPIT_UI_PORT=8025
           PHPMYADMIN_PORT=8081
           DB_NAME=esame_web
           DB_USER=utente_fallback
@@ -28,8 +27,8 @@ jobs:
           DB_ROOT_PASSWORD=root_password_sicura_123
           EOF
 
-      - name: Start database and mail services
-        run: docker compose -f docker-compose.develop.yml up -d db mailpit
+      - name: Start database service
+        run: docker compose -f docker-compose.develop.yml up -d db
 
       - name: Wait for database
         run: |
@@ -48,7 +47,7 @@ jobs:
       - name: Wait for application
         run: |
           for i in $(seq 1 60); do
-            if curl -fsS http://127.0.0.1:8080/index.php > /dev/null; then
+            if curl -fsS http://127.0.0.1:8080/ > /dev/null; then
               exit 0
             fi
             sleep 2
@@ -56,18 +55,69 @@ jobs:
           docker compose -f docker-compose.develop.yml logs web --tail=200
           exit 1
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Install VNU checker
         run: curl -fsSL https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
 
+      - name: Discover public pages from sitemap
+        run: |
+          mkdir -p .tmp/w3c/rendered .tmp/w3c/reports
+          node .github/scripts/public-pages.mjs --format=text > .tmp/public-pages.txt
+          echo "Pages under test:"
+          cat .tmp/public-pages.txt
+
       - name: Render public pages for validation
         run: |
-          mkdir -p .tmp/rendered
-          for page in index.php prodotti.php servizi.php sedi.php login.php registrazione.php policy.php accessibilita.php mappa.php; do
-            curl -fsS "http://127.0.0.1:8080/${page}" -o ".tmp/rendered/${page%.php}.html"
-          done
+          while IFS= read -r page; do
+            slug="${page#/}"
+            slug="${slug%/}"
+            if [ -z "${slug}" ]; then
+              slug="home"
+            fi
+            slug="${slug//\//__}"
+            curl -fsS "http://127.0.0.1:8080${page}" -o ".tmp/w3c/rendered/${slug}.html"
+          done < .tmp/public-pages.txt
 
       - name: Validate rendered HTML
-        run: java -jar vnu.jar --errors-only .tmp/rendered
+        id: w3c_run
+        run: |
+          set +e
+          failed=0
+          while IFS= read -r page; do
+            slug="${page#/}"
+            slug="${slug%/}"
+            if [ -z "${slug}" ]; then
+              slug="home"
+            fi
+            slug="${slug//\//__}"
+            report=".tmp/w3c/reports/${slug}.txt"
+            java -jar vnu.jar --errors-only ".tmp/w3c/rendered/${slug}.html" > "${report}" 2>&1
+            status=$?
+            if [ "${status}" -ne 0 ]; then
+              failed=1
+            fi
+          done < .tmp/public-pages.txt
+          echo "failed=${failed}" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Build W3C summary
+        if: always()
+        run: node .github/scripts/w3c-summary.mjs --reports-dir=.tmp/w3c/reports --pages-file=.tmp/public-pages.txt --output-json=.tmp/w3c/summary.json --step-summary="${GITHUB_STEP_SUMMARY}"
+
+      - name: Upload W3C reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: w3c-reports
+          path: .tmp/w3c
+
+      - name: Fail workflow if validation errors were found
+        if: always() && steps.w3c_run.outputs.failed == '1'
+        run: exit 1
 
       - name: Print application logs on failure
         if: failure()

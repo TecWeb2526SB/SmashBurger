@@ -16,7 +16,6 @@ services:
       - ./src:/var/www/html
     depends_on:
       - db
-      - mailpit
 
   # 2. Database SQL (MariaDB 11)
   db:
@@ -36,20 +35,7 @@ services:
       - db_data:/var/lib/mysql
       - ./src/database/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
 
-  # 3. Mailpit: Simulatore Email
-  mailpit:
-    image: axllent/mailpit
-    container_name: webapp_mailpit
-    restart: unless-stopped
-    ports:
-      - "${MAILPIT_UI_PORT:-8025}:8025"
-    expose:
-      - "1025"
-    networks:
-      - frontend_net
-      - backend_net
-
-  # 4. phpMyAdmin: Interfaccia Gestione Database
+  # 3. phpMyAdmin: Interfaccia Gestione Database
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: webapp_phpmyadmin

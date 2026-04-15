@@ -67,11 +67,11 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                         (<?php echo htmlspecialchars($footerBranch['province'], ENT_QUOTES, 'UTF-8'); ?>)
                     </p>
                     <p>
-                        <a href="sedi.php?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &rarr;</a>
+                        <a href="sedi?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &rarr;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
-                    <p><a href="sedi.php">Tutte le sedi &rarr;</a></p>
+                    <p><a href="sedi">Tutte le sedi &rarr;</a></p>
                 <?php endif; ?>
             </address>
         </section>
@@ -93,9 +93,9 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
 
             <nav aria-label="Informazioni legali">
                 <ul>
-                    <li><a href="policy.php">Privacy Policy</a></li>
-                    <li><a href="mappa.php">Mappa del sito</a></li>
-                    <li><a href="accessibilita.php">Accessibilità</a></li>
+                    <li><a href="privacy">Privacy Policy</a></li>
+                    <li><a href="mappa-sito">Mappa del sito</a></li>
+                    <li><a href="accessibilita">Accessibilità</a></li>
                 </ul>
             </nav>
 

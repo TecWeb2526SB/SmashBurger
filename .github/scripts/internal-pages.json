@@ -1,0 +1,35 @@
+[
+  {
+    "role": "user",
+    "identifier": "user",
+    "password": "user",
+    "pages": [
+      "account",
+      "account-profilo",
+      "carrello"
+    ]
+  },
+  {
+    "role": "branch_manager",
+    "identifier": "manager.padova",
+    "password": "manager_padova",
+    "pages": [
+      "controllo",
+      "controllo-catalogo",
+      "controllo-inventario",
+      "controllo-forniture"
+    ]
+  },
+  {
+    "role": "admin",
+    "identifier": "admin",
+    "password": "admin",
+    "pages": [
+      "controllo",
+      "controllo-catalogo",
+      "controllo-inventario",
+      "controllo-forniture",
+      "controllo-manager"
+    ]
+  }
+]

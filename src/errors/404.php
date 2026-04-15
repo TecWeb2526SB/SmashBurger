@@ -17,7 +17,7 @@ http_response_code(404);
         <div class="contenitore">
             <h1>404</h1>
             <p>La pagina che stai cercando non esiste o &egrave; stata spostata.</p>
-            <p><a href="../index.php">Torna alla home</a></p>
+            <p><a href="../">Torna alla home</a></p>
         </div>
     </main>
 

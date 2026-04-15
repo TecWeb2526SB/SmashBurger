@@ -10,6 +10,13 @@ CREATE DATABASE IF NOT EXISTS esame_web
 USE esame_web;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS inventory_movements;
+DROP TABLE IF EXISTS supply_order_items;
+DROP TABLE IF EXISTS supply_orders;
+DROP TABLE IF EXISTS supply_template_items;
+DROP TABLE IF EXISTS supply_templates;
+DROP TABLE IF EXISTS auto_reorder_policies;
+DROP TABLE IF EXISTS branch_inventory;
 DROP TABLE IF EXISTS payment_transactions;
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
@@ -29,7 +36,9 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     email VARCHAR(160) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'user') NOT NULL DEFAULT 'user',
+    role ENUM('admin', 'branch_manager', 'user') NOT NULL DEFAULT 'user',
+    managed_branch_id SMALLINT UNSIGNED NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
     email_verified_at DATETIME NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -66,6 +75,11 @@ CREATE TABLE branches (
     INDEX idx_branches_active_sort (is_active, sort_order, city)
 ) ENGINE=InnoDB;
 
+ALTER TABLE users
+    ADD CONSTRAINT fk_users_managed_branch
+    FOREIGN KEY (managed_branch_id) REFERENCES branches(id)
+    ON UPDATE CASCADE ON DELETE SET NULL;
+
 CREATE TABLE branch_hours (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     branch_id SMALLINT UNSIGNED NOT NULL,
@@ -99,14 +113,24 @@ CREATE TABLE products (
     slug VARCHAR(120) NOT NULL UNIQUE,
     description TEXT NOT NULL,
     image_path VARCHAR(255) NULL,
+    image_focus_x TINYINT UNSIGNED NOT NULL DEFAULT 50,
+    image_focus_y TINYINT UNSIGNED NOT NULL DEFAULT 50,
     allergens VARCHAR(255) NULL,
     is_available TINYINT(1) NOT NULL DEFAULT 1,
     price_cents INT UNSIGNED NOT NULL,
+    created_by_user_id INT UNSIGNED NULL,
+    updated_by_user_id INT UNSIGNED NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_products_category
         FOREIGN KEY (category_id) REFERENCES categories(id)
         ON UPDATE CASCADE ON DELETE RESTRICT,
+    CONSTRAINT fk_products_created_by
+        FOREIGN KEY (created_by_user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_products_updated_by
+        FOREIGN KEY (updated_by_user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
     CONSTRAINT chk_products_price CHECK (price_cents >= 0),
     INDEX idx_products_category (category_id),
     INDEX idx_products_available (is_available)
@@ -115,6 +139,7 @@ CREATE TABLE products (
 CREATE TABLE branch_products (
     branch_id SMALLINT UNSIGNED NOT NULL,
     product_id INT UNSIGNED NOT NULL,
+    is_listed TINYINT(1) NOT NULL DEFAULT 1,
     is_available TINYINT(1) NOT NULL DEFAULT 1,
     price_cents_override INT UNSIGNED NULL,
     pickup_eta_minutes SMALLINT UNSIGNED NOT NULL DEFAULT 15,
@@ -128,6 +153,49 @@ CREATE TABLE branch_products (
         ON UPDATE CASCADE ON DELETE CASCADE,
     CONSTRAINT chk_branch_products_price CHECK (price_cents_override IS NULL OR price_cents_override >= 0),
     INDEX idx_branch_products_available (branch_id, is_available)
+) ENGINE=InnoDB;
+
+CREATE TABLE branch_inventory (
+    branch_id SMALLINT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    on_hand_qty INT UNSIGNED NOT NULL DEFAULT 0,
+    average_unit_cost_cents INT UNSIGNED NOT NULL DEFAULT 0,
+    manual_unavailable TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (branch_id, product_id),
+    CONSTRAINT fk_branch_inventory_branch
+        FOREIGN KEY (branch_id) REFERENCES branches(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_branch_inventory_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT chk_branch_inventory_qty CHECK (on_hand_qty >= 0),
+    CONSTRAINT chk_branch_inventory_avg_cost CHECK (average_unit_cost_cents >= 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE auto_reorder_policies (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    branch_id SMALLINT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    threshold_qty INT UNSIGNED NOT NULL,
+    reorder_qty INT UNSIGNED NOT NULL,
+    cooldown_hours SMALLINT UNSIGNED NOT NULL DEFAULT 6,
+    max_pending_qty INT UNSIGNED NOT NULL DEFAULT 0,
+    mode ENUM('draft', 'auto-order') NOT NULL DEFAULT 'draft',
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    last_triggered_at DATETIME NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_auto_reorder_branch
+        FOREIGN KEY (branch_id) REFERENCES branches(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_auto_reorder_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT uq_auto_reorder_branch_product UNIQUE (branch_id, product_id),
+    CONSTRAINT chk_auto_reorder_threshold CHECK (threshold_qty > 0),
+    CONSTRAINT chk_auto_reorder_qty CHECK (reorder_qty > 0)
 ) ENGINE=InnoDB;
 
 CREATE TABLE carts (
@@ -234,6 +302,7 @@ CREATE TABLE order_items (
     quantity INT UNSIGNED NOT NULL,
     unit_price_cents INT UNSIGNED NOT NULL,
     line_total_cents INT UNSIGNED NOT NULL,
+    unit_cost_snapshot_cents INT UNSIGNED NULL,
     allergens_snapshot VARCHAR(255) NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_order_items_order
@@ -263,10 +332,126 @@ CREATE TABLE payment_transactions (
     INDEX idx_payment_transactions_order (order_id)
 ) ENGINE=InnoDB;
 
-INSERT INTO users (username, email, password_hash, role, email_verified_at)
+CREATE TABLE supply_templates (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    branch_id SMALLINT UNSIGNED NOT NULL,
+    template_name VARCHAR(120) NOT NULL,
+    frequency ENUM('weekly', 'biweekly', 'monthly') NOT NULL DEFAULT 'weekly',
+    next_run_at DATETIME NOT NULL,
+    last_generated_at DATETIME NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    notes VARCHAR(255) NULL,
+    created_by_user_id INT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_supply_templates_branch
+        FOREIGN KEY (branch_id) REFERENCES branches(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_supply_templates_user
+        FOREIGN KEY (created_by_user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    INDEX idx_supply_templates_branch_next_run (branch_id, is_active, next_run_at)
+) ENGINE=InnoDB;
+
+CREATE TABLE supply_template_items (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    template_id INT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    quantity INT UNSIGNED NOT NULL,
+    unit_cost_cents INT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_supply_template_items_template
+        FOREIGN KEY (template_id) REFERENCES supply_templates(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_supply_template_items_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT chk_supply_template_items_qty CHECK (quantity > 0),
+    CONSTRAINT chk_supply_template_items_cost CHECK (unit_cost_cents >= 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE supply_orders (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    branch_id SMALLINT UNSIGNED NOT NULL,
+    template_id INT UNSIGNED NULL,
+    created_by_user_id INT UNSIGNED NULL,
+    order_code VARCHAR(32) NOT NULL UNIQUE,
+    order_type ENUM('standard', 'extraordinary', 'automatic') NOT NULL DEFAULT 'extraordinary',
+    status ENUM('draft', 'scheduled', 'ordered', 'received', 'cancelled') NOT NULL DEFAULT 'draft',
+    supplier_name VARCHAR(120) NOT NULL,
+    scheduled_for DATETIME NULL,
+    ordered_at DATETIME NULL,
+    received_at DATETIME NULL,
+    notes VARCHAR(255) NULL,
+    total_cents INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_supply_orders_branch
+        FOREIGN KEY (branch_id) REFERENCES branches(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_supply_orders_template
+        FOREIGN KEY (template_id) REFERENCES supply_templates(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT fk_supply_orders_user
+        FOREIGN KEY (created_by_user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    CONSTRAINT chk_supply_orders_total CHECK (total_cents >= 0),
+    INDEX idx_supply_orders_branch_status (branch_id, status, created_at)
+) ENGINE=InnoDB;
+
+CREATE TABLE supply_order_items (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    supply_order_id INT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    product_name_snapshot VARCHAR(140) NOT NULL,
+    quantity_ordered INT UNSIGNED NOT NULL,
+    quantity_received INT UNSIGNED NOT NULL DEFAULT 0,
+    unit_cost_cents INT UNSIGNED NOT NULL,
+    line_total_cents INT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_supply_order_items_supply_order
+        FOREIGN KEY (supply_order_id) REFERENCES supply_orders(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_supply_order_items_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT chk_supply_order_items_ordered CHECK (quantity_ordered > 0),
+    CONSTRAINT chk_supply_order_items_received CHECK (quantity_received <= quantity_ordered),
+    CONSTRAINT chk_supply_order_items_cost CHECK (unit_cost_cents >= 0),
+    CONSTRAINT chk_supply_order_items_line CHECK (line_total_cents >= 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE inventory_movements (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    branch_id SMALLINT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED NOT NULL,
+    movement_type ENUM('supply_received', 'customer_order', 'manual_adjustment', 'supply_cancelled', 'order_cancelled') NOT NULL,
+    quantity_delta INT NOT NULL,
+    quantity_after INT NOT NULL,
+    unit_cost_cents INT UNSIGNED NULL,
+    reference_type ENUM('order', 'supply_order', 'manual', 'policy') NOT NULL DEFAULT 'manual',
+    reference_id INT UNSIGNED NULL,
+    created_by_user_id INT UNSIGNED NULL,
+    notes VARCHAR(255) NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_inventory_movements_branch
+        FOREIGN KEY (branch_id) REFERENCES branches(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_inventory_movements_product
+        FOREIGN KEY (product_id) REFERENCES products(id)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CONSTRAINT fk_inventory_movements_user
+        FOREIGN KEY (created_by_user_id) REFERENCES users(id)
+        ON UPDATE CASCADE ON DELETE SET NULL,
+    INDEX idx_inventory_movements_branch_product (branch_id, product_id, created_at)
+) ENGINE=InnoDB;
+
+INSERT INTO users (username, email, password_hash, role, is_active, email_verified_at)
 VALUES
-    ('admin', 'admin@smashburger.it', '$2y$10$TuGSbILQNQipwO6uiHAz0uxgmt.21iLrD/Wmv9DNXbpEwjkIuf2LS', 'admin', NOW()),
-    ('user', 'user@smashburger.it', '$2y$10$/vM6p.rHEgV2uspgXG5uHegXCxoWmthYDWfXRNuPAhwf5VjgC5nQa', 'user', NOW());
+    ('admin', 'admin@smashburger.it', '$2y$10$TuGSbILQNQipwO6uiHAz0uxgmt.21iLrD/Wmv9DNXbpEwjkIuf2LS', 'admin', 1, NOW()),
+    ('user', 'user@smashburger.it', '$2y$10$/vM6p.rHEgV2uspgXG5uHegXCxoWmthYDWfXRNuPAhwf5VjgC5nQa', 'user', 1, NOW());
 
 INSERT INTO brand_contacts (brand_name, support_email, info_phone, order_phone, instagram_url)
 VALUES
@@ -361,26 +546,65 @@ JOIN (
     SELECT 7, 'Domenica', '12:00:00', '22:00:00', 0
 ) AS d;
 
+INSERT INTO users (username, email, password_hash, role, managed_branch_id, is_active, email_verified_at)
+VALUES
+    (
+        'manager.padova',
+        'manager.padova@smashburger.it',
+        '$2y$10$FLKBQukAwlC66SFGUKQ.aOoxbksjNIFXypbcL0s0lqvyJFk8Jr.7e',
+        'branch_manager',
+        (SELECT id FROM branches WHERE slug = 'padova-centro'),
+        1,
+        NOW()
+    ),
+    (
+        'manager.treviso',
+        'manager.treviso@smashburger.it',
+        '$2y$10$ux57UfeRfP/4HYzGhudq6ugOtdl.peaDsgtvjRvMlW0zJAekHzs2W',
+        'branch_manager',
+        (SELECT id FROM branches WHERE slug = 'treviso-centro'),
+        1,
+        NOW()
+    ),
+    (
+        'manager.vicenza',
+        'manager.vicenza@smashburger.it',
+        '$2y$10$011JTJB/JxSJdRYcDscM9Ol6poXSN0FguB1WqyqCfZlXZDlOFT3J.',
+        'branch_manager',
+        (SELECT id FROM branches WHERE slug = 'vicenza-centro'),
+        1,
+        NOW()
+    ),
+    (
+        'manager.udine',
+        'manager.udine@smashburger.it',
+        '$2y$10$TmmPsWmVF0peDHSdfiZeZu7SZkgMH9T.QM9v7FYAeCwMzeb0N3Cc6',
+        'branch_manager',
+        (SELECT id FROM branches WHERE slug = 'udine-centro'),
+        1,
+        NOW()
+    );
+
 INSERT INTO categories (name, slug, sort_order)
 VALUES
     ('Burger', 'burger', 1),
     ('Contorni', 'contorni', 2),
     ('Bevande', 'bevande', 3);
 
-INSERT INTO products (category_id, name, slug, description, image_path, allergens, is_available, price_cents)
+INSERT INTO products (category_id, name, slug, description, image_path, image_focus_x, image_focus_y, allergens, is_available, price_cents, created_by_user_id)
 VALUES
-    ((SELECT id FROM categories WHERE slug = 'burger'), 'Classic Smash', 'classic-smash', 'Doppio smash, cheddar, cipolla, salsa signature.', NULL, 'glutine, lattosio', 1, 1090),
-    ((SELECT id FROM categories WHERE slug = 'burger'), 'Bacon Smash', 'bacon-smash', 'Doppio smash con bacon croccante e cheddar.', NULL, 'glutine, lattosio', 1, 1250),
-    ((SELECT id FROM categories WHERE slug = 'burger'), 'Veggie Smash', 'veggie-smash', 'Burger vegetale con salsa yogurt e insalata.', NULL, 'glutine, lattosio, soia', 1, 1150),
-    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Patatine Classiche', 'patatine-classiche', 'Porzione media di patatine fritte.', NULL, 'possibili tracce di glutine', 1, 390),
-    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Onion Rings', 'onion-rings', 'Anelli di cipolla croccanti con salsa BBQ.', NULL, 'glutine', 1, 450),
-    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Nuggets di Pollo', 'nuggets-pollo', '6 nuggets con salsa a scelta.', NULL, 'glutine, uova', 1, 590),
-    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Cola', 'cola', 'Lattina 33cl.', NULL, NULL, 1, 250),
-    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Acqua Naturale', 'acqua-naturale', 'Bottiglia 50cl.', NULL, NULL, 1, 150),
-    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Birra Artigianale', 'birra-artigianale', 'Bottiglia 33cl.', NULL, 'glutine', 1, 500);
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Classic Smash', 'classic-smash', 'Doppio smash, cheddar, cipolla, salsa signature.', NULL, 50, 50, 'glutine, lattosio', 1, 1090, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Bacon Smash', 'bacon-smash', 'Doppio smash con bacon croccante e cheddar.', NULL, 50, 50, 'glutine, lattosio', 1, 1250, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Veggie Smash', 'veggie-smash', 'Burger vegetale con salsa yogurt e insalata.', NULL, 50, 50, 'glutine, lattosio, soia', 1, 1150, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Patatine Classiche', 'patatine-classiche', 'Porzione media di patatine fritte.', NULL, 50, 50, 'possibili tracce di glutine', 1, 390, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Onion Rings', 'onion-rings', 'Anelli di cipolla croccanti con salsa BBQ.', NULL, 50, 50, 'glutine', 1, 450, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Nuggets di Pollo', 'nuggets-pollo', '6 nuggets con salsa a scelta.', NULL, 50, 50, 'glutine, uova', 1, 590, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Cola', 'cola', 'Lattina 33cl.', NULL, 50, 50, NULL, 1, 250, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Acqua Naturale', 'acqua-naturale', 'Bottiglia 50cl.', NULL, 50, 50, NULL, 1, 150, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Birra Artigianale', 'birra-artigianale', 'Bottiglia 33cl.', NULL, 50, 50, 'glutine', 1, 500, (SELECT id FROM users WHERE username = 'admin'));
 
-INSERT INTO branch_products (branch_id, product_id, is_available, price_cents_override, pickup_eta_minutes)
-SELECT b.id, p.id, 1, NULL, 15
+INSERT INTO branch_products (branch_id, product_id, is_listed, is_available, price_cents_override, pickup_eta_minutes)
+SELECT b.id, p.id, 1, 1, NULL, 15
 FROM branches b
 CROSS JOIN products p;
 
@@ -407,3 +631,110 @@ INNER JOIN branches b ON b.id = bp.branch_id
 INNER JOIN products p ON p.id = bp.product_id
 SET bp.price_cents_override = 1290
 WHERE b.slug = 'padova-centro' AND p.slug = 'bacon-smash';
+
+INSERT INTO branch_inventory (branch_id, product_id, on_hand_qty, average_unit_cost_cents, manual_unavailable)
+SELECT
+    b.id,
+    p.id,
+    CASE
+        WHEN c.slug = 'burger' THEN 40
+        WHEN c.slug = 'contorni' THEN 32
+        ELSE 54
+    END AS on_hand_qty,
+    CASE
+        WHEN p.slug = 'classic-smash' THEN 420
+        WHEN p.slug = 'bacon-smash' THEN 520
+        WHEN p.slug = 'veggie-smash' THEN 440
+        WHEN p.slug = 'patatine-classiche' THEN 160
+        WHEN p.slug = 'onion-rings' THEN 190
+        WHEN p.slug = 'nuggets-pollo' THEN 250
+        WHEN p.slug = 'cola' THEN 80
+        WHEN p.slug = 'acqua-naturale' THEN 45
+        ELSE 120
+    END AS average_unit_cost_cents,
+    0
+FROM branches b
+CROSS JOIN products p
+INNER JOIN categories c ON c.id = p.category_id;
+
+UPDATE branch_inventory bi
+INNER JOIN branches b ON b.id = bi.branch_id
+INNER JOIN products p ON p.id = bi.product_id
+SET bi.on_hand_qty = 18
+WHERE b.slug = 'padova-centro' AND p.slug = 'patatine-classiche';
+
+INSERT INTO auto_reorder_policies (
+    branch_id,
+    product_id,
+    threshold_qty,
+    reorder_qty,
+    cooldown_hours,
+    max_pending_qty,
+    mode,
+    is_active
+)
+SELECT
+    b.id,
+    p.id,
+    CASE
+        WHEN c.slug = 'burger' THEN 14
+        WHEN c.slug = 'contorni' THEN 12
+        ELSE 20
+    END AS threshold_qty,
+    CASE
+        WHEN c.slug = 'burger' THEN 24
+        WHEN c.slug = 'contorni' THEN 18
+        ELSE 36
+    END AS reorder_qty,
+    6,
+    CASE
+        WHEN c.slug = 'burger' THEN 48
+        WHEN c.slug = 'contorni' THEN 36
+        ELSE 72
+    END AS max_pending_qty,
+    'draft',
+    1
+FROM branches b
+CROSS JOIN products p
+INNER JOIN categories c ON c.id = p.category_id;
+
+INSERT INTO supply_templates (
+    branch_id,
+    template_name,
+    frequency,
+    next_run_at,
+    is_active,
+    notes,
+    created_by_user_id
+)
+VALUES
+    (
+        (SELECT id FROM branches WHERE slug = 'padova-centro'),
+        'Fornitura settimanale apertura',
+        'weekly',
+        DATE_ADD(NOW(), INTERVAL 2 DAY),
+        1,
+        'Template base per prodotti ad alta rotazione.',
+        (SELECT id FROM users WHERE username = 'manager.padova')
+    );
+
+INSERT INTO supply_template_items (template_id, product_id, quantity, unit_cost_cents)
+VALUES
+    (
+        (SELECT id FROM supply_templates WHERE template_name = 'Fornitura settimanale apertura' LIMIT 1),
+        (SELECT id FROM products WHERE slug = 'classic-smash'),
+        24,
+        420
+    ),
+    (
+        (SELECT id FROM supply_templates WHERE template_name = 'Fornitura settimanale apertura' LIMIT 1),
+        (SELECT id FROM products WHERE slug = 'patatine-classiche'),
+        20,
+        160
+    ),
+    (
+        (SELECT id FROM supply_templates WHERE template_name = 'Fornitura settimanale apertura' LIMIT 1),
+        (SELECT id FROM products WHERE slug = 'cola'),
+        36,
+        80
+    );

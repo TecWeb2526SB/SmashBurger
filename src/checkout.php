@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/includes/resources.php';
 
-require_login();
+require_customer_order_access();
 
 $utente = current_user();
 $userId = (int) $utente['id'];
@@ -20,7 +20,7 @@ $carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
 if (empty($carrello['items'])) {
     $nomeSede = !empty($selectedBranch['name']) ? ' per ' . $selectedBranch['name'] : '';
     flash_set('error', 'Il carrello' . $nomeSede . ' e vuoto. Aggiungi almeno un prodotto prima del checkout.');
-    header('Location: carrello.php');
+    header('Location: carrello');
     exit;
 }
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'fulfillment_type' => (string) ($checkoutFlow['fulfillment_type'] ?? 'asporto'),
             'pickup_at' => (string) ($checkoutFlow['pickup_at'] ?? ''),
         ];
-        header('Location: checkout_ritiro.php');
+        header('Location: checkout-ritiro');
         exit;
     }
 }
@@ -50,8 +50,8 @@ $flash = flash_get();
 
 $pageTitle       = 'Checkout';
 $pageDescription = 'Riepilogo ordine e avvio checkout.';
-$currentPage     = 'checkout.php';
-$breadcrumb      = [['Home', 'index.php'], ['Carrello', 'carrello.php'], ['Checkout', null]];
+$currentPage     = 'checkout';
+$breadcrumb      = [['Home', './'], ['Carrello', 'carrello'], ['Checkout', null]];
 include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout.php';
+include_once __DIR__ . '/views/checkout/checkout.php';
 include_once __DIR__ . '/views/template/footer.php';
