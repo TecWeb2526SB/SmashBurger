@@ -13,7 +13,7 @@
     <div class="contenitore">
         <h1 id="titolo-servizi">Servizi</h1>
         <p>
-            Dalla scelta del menu al ritiro in sede, il flusso e progettato per essere rapido e chiaro:
+            Dalla scelta del menu al ritiro in sede, il flusso è progettato per essere rapido e chiaro:
             un solo carrello attivo, prodotti coerenti con la sede selezionata e aggiornamenti ordine in tempo reale.
         </p>
         <?php if (!empty($selectedBranch)): ?>
@@ -30,11 +30,11 @@
         <div class="feature-grid">
             <article class="feature-card" aria-labelledby="servizio-1">
                 <h3 id="servizio-1">Ordine da menu dinamico</h3>
-                <p>Catalogo e disponibilita aggiornati in base alla sede selezionata.</p>
+                <p>Catalogo e disponibilità aggiornati in base alla sede selezionata.</p>
             </article>
             <article class="feature-card" aria-labelledby="servizio-2">
                 <h3 id="servizio-2">Asporto e ritiro in sede</h3>
-                <p>Scegli modalita e fascia oraria al checkout con riepilogo completo prima della conferma.</p>
+                <p>Scegli modalità e fascia oraria al checkout con riepilogo completo prima della conferma.</p>
             </article>
             <article class="feature-card" aria-labelledby="servizio-3">
                 <h3 id="servizio-3">Storico ordini personale</h3>

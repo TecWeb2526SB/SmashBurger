@@ -193,7 +193,7 @@ $frequencyOptions = supply_frequency_options();
                                                         </div>
 
                                                         <div class="campo-gruppo">
-                                                            <label for="standard-quantity-<?php echo $rowIndex; ?>">Quantita</label>
+                                                            <label for="standard-quantity-<?php echo $rowIndex; ?>">Quantità</label>
                                                             <input type="number" id="standard-quantity-<?php echo $rowIndex; ?>" name="template_quantity[]" min="1" step="1" value="<?php echo htmlspecialchars((string) ($row['quantity'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                                                         </div>
                                                     </div>
@@ -234,7 +234,7 @@ $frequencyOptions = supply_frequency_options();
                                                     </div>
 
                                                     <div class="campo-gruppo">
-                                                        <label for="standard-quantity-__INDEX__">Quantita</label>
+                                                        <label for="standard-quantity-__INDEX__">Quantità</label>
                                                         <input type="number" id="standard-quantity-__INDEX__" name="template_quantity[]" min="1" step="1">
                                                     </div>
                                                 </div>
@@ -358,7 +358,7 @@ $frequencyOptions = supply_frequency_options();
                                                         </div>
 
                                                         <div class="campo-gruppo">
-                                                            <label for="extra-quantity-<?php echo $rowIndex; ?>">Quantita</label>
+                                                            <label for="extra-quantity-<?php echo $rowIndex; ?>">Quantità</label>
                                                             <input type="number" id="extra-quantity-<?php echo $rowIndex; ?>" name="extra_quantity[]" min="1" step="1" value="<?php echo htmlspecialchars((string) ($row['quantity'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
                                                         </div>
                                                     </div>
@@ -399,7 +399,7 @@ $frequencyOptions = supply_frequency_options();
                                                     </div>
 
                                                     <div class="campo-gruppo">
-                                                        <label for="extra-quantity-__INDEX__">Quantita</label>
+                                                        <label for="extra-quantity-__INDEX__">Quantità</label>
                                                         <input type="number" id="extra-quantity-__INDEX__" name="extra_quantity[]" min="1" step="1">
                                                     </div>
                                                 </div>
@@ -515,7 +515,7 @@ $frequencyOptions = supply_frequency_options();
                             <details class="admin-workflow-block admin-workflow-block--confirm" open>
                                 <summary class="admin-workflow-block-summary">
                                     <span class="admin-workflow-node-type">Output</span>
-                                    <h3>Definisci l azione finale</h3>
+                                    <h3>Definisci l'azione finale</h3>
                                     <p>Decidi quantità di riordino e modalità finale: bozza controllabile o ordine già registrato.</p>
                                     <ul class="admin-workflow-chip-list">
                                         <li>Quantita riordino</li>

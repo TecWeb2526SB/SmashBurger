@@ -17,7 +17,7 @@ $internalAccountBrowsing = function_exists('is_logged_in') && is_logged_in() && 
 <section id="intestazione-prodotti" aria-labelledby="titolo-prodotti">
     <div class="contenitore">
         <h1 id="titolo-prodotti">I nostri prodotti</h1>
-        <p>Tutto quello che trovi nel nostro menu e preparato al momento, con disponibilita legata alla sede scelta.</p>
+        <p>Tutto quello che trovi nel nostro menu è preparato al momento, con disponibilità legata alla sede scelta.</p>
         </div>
         </section>
 
@@ -45,7 +45,7 @@ $internalAccountBrowsing = function_exists('is_logged_in') && is_logged_in() && 
     <section aria-label="Avviso account interno">
         <div class="contenitore">
             <div class="alert info">
-                Stai consultando il catalogo con un account interno. Per i profili admin e manager l'ordine diretto non e disponibile.
+                Stai consultando il catalogo con un account interno. Per i profili admin e manager l'ordine diretto non è disponibile.
             </div>
         </div>
     </section>
