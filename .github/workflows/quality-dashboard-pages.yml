@@ -9,6 +9,11 @@ on:
       - Authenticated internal quality
     types: [completed]
   workflow_dispatch:
+    inputs:
+      target_branch:
+        description: Branch da cui leggere gli artifact quality
+        required: false
+        default: develop
 
 permissions:
   actions: read
@@ -32,7 +37,7 @@ jobs:
 
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      TARGET_BRANCH: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref_name }}
+      TARGET_BRANCH: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || inputs.target_branch || 'develop' }}
       TARGET_SHA: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_sha || '' }}
 
     steps:
