@@ -19,12 +19,6 @@ const pages = fs.readFileSync(pagesFile, 'utf8')
     .filter(Boolean);
 
 const categoryOrder = ['performance', 'accessibility', 'best-practices', 'seo'];
-const categoryLabels = {
-    performance: 'Performance',
-    accessibility: 'Accessibility',
-    'best-practices': 'Best practices',
-    seo: 'SEO',
-};
 const deEmphasizedAuditIds = new Set([
     'network-dependency-tree-insight',
     'render-blocking-requests',
