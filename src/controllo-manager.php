@@ -142,12 +142,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'confirm_manager') {
             if (!$draft) throw new RuntimeException('Dati sessione non trovati.');
 
-            $passwordHash = null;
-            if ($draft['password'] !== '') {
-                $passwordHash = password_hash($draft['password'], PASSWORD_DEFAULT);
+            $draftId = (int) ($draft['id'] ?? 0);
+            $draftPassword = (string) ($draft['password'] ?? '');
+
+            if ($draftId === 0 && $draftPassword === '') {
+                throw new RuntimeException('Per creare un manager di filiale devi impostare una password valida. Torna ai dettagli e reinseriscila.');
             }
 
-            if ($draft['id'] > 0) {
+            $passwordHash = null;
+            if ($draftPassword !== '') {
+                if (mb_strlen($draftPassword) < 8 || !auth_is_valid_password($draftPassword)) {
+                    throw new RuntimeException('La password salvata per questo manager non e valida. Torna ai dettagli e reinseriscila.');
+                }
+
+                $passwordHash = password_hash($draftPassword, PASSWORD_DEFAULT);
+                if ($passwordHash === false) {
+                    throw new RuntimeException('Impossibile salvare la password del manager. Riprova.');
+                }
+            }
+
+            if ($draftId > 0) {
                 auth_update_branch_manager($pdo, $draft['id'], $draft['username'], $draft['email'], $draft['managed_branch_id'], $passwordHash);
                 flash_set('success', 'Credenziali manager aggiornate.');
             } else {
@@ -167,7 +181,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } elseif ($action === 'delete_branch_manager') {
             $managerId = (int) ($_POST['manager_id'] ?? 0);
-            auth_delete_user($pdo, $managerId);
+            $managerToDelete = $managerId > 0 ? auth_get_branch_manager_by_id($pdo, $managerId) : null;
+            if ($managerToDelete === null) {
+                throw new RuntimeException('Manager di filiale non trovato.');
+            }
+
+            auth_delete_branch_manager($pdo, $managerId);
             flash_set('success', 'Credenziali manager eliminate definitivamente.');
             header('Location: ' . ($sectionUrls['team'] ?? 'controllo-manager'));
             exit;

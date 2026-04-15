@@ -400,6 +400,17 @@ function auth_toggle_branch_manager(PDO $pdo, int $userId, bool $isActive): void
     ]);
 }
 
+function auth_delete_branch_manager(PDO $pdo, int $userId): void
+{
+    $stmt = $pdo->prepare(
+        'DELETE FROM users
+         WHERE id = :id
+           AND role = "branch_manager"
+         LIMIT 1'
+    );
+    $stmt->execute(['id' => $userId]);
+}
+
 function auth_delete_user(PDO $pdo, int $userId): void
 {
     $stmt = $pdo->prepare('DELETE FROM users WHERE id = :id LIMIT 1');
