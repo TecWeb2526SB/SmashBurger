@@ -1040,7 +1040,8 @@ footer a:focus-visible {
 .scheda-prodotto img {
     width: 100%;
     height: 12rem;
-    object-fit: cover;
+    object-fit: contain;
+    padding: 1rem;
 }
 
 .scheda-prodotto-corpo {
@@ -4828,4 +4829,16 @@ html.tema-scuro .admin-status-pill.is-warning::before {
 #servizi-standard,
 #servizi-contatti {
     border-top: var(--bordo-standard);
+}
+
+/* Fix per immagini più piccole a causa del padding trasparente */
+img[src*="Chicken burger.webp"],
+img[src*="Chicken%20burger.webp"],
+img[src*="Italiano.webp"],
+img[src*="VeganBurger.webp"] {
+    transform: scale(1.4);
+}
+
+img[src*="Cup.webp"] {
+    transform: scale(1.4);
 }

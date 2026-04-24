@@ -56,8 +56,8 @@ $csrfToken = csrf_token();
         
         <div class="menu-preview-grid">
             <article class="menu-preview-card" aria-labelledby="best-1">
-                <h3 id="best-1">Classic Smash</h3>
-                <p>Doppio smash, cheddar, cipolla, salsa signature.</p>
+                <h3 id="best-1">Cheeseburger</h3>
+                <p>Patty di carne, Cheddar, Cetriolini, Ketchup</p>
                 <span class="prezzo">10,90 EUR</span>
                 
                 <?php if (is_logged_in()): ?>
@@ -73,8 +73,8 @@ $csrfToken = csrf_token();
             </article>
 
             <article class="menu-preview-card" aria-labelledby="best-2">
-                <h3 id="best-2">Bacon Smash</h3>
-                <p>Doppio smash con bacon croccante e cheddar.</p>
+                <h3 id="best-2">Bacon Burger</h3>
+                <p>Patty di carne, Bacon, Cheddar, Salsa al bacon</p>
                 <span class="prezzo">12,50 EUR</span>
                 
                 <?php if (is_logged_in()): ?>
@@ -90,8 +90,8 @@ $csrfToken = csrf_token();
             </article>
 
             <article class="menu-preview-card" aria-labelledby="best-3">
-                <h3 id="best-3">Onion Smash</h3>
-                <p>Smash burger con cipolle caramellate alla piastra.</p>
+                <h3 id="best-3">IN-N-OUT</h3>
+                <p>Patty di carne, cipolla cruda, Insalata, Pomodoro, Cheddar</p>
                 <span class="prezzo">11,50 EUR</span>
                 
                 <?php if (is_logged_in()): ?>
