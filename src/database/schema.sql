@@ -589,19 +589,31 @@ INSERT INTO categories (name, slug, sort_order)
 VALUES
     ('Burger', 'burger', 1),
     ('Contorni', 'contorni', 2),
-    ('Bevande', 'bevande', 3);
+    ('Bevande', 'bevande', 3),
+    ('Dessert', 'dessert', 4);
 
 INSERT INTO products (category_id, name, slug, description, image_path, image_focus_x, image_focus_y, allergens, is_available, price_cents, created_by_user_id)
 VALUES
-    ((SELECT id FROM categories WHERE slug = 'burger'), 'Classic Smash', 'classic-smash', 'Doppio smash, cheddar, cipolla, salsa signature.', NULL, 50, 50, 'glutine, lattosio', 1, 1090, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'burger'), 'Bacon Smash', 'bacon-smash', 'Doppio smash con bacon croccante e cheddar.', NULL, 50, 50, 'glutine, lattosio', 1, 1250, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'burger'), 'Veggie Smash', 'veggie-smash', 'Burger vegetale con salsa yogurt e insalata.', NULL, 50, 50, 'glutine, lattosio, soia', 1, 1150, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Patatine Classiche', 'patatine-classiche', 'Porzione media di patatine fritte.', NULL, 50, 50, 'possibili tracce di glutine', 1, 390, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Onion Rings', 'onion-rings', 'Anelli di cipolla croccanti con salsa BBQ.', NULL, 50, 50, 'glutine', 1, 450, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Nuggets di Pollo', 'nuggets-pollo', '6 nuggets con salsa a scelta.', NULL, 50, 50, 'glutine, uova', 1, 590, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Cola', 'cola', 'Lattina 33cl.', NULL, 50, 50, NULL, 1, 250, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Acqua Naturale', 'acqua-naturale', 'Bottiglia 50cl.', NULL, 50, 50, NULL, 1, 150, (SELECT id FROM users WHERE username = 'admin')),
-    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Birra Artigianale', 'birra-artigianale', 'Bottiglia 33cl.', NULL, 50, 50, 'glutine', 1, 500, (SELECT id FROM users WHERE username = 'admin'));
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Cheeseburger', 'cheeseburger', 'Patty di carne, Cheddar, Cetriolini, Ketchup', 'images/Cheeseburger.webp', 50, 50, 'glutine, lattosio', 1, 1090, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Bacon Burger', 'bacon-burger', 'Patty di carne, Bacon, Cheddar, Salsa al bacon', 'images/Bacon-Burger.webp', 50, 50, 'glutine, lattosio', 1, 1250, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'IN-N-OUT', 'in-n-out', 'Patty di carne, cipolla cruda, Insalata, Pomodoro, Cheddar', 'images/IN-N-OUT.webp', 50, 50, 'glutine, lattosio', 1, 1150, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Chicken Burger', 'chicken-burger', 'Tender di pollo, Maionese, Insalata', 'images/Chicken burger.webp', 50, 50, 'glutine, uova', 1, 1050, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Piccante', 'piccante', 'Patty di carne, nduja, spianata piccante, provola, cipolla caramellata', 'images/Piccante.webp', 50, 50, 'glutine, lattosio', 1, 1350, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Italiano', 'italiano', 'Patty di carne, Caciocavallo, Pomodori secchi, Maionese al basilico e pinoli', 'images/Italiano.webp', 50, 50, 'glutine, lattosio, frutta a guscio', 1, 1400, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Chicken BBQ', 'chicken-bbq', 'Sovraccoscia di pollo, Salsa BBQ e miele, Bacon, Insalata colesaw, Edamer fuso', 'images/Chicken-BBQ.webp', 50, 50, 'glutine, lattosio', 1, 1300, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'burger'), 'Vegan burger', 'vegan-burger', 'Pollo vegano, Colesaw vegana, Maionese piccante vegana, Lattuga', 'images/VeganBurger.webp', 50, 50, 'glutine, soia', 1, 1250, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Patate fritte', 'patate-fritte', 'Patate e sale', 'images/Patate.webp', 50, 50, 'possibili tracce di glutine', 1, 390, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Chicken wings', 'chicken-wings', 'Alette di pollo speziate in salsa BBQ.', 'images/Chicken wings.webp', 50, 50, 'senape, soia', 1, 550, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Tenders di pollo', 'tenders-pollo', 'Striscioline di pollo fritte.', 'images/Tenders di pollo.webp', 50, 50, 'glutine', 1, 600, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'contorni'), 'Panzerotti', 'panzerotti', 'Panzerotti fritti.', 'images/Panzerotti.webp', 50, 50, 'glutine, lattosio', 1, 450, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Cup', 'cup', 'Bicchiere per bevande.', 'images/Cup.webp', 50, 50, NULL, 1, 250, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Acqua Naturale', 'acqua-naturale', 'Bottiglia 50cl.', 'images/Acqua Naturale.webp', 50, 50, NULL, 1, 150, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Acqua Frizzante', 'acqua-frizzante', 'Bottiglia 50cl.', 'images/Acqua Frizzante.webp', 50, 50, NULL, 1, 150, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'bevande'), 'Birra Artigianale', 'birra-artigianale', 'Bottiglia 33cl.', 'images/Birra Artigianale.webp', 50, 50, 'glutine', 1, 500, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'dessert'), 'Cono gelato', 'cono-gelato', 'Cono gelato classico.', 'images/Cono gelato.webp', 50, 50, 'glutine, lattosio', 1, 300, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'dessert'), 'Milkshake Vaniglia', 'milkshake-vaniglia', 'Milkshake gusto vaniglia.', 'images/MIlkshake vaniglia.webp', 50, 50, 'lattosio', 1, 450, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'dessert'), 'Milkshake Banana', 'milkshake-banana', 'Milkshake gusto banana.', 'images/Milkshake banana.webp', 50, 50, 'lattosio', 1, 450, (SELECT id FROM users WHERE username = 'admin')),
+    ((SELECT id FROM categories WHERE slug = 'dessert'), 'Milkshake Fragola', 'milkshake-fragola', 'Milkshake gusto fragola.', 'images/Milkshake fragola.webp', 50, 50, 'lattosio', 1, 450, (SELECT id FROM users WHERE username = 'admin'));
 
 INSERT INTO branch_products (branch_id, product_id, is_listed, is_available, price_cents_override, pickup_eta_minutes)
 SELECT b.id, p.id, 1, 1, NULL, 15
@@ -618,19 +630,19 @@ UPDATE branch_products bp
 INNER JOIN branches b ON b.id = bp.branch_id
 INNER JOIN products p ON p.id = bp.product_id
 SET bp.is_available = 0
-WHERE b.slug = 'vicenza-centro' AND p.slug = 'onion-rings';
+WHERE b.slug = 'vicenza-centro' AND p.slug = 'chicken-wings';
 
 UPDATE branch_products bp
 INNER JOIN branches b ON b.id = bp.branch_id
 INNER JOIN products p ON p.id = bp.product_id
 SET bp.is_available = 0
-WHERE b.slug = 'udine-centro' AND p.slug = 'veggie-smash';
+WHERE b.slug = 'udine-centro' AND p.slug = 'in-n-out';
 
 UPDATE branch_products bp
 INNER JOIN branches b ON b.id = bp.branch_id
 INNER JOIN products p ON p.id = bp.product_id
 SET bp.price_cents_override = 1290
-WHERE b.slug = 'padova-centro' AND p.slug = 'bacon-smash';
+WHERE b.slug = 'padova-centro' AND p.slug = 'bacon-burger';
 
 INSERT INTO branch_inventory (branch_id, product_id, on_hand_qty, average_unit_cost_cents, manual_unavailable)
 SELECT
@@ -642,14 +654,25 @@ SELECT
         ELSE 54
     END AS on_hand_qty,
     CASE
-        WHEN p.slug = 'classic-smash' THEN 420
-        WHEN p.slug = 'bacon-smash' THEN 520
-        WHEN p.slug = 'veggie-smash' THEN 440
-        WHEN p.slug = 'patatine-classiche' THEN 160
-        WHEN p.slug = 'onion-rings' THEN 190
-        WHEN p.slug = 'nuggets-pollo' THEN 250
-        WHEN p.slug = 'cola' THEN 80
+        WHEN p.slug = 'cheeseburger' THEN 420
+        WHEN p.slug = 'bacon-burger' THEN 520
+        WHEN p.slug = 'in-n-out' THEN 440
+        WHEN p.slug = 'chicken-burger' THEN 400
+        WHEN p.slug = 'piccante' THEN 550
+        WHEN p.slug = 'italiano' THEN 600
+        WHEN p.slug = 'chicken-bbq' THEN 550
+        WHEN p.slug = 'vegan-burger' THEN 500
+        WHEN p.slug = 'patate-fritte' THEN 160
+        WHEN p.slug = 'chicken-wings' THEN 190
+        WHEN p.slug = 'tenders-pollo' THEN 250
+        WHEN p.slug = 'panzerotti' THEN 180
+        WHEN p.slug = 'cup' THEN 80
         WHEN p.slug = 'acqua-naturale' THEN 45
+        WHEN p.slug = 'acqua-frizzante' THEN 45
+        WHEN p.slug = 'cono-gelato' THEN 100
+        WHEN p.slug = 'milkshake-vaniglia' THEN 150
+        WHEN p.slug = 'milkshake-banana' THEN 150
+        WHEN p.slug = 'milkshake-fragola' THEN 150
         ELSE 120
     END AS average_unit_cost_cents,
     0
@@ -661,7 +684,7 @@ UPDATE branch_inventory bi
 INNER JOIN branches b ON b.id = bi.branch_id
 INNER JOIN products p ON p.id = bi.product_id
 SET bi.on_hand_qty = 18
-WHERE b.slug = 'padova-centro' AND p.slug = 'patatine-classiche';
+WHERE b.slug = 'padova-centro' AND p.slug = 'patate-fritte';
 
 INSERT INTO auto_reorder_policies (
     branch_id,
@@ -722,19 +745,19 @@ INSERT INTO supply_template_items (template_id, product_id, quantity, unit_cost_
 VALUES
     (
         (SELECT id FROM supply_templates WHERE template_name = 'Fornitura settimanale apertura' LIMIT 1),
-        (SELECT id FROM products WHERE slug = 'classic-smash'),
+        (SELECT id FROM products WHERE slug = 'cheeseburger'),
         24,
         420
     ),
     (
         (SELECT id FROM supply_templates WHERE template_name = 'Fornitura settimanale apertura' LIMIT 1),
-        (SELECT id FROM products WHERE slug = 'patatine-classiche'),
+        (SELECT id FROM products WHERE slug = 'patate-fritte'),
         20,
         160
     ),
     (
         (SELECT id FROM supply_templates WHERE template_name = 'Fornitura settimanale apertura' LIMIT 1),
-        (SELECT id FROM products WHERE slug = 'cola'),
+        (SELECT id FROM products WHERE slug = 'cup'),
         36,
         80
     );
