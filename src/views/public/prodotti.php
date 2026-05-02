@@ -12,6 +12,35 @@
  */
 $csrfToken = csrf_token();
 $internalAccountBrowsing = function_exists('is_logged_in') && is_logged_in() && function_exists('can_place_customer_orders') && !can_place_customer_orders();
+$productGridImage = static function (string $imagePath): array {
+    $imagePath = trim($imagePath);
+    $sourcePath = $imagePath;
+
+    if (str_starts_with($imagePath, 'images/') && pathinfo($imagePath, PATHINFO_EXTENSION) === 'webp') {
+        $thumbnailPath = 'images/prodotti-thumb/' . basename($imagePath);
+        if (is_file(__DIR__ . '/../../' . $thumbnailPath)) {
+            $sourcePath = $thumbnailPath;
+        }
+    }
+
+    $width = 640;
+    $height = 480;
+    $imageInfo = is_file(__DIR__ . '/../../' . $sourcePath)
+        ? getimagesize(__DIR__ . '/../../' . $sourcePath)
+        : false;
+
+    if (is_array($imageInfo)) {
+        $width = (int) ($imageInfo[0] ?? $width);
+        $height = (int) ($imageInfo[1] ?? $height);
+    }
+
+    return [
+        'src' => $sourcePath,
+        'width' => $width,
+        'height' => $height,
+    ];
+};
+$productImageIndex = 0;
 ?>
 
 <section id="intestazione-prodotti" aria-labelledby="titolo-prodotti">
@@ -79,7 +108,17 @@ $internalAccountBrowsing = function_exists('is_logged_in') && is_logged_in() && 
                         <?php foreach ($categoria['products'] as $prodotto): ?>
                             <article class="scheda-prodotto" aria-labelledby="prod-<?php echo (int) $prodotto['id']; ?>">
                                 <?php if (!empty($prodotto['image_path'])): ?>
-                                    <img src="<?php echo htmlspecialchars($prodotto['image_path'], ENT_QUOTES, 'UTF-8'); ?>"
+                                    <?php
+                                    $imageMeta = $productGridImage((string) $prodotto['image_path']);
+                                    $isPriorityImage = $productImageIndex === 0;
+                                    $productImageIndex++;
+                                    ?>
+                                    <img src="<?php echo htmlspecialchars($imageMeta['src'], ENT_QUOTES, 'UTF-8'); ?>"
+                                        width="<?php echo (int) $imageMeta['width']; ?>"
+                                        height="<?php echo (int) $imageMeta['height']; ?>"
+                                        loading="<?php echo $isPriorityImage ? 'eager' : 'lazy'; ?>"
+                                        decoding="async"
+                                        <?php echo $isPriorityImage ? 'fetchpriority="high"' : ''; ?>
                                         alt="Immagine di <?php echo htmlspecialchars($prodotto['name'], ENT_QUOTES, 'UTF-8'); ?>"
                                         style="object-position: <?php echo (int) ($prodotto['image_focus_x'] ?? 50); ?>% <?php echo (int) ($prodotto['image_focus_y'] ?? 50); ?>%;">
                                 <?php else: ?>

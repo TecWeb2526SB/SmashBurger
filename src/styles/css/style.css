@@ -363,7 +363,8 @@ header h1 {
 
 .brand-sede {
     margin: 0;
-    padding: 0;
+    padding: 0 var(--spazio-xs);
+    min-height: var(--touch-target-min);
     background: none;
     border: none;
     cursor: pointer;
@@ -621,8 +622,10 @@ header h1 {
     position: relative;
     display: inline-flex;
     align-items: center;
+    min-height: var(--touch-target-min);
     line-height: 1.1;
     padding-block: var(--spazio-xs);
+    padding-inline: var(--spazio-xs);
 }
 
 #menu-principale a.nav-item-wrap {
@@ -733,6 +736,8 @@ header h1 {
     background: none;
     border: var(--bordo-standard);
     color: var(--colore-testo);
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
     padding: var(--spazio-xs) var(--spazio-sm);
     border-radius: var(--raggio-bordo);
     font-size: 0.8125rem;
@@ -1042,6 +1047,7 @@ footer a:focus-visible {
     height: 12rem;
     object-fit: contain;
     padding: 1rem;
+    background-color: var(--colore-sfondo-alt);
 }
 
 .scheda-prodotto-corpo {
@@ -1111,13 +1117,16 @@ footer a:focus-visible {
 
 #filtro-categorie ul {
     display: flex;
-    gap: var(--spazio-sm);
+    gap: var(--spazio-md);
     flex-wrap: wrap;
 }
 
 #filtro-categorie a {
-    display: inline-block;
-    padding: var(--spazio-xs) var(--spazio-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--touch-target-min);
+    padding: var(--spazio-sm) var(--spazio-md);
     border: var(--bordo-standard);
     border-radius: 2rem;
     color: var(--colore-testo);

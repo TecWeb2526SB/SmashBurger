@@ -25,6 +25,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        min-width: var(--touch-target-min);
+        min-height: var(--touch-target-min);
         background: none;
         border: var(--bordo-standard);
         color: var(--colore-testo);
@@ -271,7 +273,8 @@
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        padding-bottom: var(--spazio-xs);
+        gap: var(--spazio-md);
+        padding-bottom: var(--spazio-sm);
         scrollbar-width: thin;
     }
 
