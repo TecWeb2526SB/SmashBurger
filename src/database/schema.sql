@@ -531,15 +531,15 @@ INSERT INTO branch_hours (branch_id, weekday, day_label, open_time, close_time, 
 SELECT b.id, d.weekday, d.day_label, d.open_time, d.close_time, d.is_closed
 FROM branches b
 JOIN (
-    SELECT 1 AS weekday, 'Lunedi' AS day_label, '11:30:00' AS open_time, '22:30:00' AS close_time, 0 AS is_closed
+    SELECT 1 AS weekday, 'Lunedì' AS day_label, '11:30:00' AS open_time, '22:30:00' AS close_time, 0 AS is_closed
     UNION ALL
-    SELECT 2, 'Martedi', '11:30:00', '22:30:00', 0
+    SELECT 2, 'Martedì', '11:30:00', '22:30:00', 0
     UNION ALL
-    SELECT 3, 'Mercoledi', '11:30:00', '22:30:00', 0
+    SELECT 3, 'Mercoledì', '11:30:00', '22:30:00', 0
     UNION ALL
-    SELECT 4, 'Giovedi', '11:30:00', '22:30:00', 0
+    SELECT 4, 'Giovedì', '11:30:00', '22:30:00', 0
     UNION ALL
-    SELECT 5, 'Venerdi', '11:30:00', '22:30:00', 0
+    SELECT 5, 'Venerdì', '11:30:00', '22:30:00', 0
     UNION ALL
     SELECT 6, 'Sabato', '11:00:00', '23:30:00', 0
     UNION ALL
