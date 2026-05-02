@@ -116,7 +116,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                         <div class="account-panel-head">
                             <span class="account-panel-kicker">Passo 2 di 3</span>
                             <h2 id="titolo-step-immagine">Scegli l'immagine e regola l'inquadratura</h2>
-                            <p class="checkout-muted">Il ritaglio resta leggero e non distruttivo: salviamo il punto focale per far “cadere bene” l immagine nelle card del catalogo.</p>
+                            <p class="checkout-muted">Il ritaglio resta leggero e non distruttivo: salviamo il punto focale per far “cadere bene” l’immagine nelle card del catalogo.</p>
                         </div>
 
                         <div class="admin-product-media-grid">
@@ -212,7 +212,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                         <form method="POST" action="controllo-catalogo-prodotto<?php echo $reviewStepQuery !== '' ? '?' . $reviewStepQuery : ''; ?>">
                             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
                             <input type="hidden" name="action" value="go_to_image">
-                            <button class="bottone-secondario" type="submit">&larr; Torna all immagine</button>
+                            <button class="bottone-secondario" type="submit">&larr; Torna all'immagine</button>
                         </form>
 
                         <form method="POST" action="controllo-catalogo-prodotto<?php echo $reviewStepQuery !== '' ? '?' . $reviewStepQuery : ''; ?>">
@@ -233,9 +233,9 @@ $isReviewStep = $currentStep === 'riepilogo';
                 </ul>
                 <p class="checkout-muted account-note">
                     <?php if ($isReviewStep): ?>
-                        Dopo la conferma il prodotto entra nel catalogo globale. Ogni filiale potra poi mostrarlo o lasciarlo nascosto nel proprio listino locale.
+                        Dopo la conferma il prodotto entra nel catalogo globale. Ogni filiale potrà poi mostrarlo o lasciarlo nascosto nel proprio listino locale.
                     <?php else: ?>
-                        Il flusso salva una bozza di sessione, cosi puoi muoverti tra i passaggi senza perdere i dati gia inseriti.
+                        Il flusso salva una bozza di sessione, così puoi muoverti tra i passaggi senza perdere i dati già inseriti.
                     <?php endif; ?>
                 </p>
             </aside>

@@ -424,7 +424,7 @@ $frequencyOptions = supply_frequency_options();
                             <details class="admin-workflow-block admin-workflow-block--confirm" open>
                                 <summary class="admin-workflow-block-summary">
                                     <span class="admin-workflow-node-type">Output</span>
-                                    <h3>Registra l ordine operativo</h3>
+                                    <h3>Registra l'ordine operativo</h3>
                                     <p>Aggiungi la nota finale e salva la fornitura straordinaria nello storico della filiale.</p>
                                     <ul class="admin-workflow-chip-list">
                                         <li>Nota interna</li>
@@ -569,7 +569,7 @@ $frequencyOptions = supply_frequency_options();
                         <li><span>Consegne pianificate</span><strong><?php echo (int) $scheduledSupplyOrdersCount; ?></strong></li>
                         <li><span>Output</span><strong>Ordine operativo</strong></li>
                     </ul>
-                    <p class="checkout-muted account-note">Il builder straordinario resta leggero: aggiungi le righe strettamente necessarie, lascia il costo al sistema e registra subito l intervento nello storico.</p>
+                    <p class="checkout-muted account-note">Il builder straordinario resta leggero: aggiungi le righe strettamente necessarie, lascia il costo al sistema e registra subito l'intervento nello storico.</p>
                 <?php else: ?>
                     <ul class="riepilogo-lista">
                         <li><span>Policy attive</span><strong><?php echo (int) $activePoliciesCount; ?></strong></li>
