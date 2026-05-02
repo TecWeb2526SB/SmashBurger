@@ -1048,6 +1048,7 @@ footer a:focus-visible {
     object-fit: contain;
     padding: 1rem;
     background-color: var(--colore-sfondo-alt);
+    border-bottom: var(--bordo-standard);
 }
 
 .scheda-prodotto-corpo {
@@ -4840,14 +4841,15 @@ html.tema-scuro .admin-status-pill.is-warning::before {
     border-top: var(--bordo-standard);
 }
 
+/* TODO: meglio toccare effettivamente le immagini */
 /* Fix per immagini più piccole a causa del padding trasparente */
-img[src*="Chicken burger.webp"],
-img[src*="Chicken%20burger.webp"],
-img[src*="Italiano.webp"],
-img[src*="VeganBurger.webp"] {
-    transform: scale(1.4);
-}
-
-img[src*="Cup.webp"] {
-    transform: scale(1.4);
-}
+/* img[src*="Chicken burger.webp"],
+   img[src*="Chicken%20burger.webp"],
+   img[src*="Italiano.webp"],
+   img[src*="VeganBurger.webp"] {
+       transform: scale(1.4);
+   }
+   
+   img[src*="Cup.webp"] {
+       transform: scale(1.4);
+   } */
