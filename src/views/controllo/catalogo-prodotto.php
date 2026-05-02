@@ -116,7 +116,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                         <div class="account-panel-head">
                             <span class="account-panel-kicker">Passo 2 di 3</span>
                             <h2 id="titolo-step-immagine">Scegli l'immagine e regola l'inquadratura</h2>
-                            <p class="checkout-muted">Il ritaglio resta leggero e non distruttivo: salviamo il punto focale per far “cadere bene” l’immagine nelle card del catalogo.</p>
+                            <p class="checkout-muted">Il ritaglio resta leggero e non distruttivo: salviamo il punto focale per far "cadere bene" l'immagine nelle card del catalogo.</p>
                         </div>
 
                         <div class="admin-product-media-grid">
