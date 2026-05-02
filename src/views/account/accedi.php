@@ -30,6 +30,8 @@
             <form method="POST" action="accedi" data-valida novalidate>
                 <input type="hidden" name="csrf_token"
                     value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="hidden" name="redirect"
+                    value="<?php echo htmlspecialchars($redirectTo ?? 'account', ENT_QUOTES, 'UTF-8'); ?>">
 
                 <div class="campo-gruppo">
                     <label for="identifier">Username o email</label>

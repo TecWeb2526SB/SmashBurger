@@ -10,6 +10,7 @@ $errori               = [];
 $valoreIdentificativo = '';
 $csrfToken            = csrf_token();
 $flash                = flash_get();
+$redirectTo           = auth_normalize_redirect_target((string) ($_GET['redirect'] ?? $_POST['redirect'] ?? ''), 'account');
 
 if (is_logged_in()) {
     header('Location: account');
@@ -75,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             login_user($utente);
-            
+
             // Se l'utente ha un carrello attivo, sincronizziamo la sede della sessione con quella del carrello
             if (function_exists('cart_get_active_row')) {
                 $activeCart = cart_get_active_row($pdo, (int)$utente['id']);
@@ -89,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             flash_set('success', 'Accesso effettuato con successo. Bentornato, ' . $utente['username'] . '!');
-            header('Location: account');
+            header('Location: ' . $redirectTo);
             exit;
         }
     }

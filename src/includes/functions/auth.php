@@ -116,6 +116,25 @@ function require_login(string $redirectTo = 'accedi'): void
     exit;
 }
 
+function auth_normalize_redirect_target(string $redirectTo, string $default = 'account'): string
+{
+    $redirectTo = trim($redirectTo);
+
+    if ($redirectTo === '') {
+        return $default;
+    }
+
+    if (str_contains($redirectTo, "\n") || str_contains($redirectTo, "\r")) {
+        return $default;
+    }
+
+    if (preg_match('/^[a-z][a-z0-9+.-]*:\/\//i', $redirectTo) === 1 || str_starts_with($redirectTo, '//')) {
+        return $default;
+    }
+
+    return $redirectTo;
+}
+
 function require_admin_panel_access(string $redirectTo = 'account'): void
 {
     require_login();
