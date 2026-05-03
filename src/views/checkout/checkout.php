@@ -19,7 +19,7 @@
         <?php echo ui_alert($flash); ?>
         <?php echo ui_error_summary($errori); ?>
 
-        <form class="checkout-card checkout-form checkout-main" method="POST" action="checkout" aria-label="Conferma ordine">
+        <form class="checkout-card checkout-form" method="POST" action="checkout" aria-label="Conferma ordine">
             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
             <h2>Conferma ordine</h2>
             <?php if (!empty($selectedBranch)): ?>

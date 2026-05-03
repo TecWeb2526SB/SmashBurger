@@ -70,8 +70,8 @@ $frequencyOptions = supply_frequency_options();
 
 <section class="account-page admin-page" aria-labelledby="titolo-builder-forniture">
     <div class="contenitore">
-        <div class="account-page-head admin-page-head">
-            <div class="admin-builder-page-head">
+        <div>
+            <div>
                 <span class="account-panel-kicker"><?php echo e((string) ($builderMeta['kicker'] ?? 'Builder')); ?></span>
                 <h1 id="titolo-builder-forniture"><?php echo e((string) ($builderMeta['title'] ?? 'Builder forniture')); ?></h1>
                 <p class="checkout-muted"><?php echo e((string) ($builderMeta['description'] ?? '')); ?></p>
@@ -91,8 +91,8 @@ $frequencyOptions = supply_frequency_options();
             </div>
         <?php endif; ?>
 
-        <div class="checkout-shell admin-supply-builder-shell">
-            <div class="checkout-card checkout-form checkout-main admin-supply-builder-main">
+        <div class="checkout-shell">
+            <div class="checkout-card checkout-form">
                 <div class="account-panel-head">
                     <span class="account-panel-kicker">Canvas</span>
                     <h2>Costruisci il flusso blocco per blocco</h2>
@@ -161,7 +161,7 @@ $frequencyOptions = supply_frequency_options();
                                             <?php foreach (($draft['items'] ?? admin_supply_item_rows_default()) as $rowIndex => $row): ?>
                                                 <article class="admin-repeatable-row" data-repeatable-row>
                                                     <div class="admin-repeatable-row-head">
-                                                        <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
+                                                        <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
                                                         <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                     </div>
 
@@ -196,7 +196,7 @@ $frequencyOptions = supply_frequency_options();
                                                     </div>
 
                                                     <p
-                                                        class="checkout-muted admin-supply-cost-note"
+                                                        class="checkout-muted"
                                                         data-product-cost-output
                                                         data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                         data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -209,7 +209,7 @@ $frequencyOptions = supply_frequency_options();
                                         <template data-repeatable-template>
                                             <article class="admin-repeatable-row" data-repeatable-row>
                                                 <div class="admin-repeatable-row-head">
-                                                    <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
+                                                    <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
                                                     <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                 </div>
 
@@ -237,7 +237,7 @@ $frequencyOptions = supply_frequency_options();
                                                 </div>
 
                                                 <p
-                                                    class="checkout-muted admin-supply-cost-note"
+                                                    class="checkout-muted"
                                                     data-product-cost-output
                                                     data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                     data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -331,7 +331,7 @@ $frequencyOptions = supply_frequency_options();
                                             <?php foreach (($draft['items'] ?? admin_supply_item_rows_default()) as $rowIndex => $row): ?>
                                                 <article class="admin-repeatable-row" data-repeatable-row>
                                                     <div class="admin-repeatable-row-head">
-                                                        <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
+                                                        <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
                                                         <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                     </div>
 
@@ -366,7 +366,7 @@ $frequencyOptions = supply_frequency_options();
                                                     </div>
 
                                                     <p
-                                                        class="checkout-muted admin-supply-cost-note"
+                                                        class="checkout-muted"
                                                         data-product-cost-output
                                                         data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                         data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -379,7 +379,7 @@ $frequencyOptions = supply_frequency_options();
                                         <template data-repeatable-template>
                                             <article class="admin-repeatable-row" data-repeatable-row>
                                                 <div class="admin-repeatable-row-head">
-                                                    <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
+                                                    <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
                                                     <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                 </div>
 
@@ -407,7 +407,7 @@ $frequencyOptions = supply_frequency_options();
                                                 </div>
 
                                                 <p
-                                                    class="checkout-muted admin-supply-cost-note"
+                                                    class="checkout-muted"
                                                     data-product-cost-output
                                                     data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                     data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -555,7 +555,7 @@ $frequencyOptions = supply_frequency_options();
                 <?php endif; ?>
             </div>
 
-            <aside class="checkout-card account-side admin-supply-builder-side">
+            <aside class="checkout-card">
                 <div class="account-panel-head">
                     <span class="account-panel-kicker">Inspector</span>
                     <h2>Promemoria operativo</h2>
@@ -593,12 +593,12 @@ $frequencyOptions = supply_frequency_options();
                 <?php endif; ?>
 
                 <div class="admin-builder-side-stack">
-                    <article class="admin-builder-side-card">
+                    <article>
                         <h3>Pattern UI</h3>
                         <p class="checkout-muted">Trigger in alto, composizione o controllo al centro, output finale in basso. La lettura resta coerente con il flusso checkout della web app.</p>
                     </article>
 
-                    <article class="admin-builder-side-card">
+                    <article>
                         <h3>Ritorno rapido</h3>
                         <p class="checkout-muted">Se vuoi cambiare scenario, torna alla pagina forniture e apri un altro builder dal relativo launcher.</p>
                     </article>

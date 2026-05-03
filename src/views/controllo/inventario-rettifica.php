@@ -56,8 +56,8 @@ if ($selectedProduct !== null) {
 
 <section class="account-page admin-page" aria-labelledby="titolo-rettifica-inventario-page">
     <div class="contenitore">
-        <div class="account-page-head admin-page-head">
-            <div class="admin-builder-page-head">
+        <div>
+            <div>
                 <span class="account-panel-kicker">Rettifica inventario</span>
                 <h1 id="titolo-rettifica-inventario-page"><?php echo e((string) ($modeMeta['title'] ?? 'Rettifica inventario')); ?></h1>
                 <p class="checkout-muted"><?php echo e((string) ($modeMeta['description'] ?? '')); ?></p>
@@ -70,8 +70,8 @@ if ($selectedProduct !== null) {
 
         <?php echo ui_alert($flash); ?>
 
-        <div class="checkout-shell admin-inventory-adjustment-shell">
-            <div class="checkout-card checkout-form checkout-main admin-inventory-adjustment-main">
+        <div class="checkout-shell">
+            <div class="checkout-card checkout-form">
                 <div class="account-panel-head">
                     <span class="account-panel-kicker">Workflow</span>
                     <h2>Scegli il tipo di intervento</h2>
@@ -244,7 +244,7 @@ if ($selectedProduct !== null) {
                 </form>
             </div>
 
-            <aside class="checkout-card account-side admin-inventory-adjustment-side">
+            <aside class="checkout-card">
                 <div class="account-panel-head">
                     <span class="account-panel-kicker">Contesto</span>
                     <h3>Stato operativo della sede</h3>
@@ -253,13 +253,13 @@ if ($selectedProduct !== null) {
 
                 <div class="admin-builder-side-stack">
                     <?php if ($selectedProduct !== null): ?>
-                        <article class="admin-builder-side-card">
+                        <article>
                             <span class="account-panel-kicker">Prodotto selezionato</span>
                             <h3><?php echo e((string) ($selectedProduct['product_name'] ?? '')); ?></h3>
                             <p class="checkout-muted"><?php echo e($selectedProductDescription !== '' ? $selectedProductDescription : 'Scheda cliente senza descrizione estesa.'); ?></p>
                         </article>
 
-                        <article class="admin-builder-side-card">
+                        <article>
                             <ul class="riepilogo-lista">
                                 <li><span>In sede</span><strong><?php echo $currentQty; ?></strong></li>
                                 <li><span>In arrivo</span><strong><?php echo $pendingQty; ?></strong></li>
@@ -269,14 +269,14 @@ if ($selectedProduct !== null) {
                             </ul>
                         </article>
                     <?php else: ?>
-                        <article class="admin-builder-side-card">
+                        <article>
                             <span class="account-panel-kicker">Nessuna referenza</span>
                             <h3>Scegli prima un prodotto</h3>
                             <p class="checkout-muted">Il riepilogo laterale si popola appena selezioni una referenza della filiale dal primo blocco del workflow.</p>
                         </article>
                     <?php endif; ?>
 
-                    <article class="admin-builder-side-card">
+                    <article>
                         <span class="account-panel-kicker">Regola operativa</span>
                         <h3>Il manager non inserisce il costo</h3>
                         <p class="checkout-muted">Quando il movimento aumenta lo stock, il sistema usa automaticamente il costo medio o il costo di approvvigionamento già definito per la filiale.</p>

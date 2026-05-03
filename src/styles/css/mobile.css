@@ -89,7 +89,8 @@
     }
 
     /* --- Main content --- */
-    main {
+    main,
+    .home-hero {
         padding-block: var(--spazio-lg);
     }
 
@@ -160,10 +161,6 @@
     .branch-switcher {
         grid-template-columns: 1fr;
         max-width: 100%;
-    }
-
-    .home-hero {
-        padding-block: var(--spazio-lg);
     }
 
     .home-hero-grid {

@@ -15,7 +15,7 @@
 
 <section class="account-page" aria-labelledby="titolo-profilo">
     <div class="contenitore">
-        <div class="account-page-head">
+        <div>
             <span class="home-eyebrow">Profilo</span>
             <h1 id="titolo-profilo">Gestisci account</h1>
             <p class="account-hero-text">
@@ -28,7 +28,7 @@
 
         <?php echo ui_alert($flash); ?>
 
-        <div class="checkout-shell'account-shell">
+        <div class="checkout-shell">
             <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-identita-account">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                 <input type="hidden" name="action" value="update_identity">
@@ -68,7 +68,7 @@
                 </div>
             </form>
 
-            <aside class="checkout-card account-side" aria-labelledby="titolo-riepilogo-account">
+            <aside class="checkout-card" aria-labelledby="titolo-riepilogo-account">
                 <h2 id="titolo-riepilogo-account">In breve</h2>
                 <p class="checkout-muted">
                     Qui puoi aggiornare le credenziali di accesso in un unico passaggio. Username ed email vengono salvati subito dopo la conferma con la password attuale.
@@ -76,7 +76,7 @@
             </aside>
         </div>
 
-        <div class="checkout-shell'account-shell">
+        <div class="checkout-shell">
             <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-password-account">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                 <input type="hidden" name="action" value="update_password">
@@ -117,7 +117,7 @@
                 </div>
             </form>
 
-            <aside class="checkout-card account-side" aria-labelledby="titolo-note-sicurezza">
+            <aside class="checkout-card" aria-labelledby="titolo-note-sicurezza">
                 <h2 id="titolo-note-sicurezza">Suggerimenti</h2>
                 <ul class="riepilogo-lista">
                     <li><span>Password attuale</span><strong>Richiesta</strong></li>

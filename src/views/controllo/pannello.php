@@ -157,7 +157,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 
 <section class="account-page admin-page" aria-labelledby="titolo-admin">
     <div class="contenitore">
-        <div class="account-page-head admin-page-head">
+        <div>
             <h1 id="titolo-admin"><?php echo e((string) ($sectionMeta['title'] ?? 'Controllo')); ?></h1>
         </div>
 
@@ -683,7 +683,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <?php endif; ?>
                 </div>
 
-                <aside class="checkout-card account-side admin-action-side">
+                <aside class="checkout-card">
                     <div class="account-panel-head">
                         <span class="account-panel-kicker">Sintesi</span>
                         <h3>Stato stock</h3>
@@ -1204,7 +1204,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     </form>
                 <?php endif; ?>
 
-                <aside class="checkout-card account-side">
+                <aside class="checkout-card">
                     <div class="account-panel-head">
                         <span class="account-panel-kicker">Metodo</span>
                         <h3>Come funziona il riordino</h3>
@@ -1292,7 +1292,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 
                 <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details' || $teamMode === 'review'): ?>
                     <div class="checkout-shell">
-                        <div class="checkout-main">
+                        <div>
                             <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details'): ?>
                                 <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-manager-form">
                                     <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
@@ -1367,7 +1367,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                             <?php endif; ?>
                         </div>
 
-                        <aside class="checkout-card account-side" aria-labelledby="titolo-note-team">
+                        <aside class="checkout-card" aria-labelledby="titolo-note-team">
                             <h2 id="titolo-note-team">Suggerimenti</h2>
                             <ul class="riepilogo-lista">
                                 <li><span>Password</span><strong>8+ caratteri</strong></li>

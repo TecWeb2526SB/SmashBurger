@@ -29,7 +29,7 @@ $isReviewStep = $currentStep === 'riepilogo';
 
 <section class="account-page admin-page" aria-labelledby="titolo-catalogo-prodotto">
     <div class="contenitore">
-        <div class="account-page-head">
+        <div>
             <h1 id="titolo-catalogo-prodotto"><?php echo e($currentTitle); ?></h1>
             <div class="account-action-row">
                 <a class="bottone-secondario" href="controllo-catalogo">&larr; Torna al catalogo</a>
@@ -39,8 +39,8 @@ $isReviewStep = $currentStep === 'riepilogo';
 
         <?php echo ui_alert($flash); ?>
 
-        <div class="checkout-shell admin-product-shell">
-            <div class="checkout-card checkout-form checkout-main admin-product-main">
+        <div class="checkout-shell">
+            <div class="checkout-card checkout-form">
                 <?php if ($currentStep === 'dettagli'): ?>
                     <form method="POST" action="controllo-catalogo-prodotto<?php echo $existingProduct !== null ? '?id=' . (int) $existingProduct['id'] : ''; ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-step-dettagli">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
@@ -119,7 +119,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                         </div>
 
                         <div class="admin-product-media-grid">
-                            <div class="admin-product-preview-card">
+                            <div>
                                 <p class="account-panel-kicker">Anteprima card</p>
                                 <div class="admin-product-image-frame">
                                     <img
@@ -134,7 +134,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                                 </div>
                             </div>
 
-                            <div class="admin-product-media-controls">
+                            <div>
                                 <div class="campo-gruppo">
                                     <label for="product-image">Immagine prodotto</label>
                                     <input type="file" id="product-image" name="product_image" accept=".jpg,.jpeg,.png,.webp" data-image-upload-input="true">
@@ -157,8 +157,8 @@ $isReviewStep = $currentStep === 'riepilogo';
 
                     </form>
 
-                    <div class="checkout-navigation admin-product-step-actions">
-                        <form method="POST" action="controllo-catalogo-prodotto<?php echo $imageStepQuery !== '' ? '?' . $imageStepQuery : ''; ?>" class="admin-product-back-form">
+                    <div class="checkout-navigation">
+                        <form method="POST" action="controllo-catalogo-prodotto<?php echo $imageStepQuery !== '' ? '?' . $imageStepQuery : ''; ?>">
                             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                             <input type="hidden" name="action" value="go_to_details">
                             <button class="bottone-secondario" type="submit">&larr; Torna ai dati</button>
@@ -173,7 +173,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                     </div>
 
                     <div class="admin-product-review-grid">
-                        <article class="checkout-card admin-product-review-card">
+                        <article class="checkout-card">
                             <h3>Scheda prodotto</h3>
                             <ul class="riepilogo-lista">
                                 <li><span>Categoria</span><strong><?php echo e($categoryNameById[(int) ($draft['category_id'] ?? 0)] ?? 'Non definita'); ?></strong></li>
@@ -185,7 +185,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                             <p class="checkout-muted"><?php echo nl2br(e((string) ($draft['description'] ?? ''))); ?></p>
                         </article>
 
-                        <article class="checkout-card admin-product-review-card">
+                        <article class="checkout-card">
                             <h3>Anteprima visiva</h3>
                             <div class="admin-product-image-frame admin-product-image-frame--large">
                                 <?php if (!empty($draft['image_path'])): ?>
@@ -223,7 +223,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                 <?php endif; ?>
             </div>
 
-            <aside class="checkout-card account-side admin-product-side" aria-labelledby="titolo-side-catalogo-prodotto">
+            <aside class="checkout-card" aria-labelledby="titolo-side-catalogo-prodotto">
                 <h2 id="titolo-side-catalogo-prodotto"><?php echo $isReviewStep ? 'Prima di confermare' : 'Guida rapida'; ?></h2>
                 <ul class="riepilogo-lista">
                     <li><span>Catalogo</span><strong>Condiviso fra tutte le sedi</strong></li>

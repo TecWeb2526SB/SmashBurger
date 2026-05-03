@@ -41,10 +41,7 @@
     .branch-switcher,
     .bottone-primario,
     .mostra-password,
-    form button[type="submit"] {
-        display: none !important;
-    }
-
+    form button[type="submit"],
     [data-print-trigger="true"] {
         display: none !important;
     }
