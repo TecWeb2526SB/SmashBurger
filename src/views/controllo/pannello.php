@@ -411,7 +411,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
             </article>
 
             <?php if ($canModifyBranchOperations): ?>
-                <article class="checkout-card admin-panel-card admin-catalog-price-panel">
+                <article class="checkout-card admin-panel-card admin-catalog-toolbar">
                     <div class="admin-catalog-price-layout">
                         <div class="admin-catalog-price-main">
                             <div class="account-panel-head">
@@ -572,7 +572,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </ul>
 
                                     <?php if ($canModifyBranchOperations): ?>
-                                        <form method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" class="checkout-form admin-catalog-form">
+                                        <form method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" class="checkout-form">
                                             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                             <input type="hidden" name="action" value="branch_catalog_state">
                                             <input type="hidden" name="product_id" value="<?php echo (int) $inventoryItem['product_id']; ?>">

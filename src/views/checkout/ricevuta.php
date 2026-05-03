@@ -12,7 +12,7 @@
 
 <section class="account-page receipt-page" aria-labelledby="titolo-ricevuta">
     <div class="contenitore">
-        <div class="account-hero-card account-hero-card--compact">
+        <div class="account-hero-card">
             <div class="account-hero-copy">
                 <span class="home-eyebrow"><?php echo $receiptType === 'fornitura' ? 'Ricevuta fornitura' : 'Ricevuta ordine'; ?></span>
                 <h1 id="titolo-ricevuta">Ricevuta stampabile</h1>

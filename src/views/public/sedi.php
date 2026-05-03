@@ -19,8 +19,8 @@
             ingredienti selezionati e qualità costante in ogni sede.
         </p>
 
-        <div class="chi-siamo-grid">
-            <article class="chi-siamo-card">
+        <div class="feature-grid">
+            <article class="feature-card">
                 <h2>La nostra filosofia</h2>
                 <p>
                     Lavoriamo con processi chiari, ricette replicabili e attenzione al dettaglio.
@@ -28,7 +28,7 @@
                 </p>
             </article>
 
-            <article class="chi-siamo-card">
+            <article class="feature-card">
                 <h2>Qualità e trasparenza</h2>
                 <p>
                     Tracciamo disponibilità e menu in modo dinamico per sede: quello che vedi online
@@ -36,7 +36,7 @@
                 </p>
             </article>
 
-            <article class="chi-siamo-card">
+            <article class="feature-card">
                 <h2>Esperienza locale</h2>
                 <p>
                     Ogni sede è integrata nel proprio territorio con team dedicato e servizio uniforme.

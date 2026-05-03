@@ -50,18 +50,18 @@ $orderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000');
 <section id="servizi-standard" aria-labelledby="titolo-standard">
     <div class="contenitore">
         <h2 id="titolo-standard" class="home-section-title">Standard operativi</h2>
-        <div class="steps-grid">
-            <article class="step-card" aria-labelledby="standard-1">
+        <div class="feature-grid">
+            <article class="feature-card" aria-labelledby="standard-1">
                 <strong>Standard 1</strong>
                 <h3 id="standard-1">Un carrello per volta</h3>
                 <p>Ogni account mantiene un solo carrello attivo, sempre associato a una singola sede.</p>
             </article>
-            <article class="step-card" aria-labelledby="standard-2">
+            <article class="feature-card" aria-labelledby="standard-2">
                 <strong>Standard 2</strong>
                 <h3 id="standard-2">Prezzo congelato in carrello</h3>
                 <p>I prezzi dei prodotti vengono mantenuti nel carrello e riportati in ordine al momento della conferma.</p>
             </article>
-            <article class="step-card" aria-labelledby="standard-3">
+            <article class="feature-card" aria-labelledby="standard-3">
                 <strong>Standard 3</strong>
                 <h3 id="standard-3">Tracciamento stato ordine</h3>
                 <p>Gli stati passano da confermato a pronto/completato con storico sempre disponibile.</p>
