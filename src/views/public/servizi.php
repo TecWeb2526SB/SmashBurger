@@ -18,7 +18,7 @@
         </p>
         <?php if (!empty($selectedBranch)): ?>
             <p>
-                Sede attiva: <strong><?php echo htmlspecialchars($selectedBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong>.
+                Sede attiva: <strong><?php echo e($selectedBranch['name']); ?></strong>.
             </p>
         <?php endif; ?>
     </div>
@@ -73,31 +73,31 @@
         <div class="sede-dettaglio-card">
             <p>
                 Email brand:
-                <a href="mailto:<?php echo htmlspecialchars($brandContacts['support_email'] ?? 'info@smashburger.it', ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($brandContacts['support_email'] ?? 'info@smashburger.it', ENT_QUOTES, 'UTF-8'); ?>
+                <a href="mailto:<?php echo e($brandContacts['support_email'] ?? 'info@smashburger.it'); ?>">
+                    <?php echo e($brandContacts['support_email'] ?? 'info@smashburger.it'); ?>
                 </a>
             </p>
             <p>
                 Numero informazioni:
-                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['info_phone'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($brandContacts['info_phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['info_phone'] ?? ''))); ?>">
+                    <?php echo e($brandContacts['info_phone'] ?? ''); ?>
                 </a>
             </p>
             <p>
                 Numero ordini:
-                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['order_phone'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>">
-                    <?php echo htmlspecialchars($brandContacts['order_phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['order_phone'] ?? ''))); ?>">
+                    <?php echo e($brandContacts['order_phone'] ?? ''); ?>
                 </a>
             </p>
             <?php if (!empty($selectedBranch)): ?>
                 <p>
                     Contatto sede attiva:
-                    <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) $selectedBranch['phone']), ENT_QUOTES, 'UTF-8'); ?>">
-                        <?php echo htmlspecialchars((string) $selectedBranch['phone'], ENT_QUOTES, 'UTF-8'); ?>
+                    <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) $selectedBranch['phone'])); ?>">
+                        <?php echo e((string) $selectedBranch['phone']); ?>
                     </a>
                     -
-                    <a href="mailto:<?php echo htmlspecialchars((string) $selectedBranch['email'], ENT_QUOTES, 'UTF-8'); ?>">
-                        <?php echo htmlspecialchars((string) $selectedBranch['email'], ENT_QUOTES, 'UTF-8'); ?>
+                    <a href="mailto:<?php echo e((string) $selectedBranch['email']); ?>">
+                        <?php echo e((string) $selectedBranch['email']); ?>
                     </a>
                 </p>
             <?php endif; ?>

@@ -16,26 +16,17 @@
         <h1 id="titolo-checkout">Checkout</h1>
         <p class="checkout-intro">Verifica ordine e sede prima di passare al metodo di ritiro.</p>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($flash['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (!empty($errori['generale'])): ?>
-            <div role="alert" class="errore-sommario">
-                <p><?php echo htmlspecialchars($errori['generale'], ENT_QUOTES, 'UTF-8'); ?></p>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
+        <?php echo ui_error_summary($errori); ?>
 
         <form class="checkout-card checkout-form checkout-main" method="POST" action="checkout" aria-label="Conferma ordine">
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
             <h2>Conferma ordine</h2>
             <?php if (!empty($selectedBranch)): ?>
                 <p>
-                    Sede selezionata: <strong><?php echo htmlspecialchars($selectedBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong><br>
-                    <?php echo htmlspecialchars($selectedBranch['address_line'], ENT_QUOTES, 'UTF-8'); ?> -
-                    <?php echo htmlspecialchars($selectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
+                    Sede selezionata: <strong><?php echo e($selectedBranch['name']); ?></strong><br>
+                    <?php echo e($selectedBranch['address_line']); ?> -
+                    <?php echo e($selectedBranch['city']); ?>
                 </p>
             <?php endif; ?>
             <p>Controlla il riepilogo e poi continua con il metodo di ritiro.</p>
@@ -45,7 +36,7 @@
                 <ul class="riepilogo-lista">
                     <?php foreach ($carrello['items'] as $item): ?>
                         <li>
-                            <span><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity']; ?></span>
+                            <span><?php echo e($item['product_name']); ?> x<?php echo (int) $item['quantity']; ?></span>
                             <strong><?php echo money_eur((int) $item['line_total_cents']); ?></strong>
                         </li>
                     <?php endforeach; ?>

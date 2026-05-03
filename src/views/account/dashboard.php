@@ -24,9 +24,9 @@ $ultimoOrdine = $orders[0] ?? null;
                 <h1 id="titolo-area-personale">Area personale</h1>
                 <p class="account-hero-text">
                     <?php if (!empty($showCustomerOrders)): ?>
-                        Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout piu pulito e immediato.
+                        Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout più pulito e immediato.
                     <?php else: ?>
-                        Aggiorna le credenziali e accedi rapidamente agli strumenti interni senza mischiare l area operativa con lo storico ordini cliente.
+                        Aggiorna le credenziali e accedi rapidamente agli strumenti interni senza mischiare l'area operativa con lo storico ordini cliente.
                     <?php endif; ?>
                 </p>
                 <div class="account-action-row">
@@ -43,14 +43,14 @@ $ultimoOrdine = $orders[0] ?? null;
             <aside class="account-summary-box" aria-labelledby="titolo-riepilogo-personale">
                 <h2 id="titolo-riepilogo-personale">In breve</h2>
                 <ul class="account-summary-list">
-                    <li><span>Username</span><strong><?php echo htmlspecialchars($utente['username'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li><span>Email</span><strong><?php echo htmlspecialchars((string) $utente['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li><span><?php echo !empty($showCustomerOrders) ? 'Ordini totali' : 'Ruolo'; ?></span><strong><?php echo !empty($showCustomerOrders) ? (int) $numeroOrdini : htmlspecialchars(role_label((string) $utente['role']), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                    <li><span>Username</span><strong><?php echo e($utente['username']); ?></strong></li>
+                    <li><span>Email</span><strong><?php echo e((string) $utente['email']); ?></strong></li>
+                    <li><span><?php echo !empty($showCustomerOrders) ? 'Ordini totali' : 'Ruolo'; ?></span><strong><?php echo !empty($showCustomerOrders) ? (int) $numeroOrdini : e(role_label((string) $utente['role'])); ?></strong></li>
                     <li>
                         <span><?php echo !empty($showCustomerOrders) && $ultimoOrdine !== null ? 'Ultimo ordine' : 'Prossimo passo'; ?></span>
                         <strong>
                             <?php if (!empty($showCustomerOrders) && $ultimoOrdine !== null): ?>
-                                <?php echo htmlspecialchars((string) $ultimoOrdine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
+                                <?php echo e((string) $ultimoOrdine['order_number']); ?>
                             <?php elseif (!empty($canAccessAdminPanel)): ?>
                                 Apri il controllo
                             <?php else: ?>
@@ -62,11 +62,7 @@ $ultimoOrdine = $orders[0] ?? null;
             </aside>
         </div>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($flash['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
 
         <?php if (!empty($showCustomerOrders)): ?>
             <div class="account-section-head">
@@ -98,31 +94,31 @@ $ultimoOrdine = $orders[0] ?? null;
                             <div>
                                 <p class="ordine-card-eyebrow">Ordine</p>
                                 <h3 id="ordine-<?php echo (int) $ordine['id']; ?>">
-                                    <?php echo htmlspecialchars($ordine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php echo e($ordine['order_number']); ?>
                                 </h3>
                             </div>
                             <strong class="ordine-card-total"><?php echo money_eur((int) $ordine['total_cents']); ?></strong>
                         </div>
 
                         <ul class="ordine-pill-list" aria-label="Stato ordine">
-                            <li>Stato: <strong><?php echo htmlspecialchars($ordine['order_status'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                            <li>Pagamento: <strong><?php echo htmlspecialchars($ordine['payment_status'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                            <li>Metodo: <strong><?php echo htmlspecialchars($ordine['payment_method'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                            <li>Stato: <strong><?php echo e($ordine['order_status']); ?></strong></li>
+                            <li>Pagamento: <strong><?php echo e($ordine['payment_status']); ?></strong></li>
+                            <li>Metodo: <strong><?php echo e($ordine['payment_method']); ?></strong></li>
                         </ul>
 
                         <dl class="ordine-card-meta">
                             <div>
                                 <dt>Ritiro</dt>
-                                <dd><?php echo htmlspecialchars($ordine['fulfillment_type'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                                <dd><?php echo e($ordine['fulfillment_type']); ?></dd>
                             </div>
                             <div>
                                 <dt>Sede</dt>
-                                <dd><?php echo htmlspecialchars($ordine['branch_name_snapshot'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                                <dd><?php echo e($ordine['branch_name_snapshot']); ?></dd>
                             </div>
                             <div>
                                 <dt>Ritiro previsto</dt>
                                 <dd>
-                                    <?php echo !empty($ordine['pickup_at']) ? htmlspecialchars((string) $ordine['pickup_at'], ENT_QUOTES, 'UTF-8') : 'Da definire'; ?>
+                                    <?php echo !empty($ordine['pickup_at']) ? e((string) $ordine['pickup_at']) : 'Da definire'; ?>
                                 </dd>
                             </div>
                         </dl>
@@ -133,7 +129,7 @@ $ultimoOrdine = $orders[0] ?? null;
                                 <ul class="riepilogo-lista">
                                     <?php foreach ($ordine['items'] as $item): ?>
                                         <li>
-                                            <span><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity']; ?></span>
+                                            <span><?php echo e($item['product_name']); ?> x<?php echo (int) $item['quantity']; ?></span>
                                             <strong><?php echo money_eur((int) $item['line_total_cents']); ?></strong>
                                         </li>
                                     <?php endforeach; ?>

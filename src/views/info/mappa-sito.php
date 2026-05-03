@@ -1,6 +1,10 @@
 <?php
 /**
  * mappa-sito: View della mappa del sito.
+ *
+ * Variabili attese dal controller:
+ *   $siteMapItems array   Mappa dei link del sito
+ *   $currentPage  string  Pagina corrente
  */
 ?>
 
@@ -10,11 +14,11 @@
         <ul>
             <?php foreach (($siteMapItems ?? []) as $label => $href): ?>
                 <?php if (($currentPage ?? '') === $href): ?>
-                    <li aria-current="page"><?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?></li>
+                    <li aria-current="page"><?php echo e($label); ?></li>
                 <?php else: ?>
                     <li>
-                        <a href="<?php echo htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
-                            <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
+                        <a href="<?php echo e($href); ?>">
+                            <?php echo e($label); ?>
                         </a>
                     </li>
                 <?php endif; ?>

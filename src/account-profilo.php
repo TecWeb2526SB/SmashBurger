@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($erroriIdentita) && auth_email_exists($pdo, $formIdentita['email'], (int) $utente['id'])) {
-            $erroriIdentita['email'] = 'Email già in uso. Usane un altra.';
+            $erroriIdentita['email'] = 'Email già in uso. Usane un\'altra.';
         }
 
         if (empty($erroriIdentita)) {
@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (mb_strlen($formPassword['new_password']) < 8) {
             $erroriPassword['new_password'] = 'La nuova password deve contenere almeno 8 caratteri.';
         } elseif (!auth_is_valid_password($formPassword['new_password'])) {
-            $erroriPassword['new_password'] = 'La nuova password puo contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
+            $erroriPassword['new_password'] = 'La nuova password può contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
         } elseif (hash_equals($formPassword['current_password'], $formPassword['new_password'])) {
             $erroriPassword['new_password'] = 'La nuova password deve essere diversa da quella attuale.';
         }
@@ -148,6 +148,16 @@ $pageDescription = 'Aggiorna username, email e password del tuo account Smash Bu
 $currentPage = 'account-profilo';
 $breadcrumb = [['Home', './'], ['Area personale', 'account'], ['Gestisci account', null]];
 
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/account/profilo.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('account/profilo.php', [
+    'pageTitle' => $pageTitle,
+    'pageDescription' => $pageDescription,
+    'currentPage' => $currentPage,
+    'breadcrumb' => $breadcrumb,
+    'utente' => $utente,
+    'flash' => $flash,
+    'csrfToken' => $csrfToken,
+    'formIdentita' => $formIdentita,
+    'formPassword' => $formPassword,
+    'erroriIdentita' => $erroriIdentita,
+    'erroriPassword' => $erroriPassword
+]);

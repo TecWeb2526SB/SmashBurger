@@ -18,24 +18,15 @@
         <h1 id="titolo-checkout-ritiro">Metodo di ritiro</h1>
         <p class="checkout-intro">Scegli se ritirare subito o prenotare un orario per oggi.</p>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($flash['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (!empty($errori['generale'])): ?>
-            <div role="alert" class="errore-sommario">
-                <p><?php echo htmlspecialchars($errori['generale'], ENT_QUOTES, 'UTF-8'); ?></p>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
+        <?php echo ui_error_summary($errori); ?>
 
         <form class="checkout-card checkout-form checkout-main" method="POST" action="checkout-ritiro" data-valida novalidate>
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
 
             <?php if (!empty($selectedBranch)): ?>
                 <p class="checkout-muted">
-                    Sede ordine: <strong><?php echo htmlspecialchars($selectedBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                    Sede ordine: <strong><?php echo e($selectedBranch['name']); ?></strong>
                 </p>
             <?php endif; ?>
 
@@ -64,21 +55,21 @@
                     aria-describedby="pickup_at-help pickup_at-errore"
                     <?php echo isset($errori['pickup_at']) ? 'aria-invalid="true"' : ''; ?>>
                     <?php foreach ($todaySlots as $slot): ?>
-                        <option value="<?php echo htmlspecialchars($slot['time'], ENT_QUOTES, 'UTF-8'); ?>"
+                        <option value="<?php echo e($slot['time']); ?>"
                             <?php echo ($form['pickup_time'] === $slot['time']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($slot['display'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?php echo e($slot['display']); ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
                 <span id="pickup_at-help" class="campo-suggerimento">
                     <?php if (!empty($todaySlots)): ?>
-                        Primo orario utile: <?php echo htmlspecialchars($todaySlots[0]['display'], ENT_QUOTES, 'UTF-8'); ?>.
+                        Primo orario utile: <?php echo e($todaySlots[0]['display']); ?>.
                     <?php else: ?>
                         Oggi non ci sono slot disponibili per il ritiro programmato.
                     <?php endif; ?>
                 </span>
                 <span id="pickup_at-errore" class="campo-errore" <?php echo empty($errori['pickup_at']) ? 'hidden' : ''; ?>>
-                    <?php echo htmlspecialchars($errori['pickup_at'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                    <?php echo e($errori['pickup_at'] ?? ''); ?>
                 </span>
             </div>
 

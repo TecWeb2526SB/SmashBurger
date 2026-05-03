@@ -40,7 +40,7 @@ $siteMapItems = [
     'Accedi'                 => 'accedi',
     'Registrazione'          => 'registrati',
     'Privacy Policy'         => 'privacy',
-    'Accessibilita'          => 'accessibilita',
+    'Accessibilità'          => 'accessibilità',
     'Mappa del sito'         => 'mappa-sito',
 ];
 

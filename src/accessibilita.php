@@ -1,12 +1,8 @@
 <?php
 require_once __DIR__ . '/includes/resources.php';
-$brandContacts = brand_contact_get($pdo);
-$accessibilityUpdatedAt = '1 aprile 2026';
 
-$pageTitle       = 'Accessibilità - Smash Burger Original';
-$pageDescription = 'Dichiarazione di accessibilità, stato di conformità e canali di feedback di Smash Burger Original.';
-$currentPage     = 'accessibilita';
-$breadcrumb      = [['Home', './'], ['Accessibilità', null]];
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/info/accessibilita.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('info/accessibilità.php', [
+    'pageTitle' => 'Dichiarazione di Accessibilità - Smash Burger Original',
+    'currentPage' => 'accessibilità',
+    'breadcrumb' => [['Home', './'], ['Accessibilità', null]]
+]);

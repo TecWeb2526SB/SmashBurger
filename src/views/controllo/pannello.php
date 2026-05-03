@@ -158,18 +158,14 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 <section class="account-page admin-page" aria-labelledby="titolo-admin">
     <div class="contenitore">
         <div class="account-page-head admin-page-head">
-            <h1 id="titolo-admin"><?php echo htmlspecialchars((string) ($sectionMeta['title'] ?? 'Controllo'), ENT_QUOTES, 'UTF-8'); ?></h1>
+            <h1 id="titolo-admin"><?php echo e((string) ($sectionMeta['title'] ?? 'Controllo')); ?></h1>
         </div>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($flash['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
 
         <?php foreach ($backgroundMessages as $message): ?>
             <div class="alert success">
-                <?php echo htmlspecialchars((string) $message, ENT_QUOTES, 'UTF-8'); ?>
+                <?php echo e((string) $message); ?>
             </div>
         <?php endforeach; ?>
 
@@ -177,8 +173,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
             <ul>
                 <?php foreach ($sectionLinks as $sectionLink): ?>
                     <li>
-                        <a class="<?php echo !empty($sectionLink['is_active']) ? 'is-active' : ''; ?>" href="<?php echo htmlspecialchars((string) $sectionLink['href'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <?php echo htmlspecialchars((string) $sectionLink['label'], ENT_QUOTES, 'UTF-8'); ?>
+                        <a class="<?php echo !empty($sectionLink['is_active']) ? 'is-active' : ''; ?>" href="<?php echo e((string) $sectionLink['href']); ?>">
+                            <?php echo e((string) $sectionLink['label']); ?>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -239,10 +235,10 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                             <article class="admin-branch-card<?php echo $isComparisonSelected ? ' is-selected' : ''; ?>">
                                 <a
                                     class="admin-branch-card-link"
-                                    href="<?php echo htmlspecialchars($comparisonHref, ENT_QUOTES, 'UTF-8'); ?>"
+                                    href="<?php echo e($comparisonHref); ?>"
                                     <?php echo $isComparisonSelected ? 'aria-current="true"' : ''; ?>>
                                     <div class="admin-branch-card-head">
-                                        <h4><?php echo htmlspecialchars((string) $comparisonBranch['name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                        <h4><?php echo e((string) $comparisonBranch['name']); ?></h4>
                                         <span class="admin-branch-card-cta"><?php echo $isComparisonSelected ? 'In focus' : 'Apri dashboard'; ?></span>
                                     </div>
                                     <dl class="admin-mini-stats">
@@ -287,7 +283,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <li>
                                     <div class="admin-bar-label">
                                         <span class="admin-trend-day">Data</span>
-                                        <strong><?php echo htmlspecialchars((string) $trendItem['label'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        <strong><?php echo e((string) $trendItem['label']); ?></strong>
                                     </div>
                                     <strong class="admin-bar-value"><?php echo money_eur((int) $trendItem['revenue_cents']); ?></strong>
                                     <div class="admin-bar-track" aria-hidden="true">
@@ -319,7 +315,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 ?>
                                 <li>
                                     <div class="admin-bar-label admin-bar-label--stack">
-                                        <strong><?php echo htmlspecialchars((string) $topProduct['product_name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        <strong><?php echo e((string) $topProduct['product_name']); ?></strong>
                                         <span><?php echo money_eur((int) $topProduct['gross_margin_cents']); ?> margine</span>
                                     </div>
                                     <div class="admin-bar-track" aria-hidden="true">
@@ -351,7 +347,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 ?>
                                 <li>
                                     <div class="admin-bar-label">
-                                        <strong><?php echo htmlspecialchars((string) $categoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        <strong><?php echo e((string) $categoryItem['category_name']); ?></strong>
                                         <span><?php echo (float) $categoryItem['revenue_share']; ?>%</span>
                                     </div>
                                     <div class="admin-bar-track" aria-hidden="true">
@@ -375,7 +371,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                 <div class="admin-catalog-toolbar-head">
                     <div>
                         <span class="account-panel-kicker">Filtro categoria</span>
-                        <h3><?php echo htmlspecialchars((string) $catalogSelectedCategoryLabel, ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <h3><?php echo e((string) $catalogSelectedCategoryLabel); ?></h3>
                         <p class="checkout-muted">Riduci il rumore visivo e confronta globale e sede sulla stessa categoria senza perdere dettaglio operativo.</p>
                     </div>
                     <div class="admin-catalog-summary" aria-label="Riepilogo catalogo filtrato">
@@ -403,8 +399,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <li>
                                     <a
                                         class="<?php echo !empty($categoryLink['is_active']) ? 'is-active' : ''; ?>"
-                                        href="<?php echo htmlspecialchars((string) $categoryLink['href'], ENT_QUOTES, 'UTF-8'); ?>">
-                                        <span><?php echo htmlspecialchars((string) $categoryLink['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        href="<?php echo e((string) $categoryLink['href']); ?>">
+                                        <span><?php echo e((string) $categoryLink['label']); ?></span>
                                         <strong><?php echo (int) ($categoryLink['count'] ?? 0); ?></strong>
                                     </a>
                                 </li>
@@ -424,8 +420,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <p class="checkout-muted">Imposta il prezzo locale mostrato al cliente per la referenza selezionata.</p>
                             </div>
 
-                            <form class="checkout-form admin-inventory-price-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate>
-                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                            <form class="checkout-form admin-inventory-price-form" method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" data-valida novalidate>
+                                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                 <input type="hidden" name="action" value="update_branch_pricing">
 
                                 <div class="admin-catalog-price-form-grid">
@@ -435,7 +431,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                             <option value="">Seleziona un prodotto</option>
                                             <?php foreach ($inventoryItems as $inventoryItem): ?>
                                                 <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
-                                                    <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                    <?php echo e((string) $inventoryItem['product_name']); ?>
                                                     (attuale <?php echo money_eur((int) $inventoryItem['sale_price_cents']); ?>)
                                                 </option>
                                             <?php endforeach; ?>
@@ -483,8 +479,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     <article class="admin-detail-card admin-catalog-card">
                                         <div class="admin-catalog-card-head">
                                             <div>
-                                                <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $product['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                                <h4><?php echo htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                                <p class="ordine-card-eyebrow"><?php echo e((string) $product['category_name']); ?></p>
+                                                <h4><?php echo e((string) $product['name']); ?></h4>
                                             </div>
                                             <div class="admin-catalog-card-price">
                                                 <strong class="ordine-card-total"><?php echo money_eur((int) $product['price_cents']); ?></strong>
@@ -494,13 +490,13 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                             </div>
                                         </div>
 
-                                        <p class="checkout-muted admin-catalog-description"><?php echo htmlspecialchars((string) $product['description'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                        <p class="checkout-muted admin-catalog-description"><?php echo e((string) $product['description']); ?></p>
 
                                         <ul class="admin-tag-list admin-tag-list--compact">
-                                            <li>Slug: <?php echo htmlspecialchars((string) $product['slug'], ENT_QUOTES, 'UTF-8'); ?></li>
+                                            <li>Slug: <?php echo e((string) $product['slug']); ?></li>
                                             <li>Filiali attive: <?php echo (int) $product['listed_branches_count']; ?></li>
                                             <li>Filiali configurate: <?php echo (int) $product['configured_branches_count']; ?></li>
-                                            <li>Allergeni: <?php echo htmlspecialchars((string) ($product['allergens'] !== '' ? $product['allergens'] : 'Nessuno dichiarato'), ENT_QUOTES, 'UTF-8'); ?></li>
+                                            <li>Allergeni: <?php echo e((string) ($product['allergens'] !== '' ? $product['allergens'] : 'Nessuno dichiarato')); ?></li>
                                         </ul>
 
                                         <div class="admin-inline-actions admin-inline-actions--split">
@@ -514,8 +510,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                                 </svg>
                                                 <span class="sr-only">Modifica prodotto</span>
                                             </a>
-                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="delete_product">
                                                 <input type="hidden" name="product_id" value="<?php echo (int) $product['id']; ?>">
                                                 <button class="bottone-secondario admin-icon-button" type="submit" aria-label="Elimina prodotto">
@@ -536,7 +532,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                 <article class="checkout-card admin-panel-card">
                     <div class="account-panel-head">
                         <span class="account-panel-kicker">Catalogo sede</span>
-                        <h3>Presenza prodotto in <?php echo htmlspecialchars((string) $selectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <h3>Presenza prodotto in <?php echo e((string) $selectedBranch['city']); ?></h3>
                         <p class="checkout-muted">Qui gestisci solo come il prodotto si presenta al cliente nella filiale: presenza nel menu e possibilità di ordinazione.</p>
                     </div>
 
@@ -563,21 +559,21 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <article class="admin-detail-card admin-catalog-card admin-catalog-card--branch">
                                     <div class="admin-catalog-card-head">
                                         <div>
-                                            <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <h4><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            <p class="ordine-card-eyebrow"><?php echo e((string) $inventoryItem['category_name']); ?></p>
+                                            <h4><?php echo e((string) $inventoryItem['product_name']); ?></h4>
                                             <p class="checkout-muted admin-catalog-description">
-                                                <?php echo htmlspecialchars((string) (($inventoryItem['description'] ?? '') !== '' ? $inventoryItem['description'] : 'Scheda cliente senza descrizione estesa.'), ENT_QUOTES, 'UTF-8'); ?>
+                                                <?php echo e((string) (($inventoryItem['description'] ?? '') !== '' ? $inventoryItem['description'] : 'Scheda cliente senza descrizione estesa.')); ?>
                                             </p>
                                         </div>
                                     </div>
 
                                     <ul class="admin-tag-list admin-tag-list--compact admin-tag-list--catalog-meta">
-                                        <li>Allergeni: <?php echo htmlspecialchars((string) ($inventoryItem['allergens'] !== '' ? $inventoryItem['allergens'] : 'Nessuno dichiarato'), ENT_QUOTES, 'UTF-8'); ?></li>
+                                        <li>Allergeni: <?php echo e((string) ($inventoryItem['allergens'] !== '' ? $inventoryItem['allergens'] : 'Nessuno dichiarato')); ?></li>
                                     </ul>
 
                                     <?php if ($canModifyBranchOperations): ?>
-                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo'), ENT_QUOTES, 'UTF-8'); ?>" class="checkout-form admin-catalog-form">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <form method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" class="checkout-form admin-catalog-form">
+                                            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                             <input type="hidden" name="action" value="branch_catalog_state">
                                             <input type="hidden" name="product_id" value="<?php echo (int) $inventoryItem['product_id']; ?>">
 
@@ -657,12 +653,12 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <?php foreach ($inventoryAdjustmentModes as $modeKey => $modeItem): ?>
                                     <article class="admin-adjustment-launch-card">
                                         <div class="admin-adjustment-launch-copy">
-                                            <span class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) ($modeItem['label'] ?? 'Modalita'), ENT_QUOTES, 'UTF-8'); ?></span>
-                                            <h4><?php echo htmlspecialchars((string) ($modeItem['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h4>
-                                            <p class="checkout-muted"><?php echo htmlspecialchars((string) ($modeItem['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                                            <span class="ordine-card-eyebrow"><?php echo e((string) ($modeItem['label'] ?? 'Modalita')); ?></span>
+                                            <h4><?php echo e((string) ($modeItem['title'] ?? '')); ?></h4>
+                                            <p class="checkout-muted"><?php echo e((string) ($modeItem['description'] ?? '')); ?></p>
                                         </div>
                                         <div class="admin-adjustment-launch-actions">
-                                            <a class="bottone-primario" href="<?php echo htmlspecialchars(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, (string) $modeKey), ENT_QUOTES, 'UTF-8'); ?>">
+                                            <a class="bottone-primario" href="<?php echo e(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, (string) $modeKey)); ?>">
                                                 Apri flusso
                                             </a>
                                         </div>
@@ -744,8 +740,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     <tr>
                                         <th scope="row">
                                             <div class="admin-table-primary">
-                                                <strong><?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                                                <span><?php echo htmlspecialchars((string) $inventoryItem['category_name'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <strong><?php echo e((string) $inventoryItem['product_name']); ?></strong>
+                                                <span><?php echo e((string) $inventoryItem['category_name']); ?></span>
                                             </div>
                                         </th>
                                         <td><?php echo (int) $inventoryItem['on_hand_qty']; ?></td>
@@ -770,7 +766,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         <?php if ($canModifyBranchOperations): ?>
                                             <td>
                                                 <div class="admin-table-actions">
-                                                    <a class="bottone-secondario" href="<?php echo htmlspecialchars(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, 'conteggio', (int) $inventoryItem['product_id']), ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <a class="bottone-secondario" href="<?php echo e(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, 'conteggio', (int) $inventoryItem['product_id'])); ?>">
                                                         Rettifica
                                                     </a>
                                                 </div>
@@ -855,7 +851,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 </ul>
 
                                 <div class="checkout-navigation checkout-navigation--solo-azione admin-builder-card-cta">
-                                    <a class="bottone-primario" href="<?php echo htmlspecialchars($standardSupplyBuilderUrl, ENT_QUOTES, 'UTF-8'); ?>">Apri builder routine</a>
+                                    <a class="bottone-primario" href="<?php echo e($standardSupplyBuilderUrl); ?>">Apri builder routine</a>
                                 </div>
                             </div>
                         </article>
@@ -887,7 +883,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 </ul>
 
                                 <div class="checkout-navigation checkout-navigation--solo-azione admin-builder-card-cta">
-                                    <a class="bottone-primario" href="<?php echo htmlspecialchars($extraSupplyBuilderUrl, ENT_QUOTES, 'UTF-8'); ?>">Apri builder urgente</a>
+                                    <a class="bottone-primario" href="<?php echo e($extraSupplyBuilderUrl); ?>">Apri builder urgente</a>
                                 </div>
                             </div>
                         </article>
@@ -919,7 +915,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 </ul>
 
                                 <div class="checkout-navigation checkout-navigation--solo-azione admin-builder-card-cta">
-                                    <a class="bottone-primario" href="<?php echo htmlspecialchars($automaticSupplyBuilderUrl, ENT_QUOTES, 'UTF-8'); ?>">Apri builder automazione</a>
+                                    <a class="bottone-primario" href="<?php echo e($automaticSupplyBuilderUrl); ?>">Apri builder automazione</a>
                                 </div>
                             </div>
                         </article>
@@ -962,8 +958,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <article class="admin-detail-card">
                                     <div class="ordine-card-head">
                                         <div>
-                                            <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) ($frequencyLabels[(string) $template['frequency']] ?? $template['frequency']), ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <h4><?php echo htmlspecialchars((string) $template['template_name'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            <p class="ordine-card-eyebrow"><?php echo e((string) ($frequencyLabels[(string) $template['frequency']] ?? $template['frequency'])); ?></p>
+                                            <h4><?php echo e((string) $template['template_name']); ?></h4>
                                         </div>
                                         <span class="admin-status-pill <?php echo (int) $template['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
                                             <?php echo (int) $template['is_active'] === 1 ? 'Attivo' : 'Sospeso'; ?>
@@ -971,25 +967,25 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </div>
 
                                     <ul class="riepilogo-lista">
-                                        <li><span>Prossima esecuzione</span><strong><?php echo htmlspecialchars(format_datetime_for_ui((string) $template['next_run_at']), ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Ultima generazione</span><strong><?php echo htmlspecialchars(format_datetime_for_ui((string) $template['last_generated_at'], 'Mai generata'), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Prossima esecuzione</span><strong><?php echo e(format_datetime_for_ui((string) $template['next_run_at'])); ?></strong></li>
+                                        <li><span>Ultima generazione</span><strong><?php echo e(format_datetime_for_ui((string) $template['last_generated_at'], 'Mai generata')); ?></strong></li>
                                     </ul>
 
                                     <?php if (!empty($template['items'])): ?>
                                         <ul class="admin-tag-list" aria-label="Prodotti template">
                                             <?php foreach ($template['items'] as $item): ?>
-                                                <li><?php echo htmlspecialchars((string) $item['product_name'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity']; ?></li>
+                                                <li><?php echo e((string) $item['product_name']); ?> x<?php echo (int) $item['quantity']; ?></li>
                                             <?php endforeach; ?>
                                         </ul>
                                     <?php endif; ?>
 
                                     <?php if (!empty($template['notes'])): ?>
-                                        <p class="checkout-muted"><?php echo htmlspecialchars((string) $template['notes'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                        <p class="checkout-muted"><?php echo e((string) $template['notes']); ?></p>
                                     <?php endif; ?>
 
                                     <?php if ($canModifyBranchOperations): ?>
-                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                        <form method="POST" action="<?php echo e((string) ($sectionUrls['forniture'] ?? 'controllo-forniture')); ?>" class="admin-inline-form">
+                                            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                             <input type="hidden" name="action" value="toggle_template">
                                             <input type="hidden" name="template_id" value="<?php echo (int) $template['id']; ?>">
                                             <input type="hidden" name="is_active" value="<?php echo (int) $template['is_active'] === 1 ? '0' : '1'; ?>">
@@ -1039,20 +1035,20 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <tbody>
                                     <?php foreach ($policies as $policy): ?>
                                         <tr>
-                                            <th scope="row"><?php echo htmlspecialchars((string) $policy['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
+                                            <th scope="row"><?php echo e((string) $policy['product_name']); ?></th>
                                             <td><?php echo (int) $policy['on_hand_qty']; ?></td>
                                             <td><?php echo (int) $policy['threshold_qty']; ?></td>
                                             <td><?php echo (int) $policy['reorder_qty']; ?></td>
                                             <td><?php echo (int) $policy['cooldown_hours']; ?>h</td>
-                                            <td><?php echo htmlspecialchars((string) $policy['mode'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo e((string) $policy['mode']); ?></td>
                                             <td>
                                                 <div class="admin-inline-actions">
                                                     <span class="admin-status-pill <?php echo (int) $policy['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
                                                         <?php echo (int) $policy['is_active'] === 1 ? 'Attiva' : 'Sospesa'; ?>
                                                     </span>
                                                     <?php if ($canModifyBranchOperations): ?>
-                                                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                        <form method="POST" action="<?php echo e((string) ($sectionUrls['forniture'] ?? 'controllo-forniture')); ?>" class="admin-inline-form">
+                                                            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                             <input type="hidden" name="action" value="toggle_policy">
                                                             <input type="hidden" name="policy_id" value="<?php echo (int) $policy['id']; ?>">
                                                             <input type="hidden" name="is_active" value="<?php echo (int) $policy['is_active'] === 1 ? '0' : '1'; ?>">
@@ -1094,24 +1090,24 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <article class="admin-detail-card">
                                     <div class="ordine-card-head">
                                         <div>
-                                            <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) $supplyOrder['order_type'], ENT_QUOTES, 'UTF-8'); ?></p>
-                                            <h4><?php echo htmlspecialchars((string) $supplyOrder['order_code'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            <p class="ordine-card-eyebrow"><?php echo e((string) $supplyOrder['order_type']); ?></p>
+                                            <h4><?php echo e((string) $supplyOrder['order_code']); ?></h4>
                                         </div>
                                         <span class="admin-status-pill <?php echo (string) $supplyOrder['status'] === 'received' ? 'is-success' : ((string) $supplyOrder['status'] === 'cancelled' ? 'is-muted' : 'is-warning'); ?>">
-                                            <?php echo htmlspecialchars((string) $supplyOrder['status'], ENT_QUOTES, 'UTF-8'); ?>
+                                            <?php echo e((string) $supplyOrder['status']); ?>
                                         </span>
                                     </div>
 
                                     <ul class="riepilogo-lista">
-                                        <li><span>Fornitore</span><strong><?php echo htmlspecialchars((string) $supplyOrder['supplier_name'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Fornitore</span><strong><?php echo e((string) $supplyOrder['supplier_name']); ?></strong></li>
                                         <li><span>Totale previsto</span><strong><?php echo money_eur((int) $supplyOrder['total_cents']); ?></strong></li>
-                                        <li><span>Consegna prevista</span><strong><?php echo htmlspecialchars(format_datetime_for_ui((string) $supplyOrder['scheduled_for']), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Consegna prevista</span><strong><?php echo e(format_datetime_for_ui((string) $supplyOrder['scheduled_for'])); ?></strong></li>
                                     </ul>
 
                                     <?php if (!empty($supplyOrder['items'])): ?>
                                         <ul class="admin-tag-list" aria-label="Prodotti della fornitura">
                                             <?php foreach ($supplyOrder['items'] as $item): ?>
-                                                <li><?php echo htmlspecialchars((string) $item['product_name_snapshot'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity_ordered']; ?></li>
+                                                <li><?php echo e((string) $item['product_name_snapshot']); ?> x<?php echo (int) $item['quantity_ordered']; ?></li>
                                             <?php endforeach; ?>
                                         </ul>
                                     <?php endif; ?>
@@ -1122,14 +1118,14 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         <?php endif; ?>
 
                                         <?php if ($canModifyBranchOperations && in_array((string) $supplyOrder['status'], ['draft', 'scheduled', 'ordered'], true)): ?>
-                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['forniture'] ?? 'controllo-forniture')); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="receive_supply">
                                                 <input type="hidden" name="supply_order_id" value="<?php echo (int) $supplyOrder['id']; ?>">
                                                 <button class="bottone-primario" type="submit">Conferma ricezione</button>
                                             </form>
-                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['forniture'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['forniture'] ?? 'controllo-forniture')); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="cancel_supply">
                                                 <input type="hidden" name="supply_order_id" value="<?php echo (int) $supplyOrder['id']; ?>">
                                                 <button class="bottone-secondario" type="submit">Annulla</button>
@@ -1151,8 +1147,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 
             <div class="admin-form-grid">
                 <?php if ($canModifyBranchOperations): ?>
-                    <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['automatico'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-policy-auto">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['automatico'] ?? 'controllo-forniture')); ?>" data-valida novalidate aria-labelledby="titolo-policy-auto">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_policy">
 
                         <div class="account-panel-head">
@@ -1167,7 +1163,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <option value="">Seleziona un prodotto</option>
                                 <?php foreach ($inventoryItems as $inventoryItem): ?>
                                     <option value="<?php echo (int) $inventoryItem['product_id']; ?>">
-                                        <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                        <?php echo e((string) $inventoryItem['product_name']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -1219,8 +1215,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                         <li><span>Output</span><strong>Bozza o ordine automatico</strong></li>
                     </ul>
                     <?php if ($canModifyBranchOperations): ?>
-                        <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['automatico'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                        <form method="POST" action="<?php echo e((string) ($sectionUrls['automatico'] ?? 'controllo-forniture')); ?>" class="admin-inline-form">
+                            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                             <input type="hidden" name="action" value="run_auto_reorder">
                             <button class="bottone-secondario" type="submit">Esegui controllo ora</button>
                         </form>
@@ -1256,20 +1252,20 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                             <tbody>
                                 <?php foreach ($policies as $policy): ?>
                                     <tr>
-                                        <th scope="row"><?php echo htmlspecialchars((string) $policy['product_name'], ENT_QUOTES, 'UTF-8'); ?></th>
+                                        <th scope="row"><?php echo e((string) $policy['product_name']); ?></th>
                                         <td><?php echo (int) $policy['on_hand_qty']; ?></td>
                                         <td><?php echo (int) $policy['threshold_qty']; ?></td>
                                         <td><?php echo (int) $policy['reorder_qty']; ?></td>
                                         <td><?php echo (int) $policy['cooldown_hours']; ?>h</td>
-                                        <td><?php echo htmlspecialchars((string) $policy['mode'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><?php echo e((string) $policy['mode']); ?></td>
                                         <td>
                                             <div class="admin-inline-actions">
                                                 <span class="admin-status-pill <?php echo (int) $policy['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
                                                     <?php echo (int) $policy['is_active'] === 1 ? 'Attiva' : 'Sospesa'; ?>
                                                 </span>
                                                 <?php if ($canModifyBranchOperations): ?>
-                                                    <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['automatico'] ?? 'controllo-forniture'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                                    <form method="POST" action="<?php echo e((string) ($sectionUrls['automatico'] ?? 'controllo-forniture')); ?>" class="admin-inline-form">
+                                                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                         <input type="hidden" name="action" value="toggle_policy">
                                                         <input type="hidden" name="policy_id" value="<?php echo (int) $policy['id']; ?>">
                                                         <input type="hidden" name="is_active" value="<?php echo (int) $policy['is_active'] === 1 ? '0' : '1'; ?>">
@@ -1298,8 +1294,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <div class="checkout-shell">
                         <div class="checkout-main">
                             <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details'): ?>
-                                <form class="checkout-card checkout-form" method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'controllo-manager'), ENT_QUOTES, 'UTF-8'); ?>" data-valida novalidate aria-labelledby="titolo-manager-form">
-                                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" data-valida novalidate aria-labelledby="titolo-manager-form">
+                                    <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                     <input type="hidden" name="action" value="save_details">
                                     <input type="hidden" name="manager_id" value="<?php echo (int) ($draft['id'] ?? 0); ?>">
 
@@ -1312,11 +1308,11 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     <div class="admin-form-grid">
                                         <div class="campo-gruppo">
                                             <label for="manager-username">Username</label>
-                                            <input type="text" id="manager-username" name="username" required aria-required="true" maxlength="50" value="<?php echo htmlspecialchars((string) ($draft['username'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="text" id="manager-username" name="username" required aria-required="true" maxlength="50" value="<?php echo e((string) ($draft['username'] ?? '')); ?>">
                                         </div>
                                         <div class="campo-gruppo">
                                             <label for="manager-email">Email</label>
-                                            <input type="email" id="manager-email" name="email" required aria-required="true" maxlength="160" value="<?php echo htmlspecialchars((string) ($draft['email'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="email" id="manager-email" name="email" required aria-required="true" maxlength="160" value="<?php echo e((string) ($draft['email'] ?? '')); ?>">
                                         </div>
                                     </div>
 
@@ -1332,7 +1328,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                                 <option value="">Seleziona la filiale</option>
                                                 <?php foreach ($allBranches as $branch): ?>
                                                     <option value="<?php echo (int) $branch['id']; ?>" <?php echo (int) $branch['id'] === (int) ($draft['managed_branch_id'] ?? 0) ? 'selected' : ''; ?>>
-                                                        <?php echo htmlspecialchars((string) $branch['name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                        <?php echo e((string) $branch['name']); ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
@@ -1353,16 +1349,16 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </div>
 
                                     <ul class="riepilogo-lista">
-                                        <li><span>Username</span><strong><?php echo htmlspecialchars((string) $draft['username'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Email</span><strong><?php echo htmlspecialchars((string) $draft['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Filiale</span><strong><?php echo htmlspecialchars((string) $draft['managed_branch_name'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Username</span><strong><?php echo e((string) $draft['username']); ?></strong></li>
+                                        <li><span>Email</span><strong><?php echo e((string) $draft['email']); ?></strong></li>
+                                        <li><span>Filiale</span><strong><?php echo e((string) $draft['managed_branch_name']); ?></strong></li>
                                         <li><span>Password</span><strong><?php echo ($draft['password'] !== '') ? '******** (Modificata)' : 'Invariata'; ?></strong></li>
                                     </ul>
 
                                     <div class="checkout-navigation">
                                         <a class="bottone-secondario" href="controllo-manager?<?php echo ($draft['id'] > 0) ? 'modifica='.$draft['id'] : 'modalita=nuovo'; ?>">&larr; Torna alla modifica</a>
                                         <form method="POST" action="controllo-manager" class="admin-inline-form">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                             <input type="hidden" name="action" value="confirm_manager">
                                             <button class="bottone-primario" type="submit">Conferma e salva</button>
                                         </form>
@@ -1398,8 +1394,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     <article class="admin-detail-card">
                                         <div class="ordine-card-head">
                                             <div>
-                                                <p class="ordine-card-eyebrow"><?php echo htmlspecialchars((string) ($manager['managed_branch_name'] ?? 'Filiale non assegnata'), ENT_QUOTES, 'UTF-8'); ?></p>
-                                                <h4><?php echo htmlspecialchars((string) $manager['username'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                                <p class="ordine-card-eyebrow"><?php echo e((string) ($manager['managed_branch_name'] ?? 'Filiale non assegnata')); ?></p>
+                                                <h4><?php echo e((string) $manager['username']); ?></h4>
                                             </div>
                                             <span class="admin-status-pill <?php echo (int) $manager['is_active'] === 1 ? 'is-success' : 'is-muted'; ?>">
                                                 <?php echo (int) $manager['is_active'] === 1 ? 'Attivo' : 'Revocato'; ?>
@@ -1407,14 +1403,14 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         </div>
 
                                         <ul class="riepilogo-lista">
-                                            <li><span>Email</span><strong><?php echo htmlspecialchars((string) $manager['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                            <li><span>Filiale</span><strong><?php echo htmlspecialchars((string) ($manager['managed_branch_name'] ?? 'Non assegnata'), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                            <li><span>Email</span><strong><?php echo e((string) $manager['email']); ?></strong></li>
+                                            <li><span>Filiale</span><strong><?php echo e((string) ($manager['managed_branch_name'] ?? 'Non assegnata')); ?></strong></li>
                                         </ul>
 
                                         <div class="admin-inline-actions">
                                             <a class="bottone-secondario" href="controllo-manager?modifica=<?php echo (int) $manager['id']; ?>&amp;reset=1">Modifica credenziali</a>
-                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'controllo-manager'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="toggle_branch_manager">
                                                 <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
                                                 <input type="hidden" name="is_active" value="<?php echo (int) $manager['is_active'] === 1 ? '0' : '1'; ?>">
@@ -1422,8 +1418,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                                     <?php echo (int) $manager['is_active'] === 1 ? 'Revoca accesso' : 'Riattiva accesso'; ?>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo htmlspecialchars((string) ($sectionUrls['team'] ?? 'controllo-manager'), ENT_QUOTES, 'UTF-8'); ?>" class="admin-inline-form">
-                                                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" class="admin-inline-form">
+                                                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="delete_branch_manager">
                                                 <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
                                                 <button class="bottone-primario" type="submit" data-confirm-delete="true">Elimina credenziali</button>
@@ -1465,13 +1461,13 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     <div class="ordine-card-head">
                                         <div>
                                             <p class="ordine-card-eyebrow">Ricezione fornitura</p>
-                                            <h4><?php echo htmlspecialchars((string) $supplyOrder['order_code'], ENT_QUOTES, 'UTF-8'); ?></h4>
+                                            <h4><?php echo e((string) $supplyOrder['order_code']); ?></h4>
                                         </div>
                                         <strong class="ordine-card-total"><?php echo money_eur((int) $supplyOrder['total_cents']); ?></strong>
                                     </div>
                                     <ul class="riepilogo-lista">
-                                        <li><span>Ricevuta il</span><strong><?php echo htmlspecialchars(format_datetime_for_ui((string) $supplyOrder['received_at']), ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                                        <li><span>Fornitore</span><strong><?php echo htmlspecialchars((string) $supplyOrder['supplier_name'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                                        <li><span>Ricevuta il</span><strong><?php echo e(format_datetime_for_ui((string) $supplyOrder['received_at'])); ?></strong></li>
+                                        <li><span>Fornitore</span><strong><?php echo e((string) $supplyOrder['supplier_name']); ?></strong></li>
                                     </ul>
                                     <div class="admin-inline-actions">
                                         <a class="bottone-secondario" href="ricevuta?tipo=fornitura&amp;id=<?php echo (int) $supplyOrder['id']; ?>">Apri ricevuta</a>

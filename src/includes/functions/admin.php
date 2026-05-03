@@ -22,7 +22,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
             'uses_branch' => true,
             'title' => 'Panoramica',
             'kicker' => 'Panoramica',
-            'description' => 'Ricavi, margine, stock e confronto operativo con una vista piu ordinata e focalizzata.',
+            'description' => 'Ricavi, margine, stock e confronto operativo con una vista più ordinata e focalizzata.',
         ],
         'catalogo' => [
             'label' => 'Catalogo',
@@ -38,7 +38,7 @@ function admin_panel_sections(bool $canManageBranchManagers): array
             'uses_branch' => true,
             'title' => 'Inventario',
             'kicker' => 'Magazzino',
-            'description' => 'Quantita presenti, merce in arrivo e rettifiche operative concentrate in una sola pagina.',
+            'description' => 'Quantità presenti, merce in arrivo e rettifiche operative concentrate in una sola pagina.',
         ],
         'forniture' => [
             'label' => 'Forniture',
@@ -210,7 +210,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
     if ($utente === null) {
         logout_user();
-        flash_set('error', 'Sessione amministrativa non valida. Effettua di nuovo l accesso.');
+        flash_set('error', 'Sessione amministrativa non valida. Effettua di nuovo l\'accesso.');
         header('Location: accedi');
         exit;
     }
@@ -238,7 +238,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
         $selectedBranch = $managedBranchId > 0 ? branch_get_by_id($pdo, $managedBranchId) : null;
 
         if ($selectedBranch === null) {
-            flash_set('error', 'Il tuo account manager non e associato a una filiale valida.');
+            flash_set('error', 'Il tuo account manager non è associato a una filiale valida.');
             header('Location: account');
             exit;
         }
@@ -516,7 +516,7 @@ function inventory_apply_manual_adjustment_flow(
     $modes = admin_inventory_adjustment_modes();
 
     if (!isset($modes[$mode])) {
-        throw new RuntimeException('Modalita di rettifica inventario non valida.');
+        throw new RuntimeException('Modalità di rettifica inventario non valida.');
     }
 
     $productId = (int) ($draft['product_id'] ?? 0);
@@ -534,14 +534,14 @@ function inventory_apply_manual_adjustment_flow(
 
     if ($mode === 'carico') {
         if ($quantity <= 0) {
-            throw new RuntimeException('Inserisci una quantita positiva per il carico.');
+            throw new RuntimeException('Inserisci una quantità positiva per il carico.');
         }
 
         $quantityDelta = $quantity;
         $defaultNote = 'Carico manuale inventario.';
     } elseif ($mode === 'scarico') {
         if ($quantity <= 0) {
-            throw new RuntimeException('Inserisci una quantita positiva per lo scarico.');
+            throw new RuntimeException('Inserisci una quantità positiva per lo scarico.');
         }
 
         $quantityDelta = -$quantity;
@@ -551,7 +551,7 @@ function inventory_apply_manual_adjustment_flow(
         $defaultNote = 'Allineamento inventario a conteggio fisico.';
 
         if ($quantityDelta === 0) {
-            throw new RuntimeException('Il conteggio inserito coincide gia con la quantita registrata.');
+            throw new RuntimeException('Il conteggio inserito coincide già con la quantità registrata.');
         }
     }
 
@@ -716,7 +716,7 @@ function admin_extract_supply_items(PDO $pdo, int $branchId, array $payload, str
         }
 
         if ($quantity <= 0) {
-            throw new RuntimeException('La quantita di fornitura deve essere maggiore di zero.');
+            throw new RuntimeException('La quantità di fornitura deve essere maggiore di zero.');
         }
 
         $product = $productsById[$productId];
@@ -724,7 +724,7 @@ function admin_extract_supply_items(PDO $pdo, int $branchId, array $payload, str
 
         if ($unitCostCents <= 0) {
             throw new RuntimeException(
-                'Il costo filiale di ' . (string) $product['product_name'] . ' non e definito. Completa prima la base costi della sede.'
+                'Il costo filiale di ' . (string) $product['product_name'] . ' non è definito. Completa prima la base costi della sede.'
             );
         }
 
@@ -965,7 +965,7 @@ function catalog_delete_product(PDO $pdo, int $productId): void
         $stmt = $pdo->prepare($sql);
         $stmt->execute(['product_id' => $productId]);
         if ((int) $stmt->fetchColumn() > 0) {
-            throw new RuntimeException('Questo prodotto e gia stato usato in ordini o forniture. Per non perdere lo storico, nascondilo dalle filiali invece di eliminarlo.');
+            throw new RuntimeException('Questo prodotto è già stato usato in ordini o forniture. Per non perdere lo storico, nascondilo dalle filiali invece di eliminarlo.');
         }
     }
 
@@ -1199,7 +1199,7 @@ function inventory_adjust_stock(
     $newQty = $currentQty + $quantityDelta;
 
     if ($newQty < 0) {
-        throw new RuntimeException('Quantita inventario insufficiente per completare l operazione.');
+        throw new RuntimeException('Quantità inventario insufficiente per completare l\'operazione.');
     }
 
     $usedUnitCost = $unitCostCents !== null
@@ -1318,7 +1318,7 @@ function inventory_consume_for_order(PDO $pdo, int $branchId, array $items, int 
         $projection = inventory_get_projection($pdo, $branchId, $productId);
         if ((int) $projection['on_hand_qty'] < $quantity) {
             throw new RuntimeException(
-                'Disponibilita insufficiente per ' . $productName . '. Restano ' . (int) $projection['on_hand_qty'] . ' unita in sede.'
+                'Disponibilità insufficiente per ' . $productName . '. Restano ' . (int) $projection['on_hand_qty'] . ' unità in sede.'
             );
         }
 

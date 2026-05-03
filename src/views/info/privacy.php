@@ -1,6 +1,10 @@
 <?php
 /**
  * privacy: View della pagina privacy policy.
+ *
+ * Variabili attese dal controller:
+ *   $brandContacts   array   Contatti del brand
+ *   $policyUpdatedAt string  Data di aggiornamento
  */
 
 $policyBrandName = (string) ($brandContacts['brand_name'] ?? 'Smash Burger Original');
@@ -16,12 +20,12 @@ $policyOrderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000
                 <p class="home-eyebrow">Informativa privacy</p>
                 <h1 id="titolo-policy">Privacy Policy</h1>
                 <p class="legal-intro-copy">
-                    Questa informativa descrive come <?php echo htmlspecialchars($policyBrandName, ENT_QUOTES, 'UTF-8'); ?>
+                    Questa informativa descrive come <?php echo e($policyBrandName); ?>
                     tratta i dati personali raccolti attraverso il sito, l'area account, il carrello e il checkout.
                 </p>
                 <p class="legal-meta">
                     Ultimo aggiornamento:
-                    <strong><?php echo htmlspecialchars($policyUpdatedAt ?? '1 aprile 2026', ENT_QUOTES, 'UTF-8'); ?></strong>
+                    <strong><?php echo e($policyUpdatedAt); ?></strong>
                 </p>
             </div>
 
@@ -31,26 +35,26 @@ $policyOrderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000
                         <h2 id="policy-titolare">1. Titolare del trattamento</h2>
                         <p>
                             Il titolare del trattamento è
-                            <strong><?php echo htmlspecialchars($policyBrandName, ENT_QUOTES, 'UTF-8'); ?></strong>,
+                            <strong><?php echo e($policyBrandName); ?></strong>,
                             P.IVA 12345678901, contattabile ai seguenti recapiti:
                         </p>
                         <ul class="legal-list">
                             <li>
                                 Email:
-                                <a href="mailto:<?php echo htmlspecialchars($policyEmail, ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo htmlspecialchars($policyEmail, ENT_QUOTES, 'UTF-8'); ?>
+                                <a href="mailto:<?php echo e($policyEmail); ?>">
+                                    <?php echo e($policyEmail); ?>
                                 </a>
                             </li>
                             <li>
                                 Telefono informazioni:
-                                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $policyInfoPhone), ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo htmlspecialchars($policyInfoPhone, ENT_QUOTES, 'UTF-8'); ?>
+                                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $policyInfoPhone)); ?>">
+                                    <?php echo e($policyInfoPhone); ?>
                                 </a>
                             </li>
                             <li>
                                 Telefono ordini:
-                                <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $policyOrderPhone), ENT_QUOTES, 'UTF-8'); ?>">
-                                    <?php echo htmlspecialchars($policyOrderPhone, ENT_QUOTES, 'UTF-8'); ?>
+                                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $policyOrderPhone)); ?>">
+                                    <?php echo e($policyOrderPhone); ?>
                                 </a>
                             </li>
                         </ul>
@@ -164,12 +168,12 @@ $policyOrderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000
                         <h2 id="policy-contatti">10. Esercizio dei diritti</h2>
                         <p>
                             Per richieste relative alla privacy scrivi a
-                            <a href="mailto:<?php echo htmlspecialchars($policyEmail, ENT_QUOTES, 'UTF-8'); ?>">
-                                <?php echo htmlspecialchars($policyEmail, ENT_QUOTES, 'UTF-8'); ?>
+                            <a href="mailto:<?php echo e($policyEmail); ?>">
+                                <?php echo e($policyEmail); ?>
                             </a>
                             oppure chiama il numero
-                            <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $policyInfoPhone), ENT_QUOTES, 'UTF-8'); ?>">
-                                <?php echo htmlspecialchars($policyInfoPhone, ENT_QUOTES, 'UTF-8'); ?>
+                            <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $policyInfoPhone)); ?>">
+                                <?php echo e($policyInfoPhone); ?>
                             </a>.
                         </p>
                     </section>

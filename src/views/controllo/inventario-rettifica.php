@@ -59,20 +59,16 @@ if ($selectedProduct !== null) {
         <div class="account-page-head admin-page-head">
             <div class="admin-builder-page-head">
                 <span class="account-panel-kicker">Rettifica inventario</span>
-                <h1 id="titolo-rettifica-inventario-page"><?php echo htmlspecialchars((string) ($modeMeta['title'] ?? 'Rettifica inventario'), ENT_QUOTES, 'UTF-8'); ?></h1>
-                <p class="checkout-muted"><?php echo htmlspecialchars((string) ($modeMeta['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+                <h1 id="titolo-rettifica-inventario-page"><?php echo e((string) ($modeMeta['title'] ?? 'Rettifica inventario')); ?></h1>
+                <p class="checkout-muted"><?php echo e((string) ($modeMeta['description'] ?? '')); ?></p>
             </div>
 
             <div class="account-action-row">
-                <a class="bottone-secondario" href="<?php echo htmlspecialchars($inventoryUrl, ENT_QUOTES, 'UTF-8'); ?>">&larr; Torna a inventario</a>
+                <a class="bottone-secondario" href="<?php echo e($inventoryUrl); ?>">&larr; Torna a inventario</a>
             </div>
         </div>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars((string) ($flash['type'] ?? 'info'), ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars((string) ($flash['message'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
 
         <div class="checkout-shell admin-inventory-adjustment-shell">
             <div class="checkout-card checkout-form checkout-main admin-inventory-adjustment-main">
@@ -86,17 +82,17 @@ if ($selectedProduct !== null) {
                     <?php foreach ($modes as $modeKey => $modeItem): ?>
                         <a
                             class="<?php echo $modeKey === $mode ? 'is-active' : ''; ?>"
-                            href="<?php echo htmlspecialchars(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, (string) $modeKey, $selectedProductId > 0 ? $selectedProductId : null), ENT_QUOTES, 'UTF-8'); ?>">
-                            <span><?php echo htmlspecialchars((string) ($modeItem['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></span>
-                            <strong><?php echo htmlspecialchars((string) ($modeItem['title'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
+                            href="<?php echo e(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, (string) $modeKey, $selectedProductId > 0 ? $selectedProductId : null)); ?>">
+                            <span><?php echo e((string) ($modeItem['label'] ?? '')); ?></span>
+                            <strong><?php echo e((string) ($modeItem['title'] ?? '')); ?></strong>
                         </a>
                     <?php endforeach; ?>
                 </nav>
 
-                <form method="POST" action="<?php echo htmlspecialchars(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, $mode, $selectedProductId > 0 ? $selectedProductId : null), ENT_QUOTES, 'UTF-8'); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-rettifica-inventario-page">
-                    <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                <form method="POST" action="<?php echo e(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, $mode, $selectedProductId > 0 ? $selectedProductId : null)); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-rettifica-inventario-page">
+                    <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                     <input type="hidden" name="action" value="apply_inventory_adjustment">
-                    <input type="hidden" name="mode" value="<?php echo htmlspecialchars($mode, ENT_QUOTES, 'UTF-8'); ?>">
+                    <input type="hidden" name="mode" value="<?php echo e($mode); ?>">
 
                     <div class="admin-workflow-canvas" aria-label="Canvas rettifica inventario">
                         <details class="admin-workflow-block admin-workflow-block--trigger" open>
@@ -117,7 +113,7 @@ if ($selectedProduct !== null) {
                                         <option value="">Seleziona un prodotto</option>
                                         <?php foreach ($inventoryItems as $inventoryItem): ?>
                                             <option value="<?php echo (int) $inventoryItem['product_id']; ?>" <?php echo (int) ($inventoryItem['product_id'] ?? 0) === $selectedProductId ? 'selected' : ''; ?>>
-                                                <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                <?php echo e((string) $inventoryItem['product_name']); ?>
                                             </option>
                                         <?php endforeach; ?>
                                     </select>
@@ -169,21 +165,38 @@ if ($selectedProduct !== null) {
                             </summary>
                             <div class="admin-workflow-block-body">
                                 <?php if ($mode === 'conteggio'): ?>
-                                    <div class="campo-gruppo">
-                                        <label for="inventory-counted-qty">Quantità trovata in sede</label>
-                                        <input type="number" id="inventory-counted-qty" name="counted_qty" min="0" step="1" value="<?php echo htmlspecialchars((string) ($draft['counted_qty'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" required aria-required="true">
-                                    </div>
+                                    <?php echo ui_form_group(
+                                        'counted_qty',
+                                        'Quantità trovata in sede',
+                                        'number',
+                                        [
+                                            'value' => (string) ($draft['counted_qty'] ?? ''),
+                                            'extra_attrs' => 'min="0" step="1"'
+                                        ]
+                                    ); ?>
                                 <?php else: ?>
-                                    <div class="campo-gruppo">
-                                        <label for="inventory-adjustment-quantity"><?php echo $mode === 'carico' ? 'Unità da aggiungere' : 'Unità da rimuovere'; ?></label>
-                                        <input type="number" id="inventory-adjustment-quantity" name="quantity" min="1" step="1" value="<?php echo htmlspecialchars((string) ($draft['quantity'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>" required aria-required="true">
-                                    </div>
+                                    <?php echo ui_form_group(
+                                        'quantity',
+                                        $mode === 'carico' ? 'Unità da aggiungere' : 'Unità da rimuovere',
+                                        'number',
+                                        [
+                                            'value' => (string) ($draft['quantity'] ?? ''),
+                                            'extra_attrs' => 'min="1" step="1"'
+                                        ]
+                                    ); ?>
                                 <?php endif; ?>
 
-                                <div class="campo-gruppo">
-                                    <label for="inventory-adjustment-notes">Nota operativa</label>
-                                    <textarea id="inventory-adjustment-notes" name="notes" rows="3" placeholder="Es. ricezione fornitura, merce deteriorata, conteggio fine turno"><?php echo htmlspecialchars((string) ($draft['notes'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                </div>
+                                <?php echo ui_form_group(
+                                    'notes',
+                                    'Nota operativa',
+                                    'textarea',
+                                    [
+                                        'value' => (string) ($draft['notes'] ?? ''),
+                                        'placeholder' => 'Es. ricezione fornitura, merce deteriorata, conteggio fine turno',
+                                        'extra_attrs' => 'rows="3"',
+                                        'required' => false
+                                    ]
+                                ); ?>
                             </div>
                         </details>
 
@@ -204,7 +217,7 @@ if ($selectedProduct !== null) {
                                 <div class="admin-adjustment-preview-grid" aria-label="Anteprima rettifica">
                                     <article>
                                         <span>Modalità</span>
-                                        <strong><?php echo htmlspecialchars((string) ($modeMeta['label'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        <strong><?php echo e((string) ($modeMeta['label'] ?? '')); ?></strong>
                                     </article>
                                     <article>
                                         <span>Delta previsto</span>
@@ -218,12 +231,12 @@ if ($selectedProduct !== null) {
                                     </article>
                                     <article>
                                         <span>Giacenza finale</span>
-                                        <strong><?php echo htmlspecialchars($previewFinalLabel, ENT_QUOTES, 'UTF-8'); ?></strong>
+                                        <strong><?php echo e($previewFinalLabel); ?></strong>
                                     </article>
                                 </div>
 
                                 <div class="checkout-navigation checkout-navigation--solo-azione">
-                                    <button class="bottone-primario" type="submit"><?php echo htmlspecialchars((string) ($modeMeta['submit_label'] ?? 'Conferma'), ENT_QUOTES, 'UTF-8'); ?></button>
+                                    <button class="bottone-primario" type="submit"><?php echo e((string) ($modeMeta['submit_label'] ?? 'Conferma')); ?></button>
                                 </div>
                             </div>
                         </details>
@@ -242,8 +255,8 @@ if ($selectedProduct !== null) {
                     <?php if ($selectedProduct !== null): ?>
                         <article class="admin-builder-side-card">
                             <span class="account-panel-kicker">Prodotto selezionato</span>
-                            <h3><?php echo htmlspecialchars((string) ($selectedProduct['product_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <p class="checkout-muted"><?php echo htmlspecialchars($selectedProductDescription !== '' ? $selectedProductDescription : 'Scheda cliente senza descrizione estesa.', ENT_QUOTES, 'UTF-8'); ?></p>
+                            <h3><?php echo e((string) ($selectedProduct['product_name'] ?? '')); ?></h3>
+                            <p class="checkout-muted"><?php echo e($selectedProductDescription !== '' ? $selectedProductDescription : 'Scheda cliente senza descrizione estesa.'); ?></p>
                         </article>
 
                         <article class="admin-builder-side-card">

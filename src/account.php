@@ -23,10 +23,14 @@ $orders = $showCustomerOrders ? orders_get_for_user($pdo, (int) $utente['id']) :
 $flash = flash_get();
 $canAccessAdminPanel = can_access_admin_panel();
 
-$pageTitle       = 'Area personale - Smash Burger Original';
-$pageDescription = 'Gestisci il tuo account, i tuoi ordini e le tue preferenze Smash Burger.';
-$currentPage     = 'account';
-$breadcrumb      = [['Home', './'], ['Area personale', null]];
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/account/dashboard.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('account/dashboard.php', [
+    'pageTitle' => 'Area personale - Smash Burger Original',
+    'pageDescription' => 'Gestisci il tuo account, i tuoi ordini e le tue preferenze Smash Burger.',
+    'currentPage' => 'account',
+    'breadcrumb' => [['Home', './'], ['Area personale', null]],
+    'utente' => $utente,
+    'orders' => $orders,
+    'flash' => $flash,
+    'canAccessAdminPanel' => $canAccessAdminPanel,
+    'showCustomerOrders' => $showCustomerOrders
+]);

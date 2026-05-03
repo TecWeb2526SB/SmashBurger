@@ -1,13 +1,3 @@
-<?php
-/**
- * homepage.php: Contenuto dinamico per la pagina principale di SmashBurger.
- */
-
-// Recupero ID reali dei best seller (assumo ID 1, 2, 3 siano Classic, Bacon, Onion)
-// In un sistema reale verrebbero dal DB, qui manteniamo la struttura ma aggiungiamo i token
-$csrfToken = csrf_token();
-?>
-
 <section id="hero" class="home-hero" aria-labelledby="titolo-hero">
     <div class="contenitore">
         <div class="home-hero-grid">
@@ -65,7 +55,7 @@ $csrfToken = csrf_token();
                         <input type="hidden" name="action" value="add_product">
                         <input type="hidden" name="product_id" value="1">
                         <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="redirect_to" value="./">
                         <button type="submit" class="bottone-primario">Aggiungi</button>
                     </form>
@@ -82,7 +72,7 @@ $csrfToken = csrf_token();
                         <input type="hidden" name="action" value="add_product">
                         <input type="hidden" name="product_id" value="2">
                         <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="redirect_to" value="./">
                         <button type="submit" class="bottone-primario">Aggiungi</button>
                     </form>
@@ -99,7 +89,7 @@ $csrfToken = csrf_token();
                         <input type="hidden" name="action" value="add_product">
                         <input type="hidden" name="product_id" value="3">
                         <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="redirect_to" value="./">
                         <button type="submit" class="bottone-primario">Aggiungi</button>
                     </form>

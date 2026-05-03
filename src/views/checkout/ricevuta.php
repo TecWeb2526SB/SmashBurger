@@ -20,7 +20,7 @@
                     Documento operativo pronto per la stampa o per il salvataggio in PDF dal browser.
                 </p>
                 <div class="account-action-row">
-                    <a class="bottone-secondario" href="<?php echo htmlspecialchars($backHref, ENT_QUOTES, 'UTF-8'); ?>">&larr; <?php echo htmlspecialchars($backLabel, ENT_QUOTES, 'UTF-8'); ?></a>
+                    <a class="bottone-secondario" href="<?php echo e($backHref); ?>">&larr; <?php echo e($backLabel); ?></a>
                     <button class="bottone-primario" type="button" data-print-trigger="true">Stampa o salva PDF</button>
                 </div>
             </div>
@@ -28,8 +28,8 @@
             <aside class="account-summary-box" aria-labelledby="titolo-riepilogo-ricevuta">
                 <h2 id="titolo-riepilogo-ricevuta">Riferimenti</h2>
                 <ul class="account-summary-list">
-                    <li><span>Documento</span><strong><?php echo htmlspecialchars((string) $receipt['receipt_code'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li><span>Data</span><strong><?php echo htmlspecialchars(format_datetime_for_ui((string) ($receipt['created_at'] ?? $receipt['received_at'] ?? '')), ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                    <li><span>Documento</span><strong><?php echo e((string) $receipt['receipt_code']); ?></strong></li>
+                    <li><span>Data</span><strong><?php echo e(format_datetime_for_ui((string) ($receipt['created_at'] ?? $receipt['received_at'] ?? ''))); ?></strong></li>
                     <li><span>Totale</span><strong><?php echo money_eur((int) ($receipt['total_cents'] ?? 0)); ?></strong></li>
                 </ul>
             </aside>
@@ -48,54 +48,54 @@
                 <dl class="ordine-card-meta receipt-meta-grid">
                     <div>
                         <dt>Codice fornitura</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['order_code'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['order_code']); ?></dd>
                     </div>
                     <div>
                         <dt>Filiale</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['branch_name'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['branch_name']); ?></dd>
                     </div>
                     <div>
                         <dt>Fornitore</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['supplier_name'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['supplier_name']); ?></dd>
                     </div>
                     <div>
                         <dt>Ricevuta il</dt>
-                        <dd><?php echo htmlspecialchars(format_datetime_for_ui((string) ($receipt['received_at'] ?? '')), ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e(format_datetime_for_ui((string) ($receipt['received_at'] ?? ''))); ?></dd>
                     </div>
                     <div>
                         <dt>Stato</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['status'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['status']); ?></dd>
                     </div>
                     <div>
                         <dt>Tipo</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['order_type'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['order_type']); ?></dd>
                     </div>
                 </dl>
             <?php else: ?>
                 <dl class="ordine-card-meta receipt-meta-grid">
                     <div>
                         <dt>Numero ordine</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['order_number'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['order_number']); ?></dd>
                     </div>
                     <div>
                         <dt>Cliente</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['username'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['username']); ?></dd>
                     </div>
                     <div>
                         <dt>Email</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['email'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['email']); ?></dd>
                     </div>
                     <div>
                         <dt>Filiale</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['branch_name_snapshot'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['branch_name_snapshot']); ?></dd>
                     </div>
                     <div>
                         <dt>Ritiro</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['fulfillment_type'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['fulfillment_type']); ?></dd>
                     </div>
                     <div>
                         <dt>Pagamento</dt>
-                        <dd><?php echo htmlspecialchars((string) $receipt['payment_status'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                        <dd><?php echo e((string) $receipt['payment_status']); ?></dd>
                     </div>
                 </dl>
             <?php endif; ?>
@@ -115,7 +115,7 @@
                         <?php foreach ((array) ($receipt['items'] ?? []) as $item): ?>
                             <tr>
                                 <th scope="row">
-                                    <?php echo htmlspecialchars((string) ($item['product_name'] ?? $item['product_name_snapshot'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php echo e((string) ($item['product_name'] ?? $item['product_name_snapshot'] ?? '')); ?>
                                 </th>
                                 <td>
                                     <?php echo $receiptType === 'fornitura'
@@ -143,7 +143,7 @@
             <?php if (!empty($receipt['notes'])): ?>
                 <section class="receipt-notes" aria-labelledby="titolo-note-ricevuta">
                     <h3 id="titolo-note-ricevuta">Note</h3>
-                    <p><?php echo htmlspecialchars((string) $receipt['notes'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p><?php echo e((string) $receipt['notes']); ?></p>
                 </section>
             <?php endif; ?>
         </article>

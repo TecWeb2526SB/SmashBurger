@@ -554,7 +554,7 @@ function inizializzaAjaxCart() {
                     const data = await response.json();
                     if (!data.ok) {
                         quantityInput.value = previousValue;
-                        mostraNotifica(data.message || 'Impossibile aggiornare la quantita.', 'error');
+                        mostraNotifica(data.message || 'Impossibile aggiornare la quantità.', 'error');
                         return;
                     }
 

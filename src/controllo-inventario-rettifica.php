@@ -6,7 +6,7 @@ extract($context, EXTR_SKIP);
 
 $inventoryUrl = admin_panel_section_url('inventario', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers);
 if (!$canModifyBranchOperations) {
-    flash_set('error', 'Solo il manager della filiale puo aprire il flusso di rettifica inventario.');
+    flash_set('error', 'Solo il manager della filiale può aprire il flusso di rettifica inventario.');
     header('Location: ' . $inventoryUrl);
     exit;
 }
@@ -56,18 +56,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $selectedProductId = max(0, (int) ($draft['product_id'] ?? 0));
 $selectedProduct = $selectedProductId > 0 && isset($productsById[$selectedProductId]) ? $productsById[$selectedProductId] : null;
-$modeMeta = $modes[$mode] ?? $modes['carico'];
+$inventoryUrl = admin_panel_section_url('inventario', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers);
 
-$pageTitle = 'Rettifica inventario - Smash Burger Original';
-$pageDescription = 'Flusso guidato per carichi, scarichi e conteggi fisici di inventario.';
-$currentPage = 'controllo';
-$breadcrumb = [
-    ['Home', './'],
-    ['Controllo', 'controllo' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : '')],
-    ['Inventario', $inventoryUrl],
-    ['Rettifica', null],
-];
-
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/controllo/inventario-rettifica.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_admin_page('inventario', [
+    'pageDescription' => 'Flusso guidato per carichi, scarichi e conteggi fisici di inventario.',
+    'breadcrumb' => [
+        ['Home', './'],
+        ['Controllo', 'controllo' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : '')],
+        ['Inventario', $inventoryUrl],
+        ['Rettifica', null],
+    ],
+    'mode' => $mode,
+    'modeMeta' => $modeMeta,
+    'modes' => $modes,
+    'draft' => $draft,
+    'inventoryItems' => $inventoryItems,
+    'selectedProduct' => $selectedProduct,
+    'inventoryUrl' => $inventoryUrl
+], 'controllo/inventario-rettifica.php');

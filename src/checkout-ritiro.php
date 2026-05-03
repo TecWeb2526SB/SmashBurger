@@ -119,10 +119,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $flash = flash_get();
 
-$pageTitle = 'Checkout - Metodo di ritiro';
-$pageDescription = 'Scegli come ritirare il tuo ordine.';
-$currentPage = 'checkout';
-$breadcrumb = [['Home', './'], ['Carrello', 'carrello'], ['Checkout', 'checkout'], ['Metodo ritiro', null]];
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout/checkout-ritiro.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('checkout/checkout-ritiro.php', [
+    'pageTitle' => 'Checkout - Metodo di ritiro - Smash Burger Original',
+    'pageDescription' => 'Scegli come ritirare il tuo ordine.',
+    'currentPage' => 'checkout',
+    'breadcrumb' => [['Home', './'], ['Carrello', 'carrello'], ['Checkout', 'checkout'], ['Metodo ritiro', null]],
+    'carrello' => $carrello,
+    'selectedBranch' => $selectedBranch,
+    'todaySlots' => $todaySlots,
+    'form' => $form,
+    'errori' => $errori,
+    'flash' => $flash,
+    'csrfToken' => $csrfToken
+]);

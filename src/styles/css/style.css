@@ -256,6 +256,27 @@ a:focus-visible {
     color: var(--colore-link-focus);
 }
 
+/* Focus helpers per elementi non-link (mantengono lo stile attuale) */
+:where(
+    #theme-toggle,
+    .bottone-primario,
+    .bottone-secondario,
+    #filtro-categorie a,
+    #torna-su
+):focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+}
+
+:where(
+    .mostra-password,
+    .cart-quantity-display
+):focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+    border-radius: var(--raggio-bordo);
+}
+
 .skip-link {
     position: absolute;
     top: 0;
@@ -667,11 +688,6 @@ header h1 {
     opacity: 1;
 }
 
-#menu-principale a.nav-item-wrap:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-    border-radius: var(--raggio-bordo);
-}
 
 /*
    Pagina attiva: nessun <a>, solo testo.
@@ -753,11 +769,6 @@ header h1 {
     color: var(--colore-accento);
 }
 
-#theme-toggle:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-}
-
 
 /* --------------------------------------------------------------------------
    12. FOOTER
@@ -803,11 +814,6 @@ footer a:hover {
     color: var(--colore-accento-hover);
 }
 
-footer a:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-    border-radius: var(--raggio-bordo);
-}
 
 /* Barra inferiore del footer: copyright + nav legale */
 .footer-basso {
@@ -924,11 +930,6 @@ footer a:focus-visible {
     color: #ffffff;
 }
 
-.bottone-primario:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-}
-
 .bottone-primario:active {
     transform: translateY(0);
 }
@@ -971,11 +972,6 @@ footer a:focus-visible {
 
 .bottone-secondario:visited:not(:hover):not(:focus-visible) {
     color: var(--colore-testo);
-}
-
-.bottone-secondario:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
 }
 
 .bottone-secondario:active {
@@ -1146,11 +1142,6 @@ footer a:focus-visible {
     color: #ffffff;
 }
 
-#filtro-categorie a:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-}
-
 
 /* --------------------------------------------------------------------------
    14. PAGINE AUTENTICAZIONE — LOGIN E REGISTRAZIONE
@@ -1278,12 +1269,6 @@ footer a:focus-visible {
     color: var(--colore-accento);
 }
 
-.mostra-password:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-    border-radius: var(--raggio-bordo);
-}
-
 /* Messaggi di errore inline */
 .campo-errore {
     font-size: 0.875rem;
@@ -1338,6 +1323,9 @@ footer a:focus-visible {
     margin-bottom: var(--spazio-md);
     border: var(--bordo-standard);
     background-color: var(--colore-sfondo-alt);
+    max-width: 42rem;
+    margin-inline: auto;
+    width: 100%;
 }
 
 .alert.success {
@@ -1419,12 +1407,6 @@ footer a:focus-visible {
     font-weight: 700;
     color: var(--colore-testo);
     text-align: center;
-}
-
-.cart-quantity-display:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-    border-radius: var(--raggio-bordo);
 }
 
 .cart-quantity-button {
@@ -1528,13 +1510,7 @@ footer a:focus-visible {
     justify-content: center;
 }
 
-.checkout-layout {
-    display: grid;
-    grid-template-columns: 1.7fr 1fr;
-    gap: var(--spazio-lg);
-    align-items: start;
-}
-
+.checkout-layout,
 .checkout-shell {
     display: grid;
     grid-template-columns: 1.7fr 1fr;
@@ -1677,7 +1653,11 @@ footer a:focus-visible {
     gap: var(--spazio-sm);
 }
 
-.account-hero-copy h1 {
+.account-hero-copy h1,
+.account-section-head h2,
+.account-panel-head h2,
+.account-section-head .checkout-muted,
+.account-panel-head .checkout-muted {
     margin-bottom: 0;
 }
 
@@ -1696,15 +1676,13 @@ footer a:focus-visible {
 }
 
 .account-action-row .bottone-primario,
-.account-action-row .bottone-secondario {
+.account-action-row .bottone-secondario,
+.account-empty-actions .bottone-primario,
+.account-empty-actions .bottone-secondario {
     margin-top: 0;
 }
 
-.account-summary-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--spazio-sm);
-}
+
 
 .account-summary-box {
     border: var(--bordo-standard);
@@ -1948,13 +1926,8 @@ html.tema-scuro .account-summary-box {
     margin-bottom: var(--spazio-md);
 }
 
-.account-section-head h2 {
-    margin-bottom: 0;
-}
-
 .account-section-head .checkout-muted {
     max-width: 32rem;
-    margin-bottom: 0;
 }
 
 .account-panel-head {
@@ -1980,13 +1953,6 @@ html.tema-scuro .account-summary-box {
     flex: 0 0 auto;
 }
 
-.account-panel-head h2 {
-    margin-bottom: 0;
-}
-
-.account-panel-head .checkout-muted {
-    margin-bottom: 0;
-}
 
 .account-panel-kicker {
     display: inline-block;
@@ -2051,10 +2017,6 @@ html.tema-scuro .account-summary-box {
     gap: var(--spazio-sm);
 }
 
-.account-empty-actions .bottone-primario,
-.account-empty-actions .bottone-secondario {
-    margin-top: 0;
-}
 
 .account-orders-grid {
     display: grid;
@@ -2412,9 +2374,6 @@ html.tema-chiaro .admin-section-stat {
     line-height: 1.25;
 }
 
-.admin-workflow-selector .checkout-muted {
-    margin-bottom: 0;
-}
 
 #workflow-standard:checked ~ .admin-workflow-rail label[for="workflow-standard"],
 #workflow-extra:checked ~ .admin-workflow-rail label[for="workflow-extra"],
@@ -2446,20 +2405,18 @@ html.tema-chiaro .admin-section-stat {
     display: grid;
 }
 
-.admin-workflow-panel {
-    gap: var(--spazio-md);
-    min-height: 100%;
-}
-
-.admin-workflow-inspector {
-    gap: var(--spazio-md);
-}
-
+.admin-workflow-panel,
+.admin-workflow-inspector,
 .admin-workflow-inspector-panel {
     gap: var(--spazio-md);
 }
 
-.admin-workflow-form {
+.admin-workflow-panel {
+    min-height: 100%;
+}
+
+.admin-workflow-form,
+.admin-flow-form {
     display: grid;
     gap: var(--spazio-md);
 }
@@ -2527,11 +2484,13 @@ html.tema-chiaro .admin-section-stat {
     cursor: pointer;
 }
 
-.admin-workflow-block-summary::-webkit-details-marker {
+.admin-workflow-block-summary::-webkit-details-marker,
+.admin-flow-summary::-webkit-details-marker {
     display: none;
 }
 
-.admin-workflow-block-summary::marker {
+.admin-workflow-block-summary::marker,
+.admin-flow-summary::marker {
     content: '';
 }
 
@@ -2563,6 +2522,7 @@ html.tema-chiaro .admin-section-stat {
     background-color: rgba(192, 57, 43, 0.14);
 }
 
+.admin-workflow-selector .checkout-muted,
 .admin-workflow-block-summary h4,
 .admin-workflow-block-summary p {
     margin-bottom: 0;
@@ -2807,7 +2767,8 @@ html.tema-chiaro .admin-section-stat {
     margin-bottom: 0;
 }
 
-.admin-supply-builder-shell {
+.admin-supply-builder-shell,
+.admin-action-shell {
     align-items: start;
 }
 
@@ -2815,7 +2776,9 @@ html.tema-chiaro .admin-section-stat {
     max-width: none;
 }
 
-.admin-supply-builder-side {
+.admin-supply-builder-side,
+.admin-action-stack,
+.admin-stack-list {
     display: grid;
     gap: var(--spazio-md);
 }
@@ -3004,14 +2967,6 @@ html.tema-chiaro .admin-supply-cost-note {
     color: var(--colore-testo-leggero);
 }
 
-.admin-action-shell {
-    align-items: start;
-}
-
-.admin-action-stack {
-    display: grid;
-    gap: var(--spazio-md);
-}
 
 .admin-action-side {
     min-height: 100%;
@@ -3060,13 +3015,6 @@ html.tema-chiaro .admin-supply-cost-note {
     cursor: pointer;
 }
 
-.admin-flow-summary::-webkit-details-marker {
-    display: none;
-}
-
-.admin-flow-summary::marker {
-    content: '';
-}
 
 .admin-flow-summary:focus-visible {
     outline: var(--outline-focus);
@@ -3137,10 +3085,6 @@ html.tema-chiaro .admin-supply-cost-note {
     background: linear-gradient(180deg, rgba(192, 57, 43, 0.03), transparent 30%);
 }
 
-.admin-flow-form {
-    display: grid;
-    gap: var(--spazio-md);
-}
 
 .admin-flow-form .checkout-navigation {
     margin-top: var(--spazio-sm);
@@ -3260,7 +3204,8 @@ html.tema-chiaro .admin-supply-cost-note {
     font-size: 0.94rem;
 }
 
-.admin-mini-stats dt {
+.admin-mini-stats dt,
+.admin-bar-label span {
     color: var(--colore-testo-leggero);
 }
 
@@ -3306,7 +3251,6 @@ html.tema-chiaro .admin-supply-cost-note {
 }
 
 .admin-bar-label span {
-    color: var(--colore-testo-leggero);
     font-size: 0.9rem;
 }
 
@@ -3367,11 +3311,6 @@ html.tema-chiaro .admin-supply-cost-note {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--colore-testo-leggero);
-}
-
-.admin-stack-list {
-    display: grid;
-    gap: var(--spazio-md);
 }
 
 .admin-stack-list--catalog {
@@ -4368,12 +4307,6 @@ html.tema-scuro .admin-status-pill.is-warning::before {
     color: var(--colore-accento);
 }
 
-.breadcrumb a:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
-    border-radius: var(--raggio-bordo);
-}
-
 .breadcrumb [aria-current="page"] {
     color: var(--colore-testo);
     font-weight: 600;
@@ -4419,11 +4352,6 @@ html.tema-scuro .admin-status-pill.is-warning::before {
     color: #ffffff;
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
-}
-
-#torna-su:focus-visible {
-    outline: var(--outline-focus);
-    outline-offset: var(--outline-offset);
 }
 
 #torna-su:active {

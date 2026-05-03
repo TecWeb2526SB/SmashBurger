@@ -88,6 +88,13 @@ $breadcrumb = [
     ['Ricevuta', null],
 ];
 
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout/ricevuta.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('checkout/ricevuta.php', [
+    'pageTitle' => $pageTitle,
+    'pageDescription' => $pageDescription,
+    'currentPage' => $currentPage,
+    'breadcrumb' => $breadcrumb,
+    'receiptType' => $receiptType,
+    'receipt' => $receipt,
+    'backHref' => $backHref,
+    'backLabel' => $backLabel
+]);

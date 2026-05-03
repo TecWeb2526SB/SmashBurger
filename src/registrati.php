@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (mb_strlen($password) < 8) {
         $errori['password'] = 'La password deve contenere almeno 8 caratteri.';
     } elseif (!auth_is_valid_password($password)) {
-        $errori['password'] = 'La password puo contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
+        $errori['password'] = 'La password può contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
     }
 
     if ($conferma === '') {
@@ -55,14 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errori['conferma'] = 'Le password non coincidono.';
     }
 
-    $valori['username'] = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
-    $valori['email'] = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+    $valori['username'] = $username;
+    $valori['email'] = $email;
 
     if (empty($errori)) {
         if (auth_username_exists($pdo, $username)) {
-            $errori['username'] = 'Username gia in uso. Scegline un altro.';
+            $errori['username'] = 'Username già in uso. Scegline un altro.';
         } elseif (auth_email_exists($pdo, $email)) {
-            $errori['email'] = 'Email gia in uso. Usane un altra oppure accedi.';
+            $errori['email'] = 'Email già in uso. Usane un\'altra oppure accedi.';
         } else {
             $insertStmt = $pdo->prepare(
                 'INSERT INTO users (username, email, password_hash, role, email_verified_at, created_at, updated_at)
@@ -88,11 +88,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle       = 'Crea un account - Smash Burger Original';
-$pageDescription = 'Registrati su Smash Burger per ordinare più velocemente e tenere traccia dei tuoi ordini.';
-$currentPage     = 'registrati';
-$breadcrumb      = [['Home', './'], ['Crea un account', null]];
-
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/account/registrati.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('account/registrati.php', [
+    'pageTitle' => 'Crea un account - Smash Burger Original',
+    'pageDescription' => 'Registrati su Smash Burger per ordinare più velocemente e tenere traccia dei tuoi ordini.',
+    'currentPage' => 'registrati',
+    'breadcrumb' => [['Home', './'], ['Crea un account', null]],
+    'errori' => $errori,
+    'valori' => $valori,
+    'csrfToken' => $csrfToken
+]);
