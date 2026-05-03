@@ -13,6 +13,92 @@ function role_label(string $role): string
     };
 }
 
+function admin_team_manager_default_draft(): array
+{
+    return [
+        'id' => 0,
+        'username' => '',
+        'email' => '',
+        'password' => '',
+        'managed_branch_id' => 0,
+        'managed_branch_name' => '',
+    ];
+}
+
+function admin_team_manager_draft_from_manager(array $manager): array
+{
+    return [
+        'id' => (int) ($manager['id'] ?? 0),
+        'username' => (string) ($manager['username'] ?? ''),
+        'email' => (string) ($manager['email'] ?? ''),
+        'password' => '',
+        'managed_branch_id' => (int) ($manager['managed_branch_id'] ?? 0),
+        'managed_branch_name' => (string) ($manager['managed_branch_name'] ?? ''),
+    ];
+}
+
+function admin_team_manager_draft_from_payload(PDO $pdo, array $payload): array
+{
+    $branchId = (int) ($payload['managed_branch_id'] ?? 0);
+    $branch = $branchId > 0 ? branch_get_by_id($pdo, $branchId) : null;
+
+    return [
+        'id' => max(0, (int) ($payload['manager_id'] ?? 0)),
+        'username' => trim((string) ($payload['username'] ?? '')),
+        'email' => auth_normalize_email((string) ($payload['email'] ?? '')),
+        'password' => (string) ($payload['password'] ?? ''),
+        'managed_branch_id' => $branchId,
+        'managed_branch_name' => (string) ($branch['name'] ?? ''),
+    ];
+}
+
+function admin_team_manager_confirm(PDO $pdo, array $draft): void
+{
+    $draft = array_merge(admin_team_manager_default_draft(), $draft);
+    $managerId = (int) $draft['id'];
+    $username = trim((string) $draft['username']);
+    $email = auth_normalize_email((string) $draft['email']);
+    $password = (string) $draft['password'];
+    $branchId = (int) $draft['managed_branch_id'];
+
+    if (!auth_is_valid_username($username)) {
+        throw new RuntimeException('Username manager non valido.');
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        throw new RuntimeException('Email manager non valida.');
+    }
+
+    if ($branchId <= 0 || !branch_get_by_id($pdo, $branchId)) {
+        throw new RuntimeException('Filiale assegnata non valida.');
+    }
+
+    if (auth_username_exists($pdo, $username, $managerId > 0 ? $managerId : null)) {
+        throw new RuntimeException('Username già in uso.');
+    }
+
+    if (auth_email_exists($pdo, $email, $managerId > 0 ? $managerId : null)) {
+        throw new RuntimeException('Email già in uso.');
+    }
+
+    if (auth_branch_manager_exists_for_branch($pdo, $branchId, $managerId > 0 ? $managerId : null)) {
+        throw new RuntimeException('La filiale selezionata ha già un manager attivo.');
+    }
+
+    if ($managerId <= 0 && !auth_is_valid_password($password)) {
+        throw new RuntimeException('Password manager non valida.');
+    }
+
+    $passwordHash = $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : null;
+
+    if ($managerId > 0) {
+        auth_update_branch_manager($pdo, $managerId, $username, $email, $branchId, $passwordHash);
+        return;
+    }
+
+    auth_create_branch_manager($pdo, $username, $email, (string) $passwordHash, $branchId);
+}
+
 function admin_panel_sections(bool $canManageBranchManagers): array
 {
     $sections = [

@@ -29,7 +29,7 @@
         <?php echo ui_alert($flash); ?>
 
         <div class="checkout-shell'account-shell">
-            <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida novalidate aria-labelledby="titolo-identita-account">
+            <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-identita-account">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                 <input type="hidden" name="action" value="update_identity">
 
@@ -77,7 +77,7 @@
         </div>
 
         <div class="checkout-shell'account-shell">
-            <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida novalidate aria-labelledby="titolo-password-account">
+            <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-password-account">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                 <input type="hidden" name="action" value="update_password">
 

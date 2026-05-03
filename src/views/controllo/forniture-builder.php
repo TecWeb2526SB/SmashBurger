@@ -100,7 +100,7 @@ $frequencyOptions = supply_frequency_options();
                 </div>
 
                 <?php if ($builderKey === 'standard'): ?>
-                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-builder-standard">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-builder-standard">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_standard_template">
 
@@ -280,7 +280,7 @@ $frequencyOptions = supply_frequency_options();
                         </div>
                     </form>
                 <?php elseif ($builderKey === 'extra'): ?>
-                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-builder-straordinario">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-builder-straordinario">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_extra_supply">
 
@@ -450,7 +450,7 @@ $frequencyOptions = supply_frequency_options();
                         </div>
                     </form>
                 <?php else: ?>
-                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-builder-automatico">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-builder-automatico">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_policy">
 

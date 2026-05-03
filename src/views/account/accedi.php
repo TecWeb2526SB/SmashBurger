@@ -18,9 +18,9 @@
             <?php echo ui_alert($flash); ?>
             <?php echo ui_error_summary($errori); ?>
 
-            <form method="POST" action="accedi" data-valida novalidate>
-                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                <input type="hidden" name="redirect" value="<?php echo e($redirectTo); ?>">
+            <form method="POST" action="accedi" data-valida="true" novalidate="novalidate">
+                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
+                <input type="hidden" name="redirect" value="<?php echo e($redirectTo); ?>" />
 
                 <?php
                 echo ui_form_group('identifier', 'Username o email', 'text', [

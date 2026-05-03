@@ -7,6 +7,9 @@
  *   $brandContacts  array
  *   $allBranches    array
  */
+$supportEmail = (string) ($brandContacts['support_email'] ?? 'info@smashburger.it');
+$infoPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 1099');
+$orderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000');
 ?>
 
 <section id="servizi-intro" aria-labelledby="titolo-servizi">
@@ -73,20 +76,20 @@
         <div class="sede-dettaglio-card">
             <p>
                 Email brand:
-                <a href="mailto:<?php echo e($brandContacts['support_email'] ?? 'info@smashburger.it'); ?>">
-                    <?php echo e($brandContacts['support_email'] ?? 'info@smashburger.it'); ?>
+                <a href="mailto:<?php echo e($supportEmail); ?>">
+                    <?php echo e($supportEmail); ?>
                 </a>
             </p>
             <p>
                 Numero informazioni:
-                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['info_phone'] ?? ''))); ?>">
-                    <?php echo e($brandContacts['info_phone'] ?? ''); ?>
+                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $infoPhone)); ?>">
+                    <?php echo e($infoPhone); ?>
                 </a>
             </p>
             <p>
                 Numero ordini:
-                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) ($brandContacts['order_phone'] ?? ''))); ?>">
-                    <?php echo e($brandContacts['order_phone'] ?? ''); ?>
+                <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $orderPhone)); ?>">
+                    <?php echo e($orderPhone); ?>
                 </a>
             </p>
             <?php if (!empty($selectedBranch)): ?>

@@ -420,7 +420,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <p class="checkout-muted">Imposta il prezzo locale mostrato al cliente per la referenza selezionata.</p>
                             </div>
 
-                            <form class="checkout-form admin-inventory-price-form" method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" data-valida novalidate>
+                            <form class="checkout-form admin-inventory-price-form" method="POST" action="<?php echo e((string) ($sectionUrls['catalogo'] ?? 'controllo-catalogo')); ?>" data-valida="true" novalidate="novalidate">
                                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                 <input type="hidden" name="action" value="update_branch_pricing">
 
@@ -1147,7 +1147,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 
             <div class="admin-form-grid">
                 <?php if ($canModifyBranchOperations): ?>
-                    <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['automatico'] ?? 'controllo-forniture')); ?>" data-valida novalidate aria-labelledby="titolo-policy-auto">
+                    <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['automatico'] ?? 'controllo-forniture')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-policy-auto">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_policy">
 
@@ -1294,7 +1294,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <div class="checkout-shell">
                         <div class="checkout-main">
                             <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details'): ?>
-                                <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" data-valida novalidate aria-labelledby="titolo-manager-form">
+                                <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-manager-form">
                                     <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                     <input type="hidden" name="action" value="save_details">
                                     <input type="hidden" name="manager_id" value="<?php echo (int) ($draft['id'] ?? 0); ?>">

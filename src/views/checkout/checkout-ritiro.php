@@ -21,7 +21,7 @@
         <?php echo ui_alert($flash); ?>
         <?php echo ui_error_summary($errori); ?>
 
-        <form class="checkout-card checkout-form checkout-main" method="POST" action="checkout-ritiro" data-valida novalidate>
+        <form class="checkout-card checkout-form checkout-main" method="POST" action="checkout-ritiro" data-valida="true" novalidate="novalidate">
             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
 
             <?php if (!empty($selectedBranch)): ?>

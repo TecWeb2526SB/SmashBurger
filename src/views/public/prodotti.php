@@ -114,7 +114,7 @@ $productImageIndex = 0;
                                         decoding="async"
                                         <?php echo $isPriorityImage ? 'fetchpriority="high"' : ''; ?>
                                         alt="Immagine di <?php echo e($prodotto['name']); ?>"
-                                        style="object-position: <?php echo (int) ($prodotto['image_focus_x'] ?? 50); ?>% <?php echo (int) ($prodotto['image_focus_y'] ?? 50); ?>%;">
+                                        style="object-position: <?php echo (int) ($prodotto['image_focus_x'] ?? 50); ?>% <?php echo (int) ($prodotto['image_focus_y'] ?? 50); ?>%;" />
                                 <?php else: ?>
                                     <div class="scheda-prodotto-placeholder" aria-hidden="true">No image</div>
                                 <?php endif; ?>
@@ -141,13 +141,13 @@ $productImageIndex = 0;
                                         <?php if ((int) $prodotto['is_available'] === 1 && !$internalAccountBrowsing): ?>
                                             <form method="POST" action="carrello">
                                                 <input type="hidden" name="csrf_token"
-                                                    value="<?php echo e($csrfToken); ?>">
-                                                <input type="hidden" name="action" value="add_product">
-                                                <input type="hidden" name="product_id" value="<?php echo (int) $prodotto['id']; ?>">
-                                                <input type="hidden" name="quantity" value="1">
+                                                    value="<?php echo e($csrfToken); ?>" />
+                                                <input type="hidden" name="action" value="add_product" />
+                                                <input type="hidden" name="product_id" value="<?php echo (int) $prodotto['id']; ?>" />
+                                                <input type="hidden" name="quantity" value="1" />
                                                 <input type="hidden" name="branch_id"
-                                                    value="<?php echo !empty($selectedBranch) ? (int) $selectedBranch['id'] : 0; ?>">
-                                                <input type="hidden" name="redirect_to" value="prodotti">
+                                                    value="<?php echo !empty($selectedBranch) ? (int) $selectedBranch['id'] : 0; ?>" />
+                                                <input type="hidden" name="redirect_to" value="prodotti" />
                                                 <button type="submit" class="bottone-primario">Aggiungi al carrello</button>
                                             </form>
                                         <?php elseif ($internalAccountBrowsing): ?>

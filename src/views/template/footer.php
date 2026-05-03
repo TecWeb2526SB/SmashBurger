@@ -69,11 +69,11 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                         (<?php echo e($footerBranch['province']); ?>)
                     </p>
                     <p>
-                        <a href="sedi?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &rarr;</a>
+                        <a href="sedi?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &#8594;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
-                    <p><a href="sedi">Tutte le sedi &rarr;</a></p>
+                    <p><a href="sedi">Tutte le sedi &#8594;</a></p>
                 <?php endif; ?>
             </address>
         </section>
@@ -91,19 +91,19 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
 
         <!-- BARRA INFERIORE -->
         <div class="footer-basso">
-            <p>&copy; <?php echo date('Y'); ?> Smash Burger Original &mdash; P.IVA 12345678901</p>
+            <p>&#169; <?php echo date('Y'); ?> Smash Burger Original &#8212; P.IVA 12345678901</p>
 
             <nav aria-label="Informazioni legali">
                 <ul>
                     <li><a href="privacy">Privacy Policy</a></li>
                     <li><a href="mappa-sito">Mappa del sito</a></li>
-                    <li><a href="accessibilità">Accessibilità</a></li>
+                    <li><a href="accessibilita">Accessibilità</a></li>
                 </ul>
             </nav>
 
             <div class="w3c-badges">
-                <img src="images/w3chtml.png" alt="" aria-hidden="true" width="88" height="31">
-                <img src="images/w3ccss.png" alt="" aria-hidden="true" width="88" height="31">
+                <img src="images/w3chtml.png" alt="" aria-hidden="true" width="88" height="31" />
+                <img src="images/w3ccss.png" alt="" aria-hidden="true" width="88" height="31" />
             </div>
         </div>
 
@@ -115,14 +115,14 @@ $vjs = file_exists(__DIR__ . '/../../scripts/main.js')
     ? filemtime(__DIR__ . '/../../scripts/main.js')
     : time();
 ?>
-<script src="scripts/main.js?v=<?php echo $vjs; ?>" defer></script>
+<script src="scripts/main.js?v=<?php echo $vjs; ?>" defer="defer"></script>
 
 <button id="torna-su" type="button" aria-label="Torna all'inizio della pagina">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
          width="18" height="18" fill="none" stroke="currentColor"
          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-         aria-hidden="true" focusable="false">
-        <polyline points="18 15 12 9 6 15"/>
+         focusable="false">
+        <polyline points="18 15 12 9 6 15" />
     </svg>
 </button>
 

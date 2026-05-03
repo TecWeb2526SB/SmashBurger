@@ -16,8 +16,8 @@
 
             <?php echo ui_error_summary($errori); ?>
 
-            <form method="POST" action="registrati" data-valida novalidate>
-                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
+            <form method="POST" action="registrati" data-valida="true" novalidate="novalidate">
+                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
 
                 <?php
                 echo ui_form_group('username', 'Username', 'text', [
@@ -37,7 +37,8 @@
                 echo ui_form_group('password', 'Password', 'password', [
                     'error' => $errori['password'] ?? null,
                     'autocomplete' => 'new-password',
-                    'extra_attrs' => 'minlength="8" aria-describedby="password-suggerimento password-errore"'
+                    'extra_attrs' => 'minlength="8"',
+                    'described_by' => 'password-suggerimento'
                 ]);
                 ?>
                 <p id="password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, ! @ # $ % &amp; (minimo 8)</p>

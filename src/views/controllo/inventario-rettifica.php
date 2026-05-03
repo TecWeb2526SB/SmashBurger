@@ -89,7 +89,7 @@ if ($selectedProduct !== null) {
                     <?php endforeach; ?>
                 </nav>
 
-                <form method="POST" action="<?php echo e(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, $mode, $selectedProductId > 0 ? $selectedProductId : null)); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-rettifica-inventario-page">
+                <form method="POST" action="<?php echo e(admin_inventory_adjustment_url($selectedBranchSlug, $isGeneralAdmin, $mode, $selectedProductId > 0 ? $selectedProductId : null)); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-rettifica-inventario-page">
                     <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                     <input type="hidden" name="action" value="apply_inventory_adjustment">
                     <input type="hidden" name="mode" value="<?php echo e($mode); ?>">

@@ -42,7 +42,7 @@ $isReviewStep = $currentStep === 'riepilogo';
         <div class="checkout-shell admin-product-shell">
             <div class="checkout-card checkout-form checkout-main admin-product-main">
                 <?php if ($currentStep === 'dettagli'): ?>
-                    <form method="POST" action="controllo-catalogo-prodotto<?php echo $existingProduct !== null ? '?id=' . (int) $existingProduct['id'] : ''; ?>" data-valida novalidate aria-labelledby="titolo-step-dettagli">
+                    <form method="POST" action="controllo-catalogo-prodotto<?php echo $existingProduct !== null ? '?id=' . (int) $existingProduct['id'] : ''; ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-step-dettagli">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="save_details">
 

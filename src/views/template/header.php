@@ -38,19 +38,20 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
 }
 ?>
 <!DOCTYPE html>
-<html lang="it" xml:lang="it">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?php echo e($pageTitle ?? 'Smash Burger Original'); ?></title>
     <meta name="description"
-        content="<?php echo e($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>">
-    <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#c0392b">
+        content="<?php echo e($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>" />
+    <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#c0392b" />
 
     <script>
+        //<![CDATA[
         (function () {
             var t = localStorage.getItem('smashburger-tema');
             if (t === 'scuro' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -59,11 +60,12 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                 document.documentElement.classList.add('tema-chiaro');
             }
         }());
+        //]]>
     </script>
 
-    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
-    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>" />
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+    <link rel="manifest" href="site.webmanifest" />
 </head>
 
 <body data-cart-count="<?php echo (int) $headerCartCount; ?>">
@@ -89,11 +91,11 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                             aria-haspopup="true"
                             aria-controls="sede-dropdown-menu">
                             <?php echo e((string) $headerSelectedBranch['city']); ?>
-                            <svg class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" hidden>
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" hidden="hidden">
                             <p class="sede-dropdown-titolo">Scegli la tua sede</p>
                             <ul>
                                 <?php
@@ -210,7 +212,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
         aria-labelledby="modal-titolo"
         aria-describedby="modal-messaggio"
         aria-hidden="true"
-        hidden>
+        hidden="hidden">
         <div class="modal-content">
             <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
             <p id="modal-messaggio" class="modal-messaggio">

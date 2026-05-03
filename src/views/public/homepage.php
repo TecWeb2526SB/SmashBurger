@@ -3,7 +3,7 @@
         <div class="home-hero-grid">
             <div class="hero-content">
                 <span class="home-eyebrow">Autentico Gusto Americano</span>
-                <h1 id="titolo-hero">Il vero Smash Burger.<br>Croccante, succoso, iconico.</h1>
+                <h1 id="titolo-hero">Il vero Smash Burger.<br />Croccante, succoso, iconico.</h1>
                 <p>Scegli la sede più vicina e ordina il tuo burger pressato al momento.</p>
                 
                 <div class="hero-cta">
@@ -52,11 +52,11 @@
                 
                 <?php if (is_logged_in()): ?>
                     <form action="carrello" method="POST" class="scheda-prodotto-azioni">
-                        <input type="hidden" name="action" value="add_product">
-                        <input type="hidden" name="product_id" value="1">
-                        <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                        <input type="hidden" name="redirect_to" value="./">
+                        <input type="hidden" name="action" value="add_product" />
+                        <input type="hidden" name="product_id" value="1" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
+                        <input type="hidden" name="redirect_to" value="./" />
                         <button type="submit" class="bottone-primario">Aggiungi</button>
                     </form>
                 <?php endif; ?>
@@ -69,11 +69,11 @@
                 
                 <?php if (is_logged_in()): ?>
                     <form action="carrello" method="POST" class="scheda-prodotto-azioni">
-                        <input type="hidden" name="action" value="add_product">
-                        <input type="hidden" name="product_id" value="2">
-                        <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                        <input type="hidden" name="redirect_to" value="./">
+                        <input type="hidden" name="action" value="add_product" />
+                        <input type="hidden" name="product_id" value="2" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
+                        <input type="hidden" name="redirect_to" value="./" />
                         <button type="submit" class="bottone-primario">Aggiungi</button>
                     </form>
                 <?php endif; ?>
@@ -86,11 +86,11 @@
                 
                 <?php if (is_logged_in()): ?>
                     <form action="carrello" method="POST" class="scheda-prodotto-azioni">
-                        <input type="hidden" name="action" value="add_product">
-                        <input type="hidden" name="product_id" value="3">
-                        <input type="hidden" name="quantity" value="1">
-                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                        <input type="hidden" name="redirect_to" value="./">
+                        <input type="hidden" name="action" value="add_product" />
+                        <input type="hidden" name="product_id" value="3" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
+                        <input type="hidden" name="redirect_to" value="./" />
                         <button type="submit" class="bottone-primario">Aggiungi</button>
                     </form>
                 <?php endif; ?>

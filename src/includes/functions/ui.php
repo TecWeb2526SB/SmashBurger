@@ -66,12 +66,13 @@ function ui_form_group(string $id, string $label, string $type = 'text', array $
 {
     $value       = $options['value'] ?? '';
     $error       = $options['error'] ?? null;
-    $required    = ($options['required'] ?? true) ? 'required aria-required="true"' : '';
+    $required    = ($options['required'] ?? true) ? 'required="required" aria-required="true"' : '';
     $placeholder = isset($options['placeholder']) ? 'placeholder="' . htmlspecialchars($options['placeholder'], ENT_QUOTES, 'UTF-8') . '"' : '';
     $autocomplete = isset($options['autocomplete']) ? 'autocomplete="' . htmlspecialchars($options['autocomplete'], ENT_QUOTES, 'UTF-8') . '"' : '';
     $extraAttrs  = $options['extra_attrs'] ?? '';
     $ariaInvalid = $error ? 'aria-invalid="true"' : '';
-    $describedBy = $id . '-errore';
+    $errorId = $id . '-errore';
+    $describedBy = trim((string) ($options['described_by'] ?? '') . ' ' . $errorId);
 
     $inputHtml = '';
     if ($type === 'textarea') {
@@ -79,24 +80,24 @@ function ui_form_group(string $id, string $label, string $type = 'text', array $
     } elseif ($type === 'password') {
         $inputHtml = '
             <div class="campo-password-wrapper">
-                <input type="password" id="' . $id . '" name="' . $id . '" ' . $required . ' ' . $autocomplete . ' ' . $ariaInvalid . ' aria-describedby="' . $describedBy . '" ' . $extraAttrs . '>
+                <input type="password" id="' . $id . '" name="' . $id . '" ' . $required . ' ' . $autocomplete . ' ' . $ariaInvalid . ' aria-describedby="' . $describedBy . '" ' . $extraAttrs . ' />
                 <button type="button" class="mostra-password" aria-pressed="false" aria-label="Tieni premuto per mostrare la password">
-                    <svg class="icona-password icona-password-chiusa" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icona-password icona-password-chiusa" viewBox="0 0 24 24" focusable="false">
                         <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
                         <circle cx="12" cy="12" r="3" />
                         <path d="M4 4l16 16" />
                     </svg>
-                    <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" focusable="false">
                         <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
                         <circle cx="12" cy="12" r="3" />
                     </svg>
                 </button>
             </div>';
     } else {
-        $inputHtml = '<input type="' . $type . '" id="' . $id . '" name="' . $id . '" value="' . htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') . '" ' . $required . ' ' . $placeholder . ' ' . $autocomplete . ' ' . $ariaInvalid . ' aria-describedby="' . $describedBy . '" ' . $extraAttrs . '>';
+        $inputHtml = '<input type="' . $type . '" id="' . $id . '" name="' . $id . '" value="' . htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8') . '" ' . $required . ' ' . $placeholder . ' ' . $autocomplete . ' ' . $ariaInvalid . ' aria-describedby="' . $describedBy . '" ' . $extraAttrs . ' />';
     }
 
-    $erroreHtml = '<span id="' . $describedBy . '" class="campo-errore" ' . ($error ? '' : 'hidden') . '>' . htmlspecialchars($error ?? '', ENT_QUOTES, 'UTF-8') . '</span>';
+    $erroreHtml = '<span id="' . $errorId . '" class="campo-errore" ' . ($error ? '' : 'hidden="hidden"') . '>' . htmlspecialchars($error ?? '', ENT_QUOTES, 'UTF-8') . '</span>';
 
     return '
         <div class="campo-gruppo">

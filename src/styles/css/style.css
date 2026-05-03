@@ -8,6 +8,7 @@
     --colore-testo: #111111;
     --colore-testo-leggero: #555555;
     --colore-accento: #c0392b;
+    --colore-accento-pieno: #c0392b;
     --colore-accento-hover: #96281b;
     --colore-bordo: #dedede;
     --colore-bordo-tratteggiato: rgba(192, 57, 43, 0.18);
@@ -62,13 +63,14 @@
         --colore-sfondo: #111111;
         --colore-testo: #f0f0f0;
         --colore-testo-leggero: #aaaaaa;
-        --colore-accento: #e74c3c;
+        --colore-accento: #ff7a6d;
+        --colore-accento-pieno: #d83d2d;
         --colore-accento-hover: #c0392b;
         --colore-bordo: #2a2a2a;
         --colore-bordo-tratteggiato: rgba(231, 76, 60, 0.26);
         --colore-sfondo-alt: #1a1a1a;
 
-        --colore-link: #e74c3c;
+        --colore-link: #ff7a6d;
         --colore-link-visitato: #c39797;
     }
 }
@@ -82,12 +84,13 @@ html.tema-scuro {
     --colore-sfondo: #111111;
     --colore-testo: #f0f0f0;
     --colore-testo-leggero: #aaaaaa;
-    --colore-accento: #e74c3c;
+    --colore-accento: #ff7a6d;
+    --colore-accento-pieno: #d83d2d;
     --colore-accento-hover: #c0392b;
     --colore-bordo: #2a2a2a;
     --colore-sfondo-alt: #1a1a1a;
 
-    --colore-link: #e74c3c;
+    --colore-link: #ff7a6d;
     --colore-link-visitato: #c39797;
 }
 
@@ -96,6 +99,7 @@ html.tema-chiaro {
     --colore-testo: #111111;
     --colore-testo-leggero: #555555;
     --colore-accento: #c0392b;
+    --colore-accento-pieno: #c0392b;
     --colore-accento-hover: #96281b;
     --colore-bordo: #e0e0e0;
     --colore-bordo-tratteggiato: rgba(192, 57, 43, 0.18);
@@ -516,7 +520,7 @@ header h1 {
     right: 0.8rem;
     top: 50%;
     transform: translateY(-50%);
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     color: white;
     font-size: 0.65rem;
     font-weight: 700;
@@ -612,7 +616,7 @@ header h1 {
 }
 
 .modal-bottone-conferma {
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     color: #ffffff;
 }
 
@@ -669,7 +673,7 @@ header h1 {
     bottom: -0.15rem;
     height: 2px;
     border-radius: 999px;
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     transform: scaleX(0);
     transform-origin: left center;
     opacity: 0;
@@ -722,7 +726,7 @@ header h1 {
     position: absolute;
     top: -0.7rem;
     right: -1.1rem;
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     color: #ffffff;
     font-size: 0.75rem;
     font-weight: 700;
@@ -899,7 +903,7 @@ footer a:hover {
     align-items: center;
     justify-content: center;
     min-height: var(--touch-target-min);
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     color: #ffffff;
     border: 1px solid transparent;
     padding: var(--spazio-sm) var(--spazio-lg);
@@ -1137,7 +1141,7 @@ footer a:hover {
 
 #filtro-categorie a:hover,
 #filtro-categorie a.filtro-attivo {
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     border-color: var(--colore-accento);
     color: #ffffff;
 }
@@ -1806,7 +1810,7 @@ html.tema-scuro .account-summary-box {
 
 .checkout-step-list li.attivo {
     color: #ffffff;
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     border-color: var(--colore-accento);
 }
 
@@ -2177,7 +2181,7 @@ html.tema-scuro .account-summary-box {
 .admin-section-nav a.is-active,
 .admin-section-nav a:hover,
 .admin-section-nav a:focus-visible {
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     border-color: var(--colore-accento);
     color: #ffffff;
 }
@@ -2443,7 +2447,7 @@ html.tema-chiaro .admin-section-stat {
     width: 0.55rem;
     height: 0.55rem;
     border-radius: 50%;
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     transform: translateX(-50%);
     opacity: 0.22;
 }
@@ -4348,7 +4352,7 @@ html.tema-scuro .admin-status-pill.is-warning::before {
 }
 
 #torna-su:hover {
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-pieno);
     color: #ffffff;
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(192, 57, 43, 0.3);
