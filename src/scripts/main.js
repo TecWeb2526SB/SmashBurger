@@ -1423,8 +1423,13 @@ function inizializzaProdottiChipsSpy() {
 
         /* Scroll-spy categorie — traccia quale sezione e piu visibile */
         var sezioniVisibili = new Map();
+        var scrollSpyAttivo = true; /* Flag per disabilitare temporaneamente lo scroll-spy */
+        var chipSelezionatoManualmente = null; /* Chip selezionato con click */
 
         const sezioneObserver = new IntersectionObserver(function (entries) {
+            /* Se lo scroll-spy e disabilitato, ignora */
+            if (!scrollSpyAttivo) return;
+
             entries.forEach(function (entry) {
                 var slug = entry.target.getAttribute('data-prod-section');
                 if (entry.isIntersecting) {
@@ -1444,14 +1449,18 @@ function inizializzaProdottiChipsSpy() {
                 }
             });
 
+            /* Se c'e un chip selezionato manualmente, mantienilo attivo */
+            if (chipSelezionatoManualmente) {
+                attivaChip(chipSelezionatoManualmente);
+                return;
+            }
+
             /* Attiva solo se c'e almeno una sezione visibile con ratio significativo */
             if (slugAttivo && maxRatio > 0) {
                 attivaChip(slugAttivo);
             } else {
                 /* Nessuna sezione visibile: deseleziona tutti */
-                chips.forEach(function (chip) {
-                    chip.classList.remove('is-active');
-                });
+                deselezionaTutti();
             }
         }, {
             /* Considera "attiva" la categoria nella zona centrale del viewport */
@@ -1471,10 +1480,35 @@ function inizializzaProdottiChipsSpy() {
         });
     }
 
-    /* Click esplicito → mantieni evidenziazione coerente subito */
+    function deselezionaTutti() {
+        chips.forEach(function (chip) {
+            chip.classList.remove('is-active');
+        });
+    }
+
+    /* Click esplicito → toggle selezione e pausa scroll-spy */
     chips.forEach(function (chip) {
-        chip.addEventListener('click', function () {
-            attivaChip(chip.getAttribute('data-prod-chip'));
+        chip.addEventListener('click', function (e) {
+            var slug = chip.getAttribute('data-prod-chip');
+            var eraAttivo = chip.classList.contains('is-active');
+
+            /* Se clicco sul chip gia attivo, lo deselezione (torno a "tutte le categorie") */
+            if (eraAttivo) {
+                deselezionaTutti();
+                chipSelezionatoManualmente = null;
+            } else {
+                /* Altrimenti attiva il chip cliccato */
+                attivaChip(slug);
+                chipSelezionatoManualmente = slug;
+            }
+
+            /* Pausa lo scroll-spy per evitare conflitti durante lo scroll automatico */
+            scrollSpyAttivo = false;
+            setTimeout(function () {
+                scrollSpyAttivo = true;
+                /* Reset selezione manuale dopo lo scroll, riattiva scroll-spy */
+                chipSelezionatoManualmente = null;
+            }, 800);
         });
     });
 }
