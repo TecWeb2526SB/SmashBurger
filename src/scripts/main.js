@@ -1360,6 +1360,160 @@ function inizializzaAdminSupplyBuilder() {
 }
 
 /* ==========================================================================
+   HOMEPAGE — FAQ ACCORDION (chiude gli altri item quando se ne apre uno)
+   ========================================================================== */
+
+function inizializzaFaqAccordion() {
+    const lista = document.querySelector('[data-faq]');
+    if (!lista) return;
+
+    const items = Array.from(lista.querySelectorAll('details.faq-item'));
+    if (items.length === 0) return;
+
+    items.forEach(function (item) {
+        item.addEventListener('toggle', function () {
+            if (item.open) {
+                items.forEach(function (altro) {
+                    if (altro !== item && altro.open) {
+                        altro.open = false;
+                    }
+                });
+            }
+        });
+    });
+}
+
+
+/* ==========================================================================
+   PAGINA PRODOTTI — chip scroll-spy + stepper quantità
+   ========================================================================== */
+
+function inizializzaProdottiPage() {
+    inizializzaProdottiChipsSpy();
+    inizializzaProdottiStepper();
+}
+
+/**
+ * Sticky chip filter con scroll-spy: evidenzia il chip della categoria
+ * attualmente visibile nel viewport e segna la nav come "stuck" quando
+ * raggiunge il top, per aggiungere l'ombra di stato.
+ */
+function inizializzaProdottiChipsSpy() {
+    const nav = document.querySelector('[data-prod-chips]');
+    if (!nav) return;
+
+    const chips = Array.from(nav.querySelectorAll('[data-prod-chip]'));
+    const sezioni = Array.from(document.querySelectorAll('[data-prod-section]'));
+
+    if (chips.length === 0 || sezioni.length === 0) return;
+
+    /* Stato sticky → ombra */
+    const sentinel = document.createElement('div');
+    sentinel.setAttribute('aria-hidden', 'true');
+    sentinel.style.cssText = 'height:1px;width:100%;';
+    nav.parentNode.insertBefore(sentinel, nav);
+
+    if ('IntersectionObserver' in window) {
+        const stickyObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                nav.classList.toggle('is-stuck', !entry.isIntersecting);
+            });
+        }, { threshold: [0] });
+        stickyObserver.observe(sentinel);
+
+        /* Scroll-spy categorie */
+        const sezioneObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                const slug = entry.target.getAttribute('data-prod-section');
+                attivaChip(slug);
+            });
+        }, {
+            /* Considera "attiva" la categoria appena entra dal basso */
+            rootMargin: '-30% 0px -60% 0px',
+            threshold: 0
+        });
+
+        sezioni.forEach(function (sez) {
+            sezioneObserver.observe(sez);
+        });
+    }
+
+    function attivaChip(slug) {
+        chips.forEach(function (chip) {
+            const attivo = chip.getAttribute('data-prod-chip') === slug;
+            chip.classList.toggle('is-active', attivo);
+        });
+    }
+
+    /* Click esplicito → mantieni evidenziazione coerente subito */
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+            attivaChip(chip.getAttribute('data-prod-chip'));
+        });
+    });
+}
+
+/**
+ * Quantità: stepper +/- con limite min/max coerente con l'input.
+ * Aggiorna l'input nascosto al click; il form invia il valore corrente.
+ */
+function inizializzaProdottiStepper() {
+    const steppers = document.querySelectorAll('[data-prod-stepper]');
+    if (steppers.length === 0) return;
+
+    steppers.forEach(function (stepper) {
+        const input = stepper.querySelector('[data-prod-qty]');
+        const btnDec = stepper.querySelector('[data-prod-step="-1"]');
+        const btnInc = stepper.querySelector('[data-prod-step="1"]');
+
+        if (!input || !btnDec || !btnInc) return;
+
+        const min = parseInt(input.getAttribute('min'), 10) || 1;
+        const max = parseInt(input.getAttribute('max'), 10) || 20;
+
+        function leggi() {
+            const v = parseInt(input.value, 10);
+            return Number.isNaN(v) ? min : v;
+        }
+
+        function aggiornaStato() {
+            const v = leggi();
+            btnDec.disabled = v <= min;
+            btnInc.disabled = v >= max;
+        }
+
+        function imposta(v) {
+            const clamp = Math.max(min, Math.min(max, v));
+            input.value = String(clamp);
+            aggiornaStato();
+        }
+
+        btnDec.addEventListener('click', function () {
+            imposta(leggi() - 1);
+        });
+
+        btnInc.addEventListener('click', function () {
+            imposta(leggi() + 1);
+        });
+
+        input.addEventListener('input', function () {
+            const v = leggi();
+            if (v < min) input.value = String(min);
+            if (v > max) input.value = String(max);
+            aggiornaStato();
+        });
+
+        input.addEventListener('blur', function () {
+            imposta(leggi());
+        });
+
+        aggiornaStato();
+    });
+}
+
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -1380,4 +1534,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaStampaRicevuta();
     inizializzaAdminCatalogoProdotto();
     inizializzaAdminSupplyBuilder();
+    inizializzaFaqAccordion();
+    inizializzaProdottiPage();
 });
