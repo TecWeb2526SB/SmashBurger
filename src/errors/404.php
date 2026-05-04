@@ -1,6 +1,8 @@
 <?php
 /**
  * 404.php: Pagina di errore HTTP 404 (Not Found).
+ * Autonoma: non include resources.php perché potrebbe essere servita
+ * anche quando il bootstrap dell'applicazione fallisce.
  */
 http_response_code(404);
 ?>
@@ -9,17 +11,102 @@ http_response_code(404);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Pagina non trovata - Smash Burger Original</title>
+    <title>404 - Panino non trovato - Smash Burger Original</title>
     <link rel="stylesheet" href="../styles/resources.css">
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background-color: #fafafa;
+        }
+        .error-box {
+            text-align: center;
+            max-width: 32rem;
+        }
+        .error-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        .error-code {
+            font-size: clamp(4rem, 12vw, 8rem);
+            font-weight: 800;
+            color: #c0392b;
+            line-height: 1;
+            margin: 0 0 0.5rem;
+            letter-spacing: -0.04em;
+        }
+        .error-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 1rem;
+            color: #1a1a1a;
+        }
+        .error-desc {
+            color: #666;
+            line-height: 1.6;
+            margin: 0 0 2rem;
+        }
+        .error-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+        .error-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 999px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .error-btn:hover {
+            transform: translateY(-2px);
+        }
+        .error-btn-primary {
+            background-color: #c0392b;
+            color: #fff;
+        }
+        .error-btn-primary:hover {
+            box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
+        }
+        .error-btn-secondary {
+            background-color: #fff;
+            color: #1a1a1a;
+            border: 1px solid #e0e0e0;
+        }
+        .error-btn-secondary:hover {
+            border-color: #c0392b;
+            color: #c0392b;
+        }
+    </style>
 </head>
 <body>
-    <main id="content">
-        <div class="contenitore">
-            <h1>404</h1>
-            <p>La pagina che stai cercando non esiste o &egrave; stata spostata.</p>
-            <p><a href="../">Torna alla home</a></p>
+    <main id="content" class="error-page">
+        <div class="error-box">
+            <div class="error-icon" aria-hidden="true">&#127828;</div>
+            <p class="error-code">404</p>
+            <h1 class="error-title">Ops, panino non trovato!</h1>
+            <p class="error-desc">
+                Questo ingrediente non &egrave; nel nostro menu. 
+                Forse &egrave; finito o non &egrave; mai esistito. 
+                Ma non preoccuparti, abbiamo tanti altri panini che aspettano solo te!
+            </p>
+            <div class="error-actions">
+                <a href="../" class="error-btn error-btn-primary">
+                    <span aria-hidden="true">&#8592;</span> Torna alla home
+                </a>
+                <a href="../prodotti" class="error-btn error-btn-secondary">
+                    Scopri il menu
+                </a>
+            </div>
         </div>
     </main>
-
 </body>
 </html>
