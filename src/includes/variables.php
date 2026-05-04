@@ -37,7 +37,6 @@ $siteMapItems = [
     'I nostri prodotti'      => 'prodotti',
     'Servizi'                => 'servizi',
     'Chi siamo'              => 'chi-siamo',
-    'Le nostre sedi'         => 'sedi',
     'Accedi'                 => 'accedi',
     'Registrazione'          => 'registrati',
     'Privacy Policy'         => 'privacy',

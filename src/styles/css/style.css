@@ -6520,18 +6520,6 @@ html.tema-scuro .admin-status-pill.is-warning::before {
     color: var(--colore-testo-leggero);
 }
 
-/* Hero sedi */
-.sedi-hero {
-    padding-block: var(--spazio-sezione);
-    padding-block-start: var(--spazio-primo-titolo);
-    background-color: var(--colore-sfondo-alt);
-    border-bottom: var(--bordo-standard);
-}
-
-.sedi-hero .home-section-head {
-    max-width: 50ch;
-}
-
 .sedi-layout {
     padding-block: var(--spazio-sezione);
 }
@@ -6981,6 +6969,16 @@ img[src*="Cup.webp"] {
 .chi-stat span {
     font-size: 0.875rem;
     color: var(--colore-testo-leggero);
+}
+
+/* SEDI — integrata in chi siamo */
+.chi-sedi {
+    padding-block: var(--spazio-sezione);
+    border-top: var(--bordo-standard);
+}
+
+.chi-sedi .home-section-head {
+    margin-bottom: var(--spazio-lg);
 }
 
 /* CTA — Call to action finale */

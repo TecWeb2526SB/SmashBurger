@@ -59,7 +59,7 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
         <section aria-labelledby="titolo-indirizzo">
             <h2 id="titolo-indirizzo">Indirizzo</h2>
             <address>
-                <?php if (!empty($footerBranch)): ?>
+<?php if (!empty($footerBranch)): ?>
                     <p><?php echo htmlspecialchars($footerBranch['address_line'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <p>
                         <?php echo htmlspecialchars($footerBranch['postal_code'], ENT_QUOTES, 'UTF-8'); ?>
@@ -67,11 +67,11 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                         (<?php echo htmlspecialchars($footerBranch['province'], ENT_QUOTES, 'UTF-8'); ?>)
                     </p>
                     <p>
-                        <a href="sedi?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &rarr;</a>
+                        <a href="chi-siamo?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>#chi-sedi">Dettagli sede attiva &rarr;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
-                    <p><a href="sedi">Tutte le sedi &rarr;</a></p>
+                    <p><a href="chi-siamo#chi-sedi">Tutte le sedi &rarr;</a></p>
                 <?php endif; ?>
             </address>
         </section>
