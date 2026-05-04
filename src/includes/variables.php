@@ -16,7 +16,7 @@ $navItems = [
     'Home'              => './',
     'I nostri prodotti' => 'prodotti',
     'Servizi'           => 'servizi',
-    'Chi siamo'         => 'sedi',
+    'Chi siamo'         => 'chi-siamo',
 ];
 
 if ($isLoggedIn) {
@@ -36,7 +36,8 @@ $siteMapItems = [
     'Home'                   => './',
     'I nostri prodotti'      => 'prodotti',
     'Servizi'                => 'servizi',
-    'Chi siamo e le sedi'    => 'sedi',
+    'Chi siamo'              => 'chi-siamo',
+    'Le nostre sedi'         => 'sedi',
     'Accedi'                 => 'accedi',
     'Registrazione'          => 'registrati',
     'Privacy Policy'         => 'privacy',

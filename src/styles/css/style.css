@@ -6520,6 +6520,18 @@ html.tema-scuro .admin-status-pill.is-warning::before {
     color: var(--colore-testo-leggero);
 }
 
+/* Hero sedi */
+.sedi-hero {
+    padding-block: var(--spazio-sezione);
+    padding-block-start: var(--spazio-primo-titolo);
+    background-color: var(--colore-sfondo-alt);
+    border-bottom: var(--bordo-standard);
+}
+
+.sedi-hero .home-section-head {
+    max-width: 50ch;
+}
+
 .sedi-layout {
     padding-block: var(--spazio-sezione);
 }
@@ -6651,4 +6663,411 @@ img[src*="VeganBurger.webp"] {
 
 img[src*="Cup.webp"] {
     transform: scale(1.4);
+}
+
+
+/* --------------------------------------------------------------------------
+   21. CHI SIAMO — pagina dedicata con hero scuro e sezioni tematiche
+   -------------------------------------------------------------------------- */
+
+/* HERO Chi Siamo — sfondo scuro (stile servizi) */
+.chi-hero {
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+    padding-block: var(--spazio-sezione);
+    border-bottom: var(--bordo-standard);
+}
+
+.chi-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--spazio-lg);
+    align-items: center;
+}
+
+.chi-hero-image {
+    margin: 0;
+    border-radius: var(--raggio-card);
+    overflow: hidden;
+    box-shadow: var(--ombra-hover);
+}
+
+.chi-hero-image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.chi-hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spazio-md);
+}
+
+.chi-hero-titolo {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+    color: #f5f5f5;
+}
+
+.chi-hero-titolo em {
+    font-style: normal;
+    color: var(--colore-accento);
+}
+
+.chi-hero-lead {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 50ch;
+    color: #b0b0b0;
+    margin: 0;
+}
+
+.chi-hero-quicknav {
+    list-style: none;
+    padding: 0;
+    margin: var(--spazio-sm) 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spazio-sm);
+}
+
+.chi-hero-quicknav a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #f5f5f5;
+    text-decoration: none;
+    transition: background-color var(--transizione-base),
+                border-color var(--transizione-base),
+                color var(--transizione-base);
+}
+
+.chi-hero-quicknav a:hover,
+.chi-hero-quicknav a:focus-visible {
+    background-color: var(--colore-accento);
+    border-color: var(--colore-accento);
+    color: #ffffff;
+}
+
+/* STORIA — Timeline verticale */
+.chi-storia {
+    padding-block: var(--spazio-sezione);
+}
+
+.chi-timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+}
+
+.chi-timeline-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spazio-lg);
+    padding-block: var(--spazio-lg);
+    border-bottom: var(--bordo-standard);
+}
+
+.chi-timeline .chi-timeline-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.chi-timeline-anno {
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--colore-accento);
+    line-height: 1;
+    min-width: 5rem;
+    opacity: 0.9;
+}
+
+.chi-timeline-corpo h3 {
+    font-size: 1.4rem;
+    margin: 0 0 var(--spazio-sm);
+    line-height: 1.2;
+}
+
+.chi-timeline-corpo p {
+    color: var(--colore-testo-leggero);
+    line-height: 1.6;
+    margin: 0;
+    max-width: 65ch;
+}
+
+/* VALORI — Grid con icone (stile feature-grid) */
+.chi-valori {
+    padding-block: var(--spazio-sezione);
+    background-color: var(--colore-sfondo-alt);
+    border-top: var(--bordo-standard);
+}
+
+.chi-valori-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--spazio-md);
+}
+
+.chi-valore-card {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    padding: 1.2rem;
+    transition: transform var(--transizione-base),
+                box-shadow var(--transizione-base);
+}
+
+.chi-valore-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ombra-hover);
+}
+
+.chi-valore-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-bottom: var(--spazio-sm);
+    border-radius: 50%;
+    background-color: rgba(192, 57, 43, 0.08);
+    color: var(--colore-accento);
+    border: var(--bordo-standard);
+}
+
+.chi-valore-card h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--spazio-sm);
+}
+
+.chi-valore-card p {
+    color: var(--colore-testo-leggero);
+    margin: 0;
+}
+
+/* FILOSOFIA — Sezioni numerate (stile servizi) */
+.chi-filosofia {
+    padding-block: var(--spazio-sezione);
+    border-top: var(--bordo-standard);
+}
+
+.chi-filosofia-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0;
+}
+
+.chi-filosofia-item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spazio-lg);
+    padding-block: var(--spazio-lg);
+    border-bottom: var(--bordo-standard);
+}
+
+.chi-filosofia-list .chi-filosofia-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.chi-filosofia-numero {
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-weight: 800;
+    color: var(--colore-bordo);
+    line-height: 1;
+    min-width: 5rem;
+    opacity: 0.7;
+}
+
+.chi-filosofia-corpo {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--spazio-lg);
+    align-items: start;
+}
+
+.chi-filosofia-titolo {
+    font-size: 1.6rem;
+    margin: 0 0 var(--spazio-sm);
+    line-height: 1.2;
+}
+
+.chi-filosofia-desc {
+    color: var(--colore-testo-leggero);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.chi-filosofia-highlights {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.55rem;
+    align-self: center;
+}
+
+.chi-filosofia-highlights li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--colore-testo-leggero);
+}
+
+.chi-filosofia-highlights li::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--colore-accento);
+    margin-top: 0.5em;
+    flex-shrink: 0;
+}
+
+/* NUMERI — Statistiche in grid */
+.chi-numeri {
+    padding-block: var(--spazio-sezione);
+    background-color: var(--colore-sfondo-alt);
+    border-top: var(--bordo-standard);
+}
+
+.chi-stats-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--spazio-md);
+}
+
+.chi-stat {
+    text-align: center;
+    padding: var(--spazio-md);
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo);
+    box-shadow: var(--ombra-leggera);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.chi-stat strong {
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    color: var(--colore-accento);
+    line-height: 1.1;
+}
+
+.chi-stat span {
+    font-size: 0.875rem;
+    color: var(--colore-testo-leggero);
+}
+
+/* CTA — Call to action finale */
+.chi-cta {
+    padding-block: var(--spazio-sezione);
+    border-top: var(--bordo-standard);
+}
+
+.chi-cta-box {
+    border: var(--bordo-standard);
+    border-radius: var(--raggio-card);
+    background-color: var(--colore-sfondo-alt);
+    padding: var(--spazio-xl) var(--spazio-lg);
+    text-align: center;
+    max-width: 48rem;
+    margin-inline: auto;
+}
+
+.chi-cta-box h2 {
+    margin-bottom: var(--spazio-sm);
+}
+
+.chi-cta-box p {
+    color: var(--colore-testo-leggero);
+    max-width: 50ch;
+    margin-inline: auto;
+}
+
+.chi-cta-azioni {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spazio-sm);
+    margin-top: var(--spazio-lg);
+}
+
+/* Responsive Chi Siamo */
+@media (max-width: 64rem) {
+    .chi-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chi-hero-image {
+        order: -1;
+        max-width: 28rem;
+    }
+
+    .chi-valori-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .chi-stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .chi-filosofia-corpo {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 48rem) {
+    .chi-timeline-item {
+        grid-template-columns: 1fr;
+        gap: var(--spazio-sm);
+    }
+
+    .chi-timeline-anno {
+        font-size: 2.2rem;
+    }
+
+    .chi-filosofia-item {
+        grid-template-columns: 1fr;
+        gap: var(--spazio-sm);
+    }
+
+    .chi-filosofia-numero {
+        font-size: 2.5rem;
+    }
+
+    .chi-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 40rem) {
+    .chi-valori-grid,
+    .chi-stats-grid {
+        grid-template-columns: 1fr;
+    }
 }

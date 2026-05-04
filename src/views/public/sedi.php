@@ -1,6 +1,6 @@
 <?php
 /**
- * sedi: View dinamica chi siamo / sedi.
+ * sedi: View della pagina sedi.
  *
  * Variabili attese:
  *   $allBranches    array
@@ -10,38 +10,17 @@
  */
 ?>
 
-<section class="chi-siamo-intro" aria-labelledby="titolo-sedi">
+<!-- ==========================================================
+     HERO — Trova la tua sede
+     ========================================================== -->
+<section class="sedi-hero" aria-labelledby="titolo-sedi">
     <div class="contenitore">
-        <h1 id="titolo-sedi">Chi siamo e le nostre sedi</h1>
-        <p class="chi-siamo-lead">
-            Smash Burger Original nasce in Veneto con una promessa semplice: burger fatti al momento,
-            ingredienti selezionati e qualità costante in ogni sede.
-        </p>
-
-        <div class="chi-siamo-grid">
-            <article class="chi-siamo-card">
-                <h2>La nostra filosofia</h2>
-                <p>
-                    Lavoriamo con processi chiari, ricette replicabili e attenzione al dettaglio.
-                    Ogni ordine viene preparato espresso, con tempi rapidi e standard condivisi.
-                </p>
-            </article>
-
-            <article class="chi-siamo-card">
-                <h2>Qualità e trasparenza</h2>
-                <p>
-                    Tracciamo disponibilità e menu in modo dinamico per sede: quello che vedi online
-                    è allineato al punto vendita selezionato, inclusi orari e note di ritiro.
-                </p>
-            </article>
-
-            <article class="chi-siamo-card">
-                <h2>Esperienza locale</h2>
-                <p>
-                    Ogni sede è integrata nel proprio territorio con team dedicato e servizio uniforme.
-                    Dal ritiro immediato al ritiro programmato, l'esperienza resta semplice e affidabile.
-                </p>
-            </article>
+        <div class="home-section-head">
+            <h1 id="titolo-sedi" class="home-section-title">Le nostre sedi</h1>
+            <p class="home-section-sub">
+                Siamo presenti in diverse citt&agrave; italiane. Seleziona una sede per vedere
+                orari, indirizzo e mappa. Puoi ordinare online e ritirare in sede.
+            </p>
         </div>
     </div>
 </section>

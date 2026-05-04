@@ -42,10 +42,10 @@ $branchesForJs = array_map(static function (array $branch): array {
 
 $branchesJson = json_encode($branchesForJs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-$pageTitle       = 'Chi siamo e le nostre sedi - Smash Burger Original';
-$pageDescription = 'Scopri la storia di Smash Burger e trova la sede più vicina a te.';
+$pageTitle       = 'Le nostre sedi - Smash Burger Original';
+$pageDescription = 'Trova la sede Smash Burger più vicina a te. Orari, indirizzi e contatti di tutti i nostri locali.';
 $currentPage     = 'sedi';
-$breadcrumb      = [['Home', './'], ['Chi siamo', null]];
+$breadcrumb      = [['Home', './'], ['Le nostre sedi', null]];
 include_once __DIR__ . '/views/template/header.php';
 include_once __DIR__ . '/views/public/sedi.php';
 include_once __DIR__ . '/views/template/footer.php';

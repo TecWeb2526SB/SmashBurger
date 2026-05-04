@@ -91,8 +91,9 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
         <div class="footer-basso">
             <p>&copy; <?php echo date('Y'); ?> Smash Burger Original &mdash; P.IVA 12345678901</p>
 
-            <nav aria-label="Informazioni legali">
+<nav aria-label="Informazioni legali">
                 <ul>
+                    <li><a href="chi-siamo">Chi siamo</a></li>
                     <li><a href="privacy">Privacy Policy</a></li>
                     <li><a href="mappa-sito">Mappa del sito</a></li>
                     <li><a href="accessibilita">Accessibilità</a></li>
