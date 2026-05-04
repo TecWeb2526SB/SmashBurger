@@ -115,7 +115,7 @@ $descrizioneCategoria = function (string $slug, string $nome): string {
                 <?php foreach ($catalogoCategorie as $i => $categoria): ?>
                     <?php $count = count($categoria['products'] ?? []); ?>
                     <li>
-                        <a class="prod-chip<?php echo $i === 0 ? ' is-active' : ''; ?>"
+                        <a class="prod-chip"
                            href="#<?php echo htmlspecialchars($categoria['slug'], ENT_QUOTES, 'UTF-8'); ?>"
                            data-prod-chip="<?php echo htmlspecialchars($categoria['slug'], ENT_QUOTES, 'UTF-8'); ?>">
                             <?php echo htmlspecialchars($categoria['name'], ENT_QUOTES, 'UTF-8'); ?>

@@ -1421,17 +1421,42 @@ function inizializzaProdottiChipsSpy() {
         }, { threshold: [0] });
         stickyObserver.observe(sentinel);
 
-        /* Scroll-spy categorie */
+        /* Scroll-spy categorie — traccia quale sezione e piu visibile */
+        var sezioniVisibili = new Map();
+
         const sezioneObserver = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
-                if (!entry.isIntersecting) return;
-                const slug = entry.target.getAttribute('data-prod-section');
-                attivaChip(slug);
+                var slug = entry.target.getAttribute('data-prod-section');
+                if (entry.isIntersecting) {
+                    sezioniVisibili.set(slug, entry.intersectionRatio);
+                } else {
+                    sezioniVisibili.delete(slug);
+                }
             });
+
+            /* Trova la sezione con il rapporto di intersezione piu alto */
+            var slugAttivo = null;
+            var maxRatio = 0;
+            sezioniVisibili.forEach(function (ratio, slug) {
+                if (ratio > maxRatio) {
+                    maxRatio = ratio;
+                    slugAttivo = slug;
+                }
+            });
+
+            /* Attiva solo se c'e almeno una sezione visibile con ratio significativo */
+            if (slugAttivo && maxRatio > 0) {
+                attivaChip(slugAttivo);
+            } else {
+                /* Nessuna sezione visibile: deseleziona tutti */
+                chips.forEach(function (chip) {
+                    chip.classList.remove('is-active');
+                });
+            }
         }, {
-            /* Considera "attiva" la categoria appena entra dal basso */
-            rootMargin: '-30% 0px -60% 0px',
-            threshold: 0
+            /* Considera "attiva" la categoria nella zona centrale del viewport */
+            rootMargin: '-20% 0px -20% 0px',
+            threshold: [0, 0.1, 0.25, 0.5, 0.75, 1]
         });
 
         sezioni.forEach(function (sez) {
