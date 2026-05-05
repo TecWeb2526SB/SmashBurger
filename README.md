@@ -88,5 +88,5 @@ Il dettaglio consolidato dei risultati non viene piu scritto nel `README`: viene
 ## Note utili
 - Le pagine pubbliche monitorate dai workflow derivano da [`src/sitemap.xml`](src/sitemap.xml).
 - Il nome della sessione applicativa e `smashburger_session`, quindi gli smoke test autenticati non dipendono da `PHPSESSID`.
-- Il deploy su TecWeb scrive la configurazione DB in `src/includes/.smashburger-config.php` (sul server finisce in `public_html/includes/.smashburger-config.php`), leggendo le credenziali da `~/pwd_db_2526.txt`; l'app resta raggiungibile su `http://tecweb.studenti.math.unipd.it/<utente>`.
+- Il deploy su TecWeb scrive la configurazione DB in `src/includes/.smashburger-config.php` (sul server finisce in `public_html/includes/.smashburger-config.php`), leggendo le credenziali da `~/pwd_db_2526.txt`; usa il secret `TECWEB_SSH_PRIVATE_KEY` insieme a `TECWEB_SSH_USERNAME`, e la chiave pubblica corrispondente va caricata negli `authorized_keys` dell'account di deploy su Paolotti e TecWeb se i due accessi sono separati. L'app resta raggiungibile su `http://tecweb.studenti.math.unipd.it/<utente>`.
 - Se GitHub CodeQL o code scanning sono attivati lato repository, i relativi risultati restano visibili nella sezione Security/Actions di GitHub e si affiancano ai workflow versionati qui.

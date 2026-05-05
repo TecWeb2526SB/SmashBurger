@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 15
     env:
       TECWEB_USER: ${{ secrets.TECWEB_SSH_USERNAME }}
-      TECWEB_PASSWORD: ${{ secrets.TECWEB_SSH_PASSWORD }}
+      TECWEB_SSH_PRIVATE_KEY: ${{ secrets.TECWEB_SSH_PRIVATE_KEY }}
       TECWEB_HOST: tecweb.studenti.math.unipd.it
       TECWEB_TUNNEL_HOST: paolotti.studenti.math.unipd.it
       TECWEB_TUNNEL_SSH_PORT: "8022"
@@ -38,24 +38,32 @@ jobs:
 
       - name: Verifica secret obbligatori
         run: |
-          if [ -z "${TECWEB_USER}" ] || [ -z "${TECWEB_PASSWORD}" ]; then
-            echo "Imposta i secret TECWEB_SSH_USERNAME e TECWEB_SSH_PASSWORD nel repository."
+          if [ -z "${TECWEB_USER}" ] || [ -z "${TECWEB_SSH_PRIVATE_KEY}" ]; then
+            echo "Imposta i secret TECWEB_SSH_USERNAME e TECWEB_SSH_PRIVATE_KEY nel repository."
             exit 1
           fi
+
+      - name: Prepara chiave SSH per TecWeb
+        run: |
+          set -euo pipefail
+          keyfile="$(mktemp)"
+          printf '%s\n' "${TECWEB_SSH_PRIVATE_KEY}" > "$keyfile"
+          chmod 600 "$keyfile"
+          echo "TECWEB_SSH_KEY_FILE=$keyfile" >> "$GITHUB_ENV"
 
       - name: Installa strumenti SSH
         run: |
           sudo apt-get update
-          sudo apt-get install -y sshpass rsync
+          sudo apt-get install -y rsync
 
       - name: Apre tunnel SSH via Paolotti verso TecWeb
         run: |
           set -euo pipefail
-          export SSHPASS="${TECWEB_PASSWORD}"
-          sshpass -e ssh \
+          ssh -i "${TECWEB_SSH_KEY_FILE}" \
             -fN \
             -o ExitOnForwardFailure=yes \
             -o StrictHostKeyChecking=accept-new \
+            -o IdentitiesOnly=yes \
             -L "${TECWEB_TUNNEL_SSH_PORT}:${TECWEB_HOST}:22" \
             "${TECWEB_USER}@${TECWEB_TUNNEL_HOST}"
 
@@ -63,12 +71,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          export SSHPASS="${TECWEB_PASSWORD}"
-
           remote="${TECWEB_USER}@localhost"
-          ssh_opts=(-o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=3)
-          ssh_cmd=(sshpass -e ssh -p "${TECWEB_TUNNEL_SSH_PORT}" "${ssh_opts[@]}")
-          rsync_ssh="sshpass -e ssh -p ${TECWEB_TUNNEL_SSH_PORT} -o StrictHostKeyChecking=accept-new"
+          ssh_opts=(-i "${TECWEB_SSH_KEY_FILE}" -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=3)
+          ssh_cmd=(ssh -p "${TECWEB_TUNNEL_SSH_PORT}" "${ssh_opts[@]}")
+          rsync_ssh="ssh -i ${TECWEB_SSH_KEY_FILE} -o IdentitiesOnly=yes -p ${TECWEB_TUNNEL_SSH_PORT} -o StrictHostKeyChecking=accept-new"
 
           db_user="${TECWEB_DB_USER:-$TECWEB_USER}"
           db_name="${TECWEB_DB_NAME:-$TECWEB_USER}"
