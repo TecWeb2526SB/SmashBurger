@@ -1,0 +1,202 @@
+name: Deploy su Server TecWeb
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      import_db:
+        description: "Importa schema.sql (ATTENZIONE: ricrea le tabelle)"
+        required: true
+        default: "0"
+        type: choice
+        options:
+          - "0"
+          - "1"
+
+concurrency:
+  group: deploy-tecweb
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TECWEB_USER: ${{ secrets.TECWEB_SSH_USERNAME }}
+      TECWEB_PASSWORD: ${{ secrets.TECWEB_SSH_PASSWORD }}
+      TECWEB_HOST: tecweb.studenti.math.unipd.it
+      TECWEB_TUNNEL_HOST: paolotti.studenti.math.unipd.it
+      TECWEB_TUNNEL_SSH_PORT: "8022"
+      TECWEB_REMOTE_DIR: public_html
+      TECWEB_IMPORT_DB: ${{ github.event.inputs.import_db || '0' }}
+      TECWEB_DB_HOST: localhost
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verifica secret obbligatori
+        run: |
+          if [ -z "${TECWEB_USER}" ] || [ -z "${TECWEB_PASSWORD}" ]; then
+            echo "Imposta i secret TECWEB_SSH_USERNAME e TECWEB_SSH_PASSWORD nel repository."
+            exit 1
+          fi
+
+      - name: Installa strumenti SSH
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass rsync
+
+      - name: Apre tunnel SSH via Paolotti verso TecWeb
+        run: |
+          set -euo pipefail
+          export SSHPASS="${TECWEB_PASSWORD}"
+          sshpass -e ssh \
+            -fN \
+            -o ExitOnForwardFailure=yes \
+            -o StrictHostKeyChecking=accept-new \
+            -L "${TECWEB_TUNNEL_SSH_PORT}:${TECWEB_HOST}:22" \
+            "${TECWEB_USER}@${TECWEB_TUNNEL_HOST}"
+
+      - name: Deploy su public_html via tunnel
+        run: |
+          set -euo pipefail
+
+          export SSHPASS="${TECWEB_PASSWORD}"
+
+          remote="${TECWEB_USER}@localhost"
+          ssh_opts=(-o StrictHostKeyChecking=accept-new -o ServerAliveInterval=30 -o ServerAliveCountMax=3)
+          ssh_cmd=(sshpass -e ssh -p "${TECWEB_TUNNEL_SSH_PORT}" "${ssh_opts[@]}")
+          rsync_ssh="sshpass -e ssh -p ${TECWEB_TUNNEL_SSH_PORT} -o StrictHostKeyChecking=accept-new"
+
+          db_user="${TECWEB_DB_USER:-$TECWEB_USER}"
+          db_name="${TECWEB_DB_NAME:-$TECWEB_USER}"
+          db_host="${TECWEB_DB_HOST:-localhost}"
+
+          tmpdir="$(mktemp -d)"
+          cleanup() {
+            rm -rf "$tmpdir"
+          }
+          trap cleanup EXIT
+
+          echo "Preparo directory remota..."
+          "${ssh_cmd[@]}" "$remote" "mkdir -p '${TECWEB_REMOTE_DIR}' log php_sessions && chmod 755 '${TECWEB_REMOTE_DIR}' && chmod 700 php_sessions"
+
+          echo "Leggo password DB da ~/pwd_db_2526.txt..."
+          remote_db_file="$("${ssh_cmd[@]}" "$remote" "test -r ~/pwd_db_2526.txt && cat ~/pwd_db_2526.txt")"
+          db_password="$(printf '%s\n' "$remote_db_file" | awk '
+            BEGIN { IGNORECASE = 1 }
+            /password|passwd|pwd/ {
+              line = $0
+              gsub(/\r/, "", line)
+              sub(/.*[:=][[:space:]]*/, "", line)
+              if (line == $0) {
+                n = split(line, parts, /[[:space:]]+/)
+                line = parts[n]
+              }
+              print line
+              found = 1
+              exit
+            }
+            NF { last = $NF }
+            END {
+              if (!found && last != "") {
+                print last
+              }
+            }
+          ')"
+
+          if [ -z "${db_password}" ]; then
+            echo "Impossibile estrarre la password DB da ~/pwd_db_2526.txt"
+            exit 1
+          fi
+
+          php_quote() {
+            local value="${1//\\/\\\\}"
+            value="${value//\'/\\\'}"
+            printf "'%s'" "$value"
+          }
+
+          cat > "$tmpdir/smashburger-config.php" <<EOF
+          <?php
+          return [
+              'DB_HOST' => $(php_quote "$db_host"),
+              'DB_NAME' => $(php_quote "$db_name"),
+              'DB_USER' => $(php_quote "$db_user"),
+              'DB_PASSWORD' => $(php_quote "$db_password"),
+          ];
+          EOF
+
+          echo "Carico config DB fuori da public_html..."
+          rsync -az -e "$rsync_ssh" "$tmpdir/smashburger-config.php" "$remote:.smashburger-config.php"
+
+          if [ "${TECWEB_IMPORT_DB}" = "1" ]; then
+            if [ ! -f "src/database/schema.sql" ]; then
+              echo "File src/database/schema.sql non trovato"
+              exit 1
+            fi
+
+            awk '
+              BEGIN { skip_create_database = 0 }
+              /^[[:space:]]*CREATE[[:space:]]+DATABASE[[:space:]]/ {
+                  skip_create_database = 1
+                  next
+              }
+              skip_create_database {
+                  if ($0 ~ /;/) {
+                      skip_create_database = 0
+                  }
+                  next
+              }
+              /^[[:space:]]*USE[[:space:]]+/ { next }
+              /^[[:space:]]*DROP[[:space:]]+DATABASE[[:space:]]/ { next }
+              { print }
+            ' src/database/schema.sql > "$tmpdir/schema-existing-db.sql"
+
+            cat > "$tmpdir/mysql-defaults.cnf" <<EOF
+          [client]
+          host=${db_host}
+          user=${db_user}
+          password=${db_password}
+          database=${db_name}
+          default-character-set=utf8mb4
+          EOF
+
+            echo "Import schema sul DB ${db_name}..."
+            rsync -az -e "$rsync_ssh" "$tmpdir/schema-existing-db.sql" "$remote:.smashburger-schema.sql"
+            "${ssh_cmd[@]}" "$remote" 'set -eu
+          umask 077
+          defaults_file="$(mktemp)"
+          trap '\''rm -f "$defaults_file" "$HOME/.smashburger-schema.sql"'\'' EXIT
+          cat > "$defaults_file"
+          mysql --defaults-extra-file="$defaults_file" < "$HOME/.smashburger-schema.sql"
+          ' < "$tmpdir/mysql-defaults.cnf"
+          else
+            echo "Import DB saltato (TECWEB_IMPORT_DB=${TECWEB_IMPORT_DB})."
+          fi
+
+          cat > "$tmpdir/.htaccess" <<EOF
+          DirectoryIndex index.php
+
+          <IfModule mod_rewrite.c>
+              RewriteEngine On
+              RewriteBase /${TECWEB_USER}/
+              RewriteCond %{REQUEST_FILENAME} !-d
+              RewriteCond %{REQUEST_FILENAME}.php -f
+              RewriteRule ^(.+?)/?$ \$1.php [L]
+          </IfModule>
+          EOF
+
+          echo "Sincronizzo src/ in ${TECWEB_REMOTE_DIR}/ (senza --delete)..."
+          rsync -az \
+            --exclude '/database/' \
+            --exclude '.DS_Store' \
+            -e "$rsync_ssh" \
+            src/ \
+            "$remote:${TECWEB_REMOTE_DIR}/"
+
+          echo "Carico .htaccess..."
+          rsync -az -e "$rsync_ssh" "$tmpdir/.htaccess" "$remote:${TECWEB_REMOTE_DIR}/.htaccess"
+
+          echo "Deploy completato: http://tecweb.studenti.math.unipd.it/${TECWEB_USER}"
