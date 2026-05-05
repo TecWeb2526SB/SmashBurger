@@ -31,6 +31,23 @@ function render_page(string $viewPath, array $data = []): void
 }
 
 /**
+ * Renderizza una pagina con breadcrumb standard "Home -> Pagina".
+ */
+function render_basic_page(
+    string $viewPath,
+    string $pageTitle,
+    string $currentPage,
+    string $breadcrumbLabel,
+    array $data = []
+): void {
+    render_page($viewPath, array_merge([
+        'pageTitle' => $pageTitle,
+        'currentPage' => $currentPage,
+        'breadcrumb' => [['Home', './'], [$breadcrumbLabel, null]],
+    ], $data));
+}
+
+/**
  * Genera un alert HTML (Successo, Errore, Info).
  */
 function ui_alert(?array $flash): string

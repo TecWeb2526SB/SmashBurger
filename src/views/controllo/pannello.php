@@ -496,7 +496,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                             <li>Slug: <?php echo e((string) $product['slug']); ?></li>
                                             <li>Filiali attive: <?php echo (int) $product['listed_branches_count']; ?></li>
                                             <li>Filiali configurate: <?php echo (int) $product['configured_branches_count']; ?></li>
-                                            <li>Allergeni: <?php echo e((string) ($product['allergens'] !== '' ? $product['allergens'] : 'Nessuno dichiarato')); ?></li>
+                                            <li>Allergeni: <?php echo e(trim((string) ($product['allergens'] ?? '')) !== '' ? (string) $product['allergens'] : 'nessuno'); ?></li>
                                         </ul>
 
                                         <div class="admin-inline-actions admin-inline-actions--split">
@@ -568,7 +568,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </div>
 
                                     <ul class="admin-tag-list admin-tag-list--compact admin-tag-list--catalog-meta">
-                                        <li>Allergeni: <?php echo e((string) ($inventoryItem['allergens'] !== '' ? $inventoryItem['allergens'] : 'Nessuno dichiarato')); ?></li>
+                                        <li>Allergeni: <?php echo e(trim((string) ($inventoryItem['allergens'] ?? '')) !== '' ? (string) $inventoryItem['allergens'] : 'nessuno'); ?></li>
                                     </ul>
 
                                     <?php if ($canModifyBranchOperations): ?>
@@ -577,25 +577,22 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                             <input type="hidden" name="action" value="branch_catalog_state">
                                             <input type="hidden" name="product_id" value="<?php echo (int) $inventoryItem['product_id']; ?>">
 
-                                            <fieldset class="checkout-fieldset admin-catalog-fieldset admin-catalog-fieldset--single">
-                                                <legend>Stato locale</legend>
+                                            <div class="admin-catalog-state-list" data-admin-catalog-state>
                                                 <label class="admin-catalog-toggle">
                                                     <input type="checkbox" name="is_listed" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 ? 'checked' : ''; ?>>
                                                     <span class="admin-catalog-toggle-copy">
                                                         <strong>Visibile nel menu</strong>
-                                                        <span>Mostra il prodotto ai clienti della filiale.</span>
                                                     </span>
                                                 </label>
                                                 <label class="admin-catalog-toggle">
-                                                    <input type="checkbox" name="is_available" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 && (int) $inventoryItem['branch_availability_flag'] === 1 ? 'checked' : ''; ?>>
+                                                    <input type="checkbox" name="is_available" value="1" <?php echo (int) $inventoryItem['is_listed'] === 1 && (int) $inventoryItem['branch_availability_flag'] === 1 ? 'checked' : ''; ?> <?php echo (int) $inventoryItem['is_listed'] === 1 ? '' : 'disabled'; ?>>
                                                     <span class="admin-catalog-toggle-copy">
                                                         <strong>Ordinabile</strong>
-                                                        <span>Permetti al cliente di completare l'ordine.</span>
                                                     </span>
                                                 </label>
-                                            </fieldset>
+                                            </div>
 
-                                            <div class="checkout-navigation checkout-navigation--solo-azione">
+                                            <div class="checkout-navigation checkout-navigation--solo-azione admin-catalog-state-actions">
                                                 <button class="bottone-secondario" type="submit">Aggiorna stato</button>
                                             </div>
                                         </form>

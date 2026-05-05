@@ -30,7 +30,7 @@
                 </p>
             <?php endif; ?>
 
-            <fieldset class="checkout-fieldset" <?php echo empty($todaySlots) ? 'disabled aria-disabled="true"' : ''; ?>>
+            <fieldset class="checkout-fieldset">
                 <legend>Seleziona il ritiro</legend>
                 <label>
                     <input type="radio" name="pickup_mode" value="immediato"
@@ -41,10 +41,17 @@
 
                 <label>
                     <input type="radio" name="pickup_mode" value="orario"
+                        <?php echo empty($todaySlots) ? 'disabled' : ''; ?>
                         <?php echo ($form['pickup_mode'] === 'orario') ? 'checked' : ''; ?>>
                     Scegli orario
                 </label>
-                <p class="checkout-option-note">Orari disponibili oggi, in base all apertura della sede.</p>
+                <p class="checkout-option-note">
+                    <?php if (!empty($todaySlots)): ?>
+                        Orari disponibili oggi, in base all apertura della sede.
+                    <?php else: ?>
+                        Al momento non ci sono slot orari disponibili per oggi.
+                    <?php endif; ?>
+                </p>
             </fieldset>
 
             <div id="pickup-time-wrap" class="campo-gruppo" <?php echo ($form['pickup_mode'] === 'orario' && !empty($todaySlots)) ? '' : 'hidden'; ?>>
@@ -75,7 +82,7 @@
 
             <div class="checkout-navigation">
                 <a class="bottone-secondario" href="checkout">&larr; Torna al checkout</a>
-                <button class="bottone-primario" type="submit" <?php echo empty($todaySlots) ? 'disabled' : ''; ?>>Vai al pagamento &rarr;</button>
+                <button class="bottone-primario" type="submit">Vai al pagamento &rarr;</button>
             </div>
         </form>
     </div>

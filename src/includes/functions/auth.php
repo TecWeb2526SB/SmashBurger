@@ -116,6 +116,33 @@ function require_login(string $redirectTo = 'accedi'): void
     exit;
 }
 
+/**
+ * Carica l'utente corrente dal DB, riallinea la sessione e lo restituisce.
+ * Se l'utente non e valido, chiude la sessione e reindirizza.
+ */
+function auth_require_fresh_user(
+    PDO $pdo,
+    string $invalidSessionMessage = 'Sessione utente non valida. Effettua di nuovo l\'accesso.',
+    string $redirectTo = 'accedi'
+): array {
+    require_login($redirectTo);
+
+    $sessionUser = current_user();
+    $userId = (int) ($sessionUser['id'] ?? 0);
+    $utente = $userId > 0 ? auth_get_user_by_id($pdo, $userId) : null;
+
+    if ($utente === null) {
+        logout_user();
+        flash_set('error', $invalidSessionMessage);
+        header('Location: ' . $redirectTo);
+        exit;
+    }
+
+    login_user($utente, false);
+
+    return $utente;
+}
+
 function auth_normalize_redirect_target(string $redirectTo, string $default = 'account'): string
 {
     $redirectTo = trim($redirectTo);

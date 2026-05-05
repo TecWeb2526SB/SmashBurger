@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $templates = supply_get_templates($pdo, $selectedBranchId);
 $supplyOrders = supply_get_orders($pdo, $selectedBranchId);
+$policies = auto_reorder_get_policies($pdo, $selectedBranchId);
 $hubUrl = admin_panel_section_url('forniture', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers);
 
 render_admin_page('forniture', [

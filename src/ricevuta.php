@@ -3,17 +3,7 @@ require_once __DIR__ . '/includes/resources.php';
 
 require_login();
 
-$sessionUser = current_user();
-$utente = auth_get_user_by_id($pdo, (int) ($sessionUser['id'] ?? 0));
-
-if ($utente === null) {
-    logout_user();
-    flash_set('error', 'Sessione utente non valida. Effettua di nuovo l\'accesso.');
-    header('Location: accedi');
-    exit;
-}
-
-login_user($utente, false);
+$utente = auth_require_fresh_user($pdo);
 
 $receiptType = trim((string) ($_GET['tipo'] ?? 'ordine'));
 $receiptId = (int) ($_GET['id'] ?? 0);

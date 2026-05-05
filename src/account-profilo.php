@@ -3,15 +3,7 @@ require_once __DIR__ . '/includes/resources.php';
 
 require_login();
 
-$sessionUser = current_user();
-$utente = auth_get_user_by_id($pdo, (int) ($sessionUser['id'] ?? 0));
-
-if ($utente === null) {
-    logout_user();
-    flash_set('error', 'Sessione utente non valida. Effettua di nuovo l\'accesso.');
-    header('Location: accedi');
-    exit;
-}
+$utente = auth_require_fresh_user($pdo);
 
 $erroriIdentita = [];
 $erroriPassword = [];
@@ -84,8 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $formIdentita['email']
             );
 
-            $utente = auth_get_user_by_id($pdo, (int) $utente['id']) ?? $utente;
-            login_user($utente);
+            $utente = auth_require_fresh_user($pdo);
 
             $messaggi = [];
             if ($usernameChanged) {
@@ -133,8 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 password_hash($formPassword['new_password'], PASSWORD_DEFAULT)
             );
 
-            $utente = auth_get_user_by_id($pdo, (int) $utente['id']) ?? $utente;
-            login_user($utente);
+            $utente = auth_require_fresh_user($pdo);
 
             flash_set('success', 'Password aggiornata con successo.');
             header('Location: account-profilo');

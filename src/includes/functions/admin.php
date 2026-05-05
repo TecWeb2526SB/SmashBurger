@@ -291,17 +291,10 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 {
     require_admin_panel_access();
 
-    $sessionUser = current_user();
-    $utente = auth_get_user_by_id($pdo, (int) ($sessionUser['id'] ?? 0));
-
-    if ($utente === null) {
-        logout_user();
-        flash_set('error', 'Sessione amministrativa non valida. Effettua di nuovo l\'accesso.');
-        header('Location: accedi');
-        exit;
-    }
-
-    login_user($utente, false);
+    $utente = auth_require_fresh_user(
+        $pdo,
+        'Sessione amministrativa non valida. Effettua di nuovo l\'accesso.'
+    );
 
     $isGeneralAdmin = (string) $utente['role'] === 'admin';
     $isBranchManager = (string) $utente['role'] === 'branch_manager';

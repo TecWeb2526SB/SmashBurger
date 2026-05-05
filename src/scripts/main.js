@@ -1220,6 +1220,47 @@ function inizializzaAdminCatalogoProdotto() {
 }
 
 /* ==========================================================================
+   11B. CATALOGO ADMIN - STATO LOCALE
+   ========================================================================== */
+
+function inizializzaAdminCatalogoStato() {
+    const blocks = document.querySelectorAll('[data-admin-catalog-state]');
+    if (blocks.length === 0) return;
+
+    blocks.forEach(function (block) {
+        const listedInput = block.querySelector('input[name="is_listed"]');
+        const availableInput = block.querySelector('input[name="is_available"]');
+        if (!listedInput || !availableInput) return;
+
+        function sincronizzaStatoDisponibilita() {
+            if (listedInput.checked) {
+                availableInput.disabled = false;
+                availableInput.checked = availableInput.dataset.userChoice === '1';
+                return;
+            }
+
+            if (availableInput.checked) {
+                availableInput.dataset.userChoice = '1';
+            }
+
+            availableInput.checked = false;
+            availableInput.disabled = true;
+        }
+
+        availableInput.dataset.userChoice = availableInput.checked ? '1' : '0';
+
+        availableInput.addEventListener('change', function () {
+            if (availableInput.disabled) return;
+
+            availableInput.dataset.userChoice = availableInput.checked ? '1' : '0';
+        });
+
+        listedInput.addEventListener('change', sincronizzaStatoDisponibilita);
+        sincronizzaStatoDisponibilita();
+    });
+}
+
+/* ==========================================================================
    12. BUILDER FORNITURE - RIGHE DINAMICHE
    ========================================================================== */
 
@@ -1378,6 +1419,7 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaCheckoutRitiro();
     inizializzaCheckoutPagamento();
     inizializzaStampaRicevuta();
+    inizializzaAdminCatalogoStato();
     inizializzaAdminCatalogoProdotto();
     inizializzaAdminSupplyBuilder();
 });

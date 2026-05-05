@@ -36,10 +36,6 @@ if (
 
 $todaySlots = branch_get_today_pickup_slots($pdo, $selectedBranchId, 10);
 
-if (empty($todaySlots)) {
-    $errori['generale'] = 'Siamo spiacenti, per oggi non ci sono orari disponibili per il ritiro presso questa sede.';
-}
-
 $defaultSlot = !empty($todaySlots) ? (string) $todaySlots[0]['time'] : '';
 
 $flowFulfillmentType = (string) ($checkoutFlow['fulfillment_type'] ?? 'asporto');
@@ -68,10 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errori['generale'] = 'Sessione scaduta o richiesta non valida.';
     }
 
-    if (empty($todaySlots)) {
-        $errori['generale'] = 'Siamo spiacenti, per oggi non ci sono orari disponibili per il ritiro presso questa sede.';
-    }
-
     if (empty($errori)) {
         $form['pickup_mode'] = (string) ($_POST['pickup_mode'] ?? 'immediato');
         $form['pickup_time'] = trim((string) ($_POST['pickup_time'] ?? ''));
@@ -84,7 +76,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pickupRaw = '';
 
         if ($form['pickup_mode'] === 'orario') {
-            if (!preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $form['pickup_time'])) {
+            if (empty($todaySlots)) {
+                $errori['pickup_at'] = 'Per oggi non ci sono orari disponibili per il ritiro programmato. Puoi comunque proseguire con il ritiro immediato.';
+            }
+
+            if (empty($errori['pickup_at']) && !preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9]$/', $form['pickup_time'])) {
                 $errori['pickup_at'] = 'Seleziona un orario valido.';
             }
 

@@ -1856,8 +1856,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     color: var(--colore-testo-leggero);
 }
 
-.checkout-payment-grid,
-.admin-catalog-fieldset--single {
+.checkout-payment-grid {
     grid-template-columns: 1fr;
 }
 
@@ -1987,15 +1986,106 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     gap: 0.55rem;
 }
 
-.ordine-pill-list li {
+.ordine-pill {
     display: inline-flex;
     align-items: center;
-    gap: 0.3rem;
     padding: 0.4rem 0.75rem;
     border: var(--bordo-standard);
     border-radius: 999px;
     background-color: var(--colore-sfondo);
     font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.ordine-pill-status.is-success {
+    color: #0a7d45;
+    border-color: rgba(10, 125, 69, 0.32);
+    background-color: rgba(10, 125, 69, 0.11);
+}
+
+.ordine-pill-status.is-warning {
+    color: #9a5700;
+    border-color: rgba(201, 140, 43, 0.4);
+    background-color: rgba(255, 201, 109, 0.2);
+}
+
+.ordine-pill-status.is-danger {
+    color: #a01f2d;
+    border-color: rgba(160, 31, 45, 0.35);
+    background-color: rgba(160, 31, 45, 0.12);
+}
+
+.ordine-pill-status.is-info {
+    color: #1d4e89;
+    border-color: rgba(29, 78, 137, 0.3);
+    background-color: rgba(29, 78, 137, 0.11);
+}
+
+.ordine-payment-actions {
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding-top: 0.45rem;
+    border-top: var(--bordo-standard);
+}
+
+.ordine-payment-pill,
+.ordine-method-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2rem;
+    padding: 0.28rem 0.72rem;
+    border-radius: 999px;
+    border: var(--bordo-standard);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.ordine-payment-pill.is-paid {
+    color: #0a7d45;
+    border-color: rgba(10, 125, 69, 0.32);
+    background-color: rgba(10, 125, 69, 0.11);
+}
+
+.ordine-payment-pill.is-pending {
+    color: #9a5700;
+    border-color: rgba(201, 140, 43, 0.4);
+    background-color: rgba(255, 201, 109, 0.2);
+}
+
+.ordine-payment-pill.is-failed {
+    color: #a01f2d;
+    border-color: rgba(160, 31, 45, 0.35);
+    background-color: rgba(160, 31, 45, 0.12);
+}
+
+.ordine-payment-pill.is-refunded {
+    color: #5b3c9a;
+    border-color: rgba(91, 60, 154, 0.33);
+    background-color: rgba(91, 60, 154, 0.12);
+}
+
+.ordine-method-pill {
+    color: var(--colore-testo-leggero);
+    background-color: rgba(160, 100, 45, 0.08);
+}
+
+.ordine-method-pill-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 50%;
+    background-color: rgba(192, 57, 43, 0.14);
+    color: var(--colore-accento);
+    font-size: 0.73rem;
+    letter-spacing: 0.03em;
+}
+
+.ordine-method-pill-label {
+    color: var(--colore-testo);
 }
 
 :is(.ordine-card-meta, .admin-kpi-grid, .admin-catalog-state-grid, .admin-adjustment-inline-summary, .admin-adjustment-preview-grid, .admin-adjustment-launch-grid, .admin-adjustment-mode-nav, .receipt-meta-grid, .feature-grid) {
@@ -2705,6 +2795,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 .admin-stack-list--catalog {
     grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
     gap: 1rem;
+    align-items: stretch;
 }
 
 .admin-detail-card {
@@ -2713,6 +2804,19 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     border: var(--bordo-standard);
     border-radius: var(--raggio-card);
     background-color: var(--colore-sfondo-alt);
+}
+
+.admin-catalog-card--branch {
+    align-self: stretch;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    height: 100%;
+}
+
+.admin-catalog-card--branch .checkout-form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
 }
 
 .admin-catalog-toolbar {
@@ -2824,6 +2928,13 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     min-height: 100%;
 }
 
+.admin-catalog-card.admin-catalog-card--branch {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    align-self: stretch;
+    height: 100%;
+}
+
 .admin-catalog-card-head {
     display: flex;
     justify-content: space-between;
@@ -2903,59 +3014,37 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     padding: 0.45rem 0.7rem;
 }
 
-.admin-catalog-fieldset {
-    display: grid;
-    gap: 0.75rem;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.admin-catalog-fieldset label {
-    display: flex;
-    align-items: start;
-    gap: 0.6rem;
-    padding: 0.8rem 0.9rem;
-    border: 1px solid rgba(192, 57, 43, 0.12);
-    border-radius: 0.95rem;
-    background-color: var(--colore-sfondo);
-}
-
 .admin-catalog-toggle {
     display: flex;
-    align-items: start;
-    gap: 0.8rem;
-    padding: 1rem 1.05rem;
-    border: 1px solid rgba(192, 57, 43, 0.14);
-    border-radius: 1rem;
-    background:
-        linear-gradient(180deg, rgba(192, 57, 43, 0.04), rgba(242, 139, 84, 0.02)),
-        var(--colore-sfondo);
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.1rem 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     transition: var(--transizione-base);
 }
 
 .admin-catalog-toggle:hover,
 .admin-catalog-toggle:focus-within {
-    border-color: rgba(192, 57, 43, 0.3);
-    box-shadow: var(--ombra-leggera);
+    box-shadow: none;
 }
 
 .admin-catalog-toggle:has(input:checked) {
-    border-color: rgba(10, 125, 69, 0.32);
-    background:
-        linear-gradient(180deg, rgba(10, 125, 69, 0.12), rgba(10, 125, 69, 0.03)),
-        var(--colore-sfondo);
+    border: 0;
+    background: transparent;
 }
 
 .admin-catalog-toggle input {
-    margin-top: 0.15rem;
+    margin-top: 0;
 }
 
 .admin-catalog-toggle-copy {
-    display: grid;
-    gap: 0.2rem;
+    display: flex;
+    align-items: center;
 }
 
 .admin-catalog-toggle-copy strong,
-.admin-catalog-toggle-copy span,
 .admin-table-primary strong,
 .admin-table-primary span {
     display: block;
@@ -2967,9 +3056,26 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     color: var(--colore-testo);
 }
 
-.admin-catalog-toggle-copy span {
-    color: var(--colore-testo-leggero);
-    line-height: 1.5;
+.admin-catalog-toggle:has(input:disabled) {
+    opacity: 0.6;
+}
+
+.admin-catalog-state-list {
+    display: grid;
+    gap: 0.35rem;
+    margin-top: auto;
+}
+
+.admin-catalog-state-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--spazio-sm);
+}
+
+.admin-catalog-state-actions .bottone-primario,
+.admin-catalog-state-actions .bottone-secondario {
+    width: min(100%, 16rem);
+    margin-inline: auto;
 }
 
 .admin-adjustment-launch-card {
