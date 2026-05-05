@@ -3,15 +3,7 @@ require_once __DIR__ . '/includes/resources.php';
 
 require_login();
 
-$sessionUser = current_user();
-$utente = auth_get_user_by_id($pdo, (int) ($sessionUser['id'] ?? 0));
-
-if ($utente === null) {
-    logout_user();
-    flash_set('error', 'Sessione utente non valida. Effettua di nuovo l\'accesso.');
-    header('Location: accedi');
-    exit;
-}
+$utente = auth_require_fresh_user($pdo);
 
 $erroriIdentita = [];
 $erroriPassword = [];
@@ -73,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($erroriIdentita) && auth_email_exists($pdo, $formIdentita['email'], (int) $utente['id'])) {
-            $erroriIdentita['email'] = 'Email già in uso. Usane un altra.';
+            $erroriIdentita['email'] = 'Email già in uso. Usane un\'altra.';
         }
 
         if (empty($erroriIdentita)) {
@@ -84,8 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $formIdentita['email']
             );
 
-            $utente = auth_get_user_by_id($pdo, (int) $utente['id']) ?? $utente;
-            login_user($utente);
+            $utente = auth_require_fresh_user($pdo);
 
             $messaggi = [];
             if ($usernameChanged) {
@@ -115,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (mb_strlen($formPassword['new_password']) < 8) {
             $erroriPassword['new_password'] = 'La nuova password deve contenere almeno 8 caratteri.';
         } elseif (!auth_is_valid_password($formPassword['new_password'])) {
-            $erroriPassword['new_password'] = 'La nuova password puo contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
+            $erroriPassword['new_password'] = 'La nuova password può contenere solo lettere, numeri, underscore (_) e questi simboli: ! @ # $ % &';
         } elseif (hash_equals($formPassword['current_password'], $formPassword['new_password'])) {
             $erroriPassword['new_password'] = 'La nuova password deve essere diversa da quella attuale.';
         }
@@ -133,8 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 password_hash($formPassword['new_password'], PASSWORD_DEFAULT)
             );
 
-            $utente = auth_get_user_by_id($pdo, (int) $utente['id']) ?? $utente;
-            login_user($utente);
+            $utente = auth_require_fresh_user($pdo);
 
             flash_set('success', 'Password aggiornata con successo.');
             header('Location: account-profilo');
@@ -148,6 +138,16 @@ $pageDescription = 'Aggiorna username, email e password del tuo account Smash Bu
 $currentPage = 'account-profilo';
 $breadcrumb = [['Home', './'], ['Area personale', 'account'], ['Gestisci account', null]];
 
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/account/profilo.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('account/profilo.php', [
+    'pageTitle' => $pageTitle,
+    'pageDescription' => $pageDescription,
+    'currentPage' => $currentPage,
+    'breadcrumb' => $breadcrumb,
+    'utente' => $utente,
+    'flash' => $flash,
+    'csrfToken' => $csrfToken,
+    'formIdentita' => $formIdentita,
+    'formPassword' => $formPassword,
+    'erroriIdentita' => $erroriIdentita,
+    'erroriPassword' => $erroriPassword
+]);

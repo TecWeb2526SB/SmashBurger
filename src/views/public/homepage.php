@@ -414,7 +414,7 @@ $csrfToken = csrf_token();
                     disponibilità aggiornati in tempo reale per la sede selezionata.
                 </p>
             </li>
-            <li class="step-card">
+            <li class="feature-card">
                 <strong>Step 2</strong>
                 <h3>Conferma il ritiro</h3>
                 <p>
@@ -422,7 +422,7 @@ $csrfToken = csrf_token();
                     dell'ordine con tempi di preparazione stimati.
                 </p>
             </li>
-            <li class="step-card">
+            <li class="feature-card">
                 <strong>Step 3</strong>
                 <h3>Paga e ritira</h3>
                 <p>

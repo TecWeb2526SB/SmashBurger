@@ -10,16 +10,10 @@ require_once __DIR__ . '/includes/resources.php';
 $selectedBranch = branch_get_selected($pdo);
 
 // 2. Definizione variabili specifiche per la pagina
-$pageTitle = 'Home - Smash Burger Original | Il vero gusto dello smash';
-$pageDescription = 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina online e ritira in sede.';
-$isHomepage = true;       // Usa <h1> per il brand solo nella home
-$currentPage = './'; // Indica la voce attiva nel menu principale
-
-// 3. Caricamento della struttura della pagina (Template)
-include_once __DIR__ . '/views/template/header.php';
-
-// 4. Caricamento del contenuto specifico (View)
-include_once __DIR__ . '/views/public/homepage.php';
-
-// 5. Caricamento del footer comune
-include_once __DIR__ . '/views/template/footer.php';
+render_page('public/homepage.php', [
+    'pageTitle' => 'Home - Smash Burger Original | Il vero gusto dello smash',
+    'pageDescription' => 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina online e ritira in sede.',
+    'isHomepage' => true,
+    'currentPage' => './',
+    'selectedBranch' => $selectedBranch
+]);

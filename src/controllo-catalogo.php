@@ -2,15 +2,11 @@
 require_once __DIR__ . '/includes/resources.php';
 
 $context = admin_panel_bootstrap_context($pdo);
-extract($context, EXTR_SKIP);
-
-$currentSection = 'catalogo';
-$sectionMeta = admin_panel_section_meta($currentSection, $canManageBranchManagers);
-$sectionLinks = admin_panel_build_navigation($selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers, $currentSection);
-$sectionUrls = [];
-foreach ($sectionLinks as $sectionLink) {
-    $sectionUrls[(string) $sectionLink['section']] = (string) $sectionLink['href'];
-}
+$selectedBranchId = (int) ($context['selectedBranch']['id'] ?? 0);
+$selectedBranchSlug = (string) ($context['selectedBranch']['slug'] ?? '');
+$isGeneralAdmin = (string) ($context['utente']['role'] ?? '') === 'admin';
+$canModifyBranchOperations = (string) ($context['utente']['role'] ?? '') === 'branch_manager';
+$canManageGlobalCatalog = can_manage_global_catalog();
 
 $inventoryItems = inventory_get_branch_products($pdo, $selectedBranchId);
 $productsById = admin_build_products_lookup($inventoryItems);
@@ -53,21 +49,9 @@ $filteredInventoryItems = array_values(array_filter(
     }
 ));
 
-$catalogBaseParams = [];
-if ($isGeneralAdmin) {
-    $catalogBaseParams['sede'] = $selectedBranchSlug;
-}
-if ($catalogSelectedCategoryId > 0) {
-    $catalogBaseParams['categoria'] = $catalogSelectedCategoryId;
-}
-
-$sectionUrls['catalogo'] = 'controllo-catalogo'
-    . (!empty($catalogBaseParams) ? '?' . http_build_query($catalogBaseParams) : '');
-
 $catalogCategoryLinks = [[
     'label' => 'Tutte',
-    'href' => 'controllo-catalogo'
-        . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : ''),
+    'href' => 'controllo-catalogo' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : ''),
     'is_active' => $catalogSelectedCategoryId === 0,
     'count' => count($inventoryItems),
 ]];
@@ -76,7 +60,6 @@ foreach ($categories as $category) {
     $categoryId = (int) $category['id'];
     $params = $isGeneralAdmin ? ['sede' => $selectedBranchSlug] : [];
     $params['categoria'] = $categoryId;
-
     $catalogCategoryLinks[] = [
         'label' => (string) $category['name'],
         'href' => 'controllo-catalogo?' . http_build_query($params),
@@ -88,134 +71,42 @@ foreach ($categories as $category) {
 $catalogMetrics = [
     'global_total' => count($filteredGlobalCatalog),
     'branch_total' => count($filteredInventoryItems),
-    'branch_available' => count(array_filter(
-        $filteredInventoryItems,
-        static function (array $inventoryItem): bool {
-            return (int) ($inventoryItem['is_listed'] ?? 0) === 1
-                && (int) ($inventoryItem['is_available_for_sale'] ?? 0) === 1;
-        }
-    )),
+    'branch_available' => count(array_filter($filteredInventoryItems, static fn($i) => (int)($i['is_listed'] ?? 0) === 1 && (int)($i['is_available_for_sale'] ?? 0) === 1)),
 ];
 
-$catalogSelectedCategoryLabel = $catalogSelectedCategoryId > 0
-    ? (string) ($categoriesById[$catalogSelectedCategoryId]['name'] ?? 'Categoria')
-    : 'Tutte le categorie';
-
-$csrfToken = csrf_token();
-$flash = null;
-$backgroundMessages = [];
+$catalogSelectedCategoryLabel = $catalogSelectedCategoryId > 0 ? (string) ($categoriesById[$catalogSelectedCategoryId]['name'] ?? 'Categoria') : 'Tutte le categorie';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $csrfTokenForm = $_POST['csrf_token'] ?? null;
-    if (!csrf_is_valid($csrfTokenForm)) {
-        flash_set('error', 'Sessione scaduta o richiesta non valida. Ricarica la pagina e riprova.');
-        header('Location: ' . ($sectionUrls['catalogo'] ?? 'controllo-catalogo'));
-        exit;
+    if (!csrf_is_valid($_POST['csrf_token'] ?? null)) {
+        flash_set('error', 'Sessione scaduta. Riprova.');
+    } else {
+        $action = (string) ($_POST['action'] ?? '');
+        try {
+            if ($action === 'branch_catalog_state' && $canModifyBranchOperations) {
+                $productId = (int) ($_POST['product_id'] ?? 0);
+                branch_catalog_set_product_state($pdo, $selectedBranchId, $productId, (string)($_POST['is_listed'] ?? '0') === '1', (string)($_POST['is_available'] ?? '0') === '1');
+                flash_set('success', 'Stato prodotto aggiornato.');
+            } elseif ($action === 'update_branch_pricing' && $canModifyBranchOperations) {
+                $productId = (int) ($_POST['product_id'] ?? 0);
+                $branchPriceCents = admin_parse_money_to_cents((string) ($_POST['sale_price'] ?? ''));
+                $product = $productsById[$productId];
+                branch_catalog_set_product_state($pdo, $selectedBranchId, $productId, (int)($product['is_listed'] ?? 0) === 1, (int)($product['branch_availability_flag'] ?? 0) === 1, $branchPriceCents === (int)$product['base_price_cents'] ? null : $branchPriceCents);
+                flash_set('success', 'Prezzo aggiornato.');
+            } elseif ($action === 'delete_product' && $canManageGlobalCatalog) {
+                catalog_delete_product($pdo, (int)($_POST['product_id'] ?? 0));
+                flash_set('success', 'Prodotto eliminato.');
+            }
+        } catch (\Throwable $e) { flash_set('error', $e->getMessage()); }
     }
-
-    $action = (string) ($_POST['action'] ?? '');
-
-    try {
-        if ($action === 'branch_catalog_state') {
-            if (!$canModifyBranchOperations) {
-                throw new RuntimeException('Solo il manager della filiale puo gestire il catalogo locale.');
-            }
-
-            $productId = (int) ($_POST['product_id'] ?? 0);
-            if ($productId <= 0 || !isset($productsById[$productId])) {
-                throw new RuntimeException('Prodotto non valido per il catalogo di filiale.');
-            }
-
-            $isListed = (string) ($_POST['is_listed'] ?? '0') === '1';
-            $isAvailable = (string) ($_POST['is_available'] ?? '0') === '1';
-
-            branch_catalog_set_product_state($pdo, $selectedBranchId, $productId, $isListed, $isAvailable);
-            flash_set(
-                'success',
-                $isListed
-                    ? ($isAvailable ? 'Prodotto aggiunto e reso disponibile nel catalogo di filiale.' : 'Prodotto presente nel catalogo di filiale ma segnato come non disponibile.')
-                    : 'Prodotto nascosto dal catalogo della filiale.'
-            );
-        } elseif ($action === 'update_branch_pricing') {
-            if (!$canModifyBranchOperations) {
-                throw new RuntimeException('Solo il manager della filiale puo modificare il prezzo locale.');
-            }
-
-            $productId = (int) ($_POST['product_id'] ?? 0);
-            if ($productId <= 0 || !isset($productsById[$productId])) {
-                throw new RuntimeException('Prodotto non valido per il prezzo di filiale.');
-            }
-
-            $branchPriceCents = admin_parse_money_to_cents((string) ($_POST['sale_price'] ?? ''));
-            if ($branchPriceCents <= 0) {
-                throw new RuntimeException('Inserisci un prezzo di filiale valido.');
-            }
-
-            $product = $productsById[$productId];
-            $basePriceCents = (int) ($product['base_price_cents'] ?? 0);
-            $priceOverride = $branchPriceCents === $basePriceCents ? null : $branchPriceCents;
-
-            branch_catalog_set_product_state(
-                $pdo,
-                $selectedBranchId,
-                $productId,
-                (int) ($product['is_listed'] ?? 0) === 1,
-                (int) ($product['branch_availability_flag'] ?? 0) === 1,
-                $priceOverride
-            );
-
-            flash_set(
-                'success',
-                $priceOverride === null
-                    ? 'Prezzo filiale riallineato al prezzo base del catalogo.'
-                    : 'Prezzo filiale aggiornato con successo.'
-            );
-        } elseif ($action === 'delete_product') {
-            if (!$canManageGlobalCatalog) {
-                throw new RuntimeException('Solo l admin centrale puo eliminare prodotti dal catalogo globale.');
-            }
-
-            $productId = (int) ($_POST['product_id'] ?? 0);
-            if ($productId <= 0) {
-                throw new RuntimeException('Prodotto non valido.');
-            }
-
-            catalog_delete_product($pdo, $productId);
-            flash_set('success', 'Prodotto eliminato dal catalogo globale.');
-        } else {
-            throw new RuntimeException('Azione catalogo non riconosciuta.');
-        }
-    } catch (\Throwable $e) {
-        flash_set('error', $e->getMessage());
-    }
-
-    header('Location: ' . ($sectionUrls['catalogo'] ?? 'controllo-catalogo'));
+    header('Location: ' . $_SERVER['REQUEST_URI']);
     exit;
 }
 
-$flash = flash_get();
-$backgroundMessages = admin_panel_background_messages($pdo, $isBranchManager, $selectedBranchId, (int) $utente['id']);
-
-$branchManagers = [];
-$templates = [];
-$supplyOrders = [];
-$policies = [];
-$recentCustomerOrders = [];
-$branchComparison = [];
-$topProducts = [];
-$salesTrend = [];
-$categoryMix = [];
-$kpis = analytics_get_branch_kpis($pdo, $selectedBranchId);
-
-$pageTitle = 'Catalogo controllo - Smash Burger Original';
-$pageDescription = 'Catalogo globale e configurazione locale di filiale.';
-$currentPage = 'controllo';
-$breadcrumb = [
-    ['Home', './'],
-    ['Controllo', 'controllo' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : '')],
-    ['Catalogo', null],
-];
-
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/controllo/pannello.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_admin_page('catalogo', [
+    'catalogSelectedCategoryLabel' => $catalogSelectedCategoryLabel,
+    'catalogCategoryLinks' => $catalogCategoryLinks,
+    'catalogMetrics' => $catalogMetrics,
+    'filteredGlobalCatalog' => $filteredGlobalCatalog,
+    'filteredInventoryItems' => $filteredInventoryItems,
+    'inventoryItems' => $inventoryItems
+]);

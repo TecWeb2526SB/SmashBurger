@@ -497,7 +497,7 @@ function branch_validate_pickup_datetime(
     if ($sameDayOnly && $pickup->format('Y-m-d') !== $now->format('Y-m-d')) {
         return [
             'ok' => false,
-            'message' => 'Il ritiro programmato e disponibile solo per la giornata corrente.',
+            'message' => 'Il ritiro programmato è disponibile solo per la giornata corrente.',
         ];
     }
 
@@ -512,7 +512,7 @@ function branch_validate_pickup_datetime(
         }
         return [
             'ok' => false,
-            'message' => 'L orario selezionato non e piu disponibile.' . $suggestion,
+            'message' => 'L\'orario selezionato non è più disponibile.' . $suggestion,
         ];
     }
 
@@ -520,7 +520,7 @@ function branch_validate_pickup_datetime(
     if ($window === null) {
         return [
             'ok' => false,
-            'message' => 'La sede selezionata e chiusa nell orario richiesto.',
+            'message' => 'La sede selezionata è chiusa nell\'orario richiesto.',
         ];
     }
 
@@ -532,7 +532,7 @@ function branch_validate_pickup_datetime(
     if ($pickup < $earliest) {
         return [
             'ok' => false,
-            'message' => 'Per il ritiro in sede il primo orario disponibile e ' . $earliest->format('d/m/Y H:i') . '.',
+            'message' => 'Per il ritiro in sede il primo orario disponibile è ' . $earliest->format('d/m/Y H:i') . '.',
             'earliest_raw' => $earliest->format('Y-m-d\TH:i'),
             'earliest_display' => $earliest->format('d/m/Y H:i'),
         ];
@@ -541,7 +541,7 @@ function branch_validate_pickup_datetime(
     if ($pickup > $window['close']) {
         return [
             'ok' => false,
-            'message' => 'L orario selezionato supera la chiusura della sede.',
+            'message' => 'L\'orario selezionato supera la chiusura della sede.',
         ];
     }
 
@@ -672,7 +672,7 @@ function cart_get_active_id(PDO $pdo, int $userId, ?int $branchId = null): int
                 $activeBranch = branch_get_by_id($pdo, $activeBranchId);
                 $activeBranchName = $activeBranch ? (string) $activeBranch['name'] : 'sede corrente';
                 throw new RuntimeException(
-                    'Hai gia un carrello attivo per ' . $activeBranchName . '. ' .
+                    'Hai già un carrello attivo per ' . $activeBranchName . '. ' .
                     'Svuotalo prima di cambiare sede.'
                 );
             }
@@ -847,7 +847,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
     $maxQuantity = 100;
 
     if ($quantity < 1) {
-        return ['ok' => false, 'message' => 'Quantita non valida.'];
+        return ['ok' => false, 'message' => 'Quantità non valida.'];
     }
 
     $quantity = min($quantity, $maxQuantity);
@@ -927,7 +927,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
         if ((int) ($product['has_inventory_row'] ?? 0) !== 1 || $newQty > (int) $product['inventory_qty']) {
             return [
                 'ok' => false,
-                'message' => 'Disponibilita limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unita di ' . $product['name'] . '.',
+                'message' => 'Disponibilità limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unità di ' . $product['name'] . '.',
             ];
         }
         $unit = (int) $existingItem['unit_price_cents'];
@@ -948,7 +948,7 @@ function cart_add_product(PDO $pdo, int $userId, int $productId, int $quantity =
         if ((int) ($product['has_inventory_row'] ?? 0) !== 1 || $quantity > (int) $product['inventory_qty']) {
             return [
                 'ok' => false,
-                'message' => 'Disponibilita limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unita di ' . $product['name'] . '.',
+                'message' => 'Disponibilità limitata: in sede restano ' . (int) $product['inventory_qty'] . ' unità di ' . $product['name'] . '.',
             ];
         }
         $unit = (int) $product['effective_price_cents'];
@@ -1192,8 +1192,8 @@ function order_place(
             return [
                 'ok' => false,
                 'message' => (int) ($cartItem['is_listed'] ?? 0) === 1
-                    ? 'Nel carrello e presente un prodotto che non e piu disponibile per questa sede. Aggiorna il carrello e riprova.'
-                    : 'Nel carrello e presente un prodotto che non appartiene piu al catalogo della sede selezionata. Aggiorna il carrello e riprova.',
+                    ? 'Nel carrello è presente un prodotto che non è più disponibile per questa sede. Aggiorna il carrello e riprova.'
+                    : 'Nel carrello è presente un prodotto che non appartiene più al catalogo della sede selezionata. Aggiorna il carrello e riprova.',
             ];
         }
     }

@@ -9,27 +9,20 @@ require_once __DIR__ . '/includes/resources.php';
 // Logica sedi (come in sedi.php)
 $branchWarning = null;
 $requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
-
 $allBranches = branches_get_all($pdo);
 $selectedBranch = branch_get_selected($pdo);
-$viewedBranch = $selectedBranch; // Default to active branch
+$viewedBranch = $selectedBranch;
 
 if ($requestedBranchSlug !== '') {
-    $found = null;
-    foreach ($allBranches as $b) {
-        if ($b['slug'] === $requestedBranchSlug) {
-            $found = $b;
-            break;
-        }
-    }
-    if ($found) {
-        $viewedBranch = $found;
+    $requestedBranch = branch_get_by_slug($pdo, $requestedBranchSlug);
+    if ($requestedBranch !== null) {
+        $viewedBranch = $requestedBranch;
     } else {
-        $branchWarning = 'La sede richiesta non è disponibile.';
+        $branchWarning = 'La sede richiesta non e disponibile.';
     }
 }
 
-$branchesForJs = array_map(static function (array $branch): array {
+$branchToClientPayload = static function (array $branch): array {
     return [
         'id' => (int) $branch['id'],
         'slug' => (string) $branch['slug'],
@@ -44,9 +37,12 @@ $branchesForJs = array_map(static function (array $branch): array {
         'hours_compact' => (string) ($branch['hours_compact'] ?? ''),
         'map_embed_url' => (string) ($branch['map_embed_url'] ?? ''),
     ];
-}, $allBranches);
+};
 
-$branchesJson = json_encode($branchesForJs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+$branchesJson = json_encode(
+    array_map($branchToClientPayload, $allBranches),
+    JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+);
 
 $pageTitle       = 'Chi siamo - Smash Burger Original | La nostra storia e le sedi';
 $pageDescription = 'Scopri la storia di Smash Burger: dal 2018 portiamo lo smash burger americano in Italia. Trova la sede più vicina a te.';

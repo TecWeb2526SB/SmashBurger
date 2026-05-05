@@ -10,6 +10,7 @@ $errori               = [];
 $valoreIdentificativo = '';
 $csrfToken            = csrf_token();
 $flash                = flash_get();
+$redirectTo           = auth_normalize_redirect_target((string) ($_GET['redirect'] ?? $_POST['redirect'] ?? ''), 'account');
 
 if (is_logged_in()) {
     header('Location: account');
@@ -39,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errori['password'] = 'Inserisci la tua password.';
     }
 
-    $valoreIdentificativo = htmlspecialchars($identifier, ENT_QUOTES, 'UTF-8');
+    $valoreIdentificativo = $identifier;
 
     if (empty($errori)) {
         $lookupIdentifier = filter_var(auth_normalize_email($identifier), FILTER_VALIDATE_EMAIL)
@@ -75,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             login_user($utente);
-            
+
             // Se l'utente ha un carrello attivo, sincronizziamo la sede della sessione con quella del carrello
             if (function_exists('cart_get_active_row')) {
                 $activeCart = cart_get_active_row($pdo, (int)$utente['id']);
@@ -89,17 +90,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             flash_set('success', 'Accesso effettuato con successo. Bentornato, ' . $utente['username'] . '!');
-            header('Location: account');
+            header('Location: ' . $redirectTo);
             exit;
         }
     }
 }
 
-$pageTitle       = 'Accedi al tuo account - Smash Burger Original';
-$pageDescription = 'Accedi al tuo account Smash Burger per gestire i tuoi ordini e le tue preferenze.';
-$currentPage     = 'accedi';
-$breadcrumb      = [['Home', './'], ['Accedi', null]];
-
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/account/accedi.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('account/accedi.php', [
+    'pageTitle' => 'Accedi al tuo account - Smash Burger Original',
+    'pageDescription' => 'Accedi al tuo account Smash Burger per gestire i tuoi ordini e le tue preferenze.',
+    'currentPage' => 'accedi',
+    'breadcrumb' => [['Home', './'], ['Accedi', null]],
+    'errori' => $errori,
+    'valoreIdentificativo' => $valoreIdentificativo,
+    'redirectTo' => $redirectTo,
+    'csrfToken' => $csrfToken,
+    'flash' => $flash
+]);

@@ -70,23 +70,19 @@ $frequencyOptions = supply_frequency_options();
 
 <section class="account-page admin-page" aria-labelledby="titolo-builder-forniture">
     <div class="contenitore">
-        <div class="account-page-head admin-page-head">
-            <div class="admin-builder-page-head">
-                <span class="account-panel-kicker"><?php echo htmlspecialchars((string) ($builderMeta['kicker'] ?? 'Builder'), ENT_QUOTES, 'UTF-8'); ?></span>
-                <h1 id="titolo-builder-forniture"><?php echo htmlspecialchars((string) ($builderMeta['title'] ?? 'Builder forniture'), ENT_QUOTES, 'UTF-8'); ?></h1>
-                <p class="checkout-muted"><?php echo htmlspecialchars((string) ($builderMeta['description'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></p>
+        <div>
+            <div>
+                <span class="account-panel-kicker"><?php echo e((string) ($builderMeta['kicker'] ?? 'Builder')); ?></span>
+                <h1 id="titolo-builder-forniture"><?php echo e((string) ($builderMeta['title'] ?? 'Builder forniture')); ?></h1>
+                <p class="checkout-muted"><?php echo e((string) ($builderMeta['description'] ?? '')); ?></p>
             </div>
 
             <div class="account-action-row">
-                <a class="bottone-secondario" href="<?php echo htmlspecialchars($hubUrl, ENT_QUOTES, 'UTF-8'); ?>">&larr; Torna a forniture</a>
+                <a class="bottone-secondario" href="<?php echo e($hubUrl); ?>">&larr; Torna a forniture</a>
             </div>
         </div>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars((string) ($flash['type'] ?? 'info'), ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars((string) ($flash['message'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
 
         <?php if ($productsWithoutSupplyCostCount > 0 && $builderKey !== 'automatic'): ?>
             <div class="alert info">
@@ -95,8 +91,8 @@ $frequencyOptions = supply_frequency_options();
             </div>
         <?php endif; ?>
 
-        <div class="checkout-shell admin-supply-builder-shell">
-            <div class="checkout-card checkout-form checkout-main admin-supply-builder-main">
+        <div class="checkout-shell">
+            <div class="checkout-card checkout-form">
                 <div class="account-panel-head">
                     <span class="account-panel-kicker">Canvas</span>
                     <h2>Costruisci il flusso blocco per blocco</h2>
@@ -104,8 +100,8 @@ $frequencyOptions = supply_frequency_options();
                 </div>
 
                 <?php if ($builderKey === 'standard'): ?>
-                    <form method="POST" action="<?php echo htmlspecialchars($builderUrl, ENT_QUOTES, 'UTF-8'); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-builder-standard">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-builder-standard">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_standard_template">
 
                         <div class="admin-workflow-canvas" aria-label="Canvas routine ricorrente">
@@ -121,27 +117,27 @@ $frequencyOptions = supply_frequency_options();
                                     </ul>
                                 </summary>
                                 <div class="admin-workflow-block-body">
-                                    <div class="campo-gruppo">
-                                        <label for="standard-template-name">Nome template</label>
-                                        <input type="text" id="standard-template-name" name="template_name" required aria-required="true" maxlength="120" value="<?php echo htmlspecialchars((string) ($draft['template_name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                    </div>
+                                    <?php echo ui_form_group('standard-template-name', 'Nome template', 'text', [
+                                        'value' => $draft['template_name'] ?? '',
+                                        'extra_attrs' => 'name="template_name" maxlength="120"'
+                                    ]); ?>
 
                                     <div class="admin-inline-grid">
                                         <div class="campo-gruppo">
                                             <label for="standard-frequency">Frequenza</label>
                                             <select id="standard-frequency" name="frequency" required aria-required="true">
                                                 <?php foreach ($frequencyOptions as $value => $label): ?>
-                                                    <option value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>" <?php echo (string) ($draft['frequency'] ?? 'weekly') === $value ? 'selected' : ''; ?>>
-                                                        <?php echo htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>
+                                                    <option value="<?php echo e($value); ?>" <?php echo (string) ($draft['frequency'] ?? 'weekly') === $value ? 'selected' : ''; ?>>
+                                                        <?php echo e($label); ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
 
-                                        <div class="campo-gruppo">
-                                            <label for="standard-next-run">Prima esecuzione</label>
-                                            <input type="datetime-local" id="standard-next-run" name="next_run_at" required aria-required="true" value="<?php echo htmlspecialchars((string) ($draft['next_run_at'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('standard-next-run', 'Prima esecuzione', 'datetime-local', [
+                                            'value' => $draft['next_run_at'] ?? '',
+                                            'extra_attrs' => 'name="next_run_at"'
+                                        ]); ?>
                                     </div>
                                 </div>
                             </details>
@@ -165,7 +161,7 @@ $frequencyOptions = supply_frequency_options();
                                             <?php foreach (($draft['items'] ?? admin_supply_item_rows_default()) as $rowIndex => $row): ?>
                                                 <article class="admin-repeatable-row" data-repeatable-row>
                                                     <div class="admin-repeatable-row-head">
-                                                        <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
+                                                        <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
                                                         <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                     </div>
 
@@ -181,25 +177,26 @@ $frequencyOptions = supply_frequency_options();
                                                                     $hasSupplyCost = !empty($inventoryItem['has_supply_unit_cost']);
                                                                     ?>
                                                                     <option
-                                                                        value="<?php echo htmlspecialchars($optionProductId, ENT_QUOTES, 'UTF-8'); ?>"
+                                                                        value="<?php echo e($optionProductId); ?>"
                                                                         data-unit-cost="<?php echo (int) ($inventoryItem['supply_unit_cost_cents'] ?? 0); ?>"
                                                                         <?php echo $selectedProductId === $optionProductId ? 'selected' : ''; ?>
                                                                         <?php echo !$hasSupplyCost ? 'disabled' : ''; ?>>
-                                                                        <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                                        <?php echo e((string) $inventoryItem['product_name']); ?>
                                                                         <?php echo !$hasSupplyCost ? ' (costo da inizializzare)' : ''; ?>
                                                                     </option>
                                                                 <?php endforeach; ?>
                                                             </select>
                                                         </div>
 
-                                                        <div class="campo-gruppo">
-                                                            <label for="standard-quantity-<?php echo $rowIndex; ?>">Quantità</label>
-                                                            <input type="number" id="standard-quantity-<?php echo $rowIndex; ?>" name="template_quantity[]" min="1" step="1" value="<?php echo htmlspecialchars((string) ($row['quantity'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                                        </div>
+                                                        <?php echo ui_form_group('standard-quantity-' . $rowIndex, 'Quantità', 'number', [
+                                                            'value' => $row['quantity'] ?? '',
+                                                            'extra_attrs' => 'name="template_quantity[]" min="1" step="1"',
+                                                            'required' => false
+                                                        ]); ?>
                                                     </div>
 
                                                     <p
-                                                        class="checkout-muted admin-supply-cost-note"
+                                                        class="checkout-muted"
                                                         data-product-cost-output
                                                         data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                         data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -212,7 +209,7 @@ $frequencyOptions = supply_frequency_options();
                                         <template data-repeatable-template>
                                             <article class="admin-repeatable-row" data-repeatable-row>
                                                 <div class="admin-repeatable-row-head">
-                                                    <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
+                                                    <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
                                                     <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                 </div>
 
@@ -226,21 +223,21 @@ $frequencyOptions = supply_frequency_options();
                                                                     value="<?php echo (int) $inventoryItem['product_id']; ?>"
                                                                     data-unit-cost="<?php echo (int) ($inventoryItem['supply_unit_cost_cents'] ?? 0); ?>"
                                                                     <?php echo empty($inventoryItem['has_supply_unit_cost']) ? 'disabled' : ''; ?>>
-                                                                    <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                                    <?php echo e((string) $inventoryItem['product_name']); ?>
                                                                     <?php echo empty($inventoryItem['has_supply_unit_cost']) ? ' (costo da inizializzare)' : ''; ?>
                                                                 </option>
                                                             <?php endforeach; ?>
                                                         </select>
                                                     </div>
 
-                                                    <div class="campo-gruppo">
-                                                        <label for="standard-quantity-__INDEX__">Quantità</label>
-                                                        <input type="number" id="standard-quantity-__INDEX__" name="template_quantity[]" min="1" step="1">
-                                                    </div>
+                                                    <?php echo ui_form_group('standard-quantity-__INDEX__', 'Quantità', 'number', [
+                                                        'extra_attrs' => 'name="template_quantity[]" min="1" step="1"',
+                                                        'required' => false
+                                                    ]); ?>
                                                 </div>
 
                                                 <p
-                                                    class="checkout-muted admin-supply-cost-note"
+                                                    class="checkout-muted"
                                                     data-product-cost-output
                                                     data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                     data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -267,22 +264,24 @@ $frequencyOptions = supply_frequency_options();
                                     </ul>
                                 </summary>
                                 <div class="admin-workflow-block-body">
-                                    <div class="campo-gruppo">
-                                        <label for="standard-notes">Note</label>
-                                        <textarea id="standard-notes" name="notes" rows="4" placeholder="Es. carico del lunedi con buns, salse e packaging base"><?php echo htmlspecialchars((string) ($draft['notes'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                    </div>
+                                    <?php echo ui_form_group('standard-notes', 'Note', 'textarea', [
+                                        'value' => $draft['notes'] ?? '',
+                                        'placeholder' => 'Es. carico del lunedi con buns, salse e packaging base',
+                                        'extra_attrs' => 'name="notes" rows="4"',
+                                        'required' => false
+                                    ]); ?>
 
                                     <div class="checkout-navigation">
-                                        <a class="bottone-secondario" href="<?php echo htmlspecialchars($hubUrl, ENT_QUOTES, 'UTF-8'); ?>">&larr; Torna alla dashboard</a>
-                                        <button class="bottone-primario" type="submit"><?php echo htmlspecialchars((string) ($builderMeta['submit_label'] ?? 'Salva'), ENT_QUOTES, 'UTF-8'); ?></button>
+                                        <a class="bottone-secondario" href="<?php echo e($hubUrl); ?>">&larr; Torna alla dashboard</a>
+                                        <button class="bottone-primario" type="submit"><?php echo e((string) ($builderMeta['submit_label'] ?? 'Salva')); ?></button>
                                     </div>
                                 </div>
                             </details>
                         </div>
                     </form>
                 <?php elseif ($builderKey === 'extra'): ?>
-                    <form method="POST" action="<?php echo htmlspecialchars($builderUrl, ENT_QUOTES, 'UTF-8'); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-builder-straordinario">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-builder-straordinario">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_extra_supply">
 
                         <div class="admin-workflow-canvas" aria-label="Canvas intervento una tantum">
@@ -298,15 +297,17 @@ $frequencyOptions = supply_frequency_options();
                                 </summary>
                                 <div class="admin-workflow-block-body">
                                     <div class="admin-inline-grid">
-                                        <div class="campo-gruppo">
-                                            <label for="extra-supplier-name">Fornitore</label>
-                                            <input type="text" id="extra-supplier-name" name="supplier_name" maxlength="120" value="<?php echo htmlspecialchars((string) ($draft['supplier_name'] ?? 'Centro forniture SmashBurger'), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('extra-supplier-name', 'Fornitore', 'text', [
+                                            'value' => $draft['supplier_name'] ?? 'Centro forniture SmashBurger',
+                                            'extra_attrs' => 'name="supplier_name" maxlength="120"',
+                                            'required' => false
+                                        ]); ?>
 
-                                        <div class="campo-gruppo">
-                                            <label for="extra-scheduled-for">Consegna prevista</label>
-                                            <input type="datetime-local" id="extra-scheduled-for" name="scheduled_for" value="<?php echo htmlspecialchars((string) ($draft['scheduled_for'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('extra-scheduled-for', 'Consegna prevista', 'datetime-local', [
+                                            'value' => $draft['scheduled_for'] ?? '',
+                                            'extra_attrs' => 'name="scheduled_for"',
+                                            'required' => false
+                                        ]); ?>
                                     </div>
                                 </div>
                             </details>
@@ -330,7 +331,7 @@ $frequencyOptions = supply_frequency_options();
                                             <?php foreach (($draft['items'] ?? admin_supply_item_rows_default()) as $rowIndex => $row): ?>
                                                 <article class="admin-repeatable-row" data-repeatable-row>
                                                     <div class="admin-repeatable-row-head">
-                                                        <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
+                                                        <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto <?php echo $rowIndex + 1; ?></strong>
                                                         <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                     </div>
 
@@ -346,25 +347,26 @@ $frequencyOptions = supply_frequency_options();
                                                                     $hasSupplyCost = !empty($inventoryItem['has_supply_unit_cost']);
                                                                     ?>
                                                                     <option
-                                                                        value="<?php echo htmlspecialchars($optionProductId, ENT_QUOTES, 'UTF-8'); ?>"
+                                                                        value="<?php echo e($optionProductId); ?>"
                                                                         data-unit-cost="<?php echo (int) ($inventoryItem['supply_unit_cost_cents'] ?? 0); ?>"
                                                                         <?php echo $selectedProductId === $optionProductId ? 'selected' : ''; ?>
                                                                         <?php echo !$hasSupplyCost ? 'disabled' : ''; ?>>
-                                                                        <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                                        <?php echo e((string) $inventoryItem['product_name']); ?>
                                                                         <?php echo !$hasSupplyCost ? ' (costo da inizializzare)' : ''; ?>
                                                                     </option>
                                                                 <?php endforeach; ?>
                                                             </select>
                                                         </div>
 
-                                                        <div class="campo-gruppo">
-                                                            <label for="extra-quantity-<?php echo $rowIndex; ?>">Quantità</label>
-                                                            <input type="number" id="extra-quantity-<?php echo $rowIndex; ?>" name="extra_quantity[]" min="1" step="1" value="<?php echo htmlspecialchars((string) ($row['quantity'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                                        </div>
+                                                        <?php echo ui_form_group('extra-quantity-' . $rowIndex, 'Quantità', 'number', [
+                                                            'value' => $row['quantity'] ?? '',
+                                                            'extra_attrs' => 'name="extra_quantity[]" min="1" step="1"',
+                                                            'required' => false
+                                                        ]); ?>
                                                     </div>
 
                                                     <p
-                                                        class="checkout-muted admin-supply-cost-note"
+                                                        class="checkout-muted"
                                                         data-product-cost-output
                                                         data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                         data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -377,7 +379,7 @@ $frequencyOptions = supply_frequency_options();
                                         <template data-repeatable-template>
                                             <article class="admin-repeatable-row" data-repeatable-row>
                                                 <div class="admin-repeatable-row-head">
-                                                    <strong class="admin-repeatable-row-index" data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
+                                                    <strong data-repeatable-label data-label-prefix="Prodotto">Prodotto</strong>
                                                     <button class="admin-repeatable-remove" type="button" data-repeatable-remove aria-label="Rimuovi riga prodotto">x</button>
                                                 </div>
 
@@ -391,21 +393,21 @@ $frequencyOptions = supply_frequency_options();
                                                                     value="<?php echo (int) $inventoryItem['product_id']; ?>"
                                                                     data-unit-cost="<?php echo (int) ($inventoryItem['supply_unit_cost_cents'] ?? 0); ?>"
                                                                     <?php echo empty($inventoryItem['has_supply_unit_cost']) ? 'disabled' : ''; ?>>
-                                                                    <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                                    <?php echo e((string) $inventoryItem['product_name']); ?>
                                                                     <?php echo empty($inventoryItem['has_supply_unit_cost']) ? ' (costo da inizializzare)' : ''; ?>
                                                                 </option>
                                                             <?php endforeach; ?>
                                                         </select>
                                                     </div>
 
-                                                    <div class="campo-gruppo">
-                                                        <label for="extra-quantity-__INDEX__">Quantità</label>
-                                                        <input type="number" id="extra-quantity-__INDEX__" name="extra_quantity[]" min="1" step="1">
-                                                    </div>
+                                                    <?php echo ui_form_group('extra-quantity-__INDEX__', 'Quantità', 'number', [
+                                                        'extra_attrs' => 'name="extra_quantity[]" min="1" step="1"',
+                                                        'required' => false
+                                                    ]); ?>
                                                 </div>
 
                                                 <p
-                                                    class="checkout-muted admin-supply-cost-note"
+                                                    class="checkout-muted"
                                                     data-product-cost-output
                                                     data-default-message="Il costo della filiale verrà applicato automaticamente quando scegli la referenza."
                                                     data-missing-message="Questa referenza non ha ancora un costo filiale disponibile.">
@@ -424,7 +426,7 @@ $frequencyOptions = supply_frequency_options();
                             <details class="admin-workflow-block admin-workflow-block--confirm" open>
                                 <summary class="admin-workflow-block-summary">
                                     <span class="admin-workflow-node-type">Output</span>
-                                    <h3>Registra l ordine operativo</h3>
+                                    <h3>Registra l'ordine operativo</h3>
                                     <p>Aggiungi la nota finale e salva la fornitura straordinaria nello storico della filiale.</p>
                                     <ul class="admin-workflow-chip-list">
                                         <li>Nota interna</li>
@@ -432,22 +434,24 @@ $frequencyOptions = supply_frequency_options();
                                     </ul>
                                 </summary>
                                 <div class="admin-workflow-block-body">
-                                    <div class="campo-gruppo">
-                                        <label for="extra-notes">Note</label>
-                                        <textarea id="extra-notes" name="notes" rows="4" placeholder="Es. integrazione urgente per weekend o sostituzione merce danneggiata"><?php echo htmlspecialchars((string) ($draft['notes'] ?? ''), ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                    </div>
+                                    <?php echo ui_form_group('extra-notes', 'Note', 'textarea', [
+                                        'value' => $draft['notes'] ?? '',
+                                        'placeholder' => 'Es. integrazione urgente per weekend o sostituzione merce danneggiata',
+                                        'extra_attrs' => 'name="notes" rows="4"',
+                                        'required' => false
+                                    ]); ?>
 
                                     <div class="checkout-navigation">
-                                        <a class="bottone-secondario" href="<?php echo htmlspecialchars($hubUrl, ENT_QUOTES, 'UTF-8'); ?>">&larr; Torna alla dashboard</a>
-                                        <button class="bottone-primario" type="submit"><?php echo htmlspecialchars((string) ($builderMeta['submit_label'] ?? 'Salva'), ENT_QUOTES, 'UTF-8'); ?></button>
+                                        <a class="bottone-secondario" href="<?php echo e($hubUrl); ?>">&larr; Torna alla dashboard</a>
+                                        <button class="bottone-primario" type="submit"><?php echo e((string) ($builderMeta['submit_label'] ?? 'Salva')); ?></button>
                                     </div>
                                 </div>
                             </details>
                         </div>
                     </form>
                 <?php else: ?>
-                    <form method="POST" action="<?php echo htmlspecialchars($builderUrl, ENT_QUOTES, 'UTF-8'); ?>" class="admin-workflow-form" data-valida novalidate aria-labelledby="titolo-builder-automatico">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="admin-workflow-form" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-builder-automatico">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="create_policy">
 
                         <div class="admin-workflow-canvas" aria-label="Canvas automazione stock">
@@ -469,16 +473,16 @@ $frequencyOptions = supply_frequency_options();
                                                 <option value="">Seleziona una referenza</option>
                                                 <?php foreach ($inventoryItems as $inventoryItem): ?>
                                                     <option value="<?php echo (int) $inventoryItem['product_id']; ?>" <?php echo (string) ($draft['product_id'] ?? '') === (string) ((int) $inventoryItem['product_id']) ? 'selected' : ''; ?>>
-                                                        <?php echo htmlspecialchars((string) $inventoryItem['product_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                        <?php echo e((string) $inventoryItem['product_name']); ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             </select>
                                         </div>
 
-                                        <div class="campo-gruppo">
-                                            <label for="auto-threshold">Soglia minima</label>
-                                            <input type="number" id="auto-threshold" name="threshold_qty" required aria-required="true" min="1" step="1" value="<?php echo htmlspecialchars((string) ($draft['threshold_qty'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('auto-threshold', 'Soglia minima', 'number', [
+                                            'value' => $draft['threshold_qty'] ?? '',
+                                            'extra_attrs' => 'name="threshold_qty" min="1" step="1"'
+                                        ]); ?>
                                     </div>
                                 </div>
                             </details>
@@ -497,15 +501,17 @@ $frequencyOptions = supply_frequency_options();
                                 </summary>
                                 <div class="admin-workflow-block-body">
                                     <div class="admin-inline-grid">
-                                        <div class="campo-gruppo">
-                                            <label for="auto-cooldown">Cooldown ore</label>
-                                            <input type="number" id="auto-cooldown" name="cooldown_hours" min="0" step="1" value="<?php echo htmlspecialchars((string) ($draft['cooldown_hours'] ?? '6'), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('auto-cooldown', 'Cooldown ore', 'number', [
+                                            'value' => $draft['cooldown_hours'] ?? '6',
+                                            'extra_attrs' => 'name="cooldown_hours" min="0" step="1"',
+                                            'required' => false
+                                        ]); ?>
 
-                                        <div class="campo-gruppo">
-                                            <label for="auto-max-pending">Massimo in arrivo</label>
-                                            <input type="number" id="auto-max-pending" name="max_pending_qty" min="0" step="1" value="<?php echo htmlspecialchars((string) ($draft['max_pending_qty'] ?? '0'), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('auto-max-pending', 'Massimo in arrivo', 'number', [
+                                            'value' => $draft['max_pending_qty'] ?? '0',
+                                            'extra_attrs' => 'name="max_pending_qty" min="0" step="1"',
+                                            'required' => false
+                                        ]); ?>
                                     </div>
                                 </div>
                             </details>
@@ -524,10 +530,10 @@ $frequencyOptions = supply_frequency_options();
                                 </summary>
                                 <div class="admin-workflow-block-body">
                                     <div class="admin-inline-grid">
-                                        <div class="campo-gruppo">
-                                            <label for="auto-reorder">Quantita riordino</label>
-                                            <input type="number" id="auto-reorder" name="reorder_qty" required aria-required="true" min="1" step="1" value="<?php echo htmlspecialchars((string) ($draft['reorder_qty'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>">
-                                        </div>
+                                        <?php echo ui_form_group('auto-reorder', 'Quantita riordino', 'number', [
+                                            'value' => $draft['reorder_qty'] ?? '',
+                                            'extra_attrs' => 'name="reorder_qty" min="1" step="1"'
+                                        ]); ?>
 
                                         <div class="campo-gruppo">
                                             <label for="auto-mode">Modalita</label>
@@ -539,8 +545,8 @@ $frequencyOptions = supply_frequency_options();
                                     </div>
 
                                     <div class="checkout-navigation">
-                                        <a class="bottone-secondario" href="<?php echo htmlspecialchars($hubUrl, ENT_QUOTES, 'UTF-8'); ?>">&larr; Torna alla dashboard</a>
-                                        <button class="bottone-primario" type="submit"><?php echo htmlspecialchars((string) ($builderMeta['submit_label'] ?? 'Salva'), ENT_QUOTES, 'UTF-8'); ?></button>
+                                        <a class="bottone-secondario" href="<?php echo e($hubUrl); ?>">&larr; Torna alla dashboard</a>
+                                        <button class="bottone-primario" type="submit"><?php echo e((string) ($builderMeta['submit_label'] ?? 'Salva')); ?></button>
                                     </div>
                                 </div>
                             </details>
@@ -549,7 +555,7 @@ $frequencyOptions = supply_frequency_options();
                 <?php endif; ?>
             </div>
 
-            <aside class="checkout-card account-side admin-supply-builder-side">
+            <aside class="checkout-card">
                 <div class="account-panel-head">
                     <span class="account-panel-kicker">Inspector</span>
                     <h2>Promemoria operativo</h2>
@@ -569,7 +575,7 @@ $frequencyOptions = supply_frequency_options();
                         <li><span>Consegne pianificate</span><strong><?php echo (int) $scheduledSupplyOrdersCount; ?></strong></li>
                         <li><span>Output</span><strong>Ordine operativo</strong></li>
                     </ul>
-                    <p class="checkout-muted account-note">Il builder straordinario resta leggero: aggiungi le righe strettamente necessarie, lascia il costo al sistema e registra subito l intervento nello storico.</p>
+                    <p class="checkout-muted account-note">Il builder straordinario resta leggero: aggiungi le righe strettamente necessarie, lascia il costo al sistema e registra subito l'intervento nello storico.</p>
                 <?php else: ?>
                     <ul class="riepilogo-lista">
                         <li><span>Policy attive</span><strong><?php echo (int) $activePoliciesCount; ?></strong></li>
@@ -577,8 +583,8 @@ $frequencyOptions = supply_frequency_options();
                         <li><span>Output</span><strong>Bozza o ordine automatico</strong></li>
                     </ul>
 
-                    <form method="POST" action="<?php echo htmlspecialchars($builderUrl, ENT_QUOTES, 'UTF-8'); ?>" class="checkout-navigation checkout-navigation--solo-azione">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                    <form method="POST" action="<?php echo e($builderUrl); ?>" class="checkout-navigation checkout-navigation--solo-azione">
+                        <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="run_auto_reorder">
                         <button class="bottone-secondario" type="submit">Esegui controllo ora</button>
                     </form>
@@ -587,12 +593,12 @@ $frequencyOptions = supply_frequency_options();
                 <?php endif; ?>
 
                 <div class="admin-builder-side-stack">
-                    <article class="admin-builder-side-card">
+                    <article>
                         <h3>Pattern UI</h3>
                         <p class="checkout-muted">Trigger in alto, composizione o controllo al centro, output finale in basso. La lettura resta coerente con il flusso checkout della web app.</p>
                     </article>
 
-                    <article class="admin-builder-side-card">
+                    <article>
                         <h3>Ritorno rapido</h3>
                         <p class="checkout-muted">Se vuoi cambiare scenario, torna alla pagina forniture e apri un altro builder dal relativo launcher.</p>
                     </article>

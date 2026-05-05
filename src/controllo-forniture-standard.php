@@ -6,7 +6,7 @@ extract($context, EXTR_SKIP);
 
 $hubUrl = admin_panel_section_url('forniture', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers);
 if (!$canModifyBranchOperations) {
-    flash_set('error', 'Solo il manager della filiale puo aprire il builder operativo delle forniture.');
+    flash_set('error', 'Solo il manager della filiale può aprire il builder operativo delle forniture.');
     header('Location: ' . $hubUrl);
     exit;
 }
@@ -61,17 +61,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $templates = supply_get_templates($pdo, $selectedBranchId);
 $supplyOrders = supply_get_orders($pdo, $selectedBranchId);
 $policies = auto_reorder_get_policies($pdo, $selectedBranchId);
+$hubUrl = admin_panel_section_url('forniture', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers);
 
-$pageTitle = 'Routine ricorrente forniture - Smash Burger Original';
-$pageDescription = 'Builder guidato per creare template di fornitura ricorrenti per la filiale.';
-$currentPage = 'controllo';
-$breadcrumb = [
-    ['Home', './'],
-    ['Controllo', admin_panel_section_url('dashboard', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers)],
-    ['Forniture', $hubUrl],
-    [(string) ($builderMeta['breadcrumb'] ?? 'Routine ricorrente'), null],
-];
-
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/controllo/forniture-builder.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_admin_page('forniture', [
+    'pageDescription' => 'Builder guidato per creare template di fornitura ricorrenti per la filiale.',
+    'breadcrumb' => [
+        ['Home', './'],
+        ['Controllo', admin_panel_section_url('dashboard', $selectedBranchSlug, $isGeneralAdmin, $canManageBranchManagers)],
+        ['Forniture', $hubUrl],
+        [(string) ($builderMeta['breadcrumb'] ?? 'Routine ricorrente'), null],
+    ],
+    'builderKey' => $builderKey,
+    'builderMeta' => $builderMeta,
+    'builderUrl' => $builderUrl,
+    'hubUrl' => $hubUrl,
+    'inventoryItems' => $inventoryItems,
+    'draft' => $draft,
+    'templates' => $templates,
+    'supplyOrders' => $supplyOrders,
+    'policies' => $policies
+], 'controllo/forniture-builder.php');

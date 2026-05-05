@@ -32,7 +32,6 @@
     header,
     footer,
     nav,
-    #skip-link,
     #theme-toggle,
     #menu-toggle,
     #filtro-categorie,
@@ -41,10 +40,7 @@
     .branch-switcher,
     .bottone-primario,
     .mostra-password,
-    form button[type="submit"] {
-        display: none !important;
-    }
-
+    form button[type="submit"],
     [data-print-trigger="true"] {
         display: none !important;
     }
@@ -113,11 +109,6 @@
     tr {
         page-break-inside: avoid;
         break-inside: avoid;
-    }
-
-    /* --- Badge W3C: non stampare le immagini esterne --- */
-    .w3c-badges {
-        display: none;
     }
 
     .receipt-card,
