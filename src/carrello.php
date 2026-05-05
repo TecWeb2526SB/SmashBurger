@@ -3,15 +3,16 @@ require_once __DIR__ . '/includes/resources.php';
 
 if (!is_logged_in() && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrfTokenForm = $_POST['csrf_token'] ?? null;
+    $redirectTo = auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti');
+
     if (!csrf_is_valid($csrfTokenForm)) {
         flash_set('error', 'Sessione scaduta o richiesta non valida.');
-        header('Location: ' . app_route('accedi') . '?redirect=' . rawurlencode(auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti')));
+        header('Location: ' . app_route('accedi', ['redirect' => $redirectTo]));
         exit;
     }
 
-    $redirectTo = auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti');
     flash_set('error', 'Per continuare devi effettuare l\'accesso.');
-    header('Location: ' . app_route('accedi') . '?redirect=' . rawurlencode($redirectTo));
+    header('Location: ' . app_route('accedi', ['redirect' => $redirectTo]));
     exit;
 }
 

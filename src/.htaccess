@@ -1,6 +1,49 @@
-# Apache configuration for SmashBurger.
-# The application now uses relative .php routes and does not rely on rewrite rules.
+# Configurazione Apache per la gestione delle rotte (routing)
+# Questo file istruisce Apache su come gestire le richieste in arrivo.
 
+# Gestione degli Errori HTTP personalizzati
+# Istruisce Apache su quali file mostrare per determinati codici di errore.
+ErrorDocument 403 /errors/403.php
+ErrorDocument 404 /errors/404.php
+ErrorDocument 500 /errors/500.php
+
+# Abilitiamo il motore di riscrittura degli URL (URL rewriting)
+RewriteEngine On
+
+# Assicuriamoci che Apache segua i link simbolici (spesso richiesto per mod_rewrite)
+Options +FollowSymLinks -MultiViews
+
+# Canonicalizziamo la homepage
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteRule ^index$ / [R=301,L,NE]
+
+RewriteCond %{THE_REQUEST} \s/+index\.php(?:[?\s]|$) [NC]
+RewriteRule ^index\.php$ / [R=301,L,NE]
+
+# Canonicalizziamo gli URL root-level .php verso la versione senza estensione
+# Solo su GET/HEAD per non alterare eventuali POST legacy.
+RewriteCond %{REQUEST_METHOD} ^(?:GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/+([A-Za-z0-9_-]+)\.php(?:[?\s]|$) [NC]
+RewriteRule ^([A-Za-z0-9_-]+)\.php$ /$1 [R=301,L,NE]
+
+# Lasciamo invariati file e directory reali (css, js, txt, xml, immagini, ecc.)
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Riscriviamo internamente solo i controller root-level senza estensione
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([A-Za-z0-9_-]+)$ $1.php [L,QSA]
+
+# Regola: Se il file o la directory richiesti non esistono fisicamente sul server...
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+
+# ...allora reindirizza tutto al file index.php mantenendo i parametri della query string.
+# Questo è essenziale per il funzionamento del routing in applicazioni PHP moderne.
+# RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
+
+# Protezione extra: impediamo l'accesso a file sensibili (come .env o .git)
 <FilesMatch "^\.">
     Order allow,deny
     Deny from all

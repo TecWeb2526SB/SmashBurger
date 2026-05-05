@@ -250,7 +250,7 @@ $csrfToken = csrf_token();
 
         <ul class="category-grid" role="list">
             <li>
-                <a href="<?php echo e(app_route('prodotti') . '?categoria=burger-manzo'); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'burger-manzo'])); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -267,7 +267,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti') . '?categoria=burger-pollo'); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'burger-pollo'])); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -282,7 +282,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti') . '?categoria=burger-vegan'); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'burger-vegan'])); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -296,7 +296,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti') . '?categoria=contorni'); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'contorni'])); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -313,7 +313,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti') . '?categoria=bevande'); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'bevande'])); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -329,7 +329,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti') . '?categoria=dolci'); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'dolci'])); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -468,7 +468,7 @@ $csrfToken = csrf_token();
                         <span class="prezzo-vecchio" aria-label="Prezzo originale">39,80 &euro;</span>
                         <span class="prezzo-nuovo">29,90 &euro;</span>
                     </div>
-                    <a href="<?php echo e(app_route('prodotti') . '?promo=bundle-serata'); ?>" class="bottone-primario">Approfitta ora</a>
+                    <a href="<?php echo e(app_route('prodotti', ['promo' => 'bundle-serata'])); ?>" class="bottone-primario">Approfitta ora</a>
                 </div>
                 <p class="offer-note">Disponibile tutti i giorni dopo le 18:30 fino al 30 novembre.</p>
             </article>

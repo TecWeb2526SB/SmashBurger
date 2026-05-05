@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             if ($action === 'save_details') {
                 $_SESSION['admin_team_manager_draft'] = admin_team_manager_draft_from_payload($pdo, $_POST);
-                header('Location: ' . app_route('controllo-manager') . '?modalita=review');
+                header('Location: ' . app_route('controllo-manager', ['modalita' => 'review']));
                 exit;
             } elseif ($action === 'confirm_manager') {
                 admin_team_manager_confirm($pdo, $_SESSION['admin_team_manager_draft'] ?? []);

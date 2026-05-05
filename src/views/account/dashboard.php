@@ -239,7 +239,7 @@ $paymentMethodMeta = static function (string $rawMethod): array {
                                 <span class="ordine-method-pill-code" aria-hidden="true"><?php echo e($methodMeta['short']); ?></span>
                                 <span class="ordine-method-pill-label"><?php echo e($methodMeta['label']); ?></span>
                             </span>
-                            <a class="bottone-secondario" href="ricevuta?tipo=ordine&amp;id=<?php echo (int) $ordine['id']; ?>">Apri ricevuta</a>
+                            <a class="bottone-secondario" href="<?php echo e(app_route('ricevuta', ['tipo' => 'ordine', 'id' => (int) $ordine['id']])); ?>">Apri ricevuta</a>
                         </div>
                     </article>
                 <?php endforeach; ?>

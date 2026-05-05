@@ -128,8 +128,9 @@ jobs:
           ];
           EOF
 
-          echo "Carico config DB fuori da public_html..."
-          rsync -az -e "$rsync_ssh" "$tmpdir/smashburger-config.php" "$remote:.smashburger-config.php"
+          echo "Rimuovo vecchie copie della config e la carico in includes..."
+          "${ssh_cmd[@]}" "$remote" "rm -f '.smashburger-config.php' '${TECWEB_REMOTE_DIR}/.smashburger-config.php' '${TECWEB_REMOTE_DIR}/includes/.smashburger-config.php'"
+          rsync -az -e "$rsync_ssh" "$tmpdir/smashburger-config.php" "$remote:${TECWEB_REMOTE_DIR}/includes/.smashburger-config.php"
 
           if [ "${TECWEB_IMPORT_DB}" = "1" ]; then
             if [ ! -f "src/database/schema.sql" ]; then
@@ -176,18 +177,6 @@ jobs:
             echo "Import DB saltato (TECWEB_IMPORT_DB=${TECWEB_IMPORT_DB})."
           fi
 
-          cat > "$tmpdir/.htaccess" <<EOF
-          DirectoryIndex index.php
-
-          <IfModule mod_rewrite.c>
-              RewriteEngine On
-              RewriteBase /${TECWEB_USER}/
-              RewriteCond %{REQUEST_FILENAME} !-d
-              RewriteCond %{REQUEST_FILENAME}.php -f
-              RewriteRule ^(.+?)/?$ \$1.php [L]
-          </IfModule>
-          EOF
-
           echo "Sincronizzo src/ in ${TECWEB_REMOTE_DIR}/ (senza --delete)..."
           rsync -az \
             --exclude '/database/' \
@@ -196,7 +185,4 @@ jobs:
             src/ \
             "$remote:${TECWEB_REMOTE_DIR}/"
 
-          echo "Carico .htaccess..."
-          rsync -az -e "$rsync_ssh" "$tmpdir/.htaccess" "$remote:${TECWEB_REMOTE_DIR}/.htaccess"
-
-          echo "Deploy completato: http://tecweb.studenti.math.unipd.it/${TECWEB_USER}"
+          echo "Deploy completato: http://tecweb.studenti.math.unipd.it/~${TECWEB_USER}"

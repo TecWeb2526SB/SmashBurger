@@ -16,18 +16,15 @@ function branch_osm_embed_url(float $latitude, float $longitude): string
     $minLat = $latitude - $delta;
     $maxLat = $latitude + $delta;
 
-    $bbox = rawurlencode(
-        number_format($minLon, 6, '.', '') . ',' .
-        number_format($minLat, 6, '.', '') . ',' .
-        number_format($maxLon, 6, '.', '') . ',' .
-        number_format($maxLat, 6, '.', '')
-    );
-    $marker = rawurlencode(
-        number_format($latitude, 6, '.', '') . ',' .
-        number_format($longitude, 6, '.', '')
-    );
-
-    return 'https://www.openstreetmap.org/export/embed.html?bbox=' . $bbox . '&layer=mapnik&marker=' . $marker;
+    return 'https://www.openstreetmap.org/export/embed.html?' . http_build_query([
+        'bbox' => number_format($minLon, 6, '.', '') . ',' .
+            number_format($minLat, 6, '.', '') . ',' .
+            number_format($maxLon, 6, '.', '') . ',' .
+            number_format($maxLat, 6, '.', ''),
+        'layer' => 'mapnik',
+        'marker' => number_format($latitude, 6, '.', '') . ',' .
+            number_format($longitude, 6, '.', ''),
+    ]);
 }
 
 function branch_hours_grouped(array $hours): array

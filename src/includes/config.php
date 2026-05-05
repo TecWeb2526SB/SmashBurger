@@ -5,14 +5,20 @@
 
 // Credenziali del database
 // In locale si usano le variabili d'ambiente; su TecWeb il deploy deposita
-// un file privato in home directory con i valori reali del database.
+// un file privato dentro `src/includes/` con i valori reali del database.
 $deploymentConfig = [];
-$deploymentConfigPath = dirname(__DIR__, 3) . '/.smashburger-config.php';
+foreach ([
+    __DIR__ . '/.smashburger-config.php',
+    dirname(__DIR__, 2) . '/.smashburger-config.php',
+] as $deploymentConfigPath) {
+    if (!is_file($deploymentConfigPath)) {
+        continue;
+    }
 
-if (is_file($deploymentConfigPath)) {
     $loadedConfig = require $deploymentConfigPath;
     if (is_array($loadedConfig)) {
         $deploymentConfig = $loadedConfig;
+        break;
     }
 }
 
@@ -59,12 +65,10 @@ if (!function_exists('app_route')) {
                 $url = './';
             } else {
                 $path = ltrim($path, '/');
-                $lastSegment = basename(rtrim($path, '/'));
-                if ($lastSegment !== '' && $lastSegment !== '.' && $lastSegment !== '..' && !str_contains($lastSegment, '.')) {
-                    $path = rtrim($path, '/') . '.php';
-                }
+                $path = preg_replace('/\.php$/i', '', $path);
+                $path = trim($path, '/');
 
-                $url = $path;
+                $url = $path === '' || $path === 'index' ? './' : $path;
             }
 
             if (!empty($parsed['query'])) {
@@ -105,7 +109,7 @@ if (!function_exists('app_route_name')) {
             return './';
         }
 
-        return pathinfo(basename($path), PATHINFO_FILENAME);
+        return preg_replace('/\.php$/i', '', basename($path));
     }
 }
 

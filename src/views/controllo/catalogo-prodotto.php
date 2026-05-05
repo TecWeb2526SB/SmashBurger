@@ -25,6 +25,10 @@ foreach ($categories as $category) {
 
 $currentTitle = $existingProduct !== null ? 'Modifica prodotto globale' : 'Nuovo prodotto globale';
 $isReviewStep = $currentStep === 'riepilogo';
+$catalogProductBaseQuery = $existingProduct !== null ? ['id' => (int) $existingProduct['id']] : [];
+$catalogProductUrl = app_route('controllo-catalogo-prodotto', $catalogProductBaseQuery);
+$catalogProductImageUrl = app_route('controllo-catalogo-prodotto', array_merge($catalogProductBaseQuery, ['step' => 'immagine']));
+$catalogProductReviewUrl = app_route('controllo-catalogo-prodotto', array_merge($catalogProductBaseQuery, ['step' => 'riepilogo']));
 ?>
 
 <section class="account-page admin-page" aria-labelledby="titolo-catalogo-prodotto">
@@ -33,7 +37,7 @@ $isReviewStep = $currentStep === 'riepilogo';
             <h1 id="titolo-catalogo-prodotto"><?php echo e($currentTitle); ?></h1>
             <div class="account-action-row">
                 <a class="bottone-secondario" href="<?php echo e(app_route('controllo-catalogo')); ?>">&larr; Torna al catalogo</a>
-                <a class="bottone-secondario" href="<?php echo e(app_route('controllo-catalogo-prodotto') . ($existingProduct !== null ? '?id=' . (int) $existingProduct['id'] . '&reset=1' : '?reset=1')); ?>">Azzera bozza</a>
+                <a class="bottone-secondario" href="<?php echo e(app_route('controllo-catalogo-prodotto', array_merge($catalogProductBaseQuery, ['reset' => '1']))); ?>">Azzera bozza</a>
             </div>
         </div>
 
@@ -42,7 +46,7 @@ $isReviewStep = $currentStep === 'riepilogo';
         <div class="checkout-shell">
             <div class="checkout-card checkout-form">
                 <?php if ($currentStep === 'dettagli'): ?>
-                    <form method="POST" action="<?php echo e(app_route('controllo-catalogo-prodotto') . ($existingProduct !== null ? '?id=' . (int) $existingProduct['id'] : '')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-step-dettagli">
+                    <form method="POST" action="<?php echo e($catalogProductUrl); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-step-dettagli">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="save_details">
 
@@ -107,8 +111,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                         </div>
                     </form>
                 <?php elseif ($currentStep === 'immagine'): ?>
-                    <?php $imageStepQuery = http_build_query(array_filter(['id' => $existingProduct['id'] ?? null, 'step' => 'immagine'])); ?>
-                    <form method="POST" enctype="multipart/form-data" action="<?php echo e(app_route('controllo-catalogo-prodotto') . ($imageStepQuery !== '' ? '?' . $imageStepQuery : '')); ?>" aria-labelledby="titolo-step-immagine" id="catalog-image-step-form">
+                    <form method="POST" enctype="multipart/form-data" action="<?php echo e($catalogProductImageUrl); ?>" aria-labelledby="titolo-step-immagine" id="catalog-image-step-form">
                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                         <input type="hidden" name="action" value="save_image">
 
@@ -158,7 +161,7 @@ $isReviewStep = $currentStep === 'riepilogo';
                     </form>
 
                     <div class="checkout-navigation">
-                        <form method="POST" action="<?php echo e(app_route('controllo-catalogo-prodotto') . ($imageStepQuery !== '' ? '?' . $imageStepQuery : '')); ?>">
+                        <form method="POST" action="<?php echo e($catalogProductImageUrl); ?>">
                             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                             <input type="hidden" name="action" value="go_to_details">
                             <button class="bottone-secondario" type="submit">&larr; Torna ai dati</button>
@@ -207,14 +210,13 @@ $isReviewStep = $currentStep === 'riepilogo';
                     </div>
 
                     <div class="checkout-navigation">
-                        <?php $reviewStepQuery = http_build_query(array_filter(['id' => $existingProduct['id'] ?? null, 'step' => 'riepilogo'])); ?>
-                        <form method="POST" action="<?php echo e(app_route('controllo-catalogo-prodotto') . ($reviewStepQuery !== '' ? '?' . $reviewStepQuery : '')); ?>">
+                        <form method="POST" action="<?php echo e($catalogProductReviewUrl); ?>">
                             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                             <input type="hidden" name="action" value="go_to_image">
                             <button class="bottone-secondario" type="submit">&larr; Torna all'immagine</button>
                         </form>
 
-                        <form method="POST" action="<?php echo e(app_route('controllo-catalogo-prodotto') . ($reviewStepQuery !== '' ? '?' . $reviewStepQuery : '')); ?>">
+                        <form method="POST" action="<?php echo e($catalogProductReviewUrl); ?>">
                             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                             <input type="hidden" name="action" value="confirm_product">
                             <button class="bottone-primario" type="submit"><?php echo $existingProduct !== null ? 'Conferma modifica' : 'Conferma prodotto'; ?></button>

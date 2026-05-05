@@ -51,7 +51,7 @@ $filteredInventoryItems = array_values(array_filter(
 
 $catalogCategoryLinks = [[
     'label' => 'Tutte',
-    'href' => app_route('controllo-catalogo') . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : ''),
+    'href' => app_route('controllo-catalogo', $isGeneralAdmin ? ['sede' => $selectedBranchSlug] : []),
     'is_active' => $catalogSelectedCategoryId === 0,
     'count' => count($inventoryItems),
 ]];
@@ -62,7 +62,7 @@ foreach ($categories as $category) {
     $params['categoria'] = $categoryId;
     $catalogCategoryLinks[] = [
         'label' => (string) $category['name'],
-        'href' => app_route('controllo-catalogo') . '?' . http_build_query($params),
+        'href' => app_route('controllo-catalogo', $params),
         'is_active' => $catalogSelectedCategoryId === $categoryId,
         'count' => (int) ($catalogCategoryCounts[$categoryId] ?? 0),
     ];

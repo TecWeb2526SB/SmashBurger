@@ -9,74 +9,6 @@
  * @param string $viewPath Percorso della view relativo a src/views/
  * @param array $data Dati da estrarre per la view
  */
-if (!function_exists('app_route')) {
-    function app_route(string $route, array $query = [], ?string $fragment = null): string
-    {
-        $route = trim($route);
-
-        if ($route === '' || $route === './' || $route === '.') {
-            $url = './';
-        } elseif (preg_match('/^[a-z][a-z0-9+.-]*:\/\//i', $route) === 1 || str_starts_with($route, '//') || str_starts_with($route, 'mailto:') || str_starts_with($route, 'tel:') || str_starts_with($route, '#')) {
-            return $route;
-        } else {
-            $parsed = parse_url($route);
-            $path = (string) ($parsed['path'] ?? $route);
-            $path = trim($path);
-
-            if ($path === '' || $path === '/') {
-                $url = './';
-            } else {
-                $path = ltrim($path, '/');
-                $lastSegment = basename(rtrim($path, '/'));
-                if ($lastSegment !== '' && $lastSegment !== '.' && $lastSegment !== '..' && !str_contains($lastSegment, '.')) {
-                    $path = rtrim($path, '/') . '.php';
-                }
-
-                $url = $path;
-            }
-
-            if (!empty($parsed['query'])) {
-                parse_str((string) $parsed['query'], $parsedQuery);
-                $query = array_merge($parsedQuery, $query);
-            }
-
-            if (!empty($parsed['fragment']) && $fragment === null) {
-                $fragment = (string) $parsed['fragment'];
-            }
-        }
-
-        if (!empty($query)) {
-            $url .= '?' . http_build_query($query);
-        }
-
-        if ($fragment !== null && $fragment !== '') {
-            $url .= '#' . ltrim($fragment, '#');
-        }
-
-        return $url;
-    }
-}
-
-if (!function_exists('app_route_name')) {
-    function app_route_name(string $route): string
-    {
-        $route = trim($route);
-
-        if ($route === '' || $route === './' || $route === '.') {
-            return './';
-        }
-
-        $parsed = parse_url($route);
-        $path = trim((string) ($parsed['path'] ?? $route), '/');
-
-        if ($path === '' || $path === 'index' || $path === 'index.php') {
-            return './';
-        }
-
-        return pathinfo(basename($path), PATHINFO_FILENAME);
-    }
-}
-
 function render_page(string $viewPath, array $data = []): void
 {
     global $pdo, $navItems, $siteMapItems, $appName, $appVersion, $isLoggedIn, $sessionRole, $canAccessAdminPanel, $canPlaceOrders;
@@ -243,7 +175,7 @@ function render_admin_page(string $currentSection, array $viewData = [], ?string
     $pageTitle = ($sectionMeta['title'] ?? 'Controllo') . ' - Smash Burger Original';
     $breadcrumb = [
         ['Home', './'],
-        ['Controllo', 'controllo' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : '')],
+        ['Controllo', app_route('controllo', $isGeneralAdmin ? ['sede' => $selectedBranchSlug] : [])],
         [$sectionMeta['label'] ?? 'Dettaglio', null],
     ];
 

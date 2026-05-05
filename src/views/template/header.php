@@ -128,15 +128,14 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                 <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
                                     $hbSlug = (string) $hb['slug'];
-                                    $switchUrl = app_route('prodotti') . '?sede=' . rawurlencode($hbSlug);
+                                    $switchUrl = app_route('prodotti', ['sede' => $hbSlug]);
                                     $returnParams = $returnQueryParams;
                                     if (in_array($returnBasePage, ['prodotti', 'sedi'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
                                         $returnParams['sede'] = $hbSlug;
                                     } else {
                                         unset($returnParams['sede']);
                                     }
-                                    $returnQuery = http_build_query($returnParams);
-                                    $returnUrl = app_route($returnBasePage) . ($returnQuery !== '' ? '?' . $returnQuery : '');
+                                    $returnUrl = app_route($returnBasePage, $returnParams);
                                 ?>
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
                                         <a href="<?php echo e($switchUrl); ?>"

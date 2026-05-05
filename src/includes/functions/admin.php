@@ -171,8 +171,7 @@ function admin_panel_section_url(
         $params['sede'] = $branchSlug;
     }
 
-    $query = http_build_query($params);
-    return app_route((string) $meta['path']) . ($query !== '' ? '?' . $query : '');
+    return app_route((string) $meta['path'], $params);
 }
 
 function admin_panel_build_navigation(
@@ -202,23 +201,6 @@ function admin_panel_branch_query_params(?string $branchSlug, bool $isGeneralAdm
     }
 
     return ['sede' => $branchSlug];
-}
-
-function admin_panel_build_path(string $path, array $params = []): string
-{
-    $filteredParams = [];
-
-    foreach ($params as $key => $value) {
-        if (!is_string($key) || $key === '' || $value === null || $value === '') {
-            continue;
-        }
-
-        $filteredParams[$key] = (string) $value;
-    }
-
-    $query = http_build_query($filteredParams);
-
-    return app_route($path) . ($query !== '' ? '?' . $query : '');
 }
 
 function admin_supply_builder_pages(): array
@@ -262,10 +244,7 @@ function admin_supply_builder_url(string $builderKey, ?string $branchSlug, bool 
 {
     $meta = admin_supply_builder_meta($builderKey);
 
-    return admin_panel_build_path(
-        (string) $meta['path'],
-        admin_panel_branch_query_params($branchSlug, $isGeneralAdmin)
-    );
+    return app_route((string) $meta['path'], admin_panel_branch_query_params($branchSlug, $isGeneralAdmin));
 }
 
 function admin_inventory_adjustment_url(
@@ -284,7 +263,7 @@ function admin_inventory_adjustment_url(
         $params['prodotto'] = (string) $productId;
     }
 
-    return admin_panel_build_path('controllo-inventario-rettifica', $params);
+    return app_route('controllo-inventario-rettifica', $params);
 }
 
 function admin_panel_bootstrap_context(PDO $pdo): array

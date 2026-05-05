@@ -69,11 +69,11 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                         (<?php echo e($footerBranch['province']); ?>)
                     </p>
                     <p>
-                        <a href="<?php echo e(app_route('chi-siamo') . '?sede=' . rawurlencode((string) $footerBranch['slug']) . '#chi-sedi'); ?>">Dettagli sede attiva &rarr;</a>
+                        <a href="<?php echo e(app_route('chi-siamo', ['sede' => (string) $footerBranch['slug']], 'chi-sedi')); ?>">Dettagli sede attiva &rarr;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
-                    <p><a href="<?php echo e(app_route('chi-siamo') . '#chi-sedi'); ?>">Tutte le sedi &rarr;</a></p>
+                    <p><a href="<?php echo e(app_route('chi-siamo', [], 'chi-sedi')); ?>">Tutte le sedi &rarr;</a></p>
                 <?php endif; ?>
             </address>
         </section>

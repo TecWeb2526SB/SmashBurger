@@ -27,10 +27,11 @@ if (!$isGeneralAdmin && !can_manage_global_catalog()) {
 
 $productId = max(0, (int) ($_GET['id'] ?? 0));
 $existingProduct = $productId > 0 ? catalog_get_product_by_id($pdo, $productId) : null;
+$productFlowBaseUrl = app_route('controllo-catalogo-prodotto', $productId > 0 ? ['id' => $productId] : []);
 
 if (isset($_GET['reset'])) {
     unset($_SESSION['admin_product_draft']);
-    header('Location: ' . app_route('controllo-catalogo-prodotto') . ($productId > 0 ? '?id=' . $productId : ''));
+    header('Location: ' . $productFlowBaseUrl);
     exit;
 }
 
@@ -75,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $draft['allergens'] = trim((string) ($_POST['allergens'] ?? ''));
             $draft['price_cents'] = max(0, (int) ($_POST['price_cents'] ?? 0));
             $draft['is_available'] = (string) ($_POST['is_available'] ?? '1') === '1' ? 1 : 0;
-            header('Location: ' . app_route('controllo-catalogo-prodotto') . '?step=immagine' . ($productId > 0 ? '&id=' . $productId : ''));
+            header('Location: ' . app_route('controllo-catalogo-prodotto', array_merge(['step' => 'immagine'], $productId > 0 ? ['id' => $productId] : [])));
             exit;
         }
 
@@ -87,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $uploadResult = admin_upload_product_image($_FILES['product_image']);
                 $draft['image_path'] = $uploadResult['path'];
             }
-            header('Location: ' . app_route('controllo-catalogo-prodotto') . '?step=riepilogo' . ($productId > 0 ? '&id=' . $productId : ''));
+            header('Location: ' . app_route('controllo-catalogo-prodotto', array_merge(['step' => 'riepilogo'], $productId > 0 ? ['id' => $productId] : [])));
             exit;
         }
 

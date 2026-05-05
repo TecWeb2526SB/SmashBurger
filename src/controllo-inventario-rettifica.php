@@ -62,7 +62,7 @@ render_admin_page('inventario', [
     'pageDescription' => 'Flusso guidato per carichi, scarichi e conteggi fisici di inventario.',
     'breadcrumb' => [
         ['Home', './'],
-        ['Controllo', 'controllo' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : '')],
+        ['Controllo', app_route('controllo', $isGeneralAdmin ? ['sede' => $selectedBranchSlug] : [])],
         ['Inventario', $inventoryUrl],
         ['Rettifica', null],
     ],
