@@ -12,14 +12,14 @@ $selectedBranchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;
 $syncOnLoad = cart_sync_with_selected_branch($pdo, $userId, $selectedBranchId);
 if (!$syncOnLoad['ok']) {
     flash_set('error', $syncOnLoad['message'] ?? 'Impossibile allineare sede e carrello.');
-    header('Location: checkout');
+    header('Location: ' . app_route('checkout'));
     exit;
 }
 
 $carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
 if (empty($carrello['items'])) {
     flash_set('error', 'Il carrello e vuoto. Aggiungi almeno un prodotto prima del checkout.');
-    header('Location: carrello');
+    header('Location: ' . app_route('carrello'));
     exit;
 }
 
@@ -30,7 +30,7 @@ if (
     || (int) ($checkoutFlow['branch_id'] ?? 0) !== $selectedBranchId
 ) {
     flash_set('error', 'Per procedere, conferma prima il riepilogo ordine.');
-    header('Location: checkout');
+    header('Location: ' . app_route('checkout'));
     exit;
 }
 
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'fulfillment_type' => $fulfillmentType,
             'pickup_at' => $pickupRaw,
         ];
-        header('Location: checkout-pagamento');
+        header('Location: ' . app_route('checkout-pagamento'));
         exit;
     }
 }

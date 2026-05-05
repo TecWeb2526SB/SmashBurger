@@ -409,7 +409,7 @@ function mostraNotifica(messaggio, tipo = 'success') {
 }
 
 function inizializzaAjaxCart() {
-    const forms = document.querySelectorAll('form[action="carrello"]');
+    const forms = document.querySelectorAll('form[action$="carrello.php"]');
     if (forms.length === 0) return;
     const body = document.body;
     const totaleCarrello = document.getElementById('carrello-totale-valore');
@@ -453,7 +453,7 @@ function inizializzaAjaxCart() {
                 formData.append('ajax', '1');
 
                 try {
-                    const response = await fetch('carrello', {
+                    const response = await fetch('carrello.php', {
                         method: 'POST',
                         body: formData,
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -705,11 +705,11 @@ function inizializzaBranchSwitcher() {
             }
             params.append('ajax', '1');
 
-            try {
-                const action = form.getAttribute('action') || window.location.pathname;
-                const response = await fetch(action + '?' + params.toString(), {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
+                try {
+                    const action = form.getAttribute('action') || window.location.pathname;
+                    const response = await fetch(new URL(action, window.location.href).toString() + '?' + params.toString(), {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
 
                 if (response.ok) {
                     const data = await response.json();
@@ -914,7 +914,10 @@ function inizializzaHeaderSede() {
     function buildReturnUrl(targetSlug) {
         const returnUrl = new URL(window.location.href);
         const normalizedPath = returnUrl.pathname.replace(/^\/+|\/+$/g, '');
-        const pageName = normalizedPath === '' ? './' : normalizedPath.split('/').pop();
+        const rawPageName = normalizedPath === '' ? './' : normalizedPath.split('/').pop();
+        const pageName = rawPageName === 'index' || rawPageName === 'index.php'
+            ? './'
+            : rawPageName.replace(/\.php$/, '');
 
         returnUrl.searchParams.delete('ajax');
         returnUrl.searchParams.delete('force');

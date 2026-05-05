@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!csrf_is_valid($csrfTokenForm)) {
         flash_set('error', 'Sessione scaduta o richiesta non valida. Ricarica la pagina e riprova.');
-        header('Location: account-profilo');
+        header('Location: ' . app_route('account-profilo'));
         exit;
     }
 
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             flash_set('success', implode(' ', $messaggi));
-            header('Location: account-profilo');
+            header('Location: ' . app_route('account-profilo'));
             exit;
         }
     } elseif ($action === 'update_password') {
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $utente = auth_require_fresh_user($pdo);
 
             flash_set('success', 'Password aggiornata con successo.');
-            header('Location: account-profilo');
+            header('Location: ' . app_route('account-profilo'));
             exit;
         }
     }

@@ -18,7 +18,7 @@
             <?php echo ui_alert($flash); ?>
             <?php echo ui_error_summary($errori); ?>
 
-            <form method="POST" action="accedi" data-valida="true" novalidate="novalidate">
+            <form method="POST" action="<?php echo e(app_route('accedi')); ?>" data-valida="true" novalidate="novalidate">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
                 <input type="hidden" name="redirect" value="<?php echo e($redirectTo); ?>" />
 
@@ -38,7 +38,7 @@
 
                 <button type="submit" class="bottone-primario">Accedi</button>
 
-                <p class="auth-link">Non hai un account? <a href="registrati">Registrati</a></p>
+                <p class="auth-link">Non hai un account? <a href="<?php echo e(app_route('registrati')); ?>">Registrati</a></p>
             </form>
         </div>
     </div>

@@ -13,7 +13,7 @@ $flash                = flash_get();
 $redirectTo           = auth_normalize_redirect_target((string) ($_GET['redirect'] ?? $_POST['redirect'] ?? ''), 'account');
 
 if (is_logged_in()) {
-    header('Location: account');
+    header('Location: ' . app_route('account'));
     exit;
 }
 

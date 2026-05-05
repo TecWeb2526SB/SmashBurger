@@ -13,33 +13,33 @@ $backLabel = 'Torna all\'area personale';
 
 if ($receiptId <= 0) {
     flash_set('error', 'Ricevuta richiesta non valida.');
-    header('Location: account');
+    header('Location: ' . app_route('account'));
     exit;
 }
 
 if ($receiptType === 'fornitura') {
     if (!can_access_admin_panel()) {
         flash_set('error', 'Non hai i permessi necessari per visualizzare questa ricevuta di fornitura.');
-        header('Location: account');
+        header('Location: ' . app_route('account'));
         exit;
     }
 
     $receipt = receipt_get_supply_order($pdo, $receiptId);
     if ($receipt === null) {
         flash_set('error', 'Ricevuta fornitura non trovata.');
-        header('Location: controllo-forniture');
+        header('Location: ' . app_route('controllo-forniture'));
         exit;
     }
 
     if ((string) ($receipt['status'] ?? '') !== 'received') {
         flash_set('error', 'La ricevuta di fornitura è disponibile solo dopo la conferma di ricezione.');
-        header('Location: controllo-forniture');
+        header('Location: ' . app_route('controllo-forniture'));
         exit;
     }
 
     if (is_branch_manager() && !can_modify_managed_branch((int) $receipt['branch_id'])) {
         flash_set('error', 'Non puoi consultare ricevute di altre filiali.');
-        header('Location: controllo-forniture');
+        header('Location: ' . app_route('controllo-forniture'));
         exit;
     }
 
@@ -50,21 +50,21 @@ if ($receiptType === 'fornitura') {
 
     if (!can_place_customer_orders()) {
         flash_set('error', 'Le ricevute ordine cliente non sono disponibili per i profili interni.');
-        header('Location: account');
+        header('Location: ' . app_route('account'));
         exit;
     }
 
     $receipt = receipt_get_customer_order($pdo, $receiptId);
     if ($receipt === null) {
         flash_set('error', 'Ricevuta ordine non trovata.');
-        header('Location: account');
+        header('Location: ' . app_route('account'));
         exit;
     }
 
     $isOwner = (int) $receipt['user_id'] === (int) $utente['id'];
     if (!$isOwner) {
         flash_set('error', 'Non puoi consultare la ricevuta richiesta.');
-        header('Location: account');
+        header('Location: ' . app_route('account'));
         exit;
     }
 }

@@ -39,7 +39,7 @@ render_admin_page('forniture', [
     'openSupplyOrdersCount' => count(array_filter($supplyOrders, static fn($o) => in_array((string)$o['status'], ['draft', 'scheduled', 'ordered'], true))),
     'receivedSupplyOrdersCount' => count(array_filter($supplyOrders, static fn($o) => (string)$o['status'] === 'received')),
     'activePoliciesCount' => count(array_filter($policies, static fn($p) => (int)$p['is_active'] === 1)),
-    'standardSupplyBuilderUrl' => 'controllo-forniture-standard' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : ''),
-    'extraSupplyBuilderUrl' => 'controllo-forniture-straordinaria' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : ''),
-    'automaticSupplyBuilderUrl' => 'controllo-forniture-automatico' . ($isGeneralAdmin ? '?sede=' . rawurlencode($selectedBranchSlug) : '')
+    'standardSupplyBuilderUrl' => admin_supply_builder_url('standard', $selectedBranchSlug, $isGeneralAdmin),
+    'extraSupplyBuilderUrl' => admin_supply_builder_url('extra', $selectedBranchSlug, $isGeneralAdmin),
+    'automaticSupplyBuilderUrl' => admin_supply_builder_url('automatic', $selectedBranchSlug, $isGeneralAdmin)
 ]);

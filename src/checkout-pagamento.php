@@ -12,14 +12,14 @@ $selectedBranchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;
 $syncOnLoad = cart_sync_with_selected_branch($pdo, $userId, $selectedBranchId);
 if (!$syncOnLoad['ok']) {
     flash_set('error', $syncOnLoad['message'] ?? 'Impossibile allineare sede e carrello.');
-    header('Location: checkout');
+    header('Location: ' . app_route('checkout'));
     exit;
 }
 
 $carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
 if (empty($carrello['items'])) {
     flash_set('error', 'Il carrello è vuoto. Aggiungi almeno un prodotto prima del checkout.');
-    header('Location: carrello');
+    header('Location: ' . app_route('carrello'));
     exit;
 }
 
@@ -30,14 +30,14 @@ if (
     || (int) ($checkoutFlow['branch_id'] ?? 0) !== $selectedBranchId
 ) {
     flash_set('error', 'Per procedere, completa prima i passaggi precedenti del checkout.');
-    header('Location: checkout');
+    header('Location: ' . app_route('checkout'));
     exit;
 }
 
 $fulfillmentType = (string) ($checkoutFlow['fulfillment_type'] ?? '');
 if (!in_array($fulfillmentType, ['asporto', 'ritiro'], true)) {
     flash_set('error', 'Seleziona prima il metodo di ritiro.');
-    header('Location: checkout-ritiro');
+    header('Location: ' . app_route('checkout-ritiro'));
     exit;
 }
 
@@ -47,7 +47,7 @@ if ($fulfillmentType === 'ritiro') {
     $pickupValidation = branch_validate_pickup_datetime($pdo, $selectedBranchId, $pickupAtRaw, null, true);
     if (!$pickupValidation['ok']) {
         flash_set('error', 'L\'orario di ritiro non è più valido. Selezionane uno nuovo.');
-        header('Location: checkout-ritiro');
+        header('Location: ' . app_route('checkout-ritiro'));
         exit;
     }
     $pickupAtRaw = (string) $pickupValidation['pickup_raw'];
@@ -123,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'success',
                 'Ordine ' . $result['order_number'] . ' confermato. ' . $ritiroInfo
             );
-            header('Location: account');
+            header('Location: ' . app_route('account'));
             exit;
         }
 

@@ -13,47 +13,47 @@ $canAccessAdminPanel = $isLoggedIn && in_array($sessionRole, ['admin', 'branch_m
 $canPlaceOrders = !$isLoggedIn || $sessionRole === 'user';
 
 $navItems = [
-    'Home'              => './',
-    'I nostri prodotti' => 'prodotti',
-    'Servizi'           => 'servizi',
-    'Chi siamo'         => 'chi-siamo',
+    'Home'              => app_route('./'),
+    'I nostri prodotti' => app_route('prodotti'),
+    'Servizi'           => app_route('servizi'),
+    'Chi siamo'         => app_route('chi-siamo'),
 ];
 
 if ($isLoggedIn) {
-    $navItems['Area personale'] = 'account';
+    $navItems['Area personale'] = app_route('account');
     if ($canAccessAdminPanel) {
-        $navItems['Controllo'] = 'controllo';
+        $navItems['Controllo'] = app_route('controllo');
     }
     if ($canPlaceOrders) {
-        $navItems['Carrello'] = 'carrello';
+        $navItems['Carrello'] = app_route('carrello');
     }
-    $navItems['Esci'] = 'esci';
+    $navItems['Esci'] = app_route('esci');
 } else {
-    $navItems['Accedi'] = 'accedi';
+    $navItems['Accedi'] = app_route('accedi');
 }
 
 $siteMapItems = [
-    'Home'                   => './',
-    'I nostri prodotti'      => 'prodotti',
-    'Servizi'                => 'servizi',
-    'Chi siamo'              => 'chi-siamo',
-    'Accedi'                 => 'accedi',
-    'Registrazione'          => 'registrati',
-    'Privacy Policy'         => 'privacy',
-    'Accessibilità'          => 'accessibilità',
-    'Mappa del sito'         => 'mappa-sito',
+    'Home'                   => app_route('./'),
+    'I nostri prodotti'      => app_route('prodotti'),
+    'Servizi'                => app_route('servizi'),
+    'Chi siamo'              => app_route('chi-siamo'),
+    'Accedi'                 => app_route('accedi'),
+    'Registrazione'          => app_route('registrati'),
+    'Privacy Policy'         => app_route('privacy'),
+    'Accessibilità'          => app_route('accessibilita'),
+    'Mappa del sito'         => app_route('mappa-sito'),
 ];
 
 if ($isLoggedIn) {
     unset($siteMapItems['Accedi'], $siteMapItems['Registrazione']);
-    $siteMapItems['Area personale'] = 'account';
+    $siteMapItems['Area personale'] = app_route('account');
     if ($canPlaceOrders) {
-        $siteMapItems['Carrello'] = 'carrello';
-        $siteMapItems['Checkout'] = 'checkout';
+        $siteMapItems['Carrello'] = app_route('carrello');
+        $siteMapItems['Checkout'] = app_route('checkout');
     }
     if ($canAccessAdminPanel) {
-        $siteMapItems['Pannello controllo'] = 'controllo';
+        $siteMapItems['Pannello controllo'] = app_route('controllo');
     }
-    $siteMapItems['Profilo account'] = 'account-profilo';
-    $siteMapItems['Esci'] = 'esci';
+    $siteMapItems['Profilo account'] = app_route('account-profilo');
+    $siteMapItems['Esci'] = app_route('esci');
 }

@@ -27,7 +27,7 @@ $csrfToken = csrf_token();
                 </p>
 
                 <div class="hero-cta">
-                    <a href="prodotti" class="bottone-primario">Inizia l'ordine</a>
+                    <a href="<?php echo e(app_route('prodotti')); ?>" class="bottone-primario">Inizia l'ordine</a>
                     <a href="sedi" class="bottone-secondario">Trova la sede più vicina</a>
                 </div>
             </div>
@@ -164,7 +164,7 @@ $csrfToken = csrf_token();
                     <span class="prezzo">10,90 &euro;</span>
 
                     <?php if (is_logged_in()): ?>
-                        <form action="carrello" method="POST" class="scheda-prodotto-azioni">
+                        <form action="<?php echo e(app_route('carrello')); ?>" method="POST" class="scheda-prodotto-azioni">
                             <input type="hidden" name="action" value="add_product">
                             <input type="hidden" name="product_id" value="1">
                             <input type="hidden" name="quantity" value="1">
@@ -189,7 +189,7 @@ $csrfToken = csrf_token();
                     <span class="prezzo">12,50 &euro;</span>
 
                     <?php if (is_logged_in()): ?>
-                        <form action="carrello" method="POST" class="scheda-prodotto-azioni">
+                        <form action="<?php echo e(app_route('carrello')); ?>" method="POST" class="scheda-prodotto-azioni">
                             <input type="hidden" name="action" value="add_product">
                             <input type="hidden" name="product_id" value="2">
                             <input type="hidden" name="quantity" value="1">
@@ -214,7 +214,7 @@ $csrfToken = csrf_token();
                     <span class="prezzo">11,50 &euro;</span>
 
                     <?php if (is_logged_in()): ?>
-                        <form action="carrello" method="POST" class="scheda-prodotto-azioni">
+                        <form action="<?php echo e(app_route('carrello')); ?>" method="POST" class="scheda-prodotto-azioni">
                             <input type="hidden" name="action" value="add_product">
                             <input type="hidden" name="product_id" value="3">
                             <input type="hidden" name="quantity" value="1">
@@ -228,7 +228,7 @@ $csrfToken = csrf_token();
         </div>
 
         <p class="home-bottom-cta">
-            <a href="prodotti" class="bottone-secondario">Vedi il catalogo completo</a>
+            <a href="<?php echo e(app_route('prodotti')); ?>" class="bottone-secondario">Vedi il catalogo completo</a>
         </p>
     </div>
 </section>
@@ -250,7 +250,7 @@ $csrfToken = csrf_token();
 
         <ul class="category-grid" role="list">
             <li>
-                <a href="prodotti?categoria=burger-manzo" class="category-card">
+                <a href="<?php echo e(app_route('prodotti') . '?categoria=burger-manzo'); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -267,7 +267,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="prodotti?categoria=burger-pollo" class="category-card">
+                <a href="<?php echo e(app_route('prodotti') . '?categoria=burger-pollo'); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -282,7 +282,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="prodotti?categoria=burger-vegan" class="category-card">
+                <a href="<?php echo e(app_route('prodotti') . '?categoria=burger-vegan'); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -296,7 +296,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="prodotti?categoria=contorni" class="category-card">
+                <a href="<?php echo e(app_route('prodotti') . '?categoria=contorni'); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -313,7 +313,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="prodotti?categoria=bevande" class="category-card">
+                <a href="<?php echo e(app_route('prodotti') . '?categoria=bevande'); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -329,7 +329,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="prodotti?categoria=dolci" class="category-card">
+                <a href="<?php echo e(app_route('prodotti') . '?categoria=dolci'); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -468,7 +468,7 @@ $csrfToken = csrf_token();
                         <span class="prezzo-vecchio" aria-label="Prezzo originale">39,80 &euro;</span>
                         <span class="prezzo-nuovo">29,90 &euro;</span>
                     </div>
-                    <a href="prodotti?promo=bundle-serata" class="bottone-primario">Approfitta ora</a>
+                    <a href="<?php echo e(app_route('prodotti') . '?promo=bundle-serata'); ?>" class="bottone-primario">Approfitta ora</a>
                 </div>
                 <p class="offer-note">Disponibile tutti i giorni dopo le 18:30 fino al 30 novembre.</p>
             </article>
@@ -602,11 +602,11 @@ $csrfToken = csrf_token();
         <h2 id="titolo-ordini">Pronto a provare il vero Smash Burger?</h2>
         <p>
             Hai già ordinato con noi? Accedi alla tua
-            <a href="account">area personale</a> per ritrovare lo storico ordini,
+            <a href="<?php echo e(app_route('account')); ?>">area personale</a> per ritrovare lo storico ordini,
             ripetere un acquisto o gestire i tuoi indirizzi di ritiro.
         </p>
         <div class="hero-cta">
-            <a href="prodotti" class="bottone-primario">Ordina adesso</a>
+            <a href="<?php echo e(app_route('prodotti')); ?>" class="bottone-primario">Ordina adesso</a>
             <a href="sedi" class="bottone-secondario">Le nostre sedi</a>
         </div>
     </div>

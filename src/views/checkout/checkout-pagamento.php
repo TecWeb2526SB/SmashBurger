@@ -22,7 +22,7 @@
         <?php echo ui_alert($flash); ?>
         <?php echo ui_error_summary($errori); ?>
 
-        <form class="checkout-card checkout-form" method="POST" action="checkout-pagamento" data-valida="true" novalidate="novalidate">
+        <form class="checkout-card checkout-form" method="POST" action="<?php echo e(app_route('checkout-pagamento')); ?>" data-valida="true" novalidate="novalidate">
             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
 
             <?php if (!empty($selectedBranch)): ?>
@@ -109,7 +109,7 @@
             </div>
 
             <div class="checkout-navigation">
-                <a class="bottone-secondario" href="checkout-ritiro">&larr; Torna al ritiro</a>
+                <a class="bottone-secondario" href="<?php echo e(app_route('checkout-ritiro')); ?>">&larr; Torna al ritiro</a>
                 <button class="bottone-primario" type="submit">Conferma ordine &rarr;</button>
             </div>
         </form>

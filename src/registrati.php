@@ -14,7 +14,7 @@ $valori = [
 $csrfToken = csrf_token();
 
 if (is_logged_in()) {
-    header('Location: account');
+    header('Location: ' . app_route('account'));
     exit;
 }
 
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'role' => 'user',
             ]);
             flash_set('success', 'Registrazione completata. Benvenuto, ' . $username . '!');
-            header('Location: account');
+            header('Location: ' . app_route('account'));
             exit;
         }
     }

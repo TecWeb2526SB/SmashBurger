@@ -16,7 +16,7 @@
 
             <?php echo ui_error_summary($errori); ?>
 
-            <form method="POST" action="registrati" data-valida="true" novalidate="novalidate">
+            <form method="POST" action="<?php echo e(app_route('registrati')); ?>" data-valida="true" novalidate="novalidate">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
 
                 <?php
@@ -52,7 +52,7 @@
 
                 <button type="submit" class="bottone-primario">Crea account</button>
 
-                <p class="auth-link">Hai già un account? <a href="accedi">Accedi</a></p>
+                <p class="auth-link">Hai già un account? <a href="<?php echo e(app_route('accedi')); ?>">Accedi</a></p>
             </form>
         </div>
     </div>

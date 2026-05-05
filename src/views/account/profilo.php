@@ -22,14 +22,14 @@
                 Aggiorna i dati di accesso e mantieni il tuo account ordinato, chiaro e sempre sotto controllo.
             </p>
             <div class="account-action-row">
-                <a class="bottone-secondario" href="account">&larr; Torna all'area personale</a>
+                <a class="bottone-secondario" href="<?php echo e(app_route('account')); ?>">&larr; Torna all'area personale</a>
             </div>
         </div>
 
         <?php echo ui_alert($flash); ?>
 
         <div class="checkout-shell">
-            <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-identita-account">
+            <form class="checkout-card checkout-form" method="POST" action="<?php echo e(app_route('account-profilo')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-identita-account">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                 <input type="hidden" name="action" value="update_identity">
 
@@ -77,7 +77,7 @@
         </div>
 
         <div class="checkout-shell">
-            <form class="checkout-card checkout-form" method="POST" action="account-profilo" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-password-account">
+            <form class="checkout-card checkout-form" method="POST" action="<?php echo e(app_route('account-profilo')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-password-account">
                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                 <input type="hidden" name="action" value="update_password">
 

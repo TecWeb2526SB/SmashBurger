@@ -21,7 +21,7 @@ $isGeneralAdmin = (string) ($context['utente']['role'] ?? '') === 'admin';
 
 if (!$isGeneralAdmin && !can_manage_global_catalog()) {
     flash_set('error', 'Solo l admin centrale può gestire il catalogo globale.');
-    header('Location: controllo');
+    header('Location: ' . app_route('controllo'));
     exit;
 }
 
@@ -30,7 +30,7 @@ $existingProduct = $productId > 0 ? catalog_get_product_by_id($pdo, $productId) 
 
 if (isset($_GET['reset'])) {
     unset($_SESSION['admin_product_draft']);
-    header('Location: controllo-catalogo-prodotto' . ($productId > 0 ? '?id=' . $productId : ''));
+    header('Location: ' . app_route('controllo-catalogo-prodotto') . ($productId > 0 ? '?id=' . $productId : ''));
     exit;
 }
 
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $draft['allergens'] = trim((string) ($_POST['allergens'] ?? ''));
             $draft['price_cents'] = max(0, (int) ($_POST['price_cents'] ?? 0));
             $draft['is_available'] = (string) ($_POST['is_available'] ?? '1') === '1' ? 1 : 0;
-            header('Location: controllo-catalogo-prodotto?step=immagine' . ($productId > 0 ? '&id=' . $productId : ''));
+            header('Location: ' . app_route('controllo-catalogo-prodotto') . '?step=immagine' . ($productId > 0 ? '&id=' . $productId : ''));
             exit;
         }
 
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $uploadResult = admin_upload_product_image($_FILES['product_image']);
                 $draft['image_path'] = $uploadResult['path'];
             }
-            header('Location: controllo-catalogo-prodotto?step=riepilogo' . ($productId > 0 ? '&id=' . $productId : ''));
+            header('Location: ' . app_route('controllo-catalogo-prodotto') . '?step=riepilogo' . ($productId > 0 ? '&id=' . $productId : ''));
             exit;
         }
 
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 flash_set('success', 'Prodotto creato con successo.');
             }
             unset($_SESSION['admin_product_draft']);
-            header('Location: controllo-catalogo');
+            header('Location: ' . app_route('controllo-catalogo'));
             exit;
         }
     } catch (\Throwable $e) {

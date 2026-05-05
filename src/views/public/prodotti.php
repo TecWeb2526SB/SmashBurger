@@ -229,7 +229,7 @@ $descrizioneCategoria = function (string $slug, string $nome): string {
                                         </p>
 
                                         <?php if ($disponibile && !$internalAccountBrowsing): ?>
-                                            <form method="POST" action="carrello" class="prod-card-form"
+                                            <form method="POST" action="<?php echo e(app_route('carrello')); ?>" class="prod-card-form"
                                                   data-prod-form>
                                                 <input type="hidden" name="csrf_token"
                                                     value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">

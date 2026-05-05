@@ -69,11 +69,11 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                         (<?php echo e($footerBranch['province']); ?>)
                     </p>
                     <p>
-                        <a href="chi-siamo?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>#chi-sedi">Dettagli sede attiva &rarr;</a>
+                        <a href="<?php echo e(app_route('chi-siamo') . '?sede=' . rawurlencode((string) $footerBranch['slug']) . '#chi-sedi'); ?>">Dettagli sede attiva &rarr;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
-                    <p><a href="chi-siamo#chi-sedi">Tutte le sedi &rarr;</a></p>
+                    <p><a href="<?php echo e(app_route('chi-siamo') . '#chi-sedi'); ?>">Tutte le sedi &rarr;</a></p>
                 <?php endif; ?>
             </address>
         </section>
@@ -95,10 +95,10 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
 
             <nav aria-label="Informazioni legali">
                 <ul>
-                    <li><a href="chi-siamo">Chi siamo</a></li>
-                    <li><a href="privacy">Privacy Policy</a></li>
-                    <li><a href="mappa-sito">Mappa del sito</a></li>
-                    <li><a href="accessibilita">Accessibilità</a></li>
+                    <li><a href="<?php echo e(app_route('chi-siamo')); ?>">Chi siamo</a></li>
+                    <li><a href="<?php echo e(app_route('privacy')); ?>">Privacy Policy</a></li>
+                    <li><a href="<?php echo e(app_route('mappa-sito')); ?>">Mappa del sito</a></li>
+                    <li><a href="<?php echo e(app_route('accessibilita')); ?>">Accessibilità</a></li>
                 </ul>
             </nav>
 

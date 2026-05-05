@@ -13,7 +13,7 @@
         <h1 id="titolo-mappa">Mappa del sito</h1>
         <ul>
             <?php foreach (($siteMapItems ?? []) as $label => $href): ?>
-                <?php if (($currentPage ?? '') === $href): ?>
+                <?php if (app_route_name((string) ($currentPage ?? '')) === app_route_name((string) $href)): ?>
                     <li aria-current="page"><?php echo e($label); ?></li>
                 <?php else: ?>
                     <li>

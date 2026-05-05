@@ -108,7 +108,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                 ];
                                 $requestPath = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
                                 $currentRequestPage = $requestPath !== '' ? basename($requestPath) : './';
-                                $currentHeaderPage = (string) ($currentPage ?? $currentRequestPage);
+                                $currentHeaderPage = app_route_name((string) ($currentPage ?? $currentRequestPage));
                                 $returnBasePage = './';
                                 if (in_array($currentHeaderPage, ['prodotti', 'sedi'], true) || in_array($currentHeaderPage, $adminBranchPages, true)) {
                                     $returnBasePage = $currentHeaderPage;
@@ -128,7 +128,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                 <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
                                     $hbSlug = (string) $hb['slug'];
-                                    $switchUrl = 'prodotti?sede=' . rawurlencode($hbSlug);
+                                    $switchUrl = app_route('prodotti') . '?sede=' . rawurlencode($hbSlug);
                                     $returnParams = $returnQueryParams;
                                     if (in_array($returnBasePage, ['prodotti', 'sedi'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
                                         $returnParams['sede'] = $hbSlug;
@@ -136,7 +136,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                         unset($returnParams['sede']);
                                     }
                                     $returnQuery = http_build_query($returnParams);
-                                    $returnUrl = $returnBasePage . ($returnQuery !== '' ? '?' . $returnQuery : '');
+                                    $returnUrl = app_route($returnBasePage) . ($returnQuery !== '' ? '?' . $returnQuery : '');
                                 ?>
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
                                         <a href="<?php echo e($switchUrl); ?>"
@@ -166,7 +166,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
             <nav id="menu-principale" aria-label="Navigazione principale">
                 <ul>
                     <?php foreach ($navItems as $label => $href):
-                        $isActive = isset($currentPage) && $currentPage === $href;
+                        $isActive = app_route_name((string) ($currentPage ?? '')) === app_route_name((string) $href);
                         $isCart = ($label === 'Carrello');
                     ?>
                         <li class="<?php echo $isActive ? 'attivo' : ''; ?>">

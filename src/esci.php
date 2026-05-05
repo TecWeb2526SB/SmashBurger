@@ -6,5 +6,5 @@ if (is_logged_in()) {
 }
 
 flash_set('success', 'Hai effettuato il logout con successo.');
-header('Location: accedi');
+header('Location: ' . app_route('accedi'));
 exit;

@@ -79,7 +79,7 @@ function require_customer_order_access(string $redirectTo = 'account'): void
     }
 
     flash_set('error', 'Gli account amministrativi e manager non possono effettuare ordini cliente.');
-    header('Location: ' . $redirectTo);
+    header('Location: ' . app_route($redirectTo));
     exit;
 }
 
@@ -112,7 +112,7 @@ function require_login(string $redirectTo = 'accedi'): void
     }
 
     flash_set('error', 'Per continuare devi effettuare l\'accesso.');
-    header('Location: ' . $redirectTo);
+    header('Location: ' . app_route($redirectTo));
     exit;
 }
 
@@ -134,7 +134,7 @@ function auth_require_fresh_user(
     if ($utente === null) {
         logout_user();
         flash_set('error', $invalidSessionMessage);
-        header('Location: ' . $redirectTo);
+        header('Location: ' . app_route($redirectTo));
         exit;
     }
 
@@ -148,18 +148,40 @@ function auth_normalize_redirect_target(string $redirectTo, string $default = 'a
     $redirectTo = trim($redirectTo);
 
     if ($redirectTo === '') {
-        return $default;
+        return app_route($default);
     }
 
     if (str_contains($redirectTo, "\n") || str_contains($redirectTo, "\r")) {
-        return $default;
+        return app_route($default);
     }
 
     if (preg_match('/^[a-z][a-z0-9+.-]*:\/\//i', $redirectTo) === 1 || str_starts_with($redirectTo, '//')) {
-        return $default;
+        return app_route($default);
     }
 
-    return $redirectTo;
+    $parsed = parse_url($redirectTo);
+    if ($parsed === false) {
+        return app_route($default);
+    }
+
+    $path = (string) ($parsed['path'] ?? '');
+    if ($path === '' || $path === '/') {
+        $path = $default;
+    } elseif (str_contains($path, '..') || str_contains($path, '\\') || str_starts_with($path, '/')) {
+        $path = $default;
+    }
+
+    $normalized = app_route($path);
+
+    if (!empty($parsed['query'])) {
+        $normalized .= '?' . $parsed['query'];
+    }
+
+    if (!empty($parsed['fragment'])) {
+        $normalized .= '#' . $parsed['fragment'];
+    }
+
+    return $normalized;
 }
 
 function require_admin_panel_access(string $redirectTo = 'account'): void
@@ -171,7 +193,7 @@ function require_admin_panel_access(string $redirectTo = 'account'): void
     }
 
     flash_set('error', 'Non hai i permessi necessari per accedere al pannello di controllo.');
-    header('Location: ' . $redirectTo);
+    header('Location: ' . app_route($redirectTo));
     exit;
 }
 

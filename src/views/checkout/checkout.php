@@ -19,7 +19,7 @@
         <?php echo ui_alert($flash); ?>
         <?php echo ui_error_summary($errori); ?>
 
-        <form class="checkout-card checkout-form" method="POST" action="checkout" aria-label="Conferma ordine">
+        <form class="checkout-card checkout-form" method="POST" action="<?php echo e(app_route('checkout')); ?>" aria-label="Conferma ordine">
             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
             <h2>Conferma ordine</h2>
             <?php if (!empty($selectedBranch)): ?>
@@ -45,7 +45,7 @@
             </section>
 
             <div class="checkout-navigation">
-                <a class="bottone-secondario" href="carrello">&larr; Torna al carrello</a>
+                <a class="bottone-secondario" href="<?php echo e(app_route('carrello')); ?>">&larr; Torna al carrello</a>
                 <button class="bottone-primario" type="submit">Vai al ritiro &rarr;</button>
             </div>
         </form>

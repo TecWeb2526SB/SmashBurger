@@ -464,7 +464,7 @@
                 Scopri il nostro menu e ordina online per ritirare nella sede pi&ugrave; vicina a te.
             </p>
             <div class="chi-cta-azioni">
-                <a href="prodotti" class="bottone-primario">Scopri il menu</a>
+                <a href="<?php echo e(app_route('prodotti')); ?>" class="bottone-primario">Scopri il menu</a>
             </div>
         </div>
     </div>

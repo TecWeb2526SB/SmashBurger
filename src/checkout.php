@@ -20,7 +20,7 @@ $carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
 if (empty($carrello['items'])) {
     $nomeSede = !empty($selectedBranch['name']) ? ' per ' . $selectedBranch['name'] : '';
     flash_set('error', 'Il carrello' . $nomeSede . ' e vuoto. Aggiungi almeno un prodotto prima del checkout.');
-    header('Location: carrello');
+    header('Location: ' . app_route('carrello'));
     exit;
 }
 
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'fulfillment_type' => (string) ($checkoutFlow['fulfillment_type'] ?? 'asporto'),
             'pickup_at' => (string) ($checkoutFlow['pickup_at'] ?? ''),
         ];
-        header('Location: checkout-ritiro');
+        header('Location: ' . app_route('checkout-ritiro'));
         exit;
     }
 }

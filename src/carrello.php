@@ -5,13 +5,13 @@ if (!is_logged_in() && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrfTokenForm = $_POST['csrf_token'] ?? null;
     if (!csrf_is_valid($csrfTokenForm)) {
         flash_set('error', 'Sessione scaduta o richiesta non valida.');
-        header('Location: accedi?redirect=' . rawurlencode(auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti')));
+        header('Location: ' . app_route('accedi') . '?redirect=' . rawurlencode(auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti')));
         exit;
     }
 
     $redirectTo = auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti');
     flash_set('error', 'Per continuare devi effettuare l\'accesso.');
-    header('Location: accedi?redirect=' . rawurlencode($redirectTo));
+    header('Location: ' . app_route('accedi') . '?redirect=' . rawurlencode($redirectTo));
     exit;
 }
 
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csrfTokenForm = $_POST['csrf_token'] ?? null;
     if (!csrf_is_valid($csrfTokenForm)) {
         flash_set('error', 'Sessione scaduta o richiesta non valida.');
-        header('Location: carrello');
+        header('Location: ' . app_route('carrello'));
         exit;
     }
 
@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $redirectTo = 'carrello';
     }
 
-    header('Location: ' . $redirectTo);
+    header('Location: ' . app_route($redirectTo));
     exit;
 }
 

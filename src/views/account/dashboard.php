@@ -135,12 +135,12 @@ $paymentMethodMeta = static function (string $rawMethod): array {
                     <?php endif; ?>
                 </p>
                 <div class="account-action-row">
-                    <a class="bottone-primario" href="account-profilo">Gestisci account</a>
+                    <a class="bottone-primario" href="<?php echo e(app_route('account-profilo')); ?>">Gestisci account</a>
                     <?php if (can_place_customer_orders()): ?>
-                        <a class="bottone-secondario" href="carrello">Apri il carrello</a>
+                        <a class="bottone-secondario" href="<?php echo e(app_route('carrello')); ?>">Apri il carrello</a>
                     <?php endif; ?>
                     <?php if (!empty($canAccessAdminPanel)): ?>
-                        <a class="bottone-secondario" href="controllo">Pannello controllo</a>
+                        <a class="bottone-secondario" href="<?php echo e(app_route('controllo')); ?>">Pannello controllo</a>
                     <?php endif; ?>
                 </div>
             </div>
@@ -168,10 +168,10 @@ $paymentMethodMeta = static function (string $rawMethod): array {
                 <p>Quando effettuerai il primo acquisto troverai qui tutti i dettagli, dal riepilogo prodotti allo stato del pagamento.</p>
                 <div class="account-empty-actions">
                     <?php if (can_place_customer_orders()): ?>
-                        <a class="bottone-primario" href="prodotti">Inizia dal catalogo</a>
+                        <a class="bottone-primario" href="<?php echo e(app_route('prodotti')); ?>">Inizia dal catalogo</a>
                         <a class="bottone-secondario" href="sedi">Scegli una sede</a>
                     <?php elseif (!empty($canAccessAdminPanel)): ?>
-                        <a class="bottone-primario" href="controllo">Apri il pannello controllo</a>
+                        <a class="bottone-primario" href="<?php echo e(app_route('controllo')); ?>">Apri il pannello controllo</a>
                     <?php endif; ?>
                 </div>
             </article>

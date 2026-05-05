@@ -172,7 +172,7 @@ function admin_panel_section_url(
     }
 
     $query = http_build_query($params);
-    return (string) $meta['path'] . ($query !== '' ? '?' . $query : '');
+    return app_route((string) $meta['path']) . ($query !== '' ? '?' . $query : '');
 }
 
 function admin_panel_build_navigation(
@@ -218,7 +218,7 @@ function admin_panel_build_path(string $path, array $params = []): string
 
     $query = http_build_query($filteredParams);
 
-    return $path . ($query !== '' ? '?' . $query : '');
+    return app_route($path) . ($query !== '' ? '?' . $query : '');
 }
 
 function admin_supply_builder_pages(): array
@@ -305,7 +305,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
     if (empty($allBranches)) {
         flash_set('error', 'Nessuna sede disponibile per il pannello di controllo.');
-        header('Location: account');
+        header('Location: ' . app_route('account'));
         exit;
     }
 
@@ -318,7 +318,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
         if ($selectedBranch === null) {
             flash_set('error', 'Il tuo account manager non è associato a una filiale valida.');
-            header('Location: account');
+            header('Location: ' . app_route('account'));
             exit;
         }
     } else {
@@ -342,7 +342,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
 
     if ($selectedBranch === null) {
         flash_set('error', 'Impossibile determinare la filiale in analisi.');
-        header('Location: account');
+        header('Location: ' . app_route('account'));
         exit;
     }
 

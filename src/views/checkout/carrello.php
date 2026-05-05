@@ -34,7 +34,7 @@ foreach ($cartItems as $cartItemCheck) {
 
         <?php if (empty($cartItems)): ?>
             <p>Il tuo carrello è vuoto.</p>
-            <p><a class="bottone-primario" href="prodotti">Vai al catalogo</a></p>
+            <p><a class="bottone-primario" href="<?php echo e(app_route('prodotti')); ?>">Vai al catalogo</a></p>
         <?php else: ?>
             <?php if ($hasUnavailableItems): ?>
                 <div class="alert error">
@@ -65,7 +65,7 @@ foreach ($cartItems as $cartItemCheck) {
                                 </th>
                                 <td><?php echo money_eur((int) $item['unit_price_cents']); ?></td>
                                 <td>
-                                    <form class="inline-form" method="POST" action="carrello" data-cart-update-form>
+                                    <form class="inline-form" method="POST" action="<?php echo e(app_route('carrello')); ?>" data-cart-update-form>
                                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                         <input type="hidden" name="action" value="update_item">
                                         <input type="hidden" name="item_id" value="<?php echo (int) $item['id']; ?>">
@@ -117,7 +117,7 @@ foreach ($cartItems as $cartItemCheck) {
                                 </td>
                                 <td data-cart-line-total><?php echo money_eur((int) $item['line_total_cents']); ?></td>
                                 <td>
-                                    <form class="inline-form" method="POST" action="carrello" data-cart-remove-form>
+                                    <form class="inline-form" method="POST" action="<?php echo e(app_route('carrello')); ?>" data-cart-remove-form>
                                         <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                         <input type="hidden" name="action" value="remove_item">
                                         <input type="hidden" name="item_id" value="<?php echo (int) $item['id']; ?>">
@@ -141,7 +141,7 @@ foreach ($cartItems as $cartItemCheck) {
             </p>
 
             <div class="azioni-carrello-footer">
-                <form method="POST" action="carrello" class="form-svuota">
+                <form method="POST" action="<?php echo e(app_route('carrello')); ?>" class="form-svuota">
                     <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                     <input type="hidden" name="action" value="clear_cart">
                     <input type="hidden" name="redirect_to" value="carrello">
@@ -150,7 +150,7 @@ foreach ($cartItems as $cartItemCheck) {
                 <?php if ($hasUnavailableItems): ?>
                     <span class="bottone-primario bottone-disabilitato" aria-disabled="true">Procedi al checkout</span>
                 <?php else: ?>
-                    <a class="bottone-primario" href="checkout">Procedi al checkout</a>
+                    <a class="bottone-primario" href="<?php echo e(app_route('checkout')); ?>">Procedi al checkout</a>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

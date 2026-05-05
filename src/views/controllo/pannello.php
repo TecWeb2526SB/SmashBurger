@@ -468,7 +468,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <h3>Prodotti condivisi</h3>
                                 <p class="checkout-muted">Ogni nuovo prodotto creato qui diventa disponibile per tutte le filiali, che poi possono decidere se esporlo localmente.</p>
                             </div>
-                            <a class="bottone-primario" href="controllo-catalogo-prodotto">Nuovo prodotto</a>
+                            <a class="bottone-primario" href="<?php echo e(app_route('controllo-catalogo-prodotto')); ?>">Nuovo prodotto</a>
                         </div>
 
                         <?php if (empty($filteredGlobalCatalog)): ?>
@@ -502,7 +502,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         <div class="admin-inline-actions admin-inline-actions--split">
                                             <a
                                                 class="bottone-secondario admin-icon-button"
-                                                href="controllo-catalogo-prodotto?id=<?php echo (int) $product['id']; ?>"
+                                                href="<?php echo e(app_route('controllo-catalogo-prodotto') . '?id=' . (int) $product['id']); ?>"
                                                 aria-label="Modifica prodotto">
                                                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                                                     <path d="M4 20h4l10-10a2.1 2.1 0 0 0-4-4L4 16v4" />
@@ -1111,7 +1111,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
 
                                     <div class="admin-inline-actions">
                                         <?php if ((string) $supplyOrder['status'] === 'received'): ?>
-                                            <a class="bottone-secondario" href="ricevuta?tipo=fornitura&amp;id=<?php echo (int) $supplyOrder['id']; ?>">Apri ricevuta</a>
+                                            <a class="bottone-secondario" href="<?php echo e(app_route('ricevuta') . '?tipo=fornitura&id=' . (int) $supplyOrder['id']); ?>">Apri ricevuta</a>
                                         <?php endif; ?>
 
                                         <?php if ($canModifyBranchOperations && in_array((string) $supplyOrder['status'], ['draft', 'scheduled', 'ordered'], true)): ?>
@@ -1291,7 +1291,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                     <div class="checkout-shell">
                         <div>
                             <?php if ($teamMode === 'create_details' || $teamMode === 'edit_details'): ?>
-                                <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-manager-form">
+                                <form class="checkout-card checkout-form" method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? app_route('controllo-manager'))); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-manager-form">
                                     <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                     <input type="hidden" name="action" value="save_details">
                                     <input type="hidden" name="manager_id" value="<?php echo (int) ($draft['id'] ?? 0); ?>">
@@ -1333,7 +1333,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </div>
 
                                     <div class="checkout-navigation">
-                                        <a class="bottone-secondario" href="controllo-manager?reset=1">&larr; Annulla</a>
+                                        <a class="bottone-secondario" href="<?php echo e(app_route('controllo-manager') . '?reset=1'); ?>">&larr; Annulla</a>
                                         <button class="bottone-primario" type="submit">Vai al riepilogo &rarr;</button>
                                     </div>
                                 </form>
@@ -1353,8 +1353,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                     </ul>
 
                                     <div class="checkout-navigation">
-                                        <a class="bottone-secondario" href="controllo-manager?<?php echo ($draft['id'] > 0) ? 'modifica='.$draft['id'] : 'modalita=nuovo'; ?>">&larr; Torna alla modifica</a>
-                                        <form method="POST" action="controllo-manager" class="admin-inline-form">
+                                        <a class="bottone-secondario" href="<?php echo e(app_route('controllo-manager') . '?' . (($draft['id'] > 0) ? 'modifica=' . (int) $draft['id'] : 'modalita=nuovo')); ?>">&larr; Torna alla modifica</a>
+                                        <form method="POST" action="<?php echo e(app_route('controllo-manager')); ?>" class="admin-inline-form">
                                             <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                             <input type="hidden" name="action" value="confirm_manager">
                                             <button class="bottone-primario" type="submit">Conferma e salva</button>
@@ -1380,7 +1380,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                 <span class="account-panel-kicker">Manager correnti</span>
                                 <h3>Credenziali attive o revocate</h3>
                             </div>
-                            <a class="bottone-primario" href="controllo-manager?modalita=nuovo&amp;reset=1">Nuovo manager</a>
+                            <a class="bottone-primario" href="<?php echo e(app_route('controllo-manager') . '?modalita=nuovo&reset=1'); ?>">Nuovo manager</a>
                         </div>
 
                         <?php if (empty($branchManagers)): ?>
@@ -1405,8 +1405,8 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         </ul>
 
                                         <div class="admin-inline-actions">
-                                            <a class="bottone-secondario" href="controllo-manager?modifica=<?php echo (int) $manager['id']; ?>&amp;reset=1">Modifica credenziali</a>
-                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" class="admin-inline-form">
+                                            <a class="bottone-secondario" href="<?php echo e(app_route('controllo-manager') . '?modifica=' . (int) $manager['id'] . '&reset=1'); ?>">Modifica credenziali</a>
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? app_route('controllo-manager'))); ?>" class="admin-inline-form">
                                                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="toggle_branch_manager">
                                                 <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
@@ -1415,7 +1415,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                                     <?php echo (int) $manager['is_active'] === 1 ? 'Revoca accesso' : 'Riattiva accesso'; ?>
                                                 </button>
                                             </form>
-                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? 'controllo-manager')); ?>" class="admin-inline-form">
+                                            <form method="POST" action="<?php echo e((string) ($sectionUrls['team'] ?? app_route('controllo-manager'))); ?>" class="admin-inline-form">
                                                 <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
                                                 <input type="hidden" name="action" value="delete_branch_manager">
                                                 <input type="hidden" name="manager_id" value="<?php echo (int) $manager['id']; ?>">
@@ -1467,7 +1467,7 @@ $editingManager = isset($editingManager) && is_array($editingManager) ? $editing
                                         <li><span>Fornitore</span><strong><?php echo e((string) $supplyOrder['supplier_name']); ?></strong></li>
                                     </ul>
                                     <div class="admin-inline-actions">
-                                        <a class="bottone-secondario" href="ricevuta?tipo=fornitura&amp;id=<?php echo (int) $supplyOrder['id']; ?>">Apri ricevuta</a>
+                                        <a class="bottone-secondario" href="<?php echo e(app_route('ricevuta') . '?tipo=fornitura&id=' . (int) $supplyOrder['id']); ?>">Apri ricevuta</a>
                                     </div>
                                 </article>
                             <?php endforeach; ?>
