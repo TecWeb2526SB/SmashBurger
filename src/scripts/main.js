@@ -1401,6 +1401,219 @@ function inizializzaAdminSupplyBuilder() {
 }
 
 /* ==========================================================================
+   HOMEPAGE — FAQ ACCORDION (chiude gli altri item quando se ne apre uno)
+   ========================================================================== */
+
+function inizializzaFaqAccordion() {
+    const lista = document.querySelector('[data-faq]');
+    if (!lista) return;
+
+    const items = Array.from(lista.querySelectorAll('details.faq-item'));
+    if (items.length === 0) return;
+
+    items.forEach(function (item) {
+        item.addEventListener('toggle', function () {
+            if (item.open) {
+                items.forEach(function (altro) {
+                    if (altro !== item && altro.open) {
+                        altro.open = false;
+                    }
+                });
+            }
+        });
+    });
+}
+
+
+/* ==========================================================================
+   PAGINA PRODOTTI — chip scroll-spy + stepper quantità
+   ========================================================================== */
+
+function inizializzaProdottiPage() {
+    inizializzaProdottiChipsSpy();
+    inizializzaProdottiStepper();
+}
+
+/**
+ * Sticky chip filter con scroll-spy: evidenzia il chip della categoria
+ * attualmente visibile nel viewport e segna la nav come "stuck" quando
+ * raggiunge il top, per aggiungere l'ombra di stato.
+ */
+function inizializzaProdottiChipsSpy() {
+    const nav = document.querySelector('[data-prod-chips]');
+    if (!nav) return;
+
+    const chips = Array.from(nav.querySelectorAll('[data-prod-chip]'));
+    const sezioni = Array.from(document.querySelectorAll('[data-prod-section]'));
+
+    if (chips.length === 0 || sezioni.length === 0) return;
+
+    /* Stato sticky → ombra */
+    const sentinel = document.createElement('div');
+    sentinel.setAttribute('aria-hidden', 'true');
+    sentinel.style.cssText = 'height:1px;width:100%;';
+    nav.parentNode.insertBefore(sentinel, nav);
+
+    if ('IntersectionObserver' in window) {
+        const stickyObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                nav.classList.toggle('is-stuck', !entry.isIntersecting);
+            });
+        }, { threshold: [0] });
+        stickyObserver.observe(sentinel);
+
+        /* Scroll-spy categorie — traccia quale sezione e piu visibile */
+        var sezioniVisibili = new Map();
+        var scrollSpyAttivo = true; /* Flag per disabilitare temporaneamente lo scroll-spy */
+        var chipSelezionatoManualmente = null; /* Chip selezionato con click */
+
+        const sezioneObserver = new IntersectionObserver(function (entries) {
+            /* Se lo scroll-spy e disabilitato, ignora */
+            if (!scrollSpyAttivo) return;
+
+            entries.forEach(function (entry) {
+                var slug = entry.target.getAttribute('data-prod-section');
+                if (entry.isIntersecting) {
+                    sezioniVisibili.set(slug, entry.intersectionRatio);
+                } else {
+                    sezioniVisibili.delete(slug);
+                }
+            });
+
+            /* Trova la sezione con il rapporto di intersezione piu alto */
+            var slugAttivo = null;
+            var maxRatio = 0;
+            sezioniVisibili.forEach(function (ratio, slug) {
+                if (ratio > maxRatio) {
+                    maxRatio = ratio;
+                    slugAttivo = slug;
+                }
+            });
+
+            /* Se c'e un chip selezionato manualmente, mantienilo attivo */
+            if (chipSelezionatoManualmente) {
+                attivaChip(chipSelezionatoManualmente);
+                return;
+            }
+
+            /* Attiva solo se c'e almeno una sezione visibile con ratio significativo */
+            if (slugAttivo && maxRatio > 0) {
+                attivaChip(slugAttivo);
+            } else {
+                /* Nessuna sezione visibile: deseleziona tutti */
+                deselezionaTutti();
+            }
+        }, {
+            /* Considera "attiva" la categoria nella zona centrale del viewport */
+            rootMargin: '-20% 0px -20% 0px',
+            threshold: [0, 0.1, 0.25, 0.5, 0.75, 1]
+        });
+
+        sezioni.forEach(function (sez) {
+            sezioneObserver.observe(sez);
+        });
+    }
+
+    function attivaChip(slug) {
+        chips.forEach(function (chip) {
+            const attivo = chip.getAttribute('data-prod-chip') === slug;
+            chip.classList.toggle('is-active', attivo);
+        });
+    }
+
+    function deselezionaTutti() {
+        chips.forEach(function (chip) {
+            chip.classList.remove('is-active');
+        });
+    }
+
+    /* Click esplicito → toggle selezione e pausa scroll-spy */
+    chips.forEach(function (chip) {
+        chip.addEventListener('click', function (e) {
+            var slug = chip.getAttribute('data-prod-chip');
+            var eraAttivo = chip.classList.contains('is-active');
+
+            /* Se clicco sul chip gia attivo, lo deselezione (torno a "tutte le categorie") */
+            if (eraAttivo) {
+                deselezionaTutti();
+                chipSelezionatoManualmente = null;
+            } else {
+                /* Altrimenti attiva il chip cliccato */
+                attivaChip(slug);
+                chipSelezionatoManualmente = slug;
+            }
+
+            /* Pausa lo scroll-spy per evitare conflitti durante lo scroll automatico */
+            scrollSpyAttivo = false;
+            setTimeout(function () {
+                scrollSpyAttivo = true;
+                /* Reset selezione manuale dopo lo scroll, riattiva scroll-spy */
+                chipSelezionatoManualmente = null;
+            }, 800);
+        });
+    });
+}
+
+/**
+ * Quantità: stepper +/- con limite min/max coerente con l'input.
+ * Aggiorna l'input nascosto al click; il form invia il valore corrente.
+ */
+function inizializzaProdottiStepper() {
+    const steppers = document.querySelectorAll('[data-prod-stepper]');
+    if (steppers.length === 0) return;
+
+    steppers.forEach(function (stepper) {
+        const input = stepper.querySelector('[data-prod-qty]');
+        const btnDec = stepper.querySelector('[data-prod-step="-1"]');
+        const btnInc = stepper.querySelector('[data-prod-step="1"]');
+
+        if (!input || !btnDec || !btnInc) return;
+
+        const min = parseInt(input.getAttribute('min'), 10) || 1;
+        const max = parseInt(input.getAttribute('max'), 10) || 20;
+
+        function leggi() {
+            const v = parseInt(input.value, 10);
+            return Number.isNaN(v) ? min : v;
+        }
+
+        function aggiornaStato() {
+            const v = leggi();
+            btnDec.disabled = v <= min;
+            btnInc.disabled = v >= max;
+        }
+
+        function imposta(v) {
+            const clamp = Math.max(min, Math.min(max, v));
+            input.value = String(clamp);
+            aggiornaStato();
+        }
+
+        btnDec.addEventListener('click', function () {
+            imposta(leggi() - 1);
+        });
+
+        btnInc.addEventListener('click', function () {
+            imposta(leggi() + 1);
+        });
+
+        input.addEventListener('input', function () {
+            const v = leggi();
+            if (v < min) input.value = String(min);
+            if (v > max) input.value = String(max);
+            aggiornaStato();
+        });
+
+        input.addEventListener('blur', function () {
+            imposta(leggi());
+        });
+
+        aggiornaStato();
+    });
+}
+
+
+/* ==========================================================================
    INIT
    ========================================================================== */
 
@@ -1422,4 +1635,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaAdminCatalogoStato();
     inizializzaAdminCatalogoProdotto();
     inizializzaAdminSupplyBuilder();
+    inizializzaFaqAccordion();
+    inizializzaProdottiPage();
 });
