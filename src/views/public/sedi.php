@@ -5,6 +5,7 @@
  * Variabili attese:
  *   $allBranches    array
  *   $selectedBranch ?array
+ *   $viewedBranch   ?array
  *   $branchesJson   string
  *   $branchWarning  ?string
  */
@@ -18,8 +19,8 @@
             ingredienti selezionati e qualità costante in ogni sede.
         </p>
 
-        <div class="chi-siamo-grid">
-            <article class="chi-siamo-card">
+        <div class="feature-grid">
+            <article class="feature-card">
                 <h2>La nostra filosofia</h2>
                 <p>
                     Lavoriamo con processi chiari, ricette replicabili e attenzione al dettaglio.
@@ -27,7 +28,7 @@
                 </p>
             </article>
 
-            <article class="chi-siamo-card">
+            <article class="feature-card">
                 <h2>Qualità e trasparenza</h2>
                 <p>
                     Tracciamo disponibilità e menu in modo dinamico per sede: quello che vedi online
@@ -35,7 +36,7 @@
                 </p>
             </article>
 
-            <article class="chi-siamo-card">
+            <article class="feature-card">
                 <h2>Esperienza locale</h2>
                 <p>
                     Ogni sede è integrata nel proprio territorio con team dedicato e servizio uniforme.
@@ -49,9 +50,7 @@
 <?php if (!empty($branchWarning)): ?>
     <section aria-label="Avviso sede">
         <div class="contenitore">
-            <div class="alert error">
-                <?php echo htmlspecialchars($branchWarning, ENT_QUOTES, 'UTF-8'); ?>
-            </div>
+            <?php echo ui_alert(['type' => 'error', 'message' => $branchWarning]); ?>
         </div>
     </section>
 <?php endif; ?>
@@ -65,7 +64,7 @@
 <?php else: ?>
     <section id="sedi-interattive"
         class="sedi-layout"
-        data-selected-slug="<?php echo htmlspecialchars($viewedBranch['slug'], ENT_QUOTES, 'UTF-8'); ?>"
+        data-selected-slug="<?php echo e($viewedBranch['slug']); ?>"
         aria-labelledby="titolo-sedi-interattive">
         <div class="contenitore">
             <h2 id="titolo-sedi-interattive">Seleziona una sede sulla mappa</h2>
@@ -83,19 +82,19 @@
                                     type="button"
                                     class="sede-link<?php echo $isViewed ? ' attiva' : ''; ?>"
                                     data-branch-id="<?php echo (int) $branch['id']; ?>"
-                                    data-branch-slug="<?php echo htmlspecialchars($branch['slug'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-name="<?php echo htmlspecialchars($branch['name'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-city="<?php echo htmlspecialchars($branch['city'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-province="<?php echo htmlspecialchars($branch['province'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-address="<?php echo htmlspecialchars($branch['address_line'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-postal="<?php echo htmlspecialchars($branch['postal_code'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-phone="<?php echo htmlspecialchars($branch['phone'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-email="<?php echo htmlspecialchars($branch['email'], ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-notes="<?php echo htmlspecialchars($branch['pickup_notes'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-hours="<?php echo htmlspecialchars($branch['hours_compact'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-branch-map="<?php echo htmlspecialchars($branch['map_embed_url'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
-                                    <strong><?php echo htmlspecialchars($branch['city'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                                    <span class="sede-indirizzo"><?php echo htmlspecialchars($branch['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    data-branch-slug="<?php echo e($branch['slug']); ?>"
+                                    data-branch-name="<?php echo e($branch['name']); ?>"
+                                    data-branch-city="<?php echo e($branch['city']); ?>"
+                                    data-branch-province="<?php echo e($branch['province']); ?>"
+                                    data-branch-address="<?php echo e($branch['address_line']); ?>"
+                                    data-branch-postal="<?php echo e($branch['postal_code']); ?>"
+                                    data-branch-phone="<?php echo e($branch['phone']); ?>"
+                                    data-branch-email="<?php echo e($branch['email']); ?>"
+                                    data-branch-notes="<?php echo e($branch['pickup_notes'] ?? ''); ?>"
+                                    data-branch-hours="<?php echo e($branch['hours_compact'] ?? ''); ?>"
+                                    data-branch-map="<?php echo e($branch['map_embed_url'] ?? ''); ?>">
+                                    <strong><?php echo e($branch['city']); ?></strong>
+                                    <span class="sede-indirizzo"><?php echo e($branch['address_line']); ?></span>
                                     <?php if ($isActive): ?>
                                         <span class="badge-corrente">Attiva</span>
                                     <?php endif; ?>
@@ -107,34 +106,34 @@
 
                 <div class="sede-dettaglio-wrap">
                     <article class="sede-dettaglio-card" aria-labelledby="sede-dettaglio-nome">
-                        <h3 id="sede-dettaglio-nome"><?php echo htmlspecialchars($viewedBranch['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <h3 id="sede-dettaglio-nome"><?php echo e($viewedBranch['name']); ?></h3>
                         <p id="sede-dettaglio-indirizzo">
-                            <?php echo htmlspecialchars($viewedBranch['address_line'], ENT_QUOTES, 'UTF-8'); ?>,
-                            <?php echo htmlspecialchars($viewedBranch['postal_code'], ENT_QUOTES, 'UTF-8'); ?>
-                            <?php echo htmlspecialchars($viewedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
-                            (<?php echo htmlspecialchars($viewedBranch['province'], ENT_QUOTES, 'UTF-8'); ?>)
+                            <?php echo e($viewedBranch['address_line']); ?>,
+                            <?php echo e($viewedBranch['postal_code']); ?>
+                            <?php echo e($viewedBranch['city']); ?>
+                            (<?php echo e($viewedBranch['province']); ?>)
                         </p>
                         <p>
                             Telefono sede:
                             <a id="sede-dettaglio-phone-link"
-                                href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) $viewedBranch['phone']), ENT_QUOTES, 'UTF-8'); ?>">
-                                <span id="sede-dettaglio-phone"><?php echo htmlspecialchars($viewedBranch['phone'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) $viewedBranch['phone'])); ?>">
+                                <span id="sede-dettaglio-phone"><?php echo e($viewedBranch['phone']); ?></span>
                             </a>
                         </p>
                         <p>
                             Email sede:
                             <a id="sede-dettaglio-email-link"
-                                href="mailto:<?php echo htmlspecialchars($viewedBranch['email'], ENT_QUOTES, 'UTF-8'); ?>">
-                                <span id="sede-dettaglio-email"><?php echo htmlspecialchars($viewedBranch['email'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                href="mailto:<?php echo e($viewedBranch['email']); ?>">
+                                <span id="sede-dettaglio-email"><?php echo e($viewedBranch['email']); ?></span>
                             </a>
                         </p>
                         <p id="sede-dettaglio-orari">
                             <strong>Orari:</strong>
-                            <span id="sede-dettaglio-orari-valore"><?php echo htmlspecialchars($viewedBranch['hours_compact'] ?? 'Orari non disponibili', ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span id="sede-dettaglio-orari-valore"><?php echo e($viewedBranch['hours_compact'] ?? 'Orari non disponibili'); ?></span>
                         </p>
                         <p id="sede-dettaglio-note">
                             <strong>Note ritiro:</strong>
-                            <span id="sede-dettaglio-note-valore"><?php echo htmlspecialchars($viewedBranch['pickup_notes'] ?? '', ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span id="sede-dettaglio-note-valore"><?php echo e($viewedBranch['pickup_notes'] ?? ''); ?></span>
                         </p>
 
                     </article>
@@ -143,7 +142,7 @@
                         <iframe
                             id="sedi-mappa-frame"
                             title="Mappa sede selezionata"
-                            src="<?php echo htmlspecialchars($viewedBranch['map_embed_url'], ENT_QUOTES, 'UTF-8'); ?>">
+                            src="<?php echo e($viewedBranch['map_embed_url']); ?>">
                         </iframe>
                     </div>
                 </div>
@@ -151,5 +150,5 @@
         </div>
     </section>
 
-    <script id="branches-data" type="application/json"><?php echo htmlspecialchars($branchesJson ?: '[]', ENT_NOQUOTES, 'UTF-8'); ?></script>
+    <script id="branches-data" type="application/json"><?php echo e($branchesJson ?: '[]'); ?></script>
 <?php endif; ?>

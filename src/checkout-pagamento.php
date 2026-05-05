@@ -18,7 +18,7 @@ if (!$syncOnLoad['ok']) {
 
 $carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
 if (empty($carrello['items'])) {
-    flash_set('error', 'Il carrello e vuoto. Aggiungi almeno un prodotto prima del checkout.');
+    flash_set('error', 'Il carrello è vuoto. Aggiungi almeno un prodotto prima del checkout.');
     header('Location: carrello');
     exit;
 }
@@ -46,7 +46,7 @@ $pickupDisplay = null;
 if ($fulfillmentType === 'ritiro') {
     $pickupValidation = branch_validate_pickup_datetime($pdo, $selectedBranchId, $pickupAtRaw, null, true);
     if (!$pickupValidation['ok']) {
-        flash_set('error', 'L orario di ritiro non e piu valido. Selezionane uno nuovo.');
+        flash_set('error', 'L\'orario di ritiro non è più valido. Selezionane uno nuovo.');
         header('Location: checkout-ritiro');
         exit;
     }
@@ -133,16 +133,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $flash = flash_get();
 
-$pageTitle = 'Checkout - Pagamento';
-$pageDescription = 'Completa il pagamento del tuo ordine.';
-$currentPage = 'checkout';
-$breadcrumb = [
-    ['Home', './'],
-    ['Carrello', 'carrello'],
-    ['Checkout', 'checkout'],
-    ['Metodo ritiro', 'checkout-ritiro'],
-    ['Pagamento', null],
-];
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout/checkout-pagamento.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('checkout/checkout-pagamento.php', [
+    'pageTitle' => 'Checkout - Pagamento - Smash Burger Original',
+    'pageDescription' => 'Completa il pagamento del tuo ordine.',
+    'currentPage' => 'checkout',
+    'breadcrumb' => [
+        ['Home', './'],
+        ['Carrello', 'carrello'],
+        ['Checkout', 'checkout'],
+        ['Metodo ritiro', 'checkout-ritiro'],
+        ['Pagamento', null],
+    ],
+    'carrello' => $carrello,
+    'selectedBranch' => $selectedBranch,
+    'fulfillmentType' => $fulfillmentType,
+    'pickupDisplay' => $pickupDisplay,
+    'form' => $form,
+    'errori' => $errori,
+    'flash' => $flash,
+    'csrfToken' => $csrfToken
+]);

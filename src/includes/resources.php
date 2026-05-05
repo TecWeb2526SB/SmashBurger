@@ -14,6 +14,7 @@ require_once __DIR__ . '/functions/security.php';
 require_once __DIR__ . '/functions/auth.php';
 require_once __DIR__ . '/functions/shop.php';
 require_once __DIR__ . '/functions/admin.php';
+require_once __DIR__ . '/functions/ui.php';
 // require_once __DIR__ . '/functions/utility.php';
 // require_once __DIR__ . '/class/Database.php';
 

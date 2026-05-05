@@ -67,14 +67,13 @@
         width: 100%;
     }
 
-    #menu-principale a {
+    #menu-principale a,
+    #menu-principale .nav-item-wrap {
         display: flex;
         width: 100%;
     }
 
     #menu-principale .nav-item-wrap {
-        display: flex;
-        width: 100%;
         padding-block: var(--spazio-xs);
     }
 
@@ -89,20 +88,12 @@
     }
 
     /* --- Main content --- */
-    main {
+    main,
+    .home-hero {
         padding-block: var(--spazio-lg);
     }
 
-    .checkout-layout {
-        grid-template-columns: 1fr;
-    }
-
-    .checkout-shell {
-        grid-template-columns: 1fr;
-    }
-
-    .account-hero-card,
-    .ordine-card-meta {
+    :is(.checkout-shell, .account-hero-card, .ordine-card-meta, .checkout-payment-grid, .checkout-inline-fields, .checkout-navigation, .branch-switcher, .home-hero-grid, .sedi-grid, .chi-siamo-intro .feature-grid, .legal-grid) {
         grid-template-columns: 1fr;
     }
 
@@ -111,44 +102,28 @@
         align-items: start;
     }
 
-    .ordine-card-head {
+    .account-section-head,
+    .account-action-row,
+    .account-empty-actions,
+    .ordine-card-head,
+    .hero-cta,
+    .azioni-carrello {
         flex-direction: column;
     }
 
-    .account-section-head,
-    .account-action-row,
-    .account-empty-actions {
-        flex-direction: column;
+    .checkout-navigation--solo-azione .bottone-primario,
+    .checkout-navigation--solo-azione .bottone-secondario {
+        justify-self: stretch;
     }
 
     .account-action-row .bottone-primario,
     .account-action-row .bottone-secondario,
     .account-empty-actions .bottone-primario,
-    .account-empty-actions .bottone-secondario {
-        width: 100%;
-    }
-
-    .checkout-step-list {
-        grid-template-columns: 1fr;
-    }
-
-    .checkout-payment-grid,
-    .checkout-inline-fields {
-        grid-template-columns: 1fr;
-    }
-
-    .checkout-navigation {
-        grid-template-columns: 1fr;
-    }
-
+    .account-empty-actions .bottone-secondario,
     .checkout-navigation--solo-azione .bottone-primario,
-    .checkout-navigation--solo-azione .bottone-secondario {
-        width: 100%;
-        justify-self: stretch;
-    }
-
-    .admin-builder-card .checkout-navigation--solo-azione .bottone-primario,
-    .admin-builder-card .checkout-navigation--solo-azione .bottone-secondario,
+    .checkout-navigation--solo-azione .bottone-secondario,
+    .hero-cta .bottone-primario,
+    .hero-cta .bottone-secondario,
     .admin-repeatable-add {
         width: 100%;
     }
@@ -158,35 +133,14 @@
     }
 
     .branch-switcher {
-        grid-template-columns: 1fr;
         max-width: 100%;
-    }
-
-    .home-hero {
-        padding-block: var(--spazio-lg);
-    }
-
-    .home-hero-grid {
-        grid-template-columns: 1fr;
     }
 
     .hero-panel {
         order: -1;
     }
 
-    .hero-cta {
-        flex-direction: column;
-    }
-
-    .hero-cta .bottone-primario,
-    .hero-cta .bottone-secondario {
-        width: 100%;
-    }
-
-    .feature-grid,
-    .offer-grid,
-    .steps-grid,
-    .menu-preview-grid {
+    .feature-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -194,25 +148,12 @@
         min-width: 34rem;
     }
 
-    .sedi-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .chi-siamo-grid {
-        grid-template-columns: 1fr;
-    }
-
     .sede-mappa-box,
     #sedi-mappa-frame {
         min-height: 17rem;
     }
 
-    .legal-grid {
-        grid-template-columns: 1fr;
-    }
-
     .azioni-carrello {
-        flex-direction: column;
         align-items: stretch;
     }
 
@@ -261,10 +202,7 @@
         margin-top: var(--spazio-lg);
     }
 
-    .feature-grid,
-    .offer-grid,
-    .steps-grid,
-    .menu-preview-grid {
+    .feature-grid {
         grid-template-columns: 1fr;
     }
 

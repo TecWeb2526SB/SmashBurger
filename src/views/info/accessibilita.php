@@ -1,6 +1,10 @@
 <?php
 /**
- * accessibilita: View della dichiarazione di accessibilità.
+ * accessibilità: View della dichiarazione di accessibilità.
+ *
+ * Variabili attese dal controller:
+ *   $brandContacts          array   Contatti del brand
+ *   $accessibilityUpdatedAt string  Data di aggiornamento
  */
 
 $accessibilityBrandName = (string) ($brandContacts['brand_name'] ?? 'Smash Burger Original');
@@ -8,27 +12,27 @@ $accessibilityEmail = (string) ($brandContacts['support_email'] ?? 'info@smashbu
 $accessibilityPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 1099');
 ?>
 
-<section aria-labelledby="titolo-accessibilita">
+<section aria-labelledby="titolo-accessibilità">
     <div class="contenitore">
         <div class="legal-shell">
             <div class="legal-intro">
                 <p class="home-eyebrow">Accessibilità</p>
-                <h1 id="titolo-accessibilita">Dichiarazione di accessibilità</h1>
+                <h1 id="titolo-accessibilità">Dichiarazione di accessibilità</h1>
                 <p class="legal-intro-copy">
-                    <?php echo htmlspecialchars($accessibilityBrandName, ENT_QUOTES, 'UTF-8'); ?> si impegna a rendere il proprio sito
+                    <?php echo e($accessibilityBrandName); ?> si impegna a rendere il proprio sito
                     accessibile e utilizzabile dal maggior numero possibile di persone, con attenzione a navigazione da tastiera,
                     compatibilità con tecnologie assistive, chiarezza semantica e leggibilità dei contenuti.
                 </p>
                 <p class="legal-meta">
                     Ultimo aggiornamento:
-                    <strong><?php echo htmlspecialchars($accessibilityUpdatedAt ?? '1 aprile 2026', ENT_QUOTES, 'UTF-8'); ?></strong>
+                    <strong><?php echo e($accessibilityUpdatedAt); ?></strong>
                 </p>
             </div>
 
             <div class="legal-content">
                 <article class="legal-card" id="sezione-stato">
-                    <section class="legal-section" aria-labelledby="accessibilita-stato">
-                        <h2 id="accessibilita-stato">1. Stato di conformità</h2>
+                    <section class="legal-section" aria-labelledby="accessibilità-stato">
+                        <h2 id="accessibilità-stato">1. Stato di conformità</h2>
                         <p>
                             Alla data di questo aggiornamento il sito è da considerarsi
                             <strong>parzialmente conforme</strong> ai requisiti tecnici di accessibilità ispirati alle
@@ -39,8 +43,8 @@ $accessibilityPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 109
                         </p>
                     </section>
 
-                    <section class="legal-section legal-section-last" aria-labelledby="accessibilita-metodo">
-                        <h2 id="accessibilita-metodo">2. Monitoraggio</h2>
+                    <section class="legal-section legal-section-last" aria-labelledby="accessibilità-metodo">
+                        <h2 id="accessibilità-metodo">2. Monitoraggio</h2>
                         <div class="legal-grid">
                             <div class="legal-item">
                                 <h3>Validazione tecnica</h3>
@@ -62,9 +66,9 @@ $accessibilityPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 109
                     </section>
                 </article>
 
-                <article class="legal-card" id="sezione-funzionalita">
-                    <section class="legal-section" aria-labelledby="accessibilita-supporto">
-                        <h2 id="accessibilita-supporto">3. Funzionalità supportate</h2>
+                <article class="legal-card" id="sezione-funzionalità">
+                    <section class="legal-section" aria-labelledby="accessibilità-supporto">
+                        <h2 id="accessibilità-supporto">3. Funzionalità supportate</h2>
                         <ul class="legal-list">
                             <li>Struttura semantica con titoli, landmark e breadcrumb;</li>
                             <li>Skip link per il contenuto principale;</li>
@@ -74,8 +78,8 @@ $accessibilityPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 109
                         </ul>
                     </section>
 
-                    <section class="legal-section legal-section-last" aria-labelledby="accessibilita-limiti">
-                        <h2 id="accessibilita-limiti">4. Aspetti migliorabili</h2>
+                    <section class="legal-section legal-section-last" aria-labelledby="accessibilità-limiti">
+                        <h2 id="accessibilità-limiti">4. Aspetti migliorabili</h2>
                         <p>Punti su cui stiamo lavorando:</p>
                         <ul class="legal-list">
                             <li>Target interattivi su touch per alcune pagine specifiche;</li>
@@ -86,32 +90,34 @@ $accessibilityPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 109
                 </article>
 
                 <article class="legal-card" id="sezione-contatti">
-                    <section class="legal-section" aria-labelledby="accessibilita-compatibilita">
-                        <h2 id="accessibilita-compatibilita">5. Compatibilità</h2>
+                    <section class="legal-section" aria-labelledby="accessibilità-compatibilità">
+                        <h2 id="accessibilità-compatibilità">5. Compatibilità</h2>
                         <p>
                             Il sito è ottimizzato per i browser moderni e le principali tecnologie assistive, con particolare attenzione
                             alla navigazione da tastiera nei flussi d'acquisto.
                         </p>
                     </section>
 
-                    <section class="legal-section legal-section-last" aria-labelledby="accessibilita-feedback">
-                        <h2 id="accessibilita-feedback">6. Segnalazioni</h2>
+                    <section class="legal-section legal-section-last" aria-labelledby="accessibilità-feedback">
+                        <h2 id="accessibilità-feedback">6. Segnalazioni</h2>
                         <p>
                             Se riscontri difficoltà, puoi segnalarle a
-                            <a href="mailto:<?php echo htmlspecialchars($accessibilityEmail, ENT_QUOTES, 'UTF-8'); ?>">
-                                <?php echo htmlspecialchars($accessibilityEmail, ENT_QUOTES, 'UTF-8'); ?>
+                            <a href="mailto:<?php echo e($accessibilityEmail); ?>">
+                                <?php echo e($accessibilityEmail); ?>
+
                             </a>
                             oppure al numero
-                            <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $accessibilityPhone), ENT_QUOTES, 'UTF-8'); ?>">
-                                <?php echo htmlspecialchars($accessibilityPhone, ENT_QUOTES, 'UTF-8'); ?>
+                            <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $accessibilityPhone)); ?>">
+                                <?php echo e($accessibilityPhone); ?>
+
                             </a>.
                         </p>
                     </section>
                 </article>
 
                 <article class="legal-card" id="sezione-riferimenti">
-                    <section class="legal-section legal-section-last" aria-labelledby="accessibilita-riferimenti">
-                        <h2 id="accessibilita-riferimenti">7. Riferimenti</h2>
+                    <section class="legal-section legal-section-last" aria-labelledby="accessibilità-riferimenti">
+                        <h2 id="accessibilità-riferimenti">7. Riferimenti</h2>
                         <p>
                             Ispirato alle WCAG 2.1 AA e alle linee guida AgID per i servizi digitali al pubblico.
                         </p>

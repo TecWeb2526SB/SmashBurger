@@ -48,10 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $flash = flash_get();
 
-$pageTitle       = 'Checkout';
-$pageDescription = 'Riepilogo ordine e avvio checkout.';
-$currentPage     = 'checkout';
-$breadcrumb      = [['Home', './'], ['Carrello', 'carrello'], ['Checkout', null]];
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout/checkout.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('checkout/checkout.php', [
+    'pageTitle' => 'Checkout - Smash Burger Original',
+    'pageDescription' => 'Riepilogo ordine e avvio checkout.',
+    'currentPage' => 'checkout',
+    'breadcrumb' => [['Home', './'], ['Carrello', 'carrello'], ['Checkout', null]],
+    'carrello' => $carrello,
+    'errori' => $errori,
+    'flash' => $flash,
+    'selectedBranch' => $selectedBranch,
+    'csrfToken' => $csrfToken
+]);

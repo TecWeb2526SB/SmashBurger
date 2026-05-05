@@ -19,24 +19,15 @@
         <h1 id="titolo-checkout-pagamento">Pagamento</h1>
         <p class="checkout-intro">Scegli il metodo di pagamento e completa l ordine.</p>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($flash['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
+        <?php echo ui_alert($flash); ?>
+        <?php echo ui_error_summary($errori); ?>
 
-        <?php if (!empty($errori['generale'])): ?>
-            <div role="alert" class="errore-sommario">
-                <p><?php echo htmlspecialchars($errori['generale'], ENT_QUOTES, 'UTF-8'); ?></p>
-            </div>
-        <?php endif; ?>
-
-        <form class="checkout-card checkout-form checkout-main" method="POST" action="checkout-pagamento" data-valida novalidate>
-            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+        <form class="checkout-card checkout-form" method="POST" action="checkout-pagamento" data-valida="true" novalidate="novalidate">
+            <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
 
             <?php if (!empty($selectedBranch)): ?>
                 <p class="checkout-muted">
-                    Sede ordine: <strong><?php echo htmlspecialchars($selectedBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                    Sede ordine: <strong><?php echo e($selectedBranch['name']); ?></strong>
                 </p>
             <?php endif; ?>
 
@@ -45,7 +36,7 @@
                     Modalita ritiro: <strong>Asporto immediato</strong>. Ordine pronto in pochi minuti.
                 <?php else: ?>
                     Modalita ritiro: <strong>Ritiro in sede</strong>.
-                    Orario selezionato: <strong><?php echo htmlspecialchars((string) $pickupDisplay, ENT_QUOTES, 'UTF-8'); ?></strong>.
+                    Orario selezionato: <strong><?php echo e((string) $pickupDisplay); ?></strong>.
                 <?php endif; ?>
             </p>
 
@@ -66,93 +57,54 @@
             <div class="checkout-payment-grid">
                 <div id="payment-card-fields" class="checkout-payment-box" <?php echo ($form['payment_method'] === 'card') ? '' : 'hidden'; ?>>
                     <h2>Dati carta</h2>
-                    <div class="campo-gruppo">
-                        <label for="card_number">Numero carta</label>
-                        <input
-                            type="text"
-                            id="card_number"
-                            name="card_number"
-                            inputmode="numeric"
-                            autocomplete="cc-number"
-                            value="<?php echo htmlspecialchars($form['card_number'], ENT_QUOTES, 'UTF-8'); ?>"
-                            placeholder="4242 4242 4242 4242"
-                            aria-describedby="card_number-errore"
-                            <?php echo isset($errori['card_number']) ? 'aria-invalid="true"' : ''; ?>>
-                        <span id="card_number-errore" class="campo-errore" <?php echo empty($errori['card_number']) ? 'hidden' : ''; ?>>
-                            <?php echo htmlspecialchars($errori['card_number'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                    </div>
+                    <?php
+                    echo ui_form_group('card_number', 'Numero carta', 'text', [
+                        'value' => $form['card_number'],
+                        'error' => $errori['card_number'] ?? null,
+                        'autocomplete' => 'cc-number',
+                        'placeholder' => '4242 4242 4242 4242',
+                        'extra_attrs' => 'inputmode="numeric"'
+                    ]);
 
-                    <div class="campo-gruppo">
-                        <label for="card_holder">Intestatario carta</label>
-                        <input
-                            type="text"
-                            id="card_holder"
-                            name="card_holder"
-                            autocomplete="cc-name"
-                            value="<?php echo htmlspecialchars($form['card_holder'], ENT_QUOTES, 'UTF-8'); ?>"
-                            placeholder="Nome e cognome"
-                            aria-describedby="card_holder-errore"
-                            <?php echo isset($errori['card_holder']) ? 'aria-invalid="true"' : ''; ?>>
-                        <span id="card_holder-errore" class="campo-errore" <?php echo empty($errori['card_holder']) ? 'hidden' : ''; ?>>
-                            <?php echo htmlspecialchars($errori['card_holder'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                    </div>
+                    echo ui_form_group('card_holder', 'Intestatario carta', 'text', [
+                        'value' => $form['card_holder'],
+                        'error' => $errori['card_holder'] ?? null,
+                        'autocomplete' => 'cc-name',
+                        'placeholder' => 'Nome e cognome'
+                    ]);
+                    ?>
 
                     <div class="checkout-inline-fields">
-                        <div class="campo-gruppo">
-                            <label for="card_expiry">Scadenza (MM/AA)</label>
-                            <input
-                                type="text"
-                                id="card_expiry"
-                                name="card_expiry"
-                                inputmode="numeric"
-                                autocomplete="cc-exp"
-                                value="<?php echo htmlspecialchars($form['card_expiry'], ENT_QUOTES, 'UTF-8'); ?>"
-                                placeholder="08/30"
-                                aria-describedby="card_expiry-errore"
-                                <?php echo isset($errori['card_expiry']) ? 'aria-invalid="true"' : ''; ?>>
-                            <span id="card_expiry-errore" class="campo-errore" <?php echo empty($errori['card_expiry']) ? 'hidden' : ''; ?>>
-                                <?php echo htmlspecialchars($errori['card_expiry'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                            </span>
-                        </div>
+                        <?php
+                        echo ui_form_group('card_expiry', 'Scadenza (MM/AA)', 'text', [
+                            'value' => $form['card_expiry'],
+                            'error' => $errori['card_expiry'] ?? null,
+                            'autocomplete' => 'cc-exp',
+                            'placeholder' => '08/30',
+                            'extra_attrs' => 'inputmode="numeric"'
+                        ]);
 
-                        <div class="campo-gruppo">
-                            <label for="card_cvv">CVV</label>
-                            <input
-                                type="password"
-                                id="card_cvv"
-                                name="card_cvv"
-                                inputmode="numeric"
-                                autocomplete="cc-csc"
-                                value="<?php echo htmlspecialchars($form['card_cvv'], ENT_QUOTES, 'UTF-8'); ?>"
-                                placeholder="123"
-                                aria-describedby="card_cvv-errore"
-                                <?php echo isset($errori['card_cvv']) ? 'aria-invalid="true"' : ''; ?>>
-                            <span id="card_cvv-errore" class="campo-errore" <?php echo empty($errori['card_cvv']) ? 'hidden' : ''; ?>>
-                                <?php echo htmlspecialchars($errori['card_cvv'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                            </span>
-                        </div>
+                        echo ui_form_group('card_cvv', 'CVV', 'password', [
+                            'value' => $form['card_cvv'],
+                            'error' => $errori['card_cvv'] ?? null,
+                            'autocomplete' => 'cc-csc',
+                            'placeholder' => '123',
+                            'extra_attrs' => 'inputmode="numeric"'
+                        ]);
+                        ?>
                     </div>
                 </div>
 
                 <div id="payment-paypal-fields" class="checkout-payment-box" <?php echo ($form['payment_method'] === 'paypal') ? '' : 'hidden'; ?>>
                     <h2>Dettagli PayPal</h2>
-                    <div class="campo-gruppo">
-                        <label for="paypal_email">Email PayPal</label>
-                        <input
-                            type="email"
-                            id="paypal_email"
-                            name="paypal_email"
-                            autocomplete="email"
-                            value="<?php echo htmlspecialchars($form['paypal_email'], ENT_QUOTES, 'UTF-8'); ?>"
-                            placeholder="nome@example.com"
-                            aria-describedby="paypal_email-errore"
-                            <?php echo isset($errori['paypal_email']) ? 'aria-invalid="true"' : ''; ?>>
-                        <span id="paypal_email-errore" class="campo-errore" <?php echo empty($errori['paypal_email']) ? 'hidden' : ''; ?>>
-                            <?php echo htmlspecialchars($errori['paypal_email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                        </span>
-                    </div>
+                    <?php
+                    echo ui_form_group('paypal_email', 'Email PayPal', 'email', [
+                        'value' => $form['paypal_email'],
+                        'error' => $errori['paypal_email'] ?? null,
+                        'autocomplete' => 'email',
+                        'placeholder' => 'nome@example.com'
+                    ]);
+                    ?>
                 </div>
             </div>
 

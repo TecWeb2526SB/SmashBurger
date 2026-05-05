@@ -101,10 +101,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
 $flash = flash_get();
 
-$pageTitle       = 'Carrello - Smash Burger Original';
-$pageDescription = 'Visualizza e gestisci i prodotti nel tuo carrello Smash Burger.';
-$currentPage     = 'carrello';
-$breadcrumb      = [['Home', './'], ['Carrello', null]];
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout/carrello.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('checkout/carrello.php', [
+    'pageTitle' => 'Carrello - Smash Burger Original',
+    'pageDescription' => 'Visualizza e gestisci i prodotti nel tuo carrello Smash Burger.',
+    'currentPage' => 'carrello',
+    'breadcrumb' => [['Home', './'], ['Carrello', null]],
+    'carrello' => $carrello,
+    'flash' => $flash,
+    'selectedBranch' => $selectedBranch,
+    'csrfToken' => $csrfToken
+]);

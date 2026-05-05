@@ -13,20 +13,125 @@
 
 <?php
 $numeroOrdini = count($orders);
-$ultimoOrdine = $orders[0] ?? null;
+
+$orderStatusMeta = static function (string $rawStatus): array {
+    $label = trim($rawStatus);
+    $normalized = mb_strtolower($label);
+
+    if ($label === '') {
+        return ['label' => 'In lavorazione', 'class' => 'is-warning'];
+    }
+
+    if (
+        str_contains($normalized, 'confer')
+        || str_contains($normalized, 'confirm')
+        || str_contains($normalized, 'pronto')
+        || str_contains($normalized, 'ready')
+        || str_contains($normalized, 'complet')
+        || str_contains($normalized, 'deliver')
+    ) {
+        return ['label' => $label, 'class' => 'is-success'];
+    }
+
+    if (
+        str_contains($normalized, 'annull')
+        || str_contains($normalized, 'cancel')
+        || str_contains($normalized, 'rifiut')
+        || str_contains($normalized, 'fallit')
+        || str_contains($normalized, 'failed')
+    ) {
+        return ['label' => $label, 'class' => 'is-danger'];
+    }
+
+    if (
+        str_contains($normalized, 'attes')
+        || str_contains($normalized, 'pending')
+        || str_contains($normalized, 'prepar')
+        || str_contains($normalized, 'process')
+    ) {
+        return ['label' => $label, 'class' => 'is-warning'];
+    }
+
+    return ['label' => $label, 'class' => 'is-info'];
+};
+
+$paymentStatusMeta = static function (string $rawStatus): array {
+    $normalized = mb_strtolower(trim($rawStatus));
+
+    if (str_contains($normalized, 'pagat') || str_contains($normalized, 'paid')) {
+        return ['label' => 'Pagato', 'class' => 'is-paid'];
+    }
+
+    if (str_contains($normalized, 'rimbors') || str_contains($normalized, 'refund')) {
+        return ['label' => 'Rimborsato', 'class' => 'is-refunded'];
+    }
+
+    if (
+        str_contains($normalized, 'non pag')
+        || str_contains($normalized, 'unpaid')
+        || str_contains($normalized, 'fallit')
+        || str_contains($normalized, 'failed')
+        || str_contains($normalized, 'rifiut')
+        || str_contains($normalized, 'declin')
+    ) {
+        return ['label' => 'Non pagato', 'class' => 'is-failed'];
+    }
+
+    return ['label' => 'In attesa pagamento', 'class' => 'is-pending'];
+};
+
+$paymentMethodMeta = static function (string $rawMethod): array {
+    $label = trim($rawMethod);
+    $normalized = mb_strtolower($label);
+
+    if (str_contains($normalized, 'paypal')) {
+        return ['label' => 'PayPal', 'short' => 'PP'];
+    }
+
+    if (
+        str_contains($normalized, 'carta')
+        || str_contains($normalized, 'card')
+        || str_contains($normalized, 'visa')
+        || str_contains($normalized, 'mastercard')
+    ) {
+        return ['label' => 'Carta', 'short' => 'CC'];
+    }
+
+    if (str_contains($normalized, 'satispay')) {
+        return ['label' => 'Satispay', 'short' => 'SP'];
+    }
+
+    if (str_contains($normalized, 'bonific') || str_contains($normalized, 'bank')) {
+        return ['label' => 'Bonifico', 'short' => 'BN'];
+    }
+
+    if (str_contains($normalized, 'contant') || str_contains($normalized, 'cash')) {
+        return ['label' => 'Contanti', 'short' => 'CA'];
+    }
+
+    $safeLabel = $label !== '' ? $label : 'Metodo non definito';
+    $lettersOnly = preg_replace('/[^A-Za-z0-9]/', '', $safeLabel);
+    $short = strtoupper(substr((string) $lettersOnly, 0, 2));
+
+    return [
+        'label' => $safeLabel,
+        'short' => $short !== '' ? $short : 'NA',
+    ];
+};
 ?>
 
 <section class="account-page" aria-labelledby="titolo-area-personale">
     <div class="contenitore">
+        <?php echo ui_alert($flash); ?>
+
         <div class="account-hero-card" aria-labelledby="titolo-area-personale">
             <div class="account-hero-copy">
-                <span class="home-eyebrow">Il tuo spazio SmashBurger</span>
                 <h1 id="titolo-area-personale">Area personale</h1>
                 <p class="account-hero-text">
                     <?php if (!empty($showCustomerOrders)): ?>
-                        Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout piu pulito e immediato.
+                        Ritrova i tuoi ordini, aggiorna le credenziali e riparti subito dal catalogo con un layout più pulito e immediato.
                     <?php else: ?>
-                        Aggiorna le credenziali e accedi rapidamente agli strumenti interni senza mischiare l area operativa con lo storico ordini cliente.
+                        Aggiorna le credenziali e accedi rapidamente agli strumenti interni senza mischiare l'area operativa con lo storico ordini cliente.
                     <?php endif; ?>
                 </p>
                 <div class="account-action-row">
@@ -40,42 +145,22 @@ $ultimoOrdine = $orders[0] ?? null;
                 </div>
             </div>
 
-            <aside class="account-summary-box" aria-labelledby="titolo-riepilogo-personale">
-                <h2 id="titolo-riepilogo-personale">In breve</h2>
+            <aside class="account-summary-box" aria-label="Riepilogo account">
                 <ul class="account-summary-list">
-                    <li><span>Username</span><strong><?php echo htmlspecialchars($utente['username'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li><span>Email</span><strong><?php echo htmlspecialchars((string) $utente['email'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li><span><?php echo !empty($showCustomerOrders) ? 'Ordini totali' : 'Ruolo'; ?></span><strong><?php echo !empty($showCustomerOrders) ? (int) $numeroOrdini : htmlspecialchars(role_label((string) $utente['role']), ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                    <li>
-                        <span><?php echo !empty($showCustomerOrders) && $ultimoOrdine !== null ? 'Ultimo ordine' : 'Prossimo passo'; ?></span>
-                        <strong>
-                            <?php if (!empty($showCustomerOrders) && $ultimoOrdine !== null): ?>
-                                <?php echo htmlspecialchars((string) $ultimoOrdine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
-                            <?php elseif (!empty($canAccessAdminPanel)): ?>
-                                Apri il controllo
-                            <?php else: ?>
-                                Scegli il tuo primo menu
-                            <?php endif; ?>
-                        </strong>
-                    </li>
+                    <li><span>Username</span><strong><?php echo e($utente['username']); ?></strong></li>
+                    <li><span>Email</span><strong><?php echo e((string) $utente['email']); ?></strong></li>
+                    <li><span><?php echo !empty($showCustomerOrders) ? 'Ordini totali' : 'Ruolo'; ?></span><strong><?php echo !empty($showCustomerOrders) ? (int) $numeroOrdini : e(role_label((string) $utente['role'])); ?></strong></li>
                 </ul>
             </aside>
         </div>
 
-        <?php if (!empty($flash)): ?>
-            <div class="alert <?php echo htmlspecialchars($flash['type'] ?? 'info', ENT_QUOTES, 'UTF-8'); ?>">
-                <?php echo htmlspecialchars($flash['message'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-            </div>
-        <?php endif; ?>
-
         <?php if (!empty($showCustomerOrders)): ?>
             <div class="account-section-head">
                 <div>
-                    <span class="account-panel-kicker">Ordini</span>
                     <h2>Storico ordini</h2>
                 </div>
-                <p class="checkout-muted">Tieni sotto controllo stato, ritiro e dettagli di ogni ordine in un colpo d'occhio.</p>
             </div>
+            <p class="checkout-muted">Tieni sotto controllo stato, ritiro e dettagli di ogni ordine in un colpo d'occhio.</p>
 
         <?php if (empty($orders)): ?>
             <article class="checkout-card account-empty-state">
@@ -93,36 +178,41 @@ $ultimoOrdine = $orders[0] ?? null;
         <?php else: ?>
             <div class="account-orders-grid">
                 <?php foreach ($orders as $ordine): ?>
+                    <?php
+                    $statusMeta = $orderStatusMeta((string) ($ordine['order_status'] ?? ''));
+                    $paymentMeta = $paymentStatusMeta((string) ($ordine['payment_status'] ?? ''));
+                    $methodMeta = $paymentMethodMeta((string) ($ordine['payment_method'] ?? ''));
+                    ?>
                     <article class="ordine-card" aria-labelledby="ordine-<?php echo (int) $ordine['id']; ?>">
                         <div class="ordine-card-head">
                             <div>
                                 <p class="ordine-card-eyebrow">Ordine</p>
                                 <h3 id="ordine-<?php echo (int) $ordine['id']; ?>">
-                                    <?php echo htmlspecialchars($ordine['order_number'], ENT_QUOTES, 'UTF-8'); ?>
+                                    <?php echo e($ordine['order_number']); ?>
                                 </h3>
                             </div>
                             <strong class="ordine-card-total"><?php echo money_eur((int) $ordine['total_cents']); ?></strong>
                         </div>
 
                         <ul class="ordine-pill-list" aria-label="Stato ordine">
-                            <li>Stato: <strong><?php echo htmlspecialchars($ordine['order_status'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                            <li>Pagamento: <strong><?php echo htmlspecialchars($ordine['payment_status'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
-                            <li>Metodo: <strong><?php echo htmlspecialchars($ordine['payment_method'], ENT_QUOTES, 'UTF-8'); ?></strong></li>
+                            <li class="ordine-pill ordine-pill-status <?php echo e($statusMeta['class']); ?>">
+                                <?php echo e($statusMeta['label']); ?>
+                            </li>
                         </ul>
 
                         <dl class="ordine-card-meta">
                             <div>
                                 <dt>Ritiro</dt>
-                                <dd><?php echo htmlspecialchars($ordine['fulfillment_type'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                                <dd><?php echo e($ordine['fulfillment_type']); ?></dd>
                             </div>
                             <div>
                                 <dt>Sede</dt>
-                                <dd><?php echo htmlspecialchars($ordine['branch_name_snapshot'], ENT_QUOTES, 'UTF-8'); ?></dd>
+                                <dd><?php echo e($ordine['branch_name_snapshot']); ?></dd>
                             </div>
                             <div>
                                 <dt>Ritiro previsto</dt>
                                 <dd>
-                                    <?php echo !empty($ordine['pickup_at']) ? htmlspecialchars((string) $ordine['pickup_at'], ENT_QUOTES, 'UTF-8') : 'Da definire'; ?>
+                                    <?php echo !empty($ordine['pickup_at']) ? e((string) $ordine['pickup_at']) : 'Da definire'; ?>
                                 </dd>
                             </div>
                         </dl>
@@ -133,7 +223,7 @@ $ultimoOrdine = $orders[0] ?? null;
                                 <ul class="riepilogo-lista">
                                     <?php foreach ($ordine['items'] as $item): ?>
                                         <li>
-                                            <span><?php echo htmlspecialchars($item['product_name'], ENT_QUOTES, 'UTF-8'); ?> x<?php echo (int) $item['quantity']; ?></span>
+                                            <span><?php echo e($item['product_name']); ?> x<?php echo (int) $item['quantity']; ?></span>
                                             <strong><?php echo money_eur((int) $item['line_total_cents']); ?></strong>
                                         </li>
                                     <?php endforeach; ?>
@@ -141,7 +231,14 @@ $ultimoOrdine = $orders[0] ?? null;
                             </div>
                         <?php endif; ?>
 
-                        <div class="admin-inline-actions">
+                        <div class="admin-inline-actions ordine-payment-actions">
+                            <span class="ordine-payment-pill <?php echo e($paymentMeta['class']); ?>">
+                                <?php echo e($paymentMeta['label']); ?>
+                            </span>
+                            <span class="ordine-method-pill" aria-label="Metodo di pagamento: <?php echo e($methodMeta['label']); ?>">
+                                <span class="ordine-method-pill-code" aria-hidden="true"><?php echo e($methodMeta['short']); ?></span>
+                                <span class="ordine-method-pill-label"><?php echo e($methodMeta['label']); ?></span>
+                            </span>
                             <a class="bottone-secondario" href="ricevuta?tipo=ordine&amp;id=<?php echo (int) $ordine['id']; ?>">Apri ricevuta</a>
                         </div>
                     </article>

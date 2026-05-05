@@ -2,6 +2,7 @@
 /**
  * header.php: Intestazione comune a tutte le pagine.
  */
+global $pdo, $navItems, $isLoggedIn, $canPlaceOrders;
 
 $vResources = file_exists(__DIR__ . '/../../styles/resources.css')
     ? filemtime(__DIR__ . '/../../styles/resources.css')
@@ -37,19 +38,20 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
 }
 ?>
 <!DOCTYPE html>
-<html lang="it" xml:lang="it">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($pageTitle ?? 'Smash Burger Original'); ?></title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><?php echo e($pageTitle ?? 'Smash Burger Original'); ?></title>
     <meta name="description"
-        content="<?php echo htmlspecialchars($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>">
-    <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away">
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#c0392b">
+        content="<?php echo e($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>" />
+    <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#c0392b" />
 
     <script>
+        //<![CDATA[
         (function () {
             var t = localStorage.getItem('smashburger-tema');
             if (t === 'scuro' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -58,14 +60,15 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                 document.documentElement.classList.add('tema-chiaro');
             }
         }());
+        //]]>
     </script>
 
-    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>">
-    <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
-    <link rel="manifest" href="site.webmanifest">
+    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>" />
+    <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
+    <link rel="manifest" href="site.webmanifest" />
 </head>
 
-<body data-cart-count="<?php echo $headerCartCount; ?>">
+<body data-cart-count="<?php echo (int) $headerCartCount; ?>">
     <a class="skip-link" href="#content">Vai al contenuto</a>
     <header>
         <div class="contenitore">
@@ -87,34 +90,27 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-controls="sede-dropdown-menu">
-                            <?php echo htmlspecialchars((string) $headerSelectedBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
-                            <svg class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <?php echo e((string) $headerSelectedBranch['city']); ?>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="freccetta-sede" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 9l6 6 6-6" />
                             </svg>
                         </button>
-                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" hidden>
+                        <div id="sede-dropdown-menu" class="sede-dropdown-menu" hidden="hidden">
                             <p class="sede-dropdown-titolo">Scegli la tua sede</p>
                             <ul>
                                 <?php
                                 $adminBranchPages = [
-                                    'controllo',
-                                    'controllo-catalogo',
-                                    'controllo-catalogo-prodotto',
-                                    'controllo-inventario',
-                                    'controllo-inventario-rettifica',
-                                    'controllo-forniture',
-                                    'controllo-forniture-standard',
-                                    'controllo-forniture-straordinaria',
-                                    'controllo-forniture-automatico',
+                                    'controllo', 'controllo-catalogo', 'controllo-catalogo-prodotto',
+                                    'controllo-inventario', 'controllo-inventario-rettifica',
+                                    'controllo-forniture', 'controllo-forniture-standard',
+                                    'controllo-forniture-straordinaria', 'controllo-forniture-automatico',
                                     'controllo-manager',
                                 ];
                                 $requestPath = trim((string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH), '/');
                                 $currentRequestPage = $requestPath !== '' ? basename($requestPath) : './';
                                 $currentHeaderPage = (string) ($currentPage ?? $currentRequestPage);
                                 $returnBasePage = './';
-                                if (in_array($currentHeaderPage, ['prodotti', 'sedi'], true)) {
-                                    $returnBasePage = $currentHeaderPage;
-                                } elseif (in_array($currentHeaderPage, $adminBranchPages, true)) {
+                                if (in_array($currentHeaderPage, ['prodotti', 'sedi'], true) || in_array($currentHeaderPage, $adminBranchPages, true)) {
                                     $returnBasePage = $currentHeaderPage;
                                 } elseif (str_starts_with($currentHeaderPage, 'controllo')) {
                                     $returnBasePage = 'controllo';
@@ -124,21 +120,18 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
 
                                 $returnQueryParams = [];
                                 foreach ($_GET as $paramKey => $paramValue) {
-                                    if (!is_string($paramKey) || in_array($paramKey, ['ajax', 'force'], true)) {
-                                        continue;
-                                    }
-
-                                    if (is_scalar($paramValue)) {
+                                    if (is_string($paramKey) && !in_array($paramKey, ['ajax', 'force'], true) && is_scalar($paramValue)) {
                                         $returnQueryParams[$paramKey] = (string) $paramValue;
                                     }
                                 }
                                 ?>
                                 <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
-                                    $switchUrl = 'prodotti?sede=' . rawurlencode((string) $hb['slug']);
+                                    $hbSlug = (string) $hb['slug'];
+                                    $switchUrl = 'prodotti?sede=' . rawurlencode($hbSlug);
                                     $returnParams = $returnQueryParams;
                                     if (in_array($returnBasePage, ['prodotti', 'sedi'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
-                                        $returnParams['sede'] = (string) $hb['slug'];
+                                        $returnParams['sede'] = $hbSlug;
                                     } else {
                                         unset($returnParams['sede']);
                                     }
@@ -146,14 +139,14 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                                     $returnUrl = $returnBasePage . ($returnQuery !== '' ? '?' . $returnQuery : '');
                                 ?>
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
-                                        <a href="<?php echo htmlspecialchars($switchUrl, ENT_QUOTES, 'UTF-8'); ?>"
+                                        <a href="<?php echo e($switchUrl); ?>"
                                            class="sede-opzione"
-                                           data-switch-url="<?php echo htmlspecialchars($switchUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                           data-return-url="<?php echo htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8'); ?>"
-                                           data-sede-slug="<?php echo htmlspecialchars($hb['slug'], ENT_QUOTES, 'UTF-8'); ?>"
-                                           data-sede-name="<?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?>">
-                                            <strong><?php echo htmlspecialchars($hb['name'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                                            <span class="sede-indirizzo"><?php echo htmlspecialchars($hb['address_line'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                           data-switch-url="<?php echo e($switchUrl); ?>"
+                                           data-return-url="<?php echo e($returnUrl); ?>"
+                                           data-sede-slug="<?php echo e($hbSlug); ?>"
+                                           data-sede-name="<?php echo e((string) $hb['name']); ?>">
+                                            <strong><?php echo e((string) $hb['name']); ?></strong>
+                                            <span class="sede-indirizzo"><?php echo e((string) $hb['address_line']); ?></span>
                                             <?php if ($isCurrent): ?>
                                                 <span class="badge-corrente">Attiva</span>
                                             <?php endif; ?>
@@ -179,22 +172,22 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
                         <li class="<?php echo $isActive ? 'attivo' : ''; ?>">
                             <?php if ($isActive): ?>
                                 <span class="nav-item-wrap" aria-current="page">
-                                    <?php echo htmlspecialchars($label); ?>
+                                    <?php echo e($label); ?>
                                     <?php if ($isCart): ?>
                                         <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
-                                            <?php echo $headerCartCount; ?>
+                                            <?php echo (int) $headerCartCount; ?>
                                         </span>
                                     <?php endif; ?>
                                 </span>
                             <?php else: ?>
                                 <a
-                                    href="<?php echo htmlspecialchars($href); ?>"
+                                    href="<?php echo e($href); ?>"
                                     class="nav-item-wrap"
                                     <?php echo $href === 'esci' ? 'data-confirm-logout="true"' : ''; ?>>
-                                    <?php echo htmlspecialchars($label); ?>
+                                    <?php echo e($label); ?>
                                     <?php if ($isCart): ?>
                                         <span class="badge-notifica <?php echo $headerCartCount > 0 ? '' : 'badge-nascosto'; ?>">
-                                            <?php echo $headerCartCount; ?>
+                                            <?php echo (int) $headerCartCount; ?>
                                         </span>
                                     <?php endif; ?>
                                 </a>
@@ -205,8 +198,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
             </nav>
 
             <div class="header-azioni">
-                <button id="theme-toggle" type="button" aria-pressed="false"
-                    aria-label="Attiva modalità scura">Cambia tema</button>
+                <button id="theme-toggle" type="button" aria-pressed="false" aria-label="Cambia tema"></button>
             </div>
         </div>
     </header>
@@ -220,7 +212,7 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
         aria-labelledby="modal-titolo"
         aria-describedby="modal-messaggio"
         aria-hidden="true"
-        hidden>
+        hidden="hidden">
         <div class="modal-content">
             <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
             <p id="modal-messaggio" class="modal-messaggio">
@@ -235,4 +227,4 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
     </div>
 
     <main id="content">
-        <?php include_once __DIR__ . '/breadcrumb.php'; ?>
+        <?php include __DIR__ . '/breadcrumb.php'; ?>

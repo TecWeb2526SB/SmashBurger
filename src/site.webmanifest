@@ -1,7 +1,7 @@
 {
   "name": "Smash Burger Original",
   "short_name": "SmashBurger",
-  "description": "Ordina online il tuo smash burger e ritira nella sede piu vicina.",
+  "description": "Ordina online il tuo smash burger e ritira nella sede più vicina.",
   "lang": "it-IT",
   "start_url": "/",
   "scope": "/",

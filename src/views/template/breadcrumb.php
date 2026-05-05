@@ -16,11 +16,11 @@ if (empty($breadcrumb)) return;
         ?>
             <li <?php echo $isUltima ? 'aria-current="page"' : ''; ?>>
                 <?php if (!$isUltima && $href): ?>
-                    <a href="<?php echo htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
-                        <?php echo htmlspecialchars($etichetta, ENT_QUOTES, 'UTF-8'); ?>
+                    <a href="<?php echo e($href); ?>">
+                        <?php echo e($etichetta); ?>
                     </a>
                 <?php else: ?>
-                    <?php echo htmlspecialchars($etichetta, ENT_QUOTES, 'UTF-8'); ?>
+                    <?php echo e($etichetta); ?>
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>

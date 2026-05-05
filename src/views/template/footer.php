@@ -2,6 +2,8 @@
 /**
  * footer.php: Frammento di codice per il piè di pagina comune di tutte le pagine.
  */
+global $pdo;
+
 $brandContacts = isset($pdo) ? brand_contact_get($pdo) : [];
 $footerBranch = isset($pdo) ? branch_get_selected($pdo) : null;
 $footerHours = $footerBranch['hours'] ?? [];
@@ -24,8 +26,8 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                 <?php if (!empty($groupedHours)): ?>
                     <?php foreach ($groupedHours as $row): ?>
                         <li>
-                            <span class="giorni"><?php echo htmlspecialchars($row['days'], ENT_QUOTES, 'UTF-8'); ?>:</span>
-                            <span class="ore"><?php echo htmlspecialchars($row['hours'], ENT_QUOTES, 'UTF-8'); ?></span>
+                            <span class="giorni"><?php echo e($row['days']); ?>:</span>
+                            <span class="ore"><?php echo e($row['hours']); ?></span>
                         </li>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -33,7 +35,7 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                 <?php endif; ?>
             </ul>
             <?php if (!empty($footerBranch['name'])): ?>
-                <p class="sede-footer-corrente">Sede: <strong><?php echo htmlspecialchars($footerBranch['name'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                <p class="sede-footer-corrente">Sede: <strong><?php echo e($footerBranch['name']); ?></strong></p>
             <?php endif; ?>
         </section>
 
@@ -41,14 +43,14 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
         <section aria-labelledby="titolo-contatti">
             <h2 id="titolo-contatti">Contatti</h2>
             <address>
-                <p>Email brand: <a href="mailto:<?php echo htmlspecialchars($brandEmail, ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($brandEmail, ENT_QUOTES, 'UTF-8'); ?></a></p>
-                <p>Info brand: <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $brandInfoPhone), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($brandInfoPhone, ENT_QUOTES, 'UTF-8'); ?></a></p>
-                <p>Ordini brand: <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $brandOrderPhone), ENT_QUOTES, 'UTF-8'); ?>"><?php echo htmlspecialchars($brandOrderPhone, ENT_QUOTES, 'UTF-8'); ?></a></p>
+                <p>Email brand: <a href="mailto:<?php echo e($brandEmail); ?>"><?php echo e($brandEmail); ?></a></p>
+                <p>Info brand: <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $brandInfoPhone)); ?>"><?php echo e($brandInfoPhone); ?></a></p>
+                <p>Ordini brand: <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $brandOrderPhone)); ?>"><?php echo e($brandOrderPhone); ?></a></p>
                 <?php if (!empty($footerBranch['phone'])): ?>
                     <p>
                         Telefono sede:
-                        <a href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', (string) $footerBranch['phone']), ENT_QUOTES, 'UTF-8'); ?>">
-                            <?php echo htmlspecialchars((string) $footerBranch['phone'], ENT_QUOTES, 'UTF-8'); ?>
+                        <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) $footerBranch['phone'])); ?>">
+                            <?php echo e((string) $footerBranch['phone']); ?>
                         </a>
                     </p>
                 <?php endif; ?>
@@ -60,18 +62,18 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
             <h2 id="titolo-indirizzo">Indirizzo</h2>
             <address>
                 <?php if (!empty($footerBranch)): ?>
-                    <p><?php echo htmlspecialchars($footerBranch['address_line'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p><?php echo e($footerBranch['address_line']); ?></p>
                     <p>
-                        <?php echo htmlspecialchars($footerBranch['postal_code'], ENT_QUOTES, 'UTF-8'); ?>
-                        <?php echo htmlspecialchars($footerBranch['city'], ENT_QUOTES, 'UTF-8'); ?>
-                        (<?php echo htmlspecialchars($footerBranch['province'], ENT_QUOTES, 'UTF-8'); ?>)
+                        <?php echo e($footerBranch['postal_code']); ?>
+                        <?php echo e($footerBranch['city']); ?>
+                        (<?php echo e($footerBranch['province']); ?>)
                     </p>
                     <p>
-                        <a href="sedi?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &rarr;</a>
+                        <a href="sedi?sede=<?php echo rawurlencode((string) $footerBranch['slug']); ?>">Dettagli sede attiva &#8594;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
-                    <p><a href="sedi">Tutte le sedi &rarr;</a></p>
+                    <p><a href="sedi">Tutte le sedi &#8594;</a></p>
                 <?php endif; ?>
             </address>
         </section>
@@ -80,7 +82,7 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
         <section aria-labelledby="titolo-social">
             <h2 id="titolo-social">Seguici</h2>
             <p>
-                <a href="<?php echo htmlspecialchars($brandInstagram, ENT_QUOTES, 'UTF-8'); ?>" rel="noopener noreferrer" target="_blank"
+                <a href="<?php echo e($brandInstagram); ?>" rel="noopener noreferrer" target="_blank"
                     aria-label="Instagram di Smash Burger (apre in nuova scheda)">
                     Instagram
                 </a>
@@ -89,7 +91,7 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
 
         <!-- BARRA INFERIORE -->
         <div class="footer-basso">
-            <p>&copy; <?php echo date('Y'); ?> Smash Burger Original &mdash; P.IVA 12345678901</p>
+            <p>&#169; <?php echo date('Y'); ?> Smash Burger Original &#8212; P.IVA 12345678901</p>
 
             <nav aria-label="Informazioni legali">
                 <ul>
@@ -100,8 +102,8 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
             </nav>
 
             <div class="w3c-badges">
-                <img src="images/w3chtml.png" alt="" aria-hidden="true" width="88" height="31">
-                <img src="images/w3ccss.png" alt="" aria-hidden="true" width="88" height="31">
+                <img src="images/w3chtml.png" alt="" aria-hidden="true" width="88" height="31" />
+                <img src="images/w3ccss.png" alt="" aria-hidden="true" width="88" height="31" />
             </div>
         </div>
 
@@ -113,14 +115,14 @@ $vjs = file_exists(__DIR__ . '/../../scripts/main.js')
     ? filemtime(__DIR__ . '/../../scripts/main.js')
     : time();
 ?>
-<script src="scripts/main.js?v=<?php echo $vjs; ?>" defer></script>
+<script src="scripts/main.js?v=<?php echo $vjs; ?>" defer="defer"></script>
 
 <button id="torna-su" type="button" aria-label="Torna all'inizio della pagina">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
          width="18" height="18" fill="none" stroke="currentColor"
          stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-         aria-hidden="true" focusable="false">
-        <polyline points="18 15 12 9 6 15"/>
+         focusable="false">
+        <polyline points="18 15 12 9 6 15" />
     </svg>
 </button>
 

@@ -14,114 +14,41 @@
         <div class="auth-box">
             <h1 id="titolo-registrazione">Crea un account</h1>
 
-            <?php if (!empty($errori)): ?>
-                <div role="alert" class="errore-sommario">
-                    <p><?php echo htmlspecialchars($errori['generale'] ?? 'Correggi gli errori nel modulo prima di procedere.', ENT_QUOTES, 'UTF-8'); ?></p>
-                </div>
-            <?php endif; ?>
+            <?php echo ui_error_summary($errori); ?>
 
-            <form method="POST" action="registrati" data-valida novalidate>
-                <input type="hidden" name="csrf_token"
-                    value="<?php echo htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+            <form method="POST" action="registrati" data-valida="true" novalidate="novalidate">
+                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
 
-                <div class="campo-gruppo">
-                    <label for="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value="<?php echo $valori['username'] ?? ''; ?>"
-                        required
-                        aria-required="true"
-                        minlength="3"
-                        maxlength="50"
-                        autocomplete="username"
-                        aria-describedby="username-errore"
-                        <?php echo isset($errori['username']) ? 'aria-invalid="true"' : ''; ?>>
-                    <span id="username-errore" class="campo-errore" <?php echo empty($errori['username']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['username'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </div>
+                <?php
+                echo ui_form_group('username', 'Username', 'text', [
+                    'value' => $valori['username'] ?? '',
+                    'error' => $errori['username'] ?? null,
+                    'autocomplete' => 'username',
+                    'extra_attrs' => 'minlength="3" maxlength="50"'
+                ]);
 
-                <div class="campo-gruppo">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value="<?php echo $valori['email'] ?? ''; ?>"
-                        required
-                        aria-required="true"
-                        maxlength="160"
-                        autocomplete="email"
-                        aria-describedby="email-errore"
-                        <?php echo isset($errori['email']) ? 'aria-invalid="true"' : ''; ?>>
-                    <span id="email-errore" class="campo-errore" <?php echo empty($errori['email']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['email'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </div>
+                echo ui_form_group('email', 'Email', 'email', [
+                    'value' => $valori['email'] ?? '',
+                    'error' => $errori['email'] ?? null,
+                    'autocomplete' => 'email',
+                    'extra_attrs' => 'maxlength="160"'
+                ]);
 
-                <div class="campo-gruppo">
-                    <label for="password">Password <span class="campo-suggerimento">(minimo 8 caratteri)</span></label>
-                    <div class="campo-password-wrapper">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            required
-                            aria-required="true"
-                            minlength="8"
-                            autocomplete="new-password"
-                            aria-describedby="password-suggerimento password-errore"
-                            <?php echo isset($errori['password']) ? 'aria-invalid="true"' : ''; ?>>
-                        <button type="button" class="mostra-password" aria-pressed="false"
-                            aria-label="Tieni premuto per mostrare la password">
-                            <svg class="icona-password icona-password-chiusa" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M4 4l16 16" />
-                            </svg>
-                            <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                        </button>
-                    </div>
-                    <p id="password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, ! @ # $ % &amp;</p>
-                    <span id="password-errore" class="campo-errore" <?php echo empty($errori['password']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['password'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </div>
+                echo ui_form_group('password', 'Password', 'password', [
+                    'error' => $errori['password'] ?? null,
+                    'autocomplete' => 'new-password',
+                    'extra_attrs' => 'minlength="8"',
+                    'described_by' => 'password-suggerimento'
+                ]);
+                ?>
+                <p id="password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, ! @ # $ % &amp; (minimo 8)</p>
 
-                <div class="campo-gruppo">
-                    <label for="conferma">Conferma password</label>
-                    <div class="campo-password-wrapper">
-                        <input
-                            type="password"
-                            id="conferma"
-                            name="conferma"
-                            required
-                            aria-required="true"
-                            autocomplete="new-password"
-                            aria-describedby="conferma-errore"
-                            <?php echo isset($errori['conferma']) ? 'aria-invalid="true"' : ''; ?>>
-                        <button type="button" class="mostra-password" aria-pressed="false"
-                            aria-label="Tieni premuto per mostrare la conferma password">
-                            <svg class="icona-password icona-password-chiusa" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-                                <circle cx="12" cy="12" r="3" />
-                                <path d="M4 4l16 16" />
-                            </svg>
-                            <svg class="icona-password icona-password-aperta is-hidden" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z" />
-                                <circle cx="12" cy="12" r="3" />
-                            </svg>
-                        </button>
-                    </div>
-                    <span id="conferma-errore" class="campo-errore" <?php echo empty($errori['conferma']) ? 'hidden' : ''; ?>>
-                        <?php echo htmlspecialchars($errori['conferma'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
-                    </span>
-                </div>
+                <?php
+                echo ui_form_group('conferma', 'Conferma password', 'password', [
+                    'error' => $errori['conferma'] ?? null,
+                    'autocomplete' => 'new-password'
+                ]);
+                ?>
 
                 <button type="submit" class="bottone-primario">Crea account</button>
 

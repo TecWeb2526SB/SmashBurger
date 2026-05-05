@@ -3,17 +3,7 @@ require_once __DIR__ . '/includes/resources.php';
 
 require_login();
 
-$sessionUser = current_user();
-$utente = auth_get_user_by_id($pdo, (int) ($sessionUser['id'] ?? 0));
-
-if ($utente === null) {
-    logout_user();
-    flash_set('error', 'Sessione utente non valida. Effettua di nuovo l\'accesso.');
-    header('Location: accedi');
-    exit;
-}
-
-login_user($utente, false);
+$utente = auth_require_fresh_user($pdo);
 
 $receiptType = trim((string) ($_GET['tipo'] ?? 'ordine'));
 $receiptId = (int) ($_GET['id'] ?? 0);
@@ -88,6 +78,13 @@ $breadcrumb = [
     ['Ricevuta', null],
 ];
 
-include_once __DIR__ . '/views/template/header.php';
-include_once __DIR__ . '/views/checkout/ricevuta.php';
-include_once __DIR__ . '/views/template/footer.php';
+render_page('checkout/ricevuta.php', [
+    'pageTitle' => $pageTitle,
+    'pageDescription' => $pageDescription,
+    'currentPage' => $currentPage,
+    'breadcrumb' => $breadcrumb,
+    'receiptType' => $receiptType,
+    'receipt' => $receipt,
+    'backHref' => $backHref,
+    'backLabel' => $backLabel
+]);
