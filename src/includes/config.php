@@ -4,10 +4,22 @@
  */
 
 // Credenziali del database
-define('DB_HOST', 'db');
-define('DB_NAME', getenv('DB_NAME') ?: 'progetto_db');
-define('DB_USER', getenv('DB_USER') ?: 'utente_fallback');
-define('DB_PASS', getenv('DB_PASSWORD') ?: 'password_fallback_sicura_123');
+// In locale si usano le variabili d'ambiente; su TecWeb il deploy deposita
+// un file privato in home directory con i valori reali del database.
+$deploymentConfig = [];
+$deploymentConfigPath = dirname(__DIR__, 3) . '/.smashburger-config.php';
+
+if (is_file($deploymentConfigPath)) {
+    $loadedConfig = require $deploymentConfigPath;
+    if (is_array($loadedConfig)) {
+        $deploymentConfig = $loadedConfig;
+    }
+}
+
+define('DB_HOST', (string) ($deploymentConfig['DB_HOST'] ?? 'db'));
+define('DB_NAME', (string) ($deploymentConfig['DB_NAME'] ?? (getenv('DB_NAME') ?: 'progetto_db')));
+define('DB_USER', (string) ($deploymentConfig['DB_USER'] ?? (getenv('DB_USER') ?: 'utente_fallback')));
+define('DB_PASS', (string) ($deploymentConfig['DB_PASSWORD'] ?? (getenv('DB_PASSWORD') ?: 'password_fallback_sicura_123')));
 define('DB_CHARSET', 'utf8mb4');
 
 // Percorsi di base (opzionale, ma utile)
