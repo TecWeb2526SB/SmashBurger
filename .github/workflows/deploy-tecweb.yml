@@ -185,4 +185,4 @@ jobs:
             src/ \
             "$remote:${TECWEB_REMOTE_DIR}/"
 
-          echo "Deploy completato: http://tecweb.studenti.math.unipd.it/~${TECWEB_USER}"
+          echo "Deploy completato: http://tecweb.studenti.math.unipd.it/${TECWEB_USER}"
