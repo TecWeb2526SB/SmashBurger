@@ -3783,6 +3783,10 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* Punti di forza */
+#punti-forza {
+    padding-block: calc(var(--spazio-sezione) + 0.75rem);
+}
+
 .feature-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     list-style: none;
@@ -3804,6 +3808,13 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* Best seller — figura immagine */
+.menu-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spazio-md);
+    align-items: stretch;
+}
+
 .menu-preview-card {
     padding: 0;
     overflow: hidden;
