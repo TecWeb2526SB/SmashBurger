@@ -395,7 +395,7 @@ main {
 
 /* Pagine con breadcrumb: rimuove padding superiore di main
    per avvicinare la pill alla navbar */
-:is(main:has(> .breadcrumb), .breadcrumb + .chi-siamo-intro, .breadcrumb + #servizi-intro) {
+:is(main:has(> .breadcrumb), .breadcrumb + .chi-siamo-intro) {
     padding-block-start: 0;
 }
 
@@ -1060,7 +1060,6 @@ footer a {
     align-items: stretch;
 }
 
-#intestazione-prodotti,
 :is(.account-page, .admin-page) > .contenitore > :first-child,
 .admin-section-nav,
 .admin-kpi-grid {
@@ -3551,23 +3550,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
    19. HOMEPAGE — gerarchia visiva e coerenza componenti
    -------------------------------------------------------------------------- */
 
-.home-hero {
-    padding-block: var(--spazio-sezione);
-    padding-block-start: var(--spazio-primo-titolo);
-    border-bottom: var(--bordo-standard);
-    background: linear-gradient(180deg, var(--colore-sfondo) 0%, var(--colore-sfondo-alt) 100%);
-}
-
-:is(.home-hero-grid, .sedi-grid) {
-    display: grid;
-    gap: var(--spazio-lg);
-    align-items: start;
-}
-
-.home-hero-grid {
-    grid-template-columns: 1.55fr 1fr;
-}
-
 .home-eyebrow {
     display: inline-block;
     width: fit-content;
@@ -3583,10 +3565,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 .home-hero h2 {
     max-width: 20ch;
     margin-bottom: var(--spazio-md);
-}
-
-.hero-cta {
-    margin-block: var(--spazio-lg);
 }
 
 .hero-cta .bottone-primario,
@@ -3631,22 +3609,44 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 #promozioni,
 #come-ordinare,
 #best-seller,
+#categorie,
+#faq,
+.chi-filosofia,
+.chi-sedi,
+.chi-cta,
 .chi-siamo-intro,
 .sedi-layout,
-#servizi-intro,
-#servizi-offerti,
-#servizi-standard,
-#servizi-contatti {
+.srv-numerati,
+.srv-impegni,
+.srv-contatti,
+.chi-storia {
     padding-block: var(--spazio-sezione);
 }
 
 #promozioni,
 #come-ordinare,
 #best-seller,
-#servizi-offerti,
-#servizi-standard,
-#servizi-contatti {
+#categorie,
+#faq,
+.chi-filosofia,
+.chi-sedi,
+.chi-cta {
     border-top: var(--bordo-standard);
+}
+
+#storia,
+.chi-valori,
+.chi-numeri {
+    padding-block: var(--spazio-sezione);
+    background-color: var(--colore-sfondo-alt);
+    border-top: var(--bordo-standard);
+}
+
+.srv-catering,
+.srv-allergeni {
+    padding-block: var(--spazio-sezione);
+    background-color: var(--colore-sfondo-alt);
+    border-block: var(--bordo-standard);
 }
 
 .home-section-title {
@@ -3722,8 +3722,15 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 /* HERO — layout d'impatto, titolo grande, immagine dominante */
 .home-hero {
     padding-block: var(--spazio-sezione);
+    padding-block-start: var(--spazio-primo-titolo);
     background-color: var(--colore-sfondo-alt);
     border-bottom: var(--bordo-standard);
+}
+
+:is(.home-hero-grid, .sedi-grid) {
+    display: grid;
+    gap: var(--spazio-lg);
+    align-items: start;
 }
 
 .home-hero-grid {
@@ -3764,6 +3771,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     flex-wrap: wrap;
     gap: var(--spazio-sm);
     margin-top: var(--spazio-sm);
+    margin-bottom: var(--spazio-lg);
 }
 
 .hero-image {
@@ -3861,11 +3869,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* CATEGORIE con icone SVG (non più foto) */
-#categorie {
-    padding-block: var(--spazio-sezione);
-    border-top: var(--bordo-standard);
-}
-
 .category-grid {
     list-style: none;
     padding: 0;
@@ -3933,12 +3936,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* Storia */
-#storia {
-    padding-block: var(--spazio-sezione);
-    border-top: var(--bordo-standard);
-    background-color: var(--colore-sfondo-alt);
-}
-
 .storia-grid {
     display: grid;
     grid-template-columns: 1fr 1.2fr;
@@ -3991,7 +3988,8 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* OFFERTE — layout 1 featured + 2 secondari */
-.offer-layout {
+.offer-layout,
+.srv-contatti-grid {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: var(--spazio-md);
@@ -4257,7 +4255,8 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
         grid-template-columns: 1fr;
     }
 
-    .offer-layout {
+    .offer-layout,
+    .srv-contatti-grid {
         grid-template-columns: 1fr;
     }
 
@@ -4295,6 +4294,23 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     .hero-cta .bottone-secondario {
         width: 100%;
         text-align: center;
+    }
+
+    .srv-num-item,
+    .chi-timeline-item,
+    .chi-filosofia-item {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+
+    .srv-impegni-grid,
+    .srv-contatti-list {
+        grid-template-columns: 1fr;
+    }
+
+    .chi-valori-grid,
+    .chi-stats-grid {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -4409,7 +4425,9 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     gap: var(--spazio-lg);
 }
 
-.srv-num-item {
+.srv-num-item,
+.chi-timeline-item,
+.chi-filosofia-item {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: var(--spazio-md);
@@ -4418,7 +4436,9 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     border-bottom: var(--bordo-standard);
 }
 
-.srv-num-list .srv-num-item:last-child {
+.srv-num-list .srv-num-item:last-child,
+.chi-timeline .chi-timeline-item:last-child,
+.chi-filosofia-list .chi-filosofia-item:last-child {
     border-bottom: 0;
     padding-bottom: 0;
 }
@@ -4432,20 +4452,23 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     font-feature-settings: "tnum";
 }
 
-.srv-num-corpo {
+.srv-num-corpo,
+.chi-filosofia-corpo {
     display: grid;
     grid-template-columns: 1.4fr 1fr;
     gap: var(--spazio-lg);
     align-items: start;
 }
 
-.srv-num-titolo {
+.srv-num-titolo,
+.chi-filosofia-titolo {
     font-size: 1.6rem;
     margin: 0 0 var(--spazio-sm);
     line-height: 1.2;
 }
 
-.srv-num-desc {
+.srv-num-desc,
+.chi-filosofia-desc {
     color: var(--colore-testo-leggero);
     line-height: 1.6;
     margin: 0;
@@ -4484,12 +4507,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* CATERING — listino con 3 formule (consigliata centrale) */
-.srv-catering {
-    padding-block: var(--spazio-sezione);
-    background-color: var(--colore-sfondo-alt);
-    border-block: var(--bordo-standard);
-}
-
 .srv-formule {
     list-style: none;
     padding: 0;
@@ -4617,11 +4634,8 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* IMPEGNI — strisce verticali con accento */
-.srv-impegni {
-    padding-block: var(--spazio-sezione);
-}
-
-.srv-impegni-grid {
+.srv-impegni-grid,
+.srv-contatti-list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -4801,17 +4815,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 /* CONTATTI — callout asimmetrico */
-.srv-contatti {
-    padding-block: var(--spazio-sezione);
-}
-
-.srv-contatti-grid {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: var(--spazio-md);
-    align-items: stretch;
-}
-
 .srv-contatti-card {
     background-color: var(--colore-sfondo);
     border: var(--bordo-standard);
@@ -4823,15 +4826,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 .srv-contatti-card h3 {
     font-size: 1.25rem;
     margin: 0 0 var(--spazio-md);
-}
-
-.srv-contatti-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--spazio-md);
 }
 
 .srv-contatti-list li {
@@ -4938,26 +4932,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
         max-width: none;
     }
 
-    .srv-contatti-grid {
-        grid-template-columns: 1fr;
-    }
 }
-
-@media (max-width: 40rem) {
-    .srv-num-item {
-        grid-template-columns: 1fr;
-        gap: 0.4rem;
-    }
-
-    .srv-impegni-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .srv-contatti-list {
-        grid-template-columns: 1fr;
-    }
-}
-
 
 /* --------------------------------------------------------------------------
    19.3 PAGINA PRODOTTI — hero compatto, chip sticky, card e stepper
@@ -5512,6 +5487,18 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     .prod-stepper {
         align-self: start;
     }
+
+    .chi-timeline-anno {
+        font-size: 2.2rem;
+    }
+
+    .chi-filosofia-numero {
+        font-size: 2.5rem;
+    }
+
+    .chi-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 
@@ -5629,23 +5616,6 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 #sedi-mappa-frame {
     width: 100%;
     border: 0;
-}
-
-#servizi-intro,
-#servizi-offerti,
-#servizi-standard,
-#servizi-contatti {
-    padding-block: var(--spazio-sezione);
-}
-
-.breadcrumb + #servizi-intro {
-    padding-block-start: 0;
-}
-
-#servizi-offerti,
-#servizi-standard,
-#servizi-contatti {
-    border-top: var(--bordo-standard);
 }
 
 /* Fix per immagini più piccole a causa del padding trasparente */
@@ -5767,19 +5737,6 @@ img[src*="Cup.webp"] {
     gap: 0;
 }
 
-.chi-timeline-item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--spazio-lg);
-    padding-block: var(--spazio-lg);
-    border-bottom: var(--bordo-standard);
-}
-
-.chi-timeline .chi-timeline-item:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
-}
-
 .chi-timeline-anno {
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 800;
@@ -5870,19 +5827,6 @@ img[src*="Cup.webp"] {
     gap: 0;
 }
 
-.chi-filosofia-item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--spazio-lg);
-    padding-block: var(--spazio-lg);
-    border-bottom: var(--bordo-standard);
-}
-
-.chi-filosofia-list .chi-filosofia-item:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
-}
-
 .chi-filosofia-numero {
     font-size: clamp(3rem, 6vw, 4.5rem);
     font-weight: 800;
@@ -5890,25 +5834,6 @@ img[src*="Cup.webp"] {
     line-height: 1;
     min-width: 5rem;
     opacity: 0.7;
-}
-
-.chi-filosofia-corpo {
-    display: grid;
-    grid-template-columns: 1.4fr 1fr;
-    gap: var(--spazio-lg);
-    align-items: start;
-}
-
-.chi-filosofia-titolo {
-    font-size: 1.6rem;
-    margin: 0 0 var(--spazio-sm);
-    line-height: 1.2;
-}
-
-.chi-filosofia-desc {
-    color: var(--colore-testo-leggero);
-    line-height: 1.6;
-    margin: 0;
 }
 
 .chi-filosofia-highlights {
@@ -6042,37 +5967,6 @@ img[src*="Cup.webp"] {
     }
 
     .chi-filosofia-corpo {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 48rem) {
-    .chi-timeline-item {
-        grid-template-columns: 1fr;
-        gap: var(--spazio-sm);
-    }
-
-    .chi-timeline-anno {
-        font-size: 2.2rem;
-    }
-
-    .chi-filosofia-item {
-        grid-template-columns: 1fr;
-        gap: var(--spazio-sm);
-    }
-
-    .chi-filosofia-numero {
-        font-size: 2.5rem;
-    }
-
-    .chi-stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 40rem) {
-    .chi-valori-grid,
-    .chi-stats-grid {
         grid-template-columns: 1fr;
     }
 }
