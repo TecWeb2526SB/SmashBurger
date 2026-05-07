@@ -36,6 +36,14 @@ if (isset($pdo) && $pdo instanceof \PDO) {
 if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranch['id'])) {
     $headerSelectedBranch = $selectedBranch;
 }
+
+$headerPageName = app_route_name((string) ($currentPage ?? ''));
+$preloadHeroImage = null;
+if ($headerPageName === './') {
+    $preloadHeroImage = 'images/Cheeseburger.webp';
+} elseif ($headerPageName === 'servizi') {
+    $preloadHeroImage = 'images/evento.webp';
+}
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">
@@ -63,6 +71,9 @@ if (isset($selectedBranch) && is_array($selectedBranch) && !empty($selectedBranc
         //]]>
     </script>
 
+    <?php if (!empty($preloadHeroImage)): ?>
+        <link rel="preload" as="image" href="<?php echo e($preloadHeroImage); ?>" />
+    <?php endif; ?>
     <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>" />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
     <link rel="manifest" href="site.webmanifest" />

@@ -26,9 +26,13 @@ $cateringEmail = 'eventi@smashburger.it';
 
             <figure class="srv-hero-image">
                 <img
-                    src="images/evento.png"
+                    src="images/evento.webp"
                     alt="Allestimento catering Smash Burger con vassoi di mini burger e patatine fresche"
+                    width="1024"
+                    height="1280"
                     loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
                 >
             </figure>
 

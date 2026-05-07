@@ -39,6 +39,7 @@ $csrfToken = csrf_token();
                     width="640"
                     height="640"
                     loading="eager"
+                    fetchpriority="high"
                     decoding="async">
             </figure>
         </div>
@@ -406,7 +407,7 @@ $csrfToken = csrf_token();
             </h2>
         </div>
         <ol class="steps-grid">
-            <li class="step-card">
+            <li class="feature-card">
                 <strong>Step 1</strong>
                 <h3>Crea il tuo ordine</h3>
                 <p>
