@@ -235,10 +235,10 @@ $paymentMethodMeta = static function (string $rawMethod): array {
                             <span class="ordine-payment-pill <?php echo e($paymentMeta['class']); ?>">
                                 <?php echo e($paymentMeta['label']); ?>
                             </span>
-                            <span class="ordine-method-pill" aria-label="Metodo di pagamento: <?php echo e($methodMeta['label']); ?>">
+                            <div class="ordine-method-pill" aria-label="Metodo di pagamento: <?php echo e($methodMeta['label']); ?>">
                                 <span class="ordine-method-pill-code" aria-hidden="true"><?php echo e($methodMeta['short']); ?></span>
                                 <span class="ordine-method-pill-label"><?php echo e($methodMeta['label']); ?></span>
-                            </span>
+                            </div>
                             <a class="bottone-secondario" href="<?php echo e(app_route('ricevuta', ['tipo' => 'ordine', 'id' => (int) $ordine['id']])); ?>">Apri ricevuta</a>
                         </div>
                     </article>

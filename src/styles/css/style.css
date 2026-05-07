@@ -4692,7 +4692,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
     width: 3.5rem;
     height: 3.5rem;
     border-radius: 0.75rem;
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-hover);
     color: #fff;
     display: inline-flex;
     align-items: center;
@@ -4850,7 +4850,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 .srv-contatti-callout {
-    background-color: var(--colore-accento);
+    background-color: var(--colore-accento-hover);
     color: #fff;
     border-radius: var(--raggio-card);
     padding: var(--spazio-lg);
@@ -4875,7 +4875,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 
 .srv-contatti-callout .bottone-primario {
     background-color: #fff;
-    color: var(--colore-accento);
+    color: var(--colore-accento-hover);
     border-color: #fff;
     margin: var(--spazio-sm) 0 0;
     align-self: flex-start;
@@ -4884,7 +4884,7 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 .srv-contatti-callout .bottone-primario:hover,
 .srv-contatti-callout .bottone-primario:focus-visible {
     background-color: rgba(255, 255, 255, 0.92);
-    color: var(--colore-accento);
+    color: var(--colore-accento-hover);
 }
 
 /* Responsive — Servizi */
@@ -5120,8 +5120,8 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 .prod-chip.is-active {
-    background-color: var(--colore-accento);
-    border-color: var(--colore-accento);
+    background-color: var(--colore-accento-hover);
+    border-color: var(--colore-accento-hover);
     color: #fff;
 }
 
@@ -5140,7 +5140,8 @@ html.tema-scuro :is(.account-summary-box, .account-stat) {
 }
 
 .prod-chip.is-active .prod-chip-count {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--colore-accento-hover);
 }
 
 /* Sezione categoria */

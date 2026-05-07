@@ -466,7 +466,7 @@ $csrfToken = csrf_token();
                 </ul>
                 <div class="offer-cta-row">
                     <div class="offer-prezzo">
-                        <span class="prezzo-vecchio" aria-label="Prezzo originale">39,80 &euro;</span>
+                        <del class="prezzo-vecchio">39,80 &euro;</del>
                         <span class="prezzo-nuovo">29,90 &euro;</span>
                     </div>
                     <a href="<?php echo e(app_route('prodotti', ['promo' => 'bundle-serata'])); ?>" class="bottone-primario">Approfitta ora</a>
@@ -496,7 +496,7 @@ $csrfToken = csrf_token();
                         e quattro bevande a prezzo agevolato.
                     </p>
                     <div class="offer-prezzo">
-                        <span class="prezzo-vecchio" aria-label="Prezzo originale">52,00 &euro;</span>
+                        <del class="prezzo-vecchio">52,00 &euro;</del>
                         <span class="prezzo-nuovo">42,00 &euro;</span>
                     </div>
                     <p class="offer-note">Ideale per 3-4 persone, tutti i giorni.</p>
