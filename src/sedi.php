@@ -2,19 +2,14 @@
 require_once __DIR__ . '/includes/resources.php';
 
 $branchWarning = null;
-$requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
+$initialFlash = flash_get();
+if (is_array($initialFlash) && ($initialFlash['type'] ?? '') === 'error') {
+    $branchWarning = (string) ($initialFlash['message'] ?? '');
+}
+
 $allBranches = branches_get_all($pdo);
 $selectedBranch = branch_get_selected($pdo);
 $viewedBranch = $selectedBranch;
-
-if ($requestedBranchSlug !== '') {
-    $requestedBranch = branch_get_by_slug($pdo, $requestedBranchSlug);
-    if ($requestedBranch !== null) {
-        $viewedBranch = $requestedBranch;
-    } else {
-        $branchWarning = 'La sede richiesta non è disponibile.';
-    }
-}
 
 if ($viewedBranch === null && !empty($allBranches)) {
     $viewedBranch = $allBranches[0];

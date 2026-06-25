@@ -53,10 +53,10 @@ $csrfToken = csrf_token();
 <section id="punti-forza" aria-labelledby="titolo-punti-forza">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="titolo-punti-forza" class="home-section-title">
+            <h2 id="titolo-punti-forza">
                 Quattro motivi per sceglierci ogni giorno
             </h2>
-            <p class="home-section-sub">
+            <p>
                 Non vendiamo semplicemente hamburger: serviamo l'autentica
                 tecnica dello smash, con materie prime tracciabili e una filiera corta.
             </p>
@@ -143,10 +143,10 @@ $csrfToken = csrf_token();
 <section id="best-seller" aria-labelledby="titolo-best-seller">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="titolo-best-seller" class="home-section-title">
+            <h2 id="titolo-best-seller">
                 I nostri Best Seller
             </h2>
-            <p class="home-section-sub">
+            <p>
                 Tre classici intramontabili, scelti ogni giorno da migliaia di clienti.
             </p>
         </div>
@@ -241,17 +241,17 @@ $csrfToken = csrf_token();
 <section id="categorie" aria-labelledby="titolo-categorie">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="titolo-categorie" class="home-section-title">
+            <h2 id="titolo-categorie">
                 Esplora le categorie
             </h2>
-            <p class="home-section-sub">
+            <p>
                 Dai burger di manzo ai dolci, c'è qualcosa per ogni momento della giornata.
             </p>
         </div>
 
         <ul class="category-grid" role="list">
             <li>
-                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'burger-manzo'])); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', [], 'burger-manzo')); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -268,7 +268,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'burger-pollo'])); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', [], 'burger-pollo')); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -283,7 +283,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'burger-vegan'])); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', [], 'burger-vegan')); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -297,7 +297,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'contorni'])); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', [], 'contorni')); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -314,7 +314,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'bevande'])); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', [], 'bevande')); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -330,7 +330,7 @@ $csrfToken = csrf_token();
                 </a>
             </li>
             <li>
-                <a href="<?php echo e(app_route('prodotti', ['categoria' => 'dolci'])); ?>" class="category-card">
+                <a href="<?php echo e(app_route('prodotti', [], 'dolci')); ?>" class="category-card">
                     <span class="category-card-icon" aria-hidden="true">
                         <svg viewBox="0 0 48 48" width="40" height="40" fill="none"
                              stroke="currentColor" stroke-width="2.5"
@@ -402,7 +402,7 @@ $csrfToken = csrf_token();
 <section id="come-ordinare" aria-labelledby="titolo-come-ordinare">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="titolo-come-ordinare" class="home-section-title">
+            <h2 id="titolo-come-ordinare">
                 Come ordinare in meno di 2 minuti
             </h2>
         </div>
@@ -442,10 +442,10 @@ $csrfToken = csrf_token();
 <section id="promozioni" aria-labelledby="titolo-promozioni">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="titolo-promozioni" class="home-section-title">
+            <h2 id="titolo-promozioni">
                 Offerte del mese
             </h2>
-            <p class="home-section-sub">
+            <p>
                 Tre proposte pensate per ogni occasione: pranzo veloce, cena in famiglia
                 o serata con gli amici.
             </p>
@@ -469,7 +469,7 @@ $csrfToken = csrf_token();
                         <del class="prezzo-vecchio">39,80 &euro;</del>
                         <span class="prezzo-nuovo">29,90 &euro;</span>
                     </div>
-                    <a href="<?php echo e(app_route('prodotti', ['promo' => 'bundle-serata'])); ?>" class="bottone-primario">Approfitta ora</a>
+                    <a href="#promozioni" class="bottone-primario">Approfitta ora</a>
                 </div>
                 <p class="offer-note">Disponibile tutti i giorni dopo le 18:30 fino al 30 novembre.</p>
             </article>
@@ -513,82 +513,67 @@ $csrfToken = csrf_token();
 <section id="faq" aria-labelledby="titolo-faq">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="titolo-faq" class="home-section-title">
+            <h2 id="titolo-faq">
                 Le risposte alle domande più comuni
             </h2>
         </div>
 
-        <div class="faq-list" data-faq>
-            <details class="faq-item">
+        <div data-faq>
+            <details>
                 <summary>
-                    <span class="faq-question">Cos'è esattamente uno smash burger?</span>
-                    <span class="faq-icon" aria-hidden="true"></span>
+                    Cos'è esattamente uno smash burger?
                 </summary>
-                <div class="faq-answer">
-                    <p>
-                        Una pallina di carne fresca viene "smashata" &mdash; schiacciata &mdash;
-                        sulla piastra a 260°C per pochi secondi. Si forma così
-                        una crosta caramellata (reazione di Maillard) che dà al burger
-                        sapore intenso e bordi croccanti, mentre l'interno resta morbido e succoso.
-                    </p>
-                </div>
+                <p>
+                    Una pallina di carne fresca viene "smashata" &mdash; schiacciata &mdash;
+                    sulla piastra a 260°C per pochi secondi. Si forma così
+                    una crosta caramellata (reazione di Maillard) che dà al burger
+                    sapore intenso e bordi croccanti, mentre l'interno resta morbido e succoso.
+                </p>
             </details>
 
-            <details class="faq-item">
+            <details>
                 <summary>
-                    <span class="faq-question">Quanto tempo serve per preparare il mio ordine?</span>
-                    <span class="faq-icon" aria-hidden="true"></span>
+                    Quanto tempo serve per preparare il mio ordine?
                 </summary>
-                <div class="faq-answer">
-                    <p>
-                        In media servono <strong>12-15 minuti</strong> dal momento in cui
-                        confermi il pagamento. Riceverai una notifica via e-mail quando
-                        il tuo ordine sarà pronto per il ritiro.
-                    </p>
-                </div>
+                <p>
+                    In media servono <strong>12-15 minuti</strong> dal momento in cui
+                    confermi il pagamento. Riceverai una notifica via e-mail quando
+                    il tuo ordine sarà pronto per il ritiro.
+                </p>
             </details>
 
-            <details class="faq-item">
+            <details>
                 <summary>
-                    <span class="faq-question">Avete opzioni vegetariane o vegane?</span>
-                    <span class="faq-icon" aria-hidden="true"></span>
+                    Avete opzioni vegetariane o vegane?
                 </summary>
-                <div class="faq-answer">
-                    <p>
-                        Sì. Nel menù trovi tre Vegan Burger con patty vegetale a base di
-                        proteine di pisello, oltre a contorni e bevande adatti a una
-                        dieta vegetariana o vegana. Tutti gli allergeni sono indicati
-                        nella scheda prodotto.
-                    </p>
-                </div>
+                <p>
+                    Sì. Nel menù trovi tre Vegan Burger con patty vegetale a base di
+                    proteine di pisello, oltre a contorni e bevande adatti a una
+                    dieta vegetariana o vegana. Tutti gli allergeni sono indicati
+                    nella scheda prodotto.
+                </p>
             </details>
 
-            <details class="faq-item">
+            <details>
                 <summary>
-                    <span class="faq-question">Posso ordinare per più persone in un unico checkout?</span>
-                    <span class="faq-icon" aria-hidden="true"></span>
+                    Posso ordinare per più persone in un unico checkout?
                 </summary>
-                <div class="faq-answer">
-                    <p>
-                        Certo. Puoi aggiungere quanti prodotti vuoi al carrello &mdash;
-                        consigliamo le offerte <a href="#promozioni">Combo Famiglia</a> o
-                        <a href="#promozioni">Bundle Serata</a> per gruppi.
-                    </p>
-                </div>
+                <p>
+                    Certo. Puoi aggiungere quanti prodotti vuoi al carrello &mdash;
+                    consigliamo le offerte <a href="#promozioni">Combo Famiglia</a> o
+                    <a href="#promozioni">Bundle Serata</a> per gruppi.
+                </p>
             </details>
 
-            <details class="faq-item">
+            <details>
                 <summary>
-                    <span class="faq-question">Fate consegna a domicilio?</span>
-                    <span class="faq-icon" aria-hidden="true"></span>
+                    Fate consegna a domicilio?
                 </summary>
-                <div class="faq-answer">
-                    <p>
-                        Al momento offriamo solo il <strong>ritiro in sede</strong> per
-                        garantire la qualità del prodotto: lo smash burger va mangiato
-                        appena pronto. Stiamo valutando la consegna in alcune città.
-                    </p>
-                </div>
+                <p>
+                    Al momento offriamo solo il <strong>ritiro in sede</strong> per
+                    garantire la qualità del prodotto: lo smash burger va mangiato
+                    appena pronto. Stiamo valutando la consegna in alcune città.
+                </p>
             </details>
         </div>
     </div>

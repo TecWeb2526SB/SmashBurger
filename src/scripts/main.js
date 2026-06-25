@@ -409,7 +409,7 @@ function mostraNotifica(messaggio, tipo = 'success') {
 }
 
 function inizializzaAjaxCart() {
-    const forms = document.querySelectorAll('form[action$="carrello.php"]');
+    const forms = document.querySelectorAll('form[action$="carrello.php"], form[action$="carrello"], form[action="carrello"]');
     if (forms.length === 0) return;
     const body = document.body;
     const totaleCarrello = document.getElementById('carrello-totale-valore');
@@ -689,45 +689,6 @@ function inizializzaAjaxCart() {
     });
 }
 
-function inizializzaBranchSwitcher() {
-    const selects = document.querySelectorAll('.branch-switcher select, .hero-branch-selector select');
-    if (selects.length === 0) return;
-
-    selects.forEach(function (select) {
-        select.addEventListener('change', async function () {
-            const form = select.closest('form');
-            if (!form) return;
-
-            const formData = new FormData(form);
-            const params = new URLSearchParams();
-            for (const pair of formData.entries()) {
-                params.append(pair[0], pair[1]);
-            }
-            params.append('ajax', '1');
-
-                try {
-                    const action = form.getAttribute('action') || window.location.pathname;
-                    const response = await fetch(new URL(action, window.location.href).toString() + '?' + params.toString(), {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                    });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.ok) {
-                        // Aggiorna l'interfaccia senza refresh completo se possibile
-                        // Per ora facciamo un refresh pulito o aggiorniamo i link
-                        window.location.reload();
-                    }
-                } else {
-                    form.submit();
-                }
-            } catch (err) {
-                form.submit();
-            }
-        });
-    });
-}
-
 function inizializzaMappaSedi() {
     const wrapper = document.getElementById('sedi-interattive');
     if (!wrapper) return;
@@ -911,40 +872,19 @@ function inizializzaHeaderSede() {
         }
     }
 
-    function buildReturnUrl(targetSlug) {
-        const returnUrl = new URL(window.location.href);
-        const normalizedPath = returnUrl.pathname.replace(/^\/+|\/+$/g, '');
-        const rawPageName = normalizedPath === '' ? './' : normalizedPath.split('/').pop();
-        const pageName = rawPageName === 'index' || rawPageName === 'index.php'
-            ? './'
-            : rawPageName.replace(/\.php$/, '');
-
-        returnUrl.searchParams.delete('ajax');
-        returnUrl.searchParams.delete('force');
-
-        if (pageName === 'prodotti' || pageName === 'sedi') {
-            returnUrl.searchParams.set('sede', targetSlug);
-        } else {
-            returnUrl.searchParams.delete('sede');
-        }
-
-        return returnUrl.toString();
-    }
-
     async function cambiaSede(option, force = false) {
-        const targetSlug = option.dataset.sedeSlug || '';
-        const returnUrl = option.dataset.returnUrl || buildReturnUrl(targetSlug);
-        const switchUrl = new URL(option.dataset.switchUrl || option.href, window.location.origin);
-        switchUrl.searchParams.set('ajax', '1');
+        const form = option.closest('form');
+        if (!form) return;
 
-        if (force) {
-            switchUrl.searchParams.set('force', '1');
-        } else {
-            switchUrl.searchParams.delete('force');
-        }
+        const formData = new FormData(form);
+        formData.set('branch_force', force ? '1' : '0');
+        const returnUrl = form.querySelector('[name="branch_redirect"]')?.value || window.location.pathname;
+        const action = form.getAttribute('action') || window.location.pathname;
 
         try {
-            const response = await fetch(switchUrl.toString(), {
+            const response = await fetch(action, {
+                method: 'POST',
+                body: formData,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             const data = await response.json();
@@ -957,7 +897,7 @@ function inizializzaHeaderSede() {
             window.location.href = returnUrl;
         } catch (err) {
             console.error('Errore cambio sede:', err);
-            window.location.href = force ? switchUrl.toString() : (returnUrl || option.href);
+            form.submit();
         }
     }
 
@@ -1411,7 +1351,7 @@ function inizializzaFaqAccordion() {
     const lista = document.querySelector('[data-faq]');
     if (!lista) return;
 
-    const items = Array.from(lista.querySelectorAll('details.faq-item'));
+    const items = Array.from(lista.querySelectorAll('details'));
     if (items.length === 0) return;
 
     items.forEach(function (item) {
@@ -1630,7 +1570,6 @@ document.addEventListener('DOMContentLoaded', function () {
     inizializzaTornaSu();
     inizializzaAjaxCart();
     inizializzaHeaderSede();
-    inizializzaBranchSwitcher();
     inizializzaMappaSedi();
     inizializzaCheckoutRitiro();
     inizializzaCheckoutPagamento();

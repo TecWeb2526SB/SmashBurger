@@ -69,7 +69,7 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
                         (<?php echo e($footerBranch['province']); ?>)
                     </p>
                     <p>
-                        <a href="<?php echo e(app_route('chi-siamo', ['sede' => (string) $footerBranch['slug']], 'chi-sedi')); ?>">Dettagli sede attiva &rarr;</a>
+                        <a href="<?php echo e(app_route('chi-siamo', [], 'chi-sedi')); ?>">Dettagli sede attiva &rarr;</a>
                     </p>
                 <?php else: ?>
                     <p>Sede non disponibile.</p>
@@ -111,12 +111,7 @@ $brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagra
     </div>
 </footer>
 
-<?php
-$vjs = file_exists(__DIR__ . '/../../scripts/main.js')
-    ? filemtime(__DIR__ . '/../../scripts/main.js')
-    : time();
-?>
-<script src="scripts/main.js?v=<?php echo $vjs; ?>" defer="defer"></script>
+<script src="scripts/main.js" defer="defer"></script>
 
 <button id="torna-su" type="button" aria-label="Torna all'inizio della pagina">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"

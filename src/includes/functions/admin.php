@@ -165,13 +165,7 @@ function admin_panel_section_url(
 ): string {
     $sections = admin_panel_sections($canManageBranchManagers);
     $meta = $sections[$section] ?? $sections['dashboard'];
-    $params = [];
-
-    if ($isGeneralAdmin && !empty($meta['uses_branch']) && is_string($branchSlug) && $branchSlug !== '') {
-        $params['sede'] = $branchSlug;
-    }
-
-    return app_route((string) $meta['path'], $params);
+    return app_route((string) $meta['path']);
 }
 
 function admin_panel_build_navigation(
@@ -196,11 +190,7 @@ function admin_panel_build_navigation(
 
 function admin_panel_branch_query_params(?string $branchSlug, bool $isGeneralAdmin): array
 {
-    if (!$isGeneralAdmin || !is_string($branchSlug) || $branchSlug === '') {
-        return [];
-    }
-
-    return ['sede' => $branchSlug];
+    return [];
 }
 
 function admin_supply_builder_pages(): array
@@ -288,9 +278,6 @@ function admin_panel_bootstrap_context(PDO $pdo): array
         exit;
     }
 
-    $requestedBranchSlug = trim((string) ($_GET['sede'] ?? ''));
-    $selectedBranch = null;
-
     if ($isBranchManager) {
         $managedBranchId = (int) ($utente['managed_branch_id'] ?? 0);
         $selectedBranch = $managedBranchId > 0 ? branch_get_by_id($pdo, $managedBranchId) : null;
@@ -301,13 +288,7 @@ function admin_panel_bootstrap_context(PDO $pdo): array
             exit;
         }
     } else {
-        if ($requestedBranchSlug !== '') {
-            $selectedBranch = branch_get_by_slug($pdo, $requestedBranchSlug);
-        }
-
-        if ($selectedBranch === null) {
-            $selectedBranch = branch_get_selected($pdo);
-        }
+        $selectedBranch = branch_get_selected($pdo);
 
         if ($selectedBranch === null) {
             $selectedBranch = $allBranches[0] ?? null;

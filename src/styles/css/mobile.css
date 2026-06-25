@@ -1,241 +1,193 @@
-/* --------------------------------------------------------------------------
-   MOBILE.CSS — Stili responsivi per schermi fino a 768px
-   Usa mobile-first: queste regole si attivano sopra breakpoint specifici.
-   -------------------------------------------------------------------------- */
+/* MOBILE.CSS — Stili responsivi */
 
-/* --------------------------------------------------------------------------
-   1. BREAKPOINT PRINCIPALE — max 768px (tablet e mobile)
-   -------------------------------------------------------------------------- */
+/* Max 768px */
 
 @media (max-width: 48em) {
 
-    /* --- Layout header --- */
-    header > .contenitore {
-        flex-wrap: wrap;
-        gap: var(--spazio-sm);
-        padding-block: var(--spazio-sm);
-    }
+  header > .contenitore {
+    flex-wrap: wrap;
+    gap: var(--sp-sm);
+    padding-block: var(--sp-sm);
+  }
 
-    .brand-wrap {
-        max-width: calc(100% - 4.5rem);
-    }
+  .brand-wrap {
+    max-width: calc(100% - 4.5rem);
+  }
 
-    /* --- Bottone hamburger menu --- */
-    #menu-toggle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: var(--touch-target-min);
-        min-height: var(--touch-target-min);
-        background: none;
-        border: var(--bordo-standard);
-        color: var(--colore-testo);
-        padding: var(--spazio-xs) var(--spazio-sm);
-        border-radius: var(--raggio-bordo);
-        cursor: pointer;
-        font-size: 1.25rem;
-        order: 3;
-    }
+  #menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--tap);
+    min-height: var(--tap);
+    background: none;
+    border: var(--border);
+    color: var(--testo);
+    padding: var(--sp-xs) var(--sp-sm);
+    border-radius: var(--raggio);
+    cursor: pointer;
+    font-size: 1.25rem;
+    order: 3;
+  }
 
-    #menu-toggle:focus-visible {
-        outline: var(--outline-focus);
-        outline-offset: var(--outline-offset);
-    }
+  #menu-toggle:focus-visible {
+    outline: var(--outline-focus);
+    outline-offset: var(--outline-offset);
+  }
 
-    /* --- Navigazione principale: nascosta per default, visibile se .menu-aperto --- */
-    #menu-principale {
-        display: none;
-        width: 100%;
-        order: 4;
-        border-top: var(--bordo-standard);
-        padding-top: var(--spazio-sm);
-    }
+  #menu-principale {
+    display: none;
+    width: 100%;
+    order: 4;
+    border-top: var(--border);
+    padding-top: var(--sp-sm);
+  }
 
-    #menu-principale.menu-aperto {
-        display: block;
-    }
+  #menu-principale.menu-aperto {
+    display: block;
+  }
 
-    #menu-principale ul {
-        flex-direction: column;
-        gap: 0;
-    }
+  #menu-principale ul {
+    flex-direction: column;
+    gap: 0;
+  }
 
-    #menu-principale li,
-    #menu-principale li.attivo {
-        padding-block: var(--spazio-sm);
-        border-bottom: var(--bordo-standard);
-        width: 100%;
-    }
+  #menu-principale li,
+  #menu-principale li.attivo {
+    padding-block: var(--sp-sm);
+    border-bottom: var(--border);
+    width: 100%;
+  }
 
-    #menu-principale a,
-    #menu-principale .nav-item-wrap {
-        display: flex;
-        width: 100%;
-    }
+  #menu-principale a,
+  #menu-principale .nav-item-wrap {
+    display: flex;
+    width: 100%;
+  }
 
-    #menu-principale .nav-item-wrap {
-        padding-block: var(--spazio-xs);
-    }
+  #menu-principale .nav-item-wrap {
+    padding-block: var(--sp-xs);
+  }
 
-    #menu-principale .nav-item-wrap::after {
-        bottom: -0.1rem;
-    }
+  #menu-principale .nav-item-wrap::after {
+    bottom: -0.1rem;
+  }
 
-    /* --- Theme toggle --- */
-    #theme-toggle {
-        order: 2;
-        margin-left: auto;
-    }
+  #theme-toggle {
+    order: 2;
+    margin-left: auto;
+  }
 
-    /* --- Main content --- */
-    main,
-    .home-hero {
-        padding-block: var(--spazio-lg);
-    }
+  main,
+  .home-hero {
+    padding-block: var(--sp-lg);
+  }
 
-    :is(.checkout-shell, .account-hero-card, .ordine-card-meta, .checkout-payment-grid, .checkout-inline-fields, .checkout-navigation, .branch-switcher, .home-hero-grid, .sedi-grid, .chi-siamo-intro .feature-grid, .legal-grid) {
-        grid-template-columns: 1fr;
-    }
+  :is(.checkout-shell, .account-hero-card, .ordine-card-meta, .checkout-payment-grid, .checkout-inline-fields, .checkout-navigation, .home-hero-grid, .sedi-grid, .legal-grid) {
+    grid-template-columns: 1fr;
+  }
 
-    .account-section-head,
-    .ordine-card-head {
-        align-items: start;
-    }
+  .account-section-head,
+  .ordine-card-head {
+    align-items: start;
+  }
 
-    .account-section-head,
-    .account-action-row,
-    .account-empty-actions,
-    .ordine-card-head,
-    .hero-cta,
-    .azioni-carrello {
-        flex-direction: column;
-    }
+  .account-section-head,
+  .account-action-row,
+  .account-empty-actions,
+  .ordine-card-head,
+  .hero-cta {
+    flex-direction: column;
+  }
 
-    .checkout-navigation--solo-azione .bottone-primario,
-    .checkout-navigation--solo-azione .bottone-secondario {
-        justify-self: stretch;
-    }
+  .checkout-navigation--solo-azione .bottone-primario,
+  .checkout-navigation--solo-azione .bottone-secondario {
+    justify-self: stretch;
+  }
 
-    .account-action-row .bottone-primario,
-    .account-action-row .bottone-secondario,
-    .account-empty-actions .bottone-primario,
-    .account-empty-actions .bottone-secondario,
-    .checkout-navigation--solo-azione .bottone-primario,
-    .checkout-navigation--solo-azione .bottone-secondario,
-    .hero-cta .bottone-primario,
-    .hero-cta .bottone-secondario,
-    .admin-repeatable-add {
-        width: 100%;
-    }
+  .account-action-row .bottone-primario,
+  .account-action-row .bottone-secondario,
+  .account-empty-actions .bottone-primario,
+  .account-empty-actions .bottone-secondario,
+  .checkout-navigation--solo-azione .bottone-primario,
+  .checkout-navigation--solo-azione .bottone-secondario,
+  .hero-cta .bottone-primario,
+  .hero-cta .bottone-secondario,
+  .admin-repeatable-add {
+    width: 100%;
+  }
 
-    .admin-repeatable-row-head {
-        align-items: flex-start;
-    }
+  .admin-repeatable-row-head {
+    align-items: flex-start;
+  }
 
-    .branch-switcher {
-        max-width: 100%;
-    }
+  .tabella-carrello {
+    min-width: 34rem;
+  }
 
-    .hero-panel {
-        order: -1;
-    }
+  .sede-mappa-box,
+  #sedi-mappa-frame {
+    min-height: 17rem;
+  }
 
-    .feature-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  footer > .contenitore {
+    grid-template-columns: 1fr;
+  }
 
-    .tabella-carrello {
-        min-width: 34rem;
-    }
+  .footer-basso {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-    .sede-mappa-box,
-    #sedi-mappa-frame {
-        min-height: 17rem;
-    }
+  .auth-box {
+    padding: var(--sp-lg) var(--sp-md);
+  }
 
-    .azioni-carrello {
-        align-items: stretch;
-    }
-
-    /* --- Footer --- */
-    footer > .contenitore {
-        grid-template-columns: 1fr;
-    }
-
-    .footer-basso {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    /* --- Auth box --- */
-    .auth-box {
-        padding: var(--spazio-lg) var(--spazio-md);
-    }
-
-    /* --- Contenitore --- */
-    .contenitore {
-        padding-inline: var(--spazio-md);
-    }
+  .contenitore {
+    padding-inline: var(--sp-md);
+  }
 
 }
 
-/* --------------------------------------------------------------------------
-   2. BREAKPOINT PICCOLO — max 480px (telefoni)
-   -------------------------------------------------------------------------- */
+/* Max 480px */
 
 @media (max-width: 30em) {
 
-    h1 {
-        font-size: 1.953rem;
-    }
+  h1 {
+    font-size: 1.953rem;
+  }
 
-    h2 {
-        font-size: 1.563rem;
-    }
+  h2 {
+    font-size: 1.563rem;
+  }
 
-    /* --- Griglia prodotti: colonna singola --- */
-    .griglia-prodotti {
-        grid-template-columns: 1fr;
-    }
+  #filtro-categorie ul {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--sp-md);
+    padding-bottom: var(--sp-sm);
+    scrollbar-width: thin;
+  }
 
-    .categoria-sezione {
-        margin-top: var(--spazio-lg);
-    }
+  .header-sede-dropdown {
+    position: static;
+  }
 
-    .feature-grid {
-        grid-template-columns: 1fr;
-    }
+  .sede-dropdown-menu {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    width: 100%;
+    max-width: none;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    border-radius: 0 0 8px 8px;
+    top: 100%;
+  }
 
-    /* --- Filtro categorie: scroll orizzontale --- */
-    #filtro-categorie ul {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        gap: var(--spazio-md);
-        padding-bottom: var(--spazio-sm);
-        scrollbar-width: thin;
-    }
-
-    /* --- Branch switcher mobile --- */
-    .header-sede-dropdown {
-        position: static;
-    }
-
-    .sede-dropdown-menu {
-        left: 0;
-        right: 0;
-        min-width: 0;
-        width: 100%;
-        max-width: none;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        border-radius: 0 0 8px 8px;
-        top: 100%;
-    }
-
-    /* --- Modal mobile --- */
-    .modal-content {
-        padding: var(--spazio-md);
-        width: calc(100% - 2rem);
-        margin: 0 auto;
-    }
+  .modal-content {
+    padding: var(--sp-md);
+    width: calc(100% - 2rem);
+    margin: 0 auto;
+  }
 }

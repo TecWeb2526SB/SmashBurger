@@ -20,9 +20,9 @@
      ========================================================== -->
 <section class="chi-hero" aria-labelledby="chi-hero-titolo">
     <div class="contenitore">
-        <div class="chi-hero-grid">
+        <div>
 
-            <figure class="chi-hero-image">
+            <figure>
                 <img
                     src="images/image.png"
                     alt="Interno di un locale Smash Burger con bancone e cucina a vista"
@@ -30,26 +30,28 @@
                 >
             </figure>
 
-            <div class="chi-hero-content">
-                <h1 id="chi-hero-titolo" class="chi-hero-titolo">
+            <div>
+                <h1 id="chi-hero-titolo">
                     Dal 2018, portiamo<br>
                     <em>lo smash in Italia</em>
                 </h1>
 
-                <p class="chi-hero-lead">
+                <p>
                     Smash Burger nasce dall'idea di tre amici tornati da un viaggio
                     sulla costa ovest degli Stati Uniti. La tecnica dello "smash" &mdash;
                     schiacciare una pallina di carne sulla piastra rovente &mdash; li conquista
                     dal primo morso.
                 </p>
 
-                <ul class="chi-hero-quicknav" aria-label="Vai alla sezione">
-                    <li><a href="#chi-storia">La nostra storia</a></li>
-                    <li><a href="#chi-valori">I nostri valori</a></li>
-                    <li><a href="#chi-filosofia">Filosofia</a></li>
-                    <li><a href="#chi-numeri">Numeri</a></li>
-                    <li><a href="#chi-sedi">Le nostre sedi</a></li>
-                </ul>
+                <nav aria-label="Vai alla sezione">
+                    <ul aria-label="Vai alla sezione">
+                        <li><a href="#chi-storia">La nostra storia</a></li>
+                        <li><a href="#chi-valori">I nostri valori</a></li>
+                        <li><a href="#chi-filosofia">Filosofia</a></li>
+                        <li><a href="#chi-numeri">Numeri</a></li>
+                        <li><a href="#chi-sedi">Le nostre sedi</a></li>
+                    </ul>
+                </nav>
             </div>
 
         </div>
@@ -63,8 +65,8 @@
 <section id="chi-storia" class="chi-storia" aria-labelledby="chi-storia-titolo">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="chi-storia-titolo" class="home-section-title">Come tutto &egrave; cominciato</h2>
-            <p class="home-section-sub">
+            <h2 id="chi-storia-titolo">Come tutto &egrave; cominciato</h2>
+            <p>
                 Una storia fatta di passione per la cucina, viaggi oltreoceano e la voglia
                 di portare in Italia qualcosa di autentico e diverso.
             </p>
@@ -132,8 +134,8 @@
 <section id="chi-valori" class="chi-valori" aria-labelledby="chi-valori-titolo">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="chi-valori-titolo" class="home-section-title">I valori che ci guidano</h2>
-            <p class="home-section-sub">
+            <h2 id="chi-valori-titolo">I valori che ci guidano</h2>
+            <p>
                 Ogni decisione che prendiamo parte da questi principi fondamentali.
                 Sono la bussola che orienta il nostro lavoro quotidiano.
             </p>
@@ -220,8 +222,8 @@
 <section id="chi-filosofia" class="chi-filosofia" aria-labelledby="chi-filosofia-titolo">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="chi-filosofia-titolo" class="home-section-title">La nostra filosofia</h2>
-            <p class="home-section-sub">
+            <h2 id="chi-filosofia-titolo">La nostra filosofia</h2>
+            <p>
                 Tre pilastri su cui costruiamo ogni giorno l'esperienza Smash Burger.
             </p>
         </div>
@@ -231,8 +233,8 @@
                 <div class="chi-filosofia-numero" aria-hidden="true">01</div>
                 <div class="chi-filosofia-corpo">
                     <div>
-                        <h3 class="chi-filosofia-titolo">Tecnica autentica</h3>
-                        <p class="chi-filosofia-desc">
+                        <h3>Tecnica autentica</h3>
+                        <p>
                             Lo smash non &egrave; solo un nome: &egrave; una tecnica precisa.
                             Schiacciamo la pallina di carne sulla piastra a 260&deg;C nei primi
                             10 secondi di cottura. Si forma una crosta caramellata che sigilla
@@ -251,8 +253,8 @@
                 <div class="chi-filosofia-numero" aria-hidden="true">02</div>
                 <div class="chi-filosofia-corpo">
                     <div>
-                        <h3 class="chi-filosofia-titolo">Ingredienti tracciabili</h3>
-                        <p class="chi-filosofia-desc">
+                        <h3>Ingredienti tracciabili</h3>
+                        <p>
                             Conosciamo ogni fornitore personalmente. La carne arriva da allevamenti
                             italiani certificati, il pane viene sfornato ogni mattina da panifici
                             locali, le verdure sono di stagione e a km zero quando possibile.
@@ -270,8 +272,8 @@
                 <div class="chi-filosofia-numero" aria-hidden="true">03</div>
                 <div class="chi-filosofia-corpo">
                     <div>
-                        <h3 class="chi-filosofia-titolo">Esperienza replicabile</h3>
-                        <p class="chi-filosofia-desc">
+                        <h3>Esperienza replicabile</h3>
+                        <p>
                             Che tu sia a Milano, Bologna o Padova, l'esperienza &egrave; la stessa.
                             Processi standardizzati, formazione continua del personale, controlli
                             qualit&agrave; costanti. Nessuna sorpresa, solo certezze.
@@ -295,8 +297,8 @@
 <section id="chi-numeri" class="chi-numeri" aria-labelledby="chi-numeri-titolo">
     <div class="contenitore">
         <div class="home-section-head">
-            <h2 id="chi-numeri-titolo" class="home-section-title">I numeri che parlano</h2>
-            <p class="home-section-sub">
+            <h2 id="chi-numeri-titolo">I numeri che parlano</h2>
+            <p>
                 Dietro ogni burger c'&egrave; un team che lavora con passione.
                 Ecco cosa abbiamo costruito in questi anni.
             </p>
@@ -349,8 +351,8 @@
     <section id="chi-sedi" class="chi-sedi" aria-labelledby="chi-sedi-titolo">
         <div class="contenitore">
             <div class="home-section-head">
-                <h2 id="chi-sedi-titolo" class="home-section-title">Le nostre sedi</h2>
-                <p class="home-section-sub">Al momento non ci sono sedi disponibili.</p>
+                <h2 id="chi-sedi-titolo">Le nostre sedi</h2>
+                <p>Al momento non ci sono sedi disponibili.</p>
             </div>
         </div>
     </section>
@@ -361,8 +363,8 @@
         aria-labelledby="chi-sedi-titolo">
         <div class="contenitore">
             <div class="home-section-head">
-                <h2 id="chi-sedi-titolo" class="home-section-title">Le nostre sedi</h2>
-                <p class="home-section-sub">
+                <h2 id="chi-sedi-titolo">Le nostre sedi</h2>
+                <p>
                     Siamo presenti in diverse citt&agrave; italiane. Seleziona una sede per vedere
                     orari, indirizzo e mappa. Puoi ordinare online e ritirare in sede.
                 </p>

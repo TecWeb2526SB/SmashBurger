@@ -95,18 +95,18 @@ if ($selectedProduct !== null) {
                     <input type="hidden" name="mode" value="<?php echo e($mode); ?>">
 
                     <div class="admin-workflow-canvas" aria-label="Canvas rettifica inventario">
-                        <details class="admin-workflow-block admin-workflow-block--trigger" open>
-                            <summary class="admin-workflow-block-summary">
-                                <span class="admin-workflow-node-type">Prodotto</span>
+                        <details class="admin-workflow-block" open>
+                            <summary>
+                                <span>Prodotto</span>
                                 <h3>Seleziona la referenza di sede</h3>
                                 <p>Lavora su una sola referenza per volta e tieni il riepilogo operativo sempre visibile nella colonna laterale.</p>
-                                <ul class="admin-workflow-chip-list">
+                                <ul>
                                     <li>Prodotto</li>
                                     <li>Scorta attuale</li>
                                     <li>Merce in arrivo</li>
                                 </ul>
                             </summary>
-                            <div class="admin-workflow-block-body">
+                            <div>
                                 <div class="campo-gruppo">
                                     <label for="inventory-adjustment-product-id">Prodotto</label>
                                     <select id="inventory-adjustment-product-id" name="product_id" required aria-required="true">
@@ -140,9 +140,9 @@ if ($selectedProduct !== null) {
 
                         <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                        <details class="admin-workflow-block admin-workflow-block--action" open>
-                            <summary class="admin-workflow-block-summary">
-                                <span class="admin-workflow-node-type"><?php echo $mode === 'conteggio' ? 'Conteggio' : 'Quantità'; ?></span>
+                        <details class="admin-workflow-block" open>
+                            <summary>
+                                <span><?php echo $mode === 'conteggio' ? 'Conteggio' : 'Quantità'; ?></span>
                                 <h3>Inserisci il dato operativo</h3>
                                 <p>
                                     <?php if ($mode === 'carico'): ?>
@@ -153,7 +153,7 @@ if ($selectedProduct !== null) {
                                         Inserisci la quantità reale rilevata e lascia al sistema il calcolo della differenza da applicare.
                                     <?php endif; ?>
                                 </p>
-                                <ul class="admin-workflow-chip-list">
+                                <ul>
                                     <?php if ($mode === 'conteggio'): ?>
                                         <li>Quantità reale finale</li>
                                         <li>Delta calcolato dal sistema</li>
@@ -163,7 +163,7 @@ if ($selectedProduct !== null) {
                                     <?php endif; ?>
                                 </ul>
                             </summary>
-                            <div class="admin-workflow-block-body">
+                            <div>
                                 <?php if ($mode === 'conteggio'): ?>
                                     <?php echo ui_form_group(
                                         'counted_qty',
@@ -202,18 +202,18 @@ if ($selectedProduct !== null) {
 
                         <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                        <details class="admin-workflow-block admin-workflow-block--confirm" open>
-                            <summary class="admin-workflow-block-summary">
-                                <span class="admin-workflow-node-type">Conferma</span>
+                        <details class="admin-workflow-block" open>
+                            <summary>
+                                <span>Conferma</span>
                                 <h3>Verifica l'effetto finale</h3>
                                 <p>Prima di salvare, controlla come cambia la giacenza locale e completa l'azione con un solo invio.</p>
-                                <ul class="admin-workflow-chip-list">
+                                <ul>
                                     <li>Delta previsto</li>
                                     <li>Nuova giacenza</li>
                                     <li>Invio finale</li>
                                 </ul>
                             </summary>
-                            <div class="admin-workflow-block-body">
+                            <div>
                                 <div class="admin-adjustment-preview-grid" aria-label="Anteprima rettifica">
                                     <article>
                                         <span>Modalità</span>

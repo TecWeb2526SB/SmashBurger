@@ -22,9 +22,9 @@ $cateringEmail = 'eventi@smashburger.it';
      ========================================================== -->
 <section class="srv-hero" aria-labelledby="srv-hero-titolo">
     <div class="contenitore">
-        <div class="srv-hero-grid">
+        <div>
 
-            <figure class="srv-hero-image">
+            <figure>
                 <img
                     src="images/evento.webp"
                     alt="Allestimento catering Smash Burger con vassoi di mini burger e patatine fresche"
@@ -36,24 +36,26 @@ $cateringEmail = 'eventi@smashburger.it';
                 >
             </figure>
 
-            <div class="srv-hero-content">
-                <h1 id="srv-hero-titolo" class="srv-hero-titolo">
+            <div>
+                <h1 id="srv-hero-titolo">
                     Tutto quello che facciamo<br>
                     <em>oltre il bancone</em>
                 </h1>
 
-                <p class="srv-hero-lead">
+                <p>
                     Ordine online con ritiro veloce, catering aziendale e privatizzazione del locale
                     per eventi privati. Stessa cucina, stessa qualità, su qualunque scala.
                 </p>
 
-                <ul class="srv-hero-quicknav" aria-label="Vai alla sezione">
-                    <li><a href="#srv-servizi">Servizi</a></li>
-                    <li><a href="#srv-catering">Catering</a></li>
-                    <li><a href="#srv-impegni">Impegni</a></li>
-                    <li><a href="#srv-allergeni">Allergeni</a></li>
-                    <li><a href="#srv-contatti">Contatti</a></li>
-                </ul>
+                <nav aria-label="Vai alla sezione">
+                    <ul aria-label="Vai alla sezione">
+                        <li><a href="#srv-servizi">Servizi</a></li>
+                        <li><a href="#srv-catering">Catering</a></li>
+                        <li><a href="#srv-impegni">Impegni</a></li>
+                        <li><a href="#srv-allergeni">Allergeni</a></li>
+                        <li><a href="#srv-contatti">Contatti</a></li>
+                    </ul>
+                </nav>
             </div>
 
         </div>
@@ -68,8 +70,8 @@ $cateringEmail = 'eventi@smashburger.it';
     <div class="contenitore">
 
         <div class="home-section-head">
-            <h2 id="srv-servizi-titolo" class="home-section-title">Quattro modi di mangiare da Smash Burger</h2>
-            <p class="home-section-sub">
+            <h2 id="srv-servizi-titolo">Quattro modi di mangiare da Smash Burger</h2>
+            <p>
                 Dal pasto rapido al pranzo pianificato per tutto l'ufficio: ogni servizio nasce dalla
                 stessa cucina, con la stessa carne 100% bovino italiano battuta sulla piastra.
             </p>
@@ -81,8 +83,8 @@ $cateringEmail = 'eventi@smashburger.it';
                 <div class="srv-num-numero" aria-hidden="true">01</div>
                 <div class="srv-num-corpo">
                     <div>
-                        <h3 class="srv-num-titolo">Ordine online &amp; ritiro in sede</h3>
-                        <p class="srv-num-desc">
+                        <h3>Ordine online &amp; ritiro in sede</h3>
+                        <p>
                             Costruisci il tuo menu dal sito, paghi al tavolo o al ritiro e passi a
                             prendere l'ordine quando vuoi. Niente coda, niente attese: te lo prepariamo
                             solo quando arrivi sul posto, così lo trovi caldo e appena fatto.
@@ -100,8 +102,8 @@ $cateringEmail = 'eventi@smashburger.it';
                 <div class="srv-num-numero" aria-hidden="true">02</div>
                 <div class="srv-num-corpo">
                     <div>
-                        <h3 class="srv-num-titolo">Pranzo in sede, anche al volo</h3>
-                        <p class="srv-num-desc">
+                        <h3>Pranzo in sede, anche al volo</h3>
+                        <p>
                             Tavoli all'interno e dehor esterno nelle sedi che lo prevedono. Servizio
                             rapido a banco per la pausa pranzo, formule complete con bevanda e
                             contorno per chi vuole sedersi senza pensieri.
@@ -119,8 +121,8 @@ $cateringEmail = 'eventi@smashburger.it';
                 <div class="srv-num-numero" aria-hidden="true">03</div>
                 <div class="srv-num-corpo">
                     <div>
-                        <h3 class="srv-num-titolo">Catering aziendale</h3>
-                        <p class="srv-num-desc">
+                        <h3>Catering aziendale</h3>
+                        <p>
                             Riunioni, lanci di prodotto, formazione, team building: portiamo lo smash
                             in ufficio. Tre formule modulari da 10 a 200 persone, con un referente
                             dedicato dalla conferma fino al ritiro dei materiali.
@@ -138,8 +140,8 @@ $cateringEmail = 'eventi@smashburger.it';
                 <div class="srv-num-numero" aria-hidden="true">04</div>
                 <div class="srv-num-corpo">
                     <div>
-                        <h3 class="srv-num-titolo">Eventi privati &amp; privatizzazione</h3>
-                        <p class="srv-num-desc">
+                        <h3>Eventi privati &amp; privatizzazione</h3>
+                        <p>
                             Compleanni, lauree, feste aziendali in formato più informale: privatizzi
                             una sezione del locale o l'intero spazio, scegli la formula e ci pensiamo
                             noi al resto. Decorazioni neutre incluse, personalizzazioni su richiesta.
@@ -165,8 +167,8 @@ $cateringEmail = 'eventi@smashburger.it';
     <div class="contenitore">
 
         <div class="home-section-head">
-            <h2 id="srv-catering-titolo" class="home-section-title">Tre formule, un solo standard</h2>
-            <p class="home-section-sub">
+            <h2 id="srv-catering-titolo">Tre formule, un solo standard</h2>
+            <p>
                 Scegli la formula più adatta alla tua occasione. Tutte includono carne 100% bovino
                 italiano, pane brioche fresco e salse di nostra produzione.
             </p>
@@ -263,8 +265,8 @@ $cateringEmail = 'eventi@smashburger.it';
     <div class="contenitore">
 
         <div class="home-section-head">
-            <h2 id="srv-impegni-titolo" class="home-section-title">I nostri impegni operativi</h2>
-            <p class="home-section-sub">
+            <h2 id="srv-impegni-titolo">I nostri impegni operativi</h2>
+            <p>
                 Regole semplici che ci diamo per evitare brutte sorprese, sia che tu ordini un singolo
                 burger o un catering da 200 persone.
             </p>
@@ -344,8 +346,8 @@ $cateringEmail = 'eventi@smashburger.it';
     <div class="contenitore">
 
         <div class="home-section-head">
-            <h2 id="srv-allergeni-titolo" class="home-section-title">Allergeni &amp; opzioni alimentari</h2>
-            <p class="home-section-sub">
+            <h2 id="srv-allergeni-titolo">Allergeni &amp; opzioni alimentari</h2>
+            <p>
                 Etichettiamo ogni piatto con i 14 allergeni regolamentati dall'UE. Su richiesta, al
                 momento dell'ordine, possiamo adattare la maggior parte delle ricette.
             </p>
@@ -460,8 +462,8 @@ $cateringEmail = 'eventi@smashburger.it';
     <div class="contenitore">
 
         <div class="home-section-head">
-            <h2 id="srv-contatti-titolo" class="home-section-title">Parla con noi</h2>
-            <p class="home-section-sub">
+            <h2 id="srv-contatti-titolo">Parla con noi</h2>
+            <p>
                 Per ordini singoli usa il sito o la cassa in sede. Per tutto il resto &mdash; catering,
                 fatturazione, eventi &mdash; trovi qui i canali giusti.
             </p>

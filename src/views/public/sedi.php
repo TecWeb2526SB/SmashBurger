@@ -14,8 +14,8 @@
 <section id="chi-sedi" class="chi-sedi sedi-layout" data-selected-slug="<?php echo e((string) ($viewedBranch['slug'] ?? '')); ?>" aria-labelledby="chi-sedi-titolo">
     <div class="contenitore">
         <div class="home-section-head">
-            <h1 id="chi-sedi-titolo" class="home-section-title">Le nostre sedi</h1>
-            <p class="home-section-sub">
+            <h1 id="chi-sedi-titolo">Le nostre sedi</h1>
+            <p>
                 Siamo presenti in diverse citt&agrave; italiane. Seleziona una sede per vedere
                 orari, indirizzo e mappa. Puoi ordinare online e ritirare in sede.
             </p>
@@ -28,7 +28,7 @@
         <?php endif; ?>
 
         <?php if (empty($allBranches) || empty($viewedBranch)): ?>
-            <p class="home-section-sub">Al momento non ci sono sedi disponibili.</p>
+            <p>Al momento non ci sono sedi disponibili.</p>
         <?php else: ?>
             <div id="sedi-interattive" class="sedi-grid">
                 <nav class="sedi-lista" aria-label="Elenco sedi disponibili">

@@ -105,18 +105,18 @@ $frequencyOptions = supply_frequency_options();
                         <input type="hidden" name="action" value="create_standard_template">
 
                         <div class="admin-workflow-canvas" aria-label="Canvas routine ricorrente">
-                            <details class="admin-workflow-block admin-workflow-block--trigger" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Quando</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Quando</span>
                                     <h3 id="titolo-builder-standard">Programma la routine</h3>
                                     <p>Definisci identità del flusso, cadenza e primo avvio del template ricorrente.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Nome template</li>
                                         <li>Frequenza</li>
                                         <li>Prima esecuzione</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <?php echo ui_form_group('standard-template-name', 'Nome template', 'text', [
                                         'value' => $draft['template_name'] ?? '',
                                         'extra_attrs' => 'name="template_name" maxlength="120"'
@@ -144,18 +144,18 @@ $frequencyOptions = supply_frequency_options();
 
                             <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                            <details class="admin-workflow-block admin-workflow-block--action" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Azione</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Azione</span>
                                     <h3>Componi i prodotti</h3>
                                     <p>Aggiungi o rimuovi righe con i controlli + e x. Il costo della sede viene applicato in automatico sulla singola referenza.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Prodotti illimitati</li>
                                         <li>Quantita per riga</li>
                                         <li>Costo filiale automatico</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <div class="admin-repeatable-list" data-repeatable-list="standard-items" data-next-index="<?php echo count((array) ($draft['items'] ?? [])); ?>">
                                         <div class="admin-repeatable-row-list" data-repeatable-rows>
                                             <?php foreach (($draft['items'] ?? admin_supply_item_rows_default()) as $rowIndex => $row): ?>
@@ -253,17 +253,17 @@ $frequencyOptions = supply_frequency_options();
 
                             <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                            <details class="admin-workflow-block admin-workflow-block--confirm" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Output</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Output</span>
                                     <h3>Chiudi e salva il template</h3>
                                     <p>Lascia una nota per il team e genera un template riutilizzabile nella dashboard forniture.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Note operative</li>
                                         <li>Salvataggio immediato</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <?php echo ui_form_group('standard-notes', 'Note', 'textarea', [
                                         'value' => $draft['notes'] ?? '',
                                         'placeholder' => 'Es. carico del lunedi con buns, salse e packaging base',
@@ -285,17 +285,17 @@ $frequencyOptions = supply_frequency_options();
                         <input type="hidden" name="action" value="create_extra_supply">
 
                         <div class="admin-workflow-canvas" aria-label="Canvas intervento una tantum">
-                            <details class="admin-workflow-block admin-workflow-block--trigger" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Avvio</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Avvio</span>
                                     <h3 id="titolo-builder-straordinario">Apri la fornitura urgente</h3>
                                     <p>Definisci fornitore e consegna prevista solo se servono davvero per questo intervento.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Fornitore</li>
                                         <li>Consegna prevista</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <div class="admin-inline-grid">
                                         <?php echo ui_form_group('extra-supplier-name', 'Fornitore', 'text', [
                                             'value' => $draft['supplier_name'] ?? 'Centro forniture SmashBurger',
@@ -314,18 +314,18 @@ $frequencyOptions = supply_frequency_options();
 
                             <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                            <details class="admin-workflow-block admin-workflow-block--action" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Azione</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Azione</span>
                                     <h3>Compila le righe necessarie</h3>
                                     <p>Per le urgenze non ci sono limiti fissi: aggiungi solo le referenze che servono davvero e lascia al sistema il costo della filiale.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Righe dinamiche</li>
                                         <li>Quantita</li>
                                         <li>Costo automatico</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <div class="admin-repeatable-list" data-repeatable-list="extra-items" data-next-index="<?php echo count((array) ($draft['items'] ?? [])); ?>">
                                         <div class="admin-repeatable-row-list" data-repeatable-rows>
                                             <?php foreach (($draft['items'] ?? admin_supply_item_rows_default()) as $rowIndex => $row): ?>
@@ -423,17 +423,17 @@ $frequencyOptions = supply_frequency_options();
 
                             <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                            <details class="admin-workflow-block admin-workflow-block--confirm" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Output</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Output</span>
                                     <h3>Registra l'ordine operativo</h3>
                                     <p>Aggiungi la nota finale e salva la fornitura straordinaria nello storico della filiale.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Nota interna</li>
                                         <li>Storico forniture</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <?php echo ui_form_group('extra-notes', 'Note', 'textarea', [
                                         'value' => $draft['notes'] ?? '',
                                         'placeholder' => 'Es. integrazione urgente per weekend o sostituzione merce danneggiata',
@@ -455,17 +455,17 @@ $frequencyOptions = supply_frequency_options();
                         <input type="hidden" name="action" value="create_policy">
 
                         <div class="admin-workflow-canvas" aria-label="Canvas automazione stock">
-                            <details class="admin-workflow-block admin-workflow-block--trigger" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Trigger</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Trigger</span>
                                     <h3 id="titolo-builder-automatico">Sorveglia una referenza</h3>
                                     <p>Seleziona il prodotto e imposta la soglia che attiva il controllo automatico.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Prodotto</li>
                                         <li>Soglia minima</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <div class="admin-inline-grid">
                                         <div class="campo-gruppo">
                                             <label for="auto-product-id">Prodotto</label>
@@ -489,17 +489,17 @@ $frequencyOptions = supply_frequency_options();
 
                             <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                            <details class="admin-workflow-block admin-workflow-block--condition" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Controllo</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Controllo</span>
                                     <h3>Evita riordini ridondanti</h3>
                                     <p>Applica finestra di cooldown e limite massimo di merce già in arrivo prima di generare nuove azioni.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Cooldown</li>
                                         <li>Massimo in arrivo</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <div class="admin-inline-grid">
                                         <?php echo ui_form_group('auto-cooldown', 'Cooldown ore', 'number', [
                                             'value' => $draft['cooldown_hours'] ?? '6',
@@ -518,17 +518,17 @@ $frequencyOptions = supply_frequency_options();
 
                             <div class="admin-workflow-link" aria-hidden="true"></div>
 
-                            <details class="admin-workflow-block admin-workflow-block--confirm" open>
-                                <summary class="admin-workflow-block-summary">
-                                    <span class="admin-workflow-node-type">Output</span>
+                            <details class="admin-workflow-block" open>
+                                <summary>
+                                    <span>Output</span>
                                     <h3>Definisci l'azione finale</h3>
                                     <p>Decidi quantità di riordino e modalità finale: bozza controllabile o ordine già registrato.</p>
-                                    <ul class="admin-workflow-chip-list">
+                                    <ul>
                                         <li>Quantita riordino</li>
                                         <li>Bozza o ordine</li>
                                     </ul>
                                 </summary>
-                                <div class="admin-workflow-block-body">
+                                <div>
                                     <div class="admin-inline-grid">
                                         <?php echo ui_form_group('auto-reorder', 'Quantita riordino', 'number', [
                                             'value' => $draft['reorder_qty'] ?? '',

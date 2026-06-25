@@ -175,7 +175,7 @@ function render_admin_page(string $currentSection, array $viewData = [], ?string
     $pageTitle = ($sectionMeta['title'] ?? 'Controllo') . ' - Smash Burger Original';
     $breadcrumb = [
         ['Home', './'],
-        ['Controllo', app_route('controllo', $isGeneralAdmin ? ['sede' => $selectedBranchSlug] : [])],
+        ['Controllo', app_route('controllo')],
         [$sectionMeta['label'] ?? 'Dettaglio', null],
     ];
 

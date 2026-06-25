@@ -4,10 +4,6 @@
  */
 global $pdo, $navItems, $isLoggedIn, $canPlaceOrders;
 
-$vResources = file_exists(__DIR__ . '/../../styles/resources.css')
-    ? filemtime(__DIR__ . '/../../styles/resources.css')
-    : time();
-
 $headerSelectedBranch = null;
 $headerAllBranches = [];
 $headerCartCount = 0;
@@ -56,7 +52,7 @@ if ($headerPageName === './') {
         content="<?php echo e($pageDescription ?? 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro.'); ?>" />
     <meta name="keywords" content="smash burger, fast food, hamburger, domicilio, take away" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#c0392b" />
+    <meta name="theme-color" content="#ce493c" />
 
     <script>
         //<![CDATA[
@@ -74,7 +70,7 @@ if ($headerPageName === './') {
     <?php if (!empty($preloadHeroImage)): ?>
         <link rel="preload" as="image" href="<?php echo e($preloadHeroImage); ?>" />
     <?php endif; ?>
-    <link rel="stylesheet" href="styles/resources.css?v=<?php echo $vResources; ?>" />
+    <link rel="stylesheet" href="styles/resources.css" />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
     <link rel="manifest" href="site.webmanifest" />
 </head>
@@ -128,39 +124,31 @@ if ($headerPageName === './') {
                                 } elseif ($currentHeaderPage !== '') {
                                     $returnBasePage = $currentHeaderPage;
                                 }
-
-                                $returnQueryParams = [];
-                                foreach ($_GET as $paramKey => $paramValue) {
-                                    if (is_string($paramKey) && !in_array($paramKey, ['ajax', 'force'], true) && is_scalar($paramValue)) {
-                                        $returnQueryParams[$paramKey] = (string) $paramValue;
-                                    }
-                                }
+                                $branchSwitchFormAction = app_route($returnBasePage);
+                                $branchRedirect = app_route($returnBasePage);
                                 ?>
                                 <?php foreach ($headerAllBranches as $hb):
                                     $isCurrent = (int)$hb['id'] === (int)$headerSelectedBranch['id'];
                                     $hbSlug = (string) $hb['slug'];
-                                    $switchUrl = app_route('prodotti', ['sede' => $hbSlug]);
-                                    $returnParams = $returnQueryParams;
-                                    if (in_array($returnBasePage, ['prodotti', 'sedi'], true) || in_array($returnBasePage, $adminBranchPages, true)) {
-                                        $returnParams['sede'] = $hbSlug;
-                                    } else {
-                                        unset($returnParams['sede']);
-                                    }
-                                    $returnUrl = app_route($returnBasePage, $returnParams);
                                 ?>
                                     <li class="<?php echo $isCurrent ? 'corrente' : ''; ?>">
-                                        <a href="<?php echo e($switchUrl); ?>"
-                                           class="sede-opzione"
-                                           data-switch-url="<?php echo e($switchUrl); ?>"
-                                           data-return-url="<?php echo e($returnUrl); ?>"
-                                           data-sede-slug="<?php echo e($hbSlug); ?>"
-                                           data-sede-name="<?php echo e((string) $hb['name']); ?>">
-                                            <strong><?php echo e((string) $hb['name']); ?></strong>
-                                            <span class="sede-indirizzo"><?php echo e((string) $hb['address_line']); ?></span>
-                                            <?php if ($isCurrent): ?>
-                                                <span class="badge-corrente">Attiva</span>
-                                            <?php endif; ?>
-                                        </a>
+                                        <form class="sede-opzione-form" method="post" action="<?php echo e($branchSwitchFormAction); ?>">
+                                            <input type="hidden" name="branch_action" value="cambia_sede" />
+                                            <input type="hidden" name="branch_slug" value="<?php echo e($hbSlug); ?>" />
+                                            <input type="hidden" name="branch_redirect" value="<?php echo e($branchRedirect); ?>" />
+                                            <input type="hidden" name="csrf_token" value="<?php echo e(csrf_token()); ?>" />
+                                            <button
+                                                type="submit"
+                                                class="sede-opzione"
+                                                data-sede-slug="<?php echo e($hbSlug); ?>"
+                                                data-sede-name="<?php echo e((string) $hb['name']); ?>">
+                                                <strong><?php echo e((string) $hb['name']); ?></strong>
+                                                <span class="sede-indirizzo"><?php echo e((string) $hb['address_line']); ?></span>
+                                                <?php if ($isCurrent): ?>
+                                                    <span class="badge-corrente">Attiva</span>
+                                                <?php endif; ?>
+                                            </button>
+                                        </form>
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
@@ -226,7 +214,7 @@ if ($headerPageName === './') {
         <div class="modal-content">
             <h2 id="modal-titolo" class="modal-titolo">Cambiare sede?</h2>
             <p id="modal-messaggio" class="modal-messaggio">
-                Hai già dei prodotti nel carrello per un'altra sede. 
+                Hai già dei prodotti nel carrello per un'altra sede.
                 Cambiando sede ora, il tuo carrello attuale verrà svuotato. Vuoi procedere?
             </p>
             <div class="modal-azioni">
