@@ -208,16 +208,20 @@ Fine fase: un solo file, massimo 400 righe, ogni funzione degrada correttamente.
 
 ### Fase 8: qualità, consegna, relazione
 
-1. Aggiornare `src/sitemap.xml` e l'elenco delle pagine controllate dai workflow.
-2. Togliere `'unsafe-inline'` dalla CSP in `.htaccess`, ora superflua.
-3. Eseguire i controlli: validatori W3C, Pa11y, Lighthouse, pagine autenticate.
+1. `src/sitemap.xml` e i workflow sono già allineati alle pagine attuali: resta da
+   rileggerli quando il foglio di stile e gli script sono completi.
+2. La CSP in `.htaccess` è già senza `'unsafe-inline'`: va verificata di nuovo dopo la
+   fase 7, perché il file di script viene caricato dall'esterno e non inline.
+3. Eseguire i controlli su GitHub: validatore Nu, sintassi XML, validatore CSS, Pa11y,
+   Lighthouse.
 4. Verificare i permessi dei file PHP e il deploy su `tecweb.studenti.math.unipd.it`.
 5. Produrre il dump del database per la consegna su Moodle.
 6. Scrivere la relazione: prima pagina con indirizzo del sito, credenziali per ogni classe
    di utenza ed email del referente; corpo con analisi utenti e ricerche (fase 1),
    progettazione, realizzazione, test e ruoli dei componenti del gruppo.
 7. Riscrivere `README.md`, `docs/GUIDA_SVILUPPO.md` e `docs/documentazione.md`
-   sull'architettura nuova; archiviare `docs/RICOGNIZIONE.md`.
+   sull'architettura nuova, compresa la struttura di `.github`; archiviare
+   `docs/RICOGNIZIONE.md`.
 
 Fine fase: `rebuild` unito in `main`, progetto installato e consegnato.
 

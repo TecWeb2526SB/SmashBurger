@@ -1,0 +1,40 @@
+name: Avvia l'applicazione
+description: Prepara le variabili d'ambiente, avvia lo stack Docker e aspetta che il sito risponda.
+
+inputs:
+  porta:
+    description: Porta su cui esporre il sito
+    required: false
+    default: '8080'
+
+runs:
+  using: composite
+  steps:
+    - name: Prepara le variabili d'ambiente
+      shell: bash
+      run: |
+        cat > .env <<EOF
+        HTTP_PORT=${{ inputs.porta }}
+        PHPMYADMIN_PORT=8081
+        DB_NAME=esame_web
+        DB_USER=utente_prova
+        DB_PASSWORD=password_prova
+        DB_ROOT_PASSWORD=password_root_prova
+        EOF
+
+    - name: Avvia lo stack
+      shell: bash
+      run: docker compose -f docker-compose.develop.yml up -d --build web
+
+    - name: Aspetta che il sito risponda
+      shell: bash
+      run: |
+        for tentativo in $(seq 1 60); do
+          if curl -fsS "http://127.0.0.1:${{ inputs.porta }}/" > /dev/null; then
+            echo "Il sito risponde dopo ${tentativo} tentativi."
+            exit 0
+          fi
+          sleep 2
+        done
+        docker compose -f docker-compose.develop.yml logs --tail=200
+        exit 1

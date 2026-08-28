@@ -3,11 +3,8 @@
 Applicazione web PHP/MariaDB per la gestione del sito Smash Burger, del catalogo prodotti, degli ordini e del pannello di controllo multi-filiale.
 
 ## Stato dei workflow
-![Lighthouse CI](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/lighthouse.yml/badge.svg)
-![Accessibility Check](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/accessibility.yml/badge.svg)
-![W3C Validators](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/w3c-validators.yml/badge.svg)
-![Authenticated Internal Quality](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/authenticated-quality.yml/badge.svg)
-![Quality Dashboard Pages](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/quality-dashboard-pages.yml/badge.svg)
+![Qualità](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/qualita.yml/badge.svg)
+![Deploy su TecWeb](https://github.com/TecWeb2526SB/SmashBurger/actions/workflows/deploy-tecweb.yml/badge.svg)
 
 ## Panoramica
 Il progetto separa controller PHP, view, risorse frontend e funzioni applicative per mantenere il codice modulare e coerente con le linee guida del corso di Tecnologie Web.

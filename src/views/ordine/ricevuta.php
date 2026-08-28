@@ -44,7 +44,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <th scope="row" colspan="3">Totale</th>
+                <td colspan="3">Totale</td>
                 <td><?php echo e(prezzo((int) $ordine['totale_centesimi'])); ?></td>
             </tr>
         </tfoot>

@@ -1,0 +1,20 @@
+{
+  "cliente": {
+    "utente": "user",
+    "password": "user",
+    "pagine": ["area-personale", "profilo", "carrello", "pagamento"]
+  },
+  "amministratore": {
+    "utente": "admin",
+    "password": "admin",
+    "pagine": [
+      "area-personale",
+      "profilo",
+      "controllo",
+      "controllo-prodotti",
+      "controllo-prodotto",
+      "controllo-sedi",
+      "controllo-utenti"
+    ]
+  }
+}

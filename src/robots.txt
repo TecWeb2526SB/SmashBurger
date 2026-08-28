@@ -1,12 +1,12 @@
 User-agent: *
 Allow: /
 
-Disallow: /account
+Disallow: /area-personale
+Disallow: /profilo
 Disallow: /carrello
-Disallow: /checkout
-Disallow: /checkout-ritiro
-Disallow: /checkout-pagamento
-Disallow: /account-profilo
+Disallow: /pagamento
+Disallow: /ricevuta
 Disallow: /esci
+Disallow: /controllo
 
 Sitemap: https://www.smashburger.it/sitemap.xml

@@ -38,7 +38,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <th scope="row" colspan="2">Totale</th>
+                <td colspan="2">Totale</td>
                 <td><?php echo e(prezzo((int) $totale)); ?></td>
             </tr>
         </tfoot>
