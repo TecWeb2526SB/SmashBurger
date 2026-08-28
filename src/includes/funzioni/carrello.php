@@ -164,7 +164,7 @@ function carrello_aggiorna_quantita(PDO $pdo, int $utenteId, int $rigaId, int $q
     $verifica->execute(['riga' => $rigaId, 'carrello' => $carrelloId]);
 
     if ($verifica->fetch() === false) {
-        return ['ok' => false, 'messaggio' => 'Riga del carrello non trovata.'];
+        return ['ok' => false, 'messaggio' => 'Questo prodotto non è più nel carrello.'];
     }
 
     if ($quantita === 0) {
@@ -196,7 +196,7 @@ function carrello_varia_quantita(PDO $pdo, int $utenteId, int $rigaId, int $vari
     $quantita = $query->fetchColumn();
 
     if ($quantita === false) {
-        return ['ok' => false, 'messaggio' => 'Riga del carrello non trovata.'];
+        return ['ok' => false, 'messaggio' => 'Questo prodotto non è più nel carrello.'];
     }
 
     return carrello_aggiorna_quantita($pdo, $utenteId, $rigaId, (int) $quantita + $variazione);

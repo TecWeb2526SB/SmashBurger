@@ -35,7 +35,7 @@ $errori = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_valido($_POST['token_csrf'] ?? null)) {
-        messaggio_imposta('errore', 'Sessione scaduta, riprova a inviare il modulo.');
+        messaggio_imposta('errore', 'La pagina è rimasta aperta troppo a lungo, riprova.');
         vai_a('controllo-prodotti');
     }
 

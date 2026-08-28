@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string) ($_POST['password'] ?? '');
 
     if (!csrf_valido($_POST['token_csrf'] ?? null)) {
-        $errori['modulo'] = 'Sessione scaduta, riprova a inviare il modulo.';
+        $errori['modulo'] = 'La pagina è rimasta aperta troppo a lungo, riprova.';
     } else {
         $esito = utente_registra($pdo, $valori['nome_utente'], $valori['email'], $password);
 

@@ -25,7 +25,7 @@ $errore = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_valido($_POST['token_csrf'] ?? null)) {
-        $errore = 'Sessione scaduta, riprova a inviare il modulo.';
+        $errore = 'La pagina è rimasta aperta troppo a lungo, riprova.';
     } else {
         $sedeRichiesta = (int) ($_POST['sede_id'] ?? 0);
 
