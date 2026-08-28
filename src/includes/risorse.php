@@ -10,4 +10,6 @@ require_once __DIR__ . '/funzioni/sicurezza.php';
 require_once __DIR__ . '/funzioni/utenti.php';
 require_once __DIR__ . '/funzioni/sedi.php';
 require_once __DIR__ . '/funzioni/catalogo.php';
+require_once __DIR__ . '/funzioni/carrello.php';
+require_once __DIR__ . '/funzioni/ordini.php';
 require_once __DIR__ . '/database.php';

@@ -117,7 +117,7 @@ CREATE TABLE ordini (
     aggiornato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY idx_ordini_utente (utente_id),
     KEY idx_ordini_sede_stato (sede_id, stato),
-    CONSTRAINT fk_ordini_utente FOREIGN KEY (utente_id) REFERENCES utenti (id),
+    CONSTRAINT fk_ordini_utente FOREIGN KEY (utente_id) REFERENCES utenti (id) ON DELETE CASCADE,
     CONSTRAINT fk_ordini_sede FOREIGN KEY (sede_id) REFERENCES sedi (id)
 ) ENGINE=InnoDB;
 

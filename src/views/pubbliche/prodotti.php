@@ -62,6 +62,24 @@
 
                         <?php if ((int) $prodotto['disponibile'] !== 1): ?>
                             <p><span class="etichetta">Non disponibile</span></p>
+                        <?php elseif (!utente_autenticato()): ?>
+                            <p><a href="<?php echo e(url('accedi')); ?>">Accedi per ordinare</a></p>
+                        <?php else: ?>
+                            <form method="post" action="<?php echo e(url('carrello')); ?>">
+                                <?php echo campo_csrf(); ?>
+                                <input type="hidden" name="azione" value="aggiungi" />
+                                <input type="hidden" name="ritorno" value="prodotti" />
+                                <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
+                                <p>
+                                    <label for="quantita-<?php echo (int) $prodotto['id']; ?>">
+                                        Quantità di <?php echo e($prodotto['nome']); ?>
+                                    </label>
+                                    <input type="number" id="quantita-<?php echo (int) $prodotto['id']; ?>"
+                                        name="quantita" value="1" min="1"
+                                        max="<?php echo QUANTITA_MASSIMA; ?>" required="required" />
+                                </p>
+                                <p><button type="submit">Aggiungi al carrello</button></p>
+                            </form>
                         <?php endif; ?>
                     </article>
                 </li>

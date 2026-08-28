@@ -100,3 +100,15 @@ function orario(?string $ora): string
 {
     return $ora === null ? '' : substr($ora, 0, 5);
 }
+
+/**
+ * Restituisce una sede attiva a partire dal suo identificativo, oppure null.
+ */
+function sede_per_id(PDO $pdo, int $sedeId): ?array
+{
+    $query = $pdo->prepare('SELECT * FROM sedi WHERE id = :id AND attiva = 1');
+    $query->execute(['id' => $sedeId]);
+    $sede = $query->fetch();
+
+    return $sede === false ? null : $sede;
+}
