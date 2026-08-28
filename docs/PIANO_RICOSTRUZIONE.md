@@ -54,7 +54,7 @@ Documenti collegati: `docs/VINCOLI_ESAME.md` (requisiti obbligatori), `REGOLE.md
 | Pubblica | `index.php`, `prodotti.php`, `servizi.php`, `chi-siamo.php`, `sedi.php`, `privacy.php`, `accessibilita.php`, `mappa-sito.php` |
 | Account | `accedi.php`, `registrati.php`, `esci.php`, `area-personale.php`, `profilo.php` |
 | Acquisto | `carrello.php`, `pagamento.php`, `ricevuta.php` |
-| Controllo | `controllo.php` (ordini), `controllo-prodotti.php`, `controllo-prodotto.php`, `controllo-sedi.php`, `controllo-utenti.php` |
+| Controllo | `controllo.php` (ordini), `controllo-prodotti.php`, `controllo-prodotto.php`, `controllo-sedi.php`, `controllo-sede.php`, `controllo-utenti.php` |
 | Errori | `errors/403.php`, `errors/404.php`, `errors/500.php` |
 
 Il pagamento oggi è diviso in tre pagine (`checkout`, `checkout-ritiro`,
@@ -107,7 +107,7 @@ tocca prima della fase 5, il JavaScript prima della fase 6.
 
 Fine fase: ambiente allineato al server di consegna e `src/` ridotto agli asset.
 
-### Fase 1: analisi degli utenti e delle ricerche
+### Fase 1: analisi degli utenti e delle ricerche (completata)
 
 Richiesta esplicita dei vincoli d'esame e presupposto dei contenuti.
 
@@ -119,7 +119,7 @@ Richiesta esplicita dei vincoli d'esame e presupposto dei contenuti.
 
 Fine fase: capitolo dell'analisi scritto in `docs/` e riusabile nella relazione.
 
-### Fase 2: fondamenta
+### Fase 2: fondamenta (completata)
 
 1. `database/schema.sql` nuovo secondo il punto 3, con dati di esempio.
 2. `includes/configurazione.php`: costanti, contatti, sessione, funzione degli URL.
@@ -134,7 +134,7 @@ Fine fase: capitolo dell'analisi scritto in `docs/` e riusabile nella relazione.
 
 Fine fase: la home mostra dati reali dal database ed è validata.
 
-### Fase 3: struttura delle pagine pubbliche e utente
+### Fase 3: struttura delle pagine pubbliche e utente (completata)
 
 Nell'ordine: prodotti, sedi, servizi, chi siamo, pagine informative, accesso e
 registrazione, area personale e profilo, carrello, pagamento, ricevuta, pagine di errore.
@@ -144,7 +144,7 @@ controllo Pa11y, prova con JavaScript disabilitato.
 
 Fine fase: tutti i percorsi pubblici e utente completi, senza stile e senza JavaScript.
 
-### Fase 4: pannello di controllo
+### Fase 4: pannello di controllo (completata)
 
 Ogni sezione espone inserimento, modifica e cancellazione, come richiesto dai vincoli
 d'esame.
@@ -152,7 +152,7 @@ d'esame.
 1. `controllo.php`: elenco ordini con filtro per sede e per stato, cambio stato.
 2. `controllo-prodotti.php` e `controllo-prodotto.php`: creazione, modifica,
    cancellazione, caricamento immagine con lista consentita di tipi.
-3. `controllo-sedi.php`: anagrafica e orari.
+3. `controllo-sedi.php` e `controllo-sede.php`: anagrafica delle sedi e orari settimanali.
 4. `controllo-utenti.php`: elenco, attivazione, cambio ruolo, cancellazione.
 
 Ogni azione verifica ruolo e token CSRF lato server e risponde con un redirect.
@@ -249,7 +249,7 @@ Fine fase: `rebuild` unito in `main`, progetto installato e consegnato.
 | Classi CSS distinte | 390 | 50 |
 | `id` nel markup | 194 | 30 |
 | Tabelle | 19 | 9 |
-| Pagine | 27 | 21 |
+| Pagine | 27 | 22 |
 
 ## 7. Modo di lavorare
 
