@@ -25,7 +25,7 @@
     <ul>
         <li>nome utente, indirizzo email e password, forniti durante la registrazione;</li>
         <li>contenuto degli ordini, sede e orario di ritiro scelti;</li>
-        <li>dati tecnici della sessione, necessari a mantenere l'accesso e il carrello.</li>
+        <li>un identificativo di sessione, necessario a tenerti collegato e a conservare il carrello.</li>
     </ul>
 
     <p>La password non viene mai salvata in chiaro: il database conserva solo la sua impronta.</p>
@@ -45,8 +45,8 @@
     <h2>Conservazione</h2>
 
     <p>
-        I dati dell'account restano finché l'account esiste. Gli ordini restano per il
-        tempo richiesto dagli obblighi amministrativi.
+        I dati dell'account restano finché l'account esiste. Se cancelli l'account
+        spariscono anche il carrello e lo storico degli ordini.
     </p>
 </section>
 

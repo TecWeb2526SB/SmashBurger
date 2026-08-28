@@ -23,6 +23,7 @@ http_response_code(404);
         <h1>Pagina non trovata</h1>
         <p>L'indirizzo richiesto non corrisponde a nessuna pagina del sito.</p>
         <p><a href="./">Torna alla home</a></p>
+        <p><a href="prodotti">Vai al menu</a></p>
     </main>
 </body>
 
