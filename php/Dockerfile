@@ -1,5 +1,5 @@
-# Usiamo l'immagine ufficiale PHP 8.3 con Apache pre-configurato
-FROM php:8.3-apache
+# Immagine ufficiale PHP 8.1 con Apache, stessa versione del server di consegna
+FROM php:8.1-apache
 
 # Aggiorniamo i pacchetti del sistema operativo e installiamo le dipendenze per MariaDB/MySQL
 RUN apt-get update && apt-get install -y \
