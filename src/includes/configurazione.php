@@ -50,6 +50,17 @@ function url(string $pagina = '', array $parametri = []): string
     return $indirizzo;
 }
 
+// Gli errori non vengono stampati nella pagina: finiscono nel log del server e la
+// richiesta si chiude con la pagina di errore 500.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+
+set_exception_handler(function (Throwable $errore): void {
+    error_log('Errore non gestito: ' . $errore->getMessage());
+    http_response_code(500);
+    include __DIR__ . '/../errors/500.php';
+});
+
 // La sessione serve per l'accesso, per il token CSRF e per la sede scelta.
 if (session_status() === PHP_SESSION_NONE) {
     session_name('smashburger');
