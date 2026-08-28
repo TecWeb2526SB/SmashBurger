@@ -228,41 +228,36 @@ function ordini_tutti(PDO $pdo, ?int $sedeId = null, ?string $stato = null): arr
 }
 
 /**
- * Cambia lo stato di un ordine.
+ * Elenca gli stati possibili del pagamento.
+ */
+function ordine_stati_pagamento(): array
+{
+    return ['da pagare', 'pagato'];
+}
+
+/**
+ * Aggiorna insieme stato dell'ordine e stato del pagamento.
  *
  * @return array{ok: bool, messaggio: string}
  */
-function ordine_cambia_stato(PDO $pdo, int $ordineId, string $stato): array
+function ordine_aggiorna(PDO $pdo, int $ordineId, string $stato, string $statoPagamento): array
 {
     if (!in_array($stato, ordine_stati(), true)) {
         return ['ok' => false, 'messaggio' => 'Stato non valido.'];
     }
 
-    $aggiornamento = $pdo->prepare('UPDATE ordini SET stato = :stato WHERE id = :id');
-    $aggiornamento->execute(['stato' => $stato, 'id' => $ordineId]);
-
-    if ($aggiornamento->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'Ordine non trovato.'];
+    if (!in_array($statoPagamento, ordine_stati_pagamento(), true)) {
+        return ['ok' => false, 'messaggio' => 'Stato del pagamento non valido.'];
     }
 
-    return ['ok' => true, 'messaggio' => 'Stato dell\'ordine aggiornato.'];
-}
-
-/**
- * Segna un ordine come pagato, per gli incassi in contanti al ritiro.
- *
- * @return array{ok: bool, messaggio: string}
- */
-function ordine_segna_pagato(PDO $pdo, int $ordineId): array
-{
-    $aggiornamento = $pdo->prepare(
-        'UPDATE ordini SET stato_pagamento = :stato WHERE id = :id'
+    $query = $pdo->prepare(
+        'UPDATE ordini SET stato = :stato, stato_pagamento = :pagamento WHERE id = :id'
     );
-    $aggiornamento->execute(['stato' => 'pagato', 'id' => $ordineId]);
+    $query->execute(['stato' => $stato, 'pagamento' => $statoPagamento, 'id' => $ordineId]);
 
-    if ($aggiornamento->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'Ordine già segnato come pagato.'];
+    if ($query->rowCount() === 0) {
+        return ['ok' => true, 'messaggio' => 'Nessuna modifica da salvare.'];
     }
 
-    return ['ok' => true, 'messaggio' => 'Pagamento registrato.'];
+    return ['ok' => true, 'messaggio' => 'Ordine aggiornato.'];
 }

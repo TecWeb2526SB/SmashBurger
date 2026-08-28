@@ -56,4 +56,5 @@ mostra_pagina('account/profilo.php', [
     'pagina' => 'Area personale',
     'breadcrumb' => [['Home', url()], ['Area personale', url('area-personale')], ['Profilo', null]],
     'utente' => $utente,
+    'confermaCancella' => isset($_GET['cancella']) && !utente_e_amministratore(),
 ]);

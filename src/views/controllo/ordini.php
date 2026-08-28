@@ -2,7 +2,9 @@
 /**
  * Elenco degli ordini con i filtri e le azioni sullo stato.
  *
- * Riceve $sedi, $stati, $sedeFiltro, $statoFiltro e $ordini dal controller.
+ * Riceve $sedi, $stati, $statiPagamento, $sedeFiltro, $statoFiltro e $ordini dal
+ * controller. Ogni riga porta l'identificativo dell'ordine in data-ordine, così può
+ * essere aggiornata da sola senza ricaricare la pagina.
  */
 ?>
 <h1>Pannello di controllo</h1>
@@ -57,35 +59,25 @@
                 <th scope="col">Sede</th>
                 <th scope="col">Ritiro</th>
                 <th scope="col">Totale</th>
-                <th scope="col">Pagamento</th>
-                <th scope="col">Stato</th>
+                <th scope="col">Metodo</th>
+                <th scope="col">Stato e pagamento</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($ordini as $ordine): ?>
-                <tr>
+                <tr data-ordine="<?php echo (int) $ordine['id']; ?>">
                     <th scope="row"><?php echo e($ordine['numero']); ?></th>
                     <td><?php echo e($ordine['nome_utente']); ?></td>
                     <td><?php echo e($ordine['citta']); ?></td>
                     <td><?php echo e(date('d/m/Y H:i', strtotime($ordine['ritiro_previsto']))); ?></td>
                     <td><?php echo e(prezzo((int) $ordine['totale_centesimi'])); ?></td>
+                    <td><?php echo e($ordine['metodo_pagamento']); ?></td>
                     <td>
-                        <?php echo e($ordine['metodo_pagamento']); ?>,
-                        <?php echo e($ordine['stato_pagamento']); ?>
-                        <?php if ($ordine['stato_pagamento'] === 'da pagare'): ?>
-                            <form method="post" action="<?php echo e(url('controllo')); ?>">
-                                <?php echo campo_csrf(); ?>
-                                <input type="hidden" name="azione" value="pagato" />
-                                <input type="hidden" name="ordine_id" value="<?php echo (int) $ordine['id']; ?>" />
-                                <button type="submit">Segna pagato l'ordine <?php echo e($ordine['numero']); ?></button>
-                            </form>
-                        <?php endif; ?>
-                    </td>
-                    <td>
-                        <form method="post" action="<?php echo e(url('controllo')); ?>">
+                        <form method="post" action="<?php echo e(url('controllo')); ?>" data-modulo="ordine">
                             <?php echo campo_csrf(); ?>
-                            <input type="hidden" name="azione" value="stato" />
+                            <input type="hidden" name="azione" value="aggiorna" />
                             <input type="hidden" name="ordine_id" value="<?php echo (int) $ordine['id']; ?>" />
+
                             <label for="stato-<?php echo (int) $ordine['id']; ?>">
                                 Stato dell'ordine <?php echo e($ordine['numero']); ?>
                             </label>
@@ -97,6 +89,19 @@
                                     </option>
                                 <?php endforeach; ?>
                             </select>
+
+                            <label for="pagamento-<?php echo (int) $ordine['id']; ?>">
+                                Pagamento dell'ordine <?php echo e($ordine['numero']); ?>
+                            </label>
+                            <select id="pagamento-<?php echo (int) $ordine['id']; ?>" name="stato_pagamento">
+                                <?php foreach ($statiPagamento as $statoPagamento): ?>
+                                    <option value="<?php echo e($statoPagamento); ?>"
+                                        <?php echo $statoPagamento === $ordine['stato_pagamento'] ? 'selected="selected"' : ''; ?>>
+                                        <?php echo e($statoPagamento); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+
                             <button type="submit">Aggiorna</button>
                         </form>
                     </td>

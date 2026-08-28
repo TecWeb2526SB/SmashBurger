@@ -128,6 +128,9 @@ Regole:
 - Tutte le query usano prepared statement con parametri nominati.
 - Ogni richiesta `POST` verifica il token CSRF prima di produrre effetti.
 - Ogni azione che modifica dati risponde con un redirect (`POST` seguito da `GET`).
+- Ogni azione che cancella dati passa da una richiesta di conferma: il collegamento porta
+  alla pagina in `GET` con il dato da cancellare, la pagina mostra che cosa sta per
+  succedere e la cancellazione avviene con il modulo in `POST`.
 - **Ogni validazione fatta in JavaScript esiste identica in PHP** (vincolo d'esame): il
   controllo lato client è un aiuto, quello lato server è la difesa.
 - Le funzioni restituiscono dati oppure un array `['ok' => bool, 'messaggio' => string]`;
@@ -223,6 +226,11 @@ completa e validata**. Fino ad allora le pagine restano senza stile.
 - Il JavaScript non genera il markup della pagina e non sostituisce moduli funzionanti: al
   massimo intercetta un invio, ripete la stessa richiesta e aggiorna una porzione già
   presente.
+- Le richieste inviate dallo script sono le stesse dei moduli e ricevono la stessa
+  risposta HTML: il server non espone una seconda rappresentazione dei dati. Dalla
+  risposta lo script prende il frammento che serve e sostituisce quello già in pagina.
+- I punti di aggancio nel markup sono attributi `data-modulo` sui moduli aggiornabili e
+  `data-ordine` sulle righe che si aggiornano da sole.
 - Nessuna scrittura di stili da codice: si aggiunge o si toglie una classe o un attributo.
 - Nomi di funzioni e variabili in `camelCaseItaliano` (`inizializzaTema`,
   `aggiornaCarrello`, `quantitaCorrente`).

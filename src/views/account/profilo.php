@@ -1,6 +1,9 @@
 <?php
 /**
- * Modifica dei dati dell'account. Riceve $utente dal controller.
+ * Modifica dei dati dell'account.
+ *
+ * Riceve $utente e $confermaCancella, vero quando è stata chiesta la conferma di
+ * cancellazione dell'account.
  */
 ?>
 <h1>Profilo</h1>
@@ -54,10 +57,21 @@
 
         <p>La cancellazione elimina l'account, il carrello e lo storico degli ordini.</p>
 
-        <form method="post" action="<?php echo e(url('profilo')); ?>">
-            <?php echo campo_csrf(); ?>
-            <input type="hidden" name="azione" value="cancella" />
-            <p><button type="submit">Cancella il mio account</button></p>
-        </form>
+        <?php if ($confermaCancella): ?>
+            <div role="alert">
+                <p>Confermi la cancellazione? L'operazione non può essere annullata.</p>
+
+                <form method="post" action="<?php echo e(url('profilo')); ?>">
+                    <?php echo campo_csrf(); ?>
+                    <input type="hidden" name="azione" value="cancella" />
+                    <p>
+                        <button type="submit">Sì, cancella il mio account</button>
+                        <a href="<?php echo e(url('profilo')); ?>">Annulla</a>
+                    </p>
+                </form>
+            </div>
+        <?php else: ?>
+            <p><a href="<?php echo e(url('profilo', ['cancella' => 1])); ?>">Cancella il mio account</a></p>
+        <?php endif; ?>
     </section>
 <?php endif; ?>

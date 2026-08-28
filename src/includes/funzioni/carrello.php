@@ -113,8 +113,43 @@ function carrello_aggiungi(PDO $pdo, int $utenteId, int $prodottoId, int $quanti
 }
 
 /**
- * Cambia la quantità di una riga. La riga viene cercata solo dentro il carrello
- * dell'utente, così un identificativo altrui non produce effetti.
+ * Applica le quantità inviate dal carrello.
+ *
+ * Le righe vengono scritte in una transazione: o valgono tutte le nuove quantità o non
+ * ne vale nessuna, così un valore sbagliato non lascia il carrello a metà strada.
+ *
+ * @param array $quantita  quantità indicizzate per identificativo di riga
+ * @return array{ok: bool, messaggio: string}
+ */
+function carrello_aggiorna_righe(PDO $pdo, int $utenteId, array $quantita): array
+{
+    if ($quantita === []) {
+        return ['ok' => false, 'messaggio' => 'Nessuna quantità da aggiornare.'];
+    }
+
+    $pdo->beginTransaction();
+
+    foreach ($quantita as $rigaId => $valore) {
+        $esito = carrello_aggiorna_quantita($pdo, $utenteId, (int) $rigaId, (int) $valore);
+
+        if (!$esito['ok']) {
+            $pdo->rollBack();
+
+            return $esito;
+        }
+    }
+
+    $pdo->commit();
+
+    return ['ok' => true, 'messaggio' => 'Carrello aggiornato.'];
+}
+
+/**
+ * Cambia la quantità di una riga, oppure la toglie se la quantità è zero.
+ *
+ * L'appartenenza della riga al carrello di chi la modifica viene verificata prima della
+ * scrittura: il numero di righe toccate dall'aggiornamento non basta, perché vale zero
+ * anche quando la quantità inviata è identica a quella già salvata.
  *
  * @return array{ok: bool, messaggio: string}
  */
@@ -124,20 +159,23 @@ function carrello_aggiorna_quantita(PDO $pdo, int $utenteId, int $rigaId, int $q
         return ['ok' => false, 'messaggio' => 'Quantità non valida.'];
     }
 
-    if ($quantita === 0) {
-        return carrello_rimuovi($pdo, $utenteId, $rigaId);
-    }
-
     $carrelloId = carrello_id($pdo, $utenteId);
-    $aggiornamento = $pdo->prepare(
-        'UPDATE righe_carrello SET quantita = :quantita
-         WHERE id = :riga AND carrello_id = :carrello'
-    );
-    $aggiornamento->execute(['quantita' => $quantita, 'riga' => $rigaId, 'carrello' => $carrelloId]);
+    $verifica = $pdo->prepare('SELECT id FROM righe_carrello WHERE id = :riga AND carrello_id = :carrello');
+    $verifica->execute(['riga' => $rigaId, 'carrello' => $carrelloId]);
 
-    if ($aggiornamento->rowCount() === 0) {
+    if ($verifica->fetch() === false) {
         return ['ok' => false, 'messaggio' => 'Riga del carrello non trovata.'];
     }
+
+    if ($quantita === 0) {
+        $pdo->prepare('DELETE FROM righe_carrello WHERE id = :riga AND carrello_id = :carrello')
+            ->execute(['riga' => $rigaId, 'carrello' => $carrelloId]);
+
+        return ['ok' => true, 'messaggio' => 'Prodotto tolto dal carrello.'];
+    }
+
+    $pdo->prepare('UPDATE righe_carrello SET quantita = :quantita WHERE id = :riga AND carrello_id = :carrello')
+        ->execute(['quantita' => $quantita, 'riga' => $rigaId, 'carrello' => $carrelloId]);
 
     return ['ok' => true, 'messaggio' => 'Quantità aggiornata.'];
 }
@@ -149,15 +187,7 @@ function carrello_aggiorna_quantita(PDO $pdo, int $utenteId, int $rigaId, int $q
  */
 function carrello_rimuovi(PDO $pdo, int $utenteId, int $rigaId): array
 {
-    $carrelloId = carrello_id($pdo, $utenteId);
-    $cancellazione = $pdo->prepare('DELETE FROM righe_carrello WHERE id = :riga AND carrello_id = :carrello');
-    $cancellazione->execute(['riga' => $rigaId, 'carrello' => $carrelloId]);
-
-    if ($cancellazione->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'Riga del carrello non trovata.'];
-    }
-
-    return ['ok' => true, 'messaggio' => 'Prodotto tolto dal carrello.'];
+    return carrello_aggiorna_quantita($pdo, $utenteId, $rigaId, 0);
 }
 
 /**

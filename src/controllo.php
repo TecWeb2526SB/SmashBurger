@@ -18,11 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $ordineId = (int) ($_POST['ordine_id'] ?? 0);
 
-    $esito = match ((string) ($_POST['azione'] ?? '')) {
-        'stato' => ordine_cambia_stato($pdo, $ordineId, (string) ($_POST['stato'] ?? '')),
-        'pagato' => ordine_segna_pagato($pdo, $ordineId),
-        default => ['ok' => false, 'messaggio' => 'Azione non riconosciuta.'],
-    };
+    $esito = ((string) ($_POST['azione'] ?? '')) === 'aggiorna'
+        ? ordine_aggiorna(
+            $pdo,
+            $ordineId,
+            (string) ($_POST['stato'] ?? ''),
+            (string) ($_POST['stato_pagamento'] ?? '')
+        )
+        : ['ok' => false, 'messaggio' => 'Azione non riconosciuta.'];
 
     messaggio_imposta($esito['ok'] ? 'successo' : 'errore', $esito['messaggio']);
     vai_a('controllo');
@@ -49,6 +52,7 @@ mostra_pagina('controllo/ordini.php', [
     'sezione' => 'Ordini',
     'sedi' => $sedi,
     'stati' => ordine_stati(),
+    'statiPagamento' => ordine_stati_pagamento(),
     'sedeFiltro' => $sedeFiltro,
     'statoFiltro' => $statoFiltro,
     'ordini' => ordini_tutti($pdo, $sedeFiltro, $statoFiltro),

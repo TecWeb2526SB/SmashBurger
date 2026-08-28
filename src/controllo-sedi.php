@@ -21,6 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     vai_a('controllo-sedi');
 }
 
+// Il collegamento di cancellazione porta qui in GET e mostra solo la richiesta di
+// conferma: la cancellazione avviene con il modulo in POST.
+$daCancellare = isset($_GET['cancella']) ? sede_per_id($pdo, (int) $_GET['cancella']) : null;
+
 $query = $pdo->query('SELECT id, slug, nome, citta, provincia, indirizzo, attiva FROM sedi ORDER BY ordine, citta');
 
 mostra_pagina('controllo/sedi.php', [
@@ -29,4 +33,5 @@ mostra_pagina('controllo/sedi.php', [
     'breadcrumb' => [['Home', url()], ['Controllo', url('controllo')], ['Sedi', null]],
     'sezione' => 'Sedi',
     'sedi' => $query->fetchAll(),
+    'daCancellare' => $daCancellare,
 ]);

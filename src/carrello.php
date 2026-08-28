@@ -35,16 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'aggiorna':
-            $esito = carrello_aggiorna_quantita(
-                $pdo,
-                $utenteId,
-                (int) ($_POST['riga_id'] ?? 0),
-                (int) ($_POST['quantita'] ?? 0)
-            );
-            break;
-
-        case 'rimuovi':
-            $esito = carrello_rimuovi($pdo, $utenteId, (int) ($_POST['riga_id'] ?? 0));
+            $esito = carrello_aggiorna_righe($pdo, $utenteId, (array) ($_POST['quantita'] ?? []));
             break;
 
         case 'svuota':
@@ -69,4 +60,5 @@ mostra_pagina('ordine/carrello.php', [
     'righe' => $riepilogo['righe'],
     'articoli' => $riepilogo['articoli'],
     'totale' => $riepilogo['totale_centesimi'],
+    'confermaSvuota' => isset($_GET['svuota']) && $riepilogo['righe'] !== [],
 ]);
