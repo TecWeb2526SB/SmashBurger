@@ -12,8 +12,6 @@
 --
 
 -- Account del sito. Il ruolo distingue chi ordina da chi gestisce il servizio.
--- I due contatori servono a bloccare temporaneamente un account dopo una serie di
--- tentativi di accesso falliti.
 CREATE TABLE utenti (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome_utente VARCHAR(50) NOT NULL UNIQUE,
@@ -21,8 +19,6 @@ CREATE TABLE utenti (
     password_hash VARCHAR(255) NOT NULL,
     ruolo ENUM('cliente', 'amministratore') NOT NULL DEFAULT 'cliente',
     attivo TINYINT(1) NOT NULL DEFAULT 1,
-    tentativi_falliti TINYINT UNSIGNED NOT NULL DEFAULT 0,
-    bloccato_fino DATETIME NULL,
     creato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     aggiornato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;

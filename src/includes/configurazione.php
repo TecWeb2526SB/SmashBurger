@@ -28,10 +28,6 @@ define('TELEFONO_SITO', '049 111 2201');
 // Minuti di attesa fra la conferma dell'ordine e il primo orario di ritiro possibile.
 define('MINUTI_PREPARAZIONE', 20);
 
-// Dopo questo numero di accessi falliti l'account resta bloccato per i minuti indicati.
-define('TENTATIVI_ACCESSO_MASSIMI', 5);
-define('MINUTI_BLOCCO_ACCESSO', 15);
-
 /**
  * Costruisce un indirizzo relativo a partire dal nome di una pagina.
  *

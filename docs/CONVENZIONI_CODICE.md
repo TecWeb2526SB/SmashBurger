@@ -324,10 +324,7 @@ considerato ostile finché non viene validato.
 - Dopo un accesso riuscito l'identificativo di sessione viene rigenerato.
 - L'uscita svuota la sessione, la distrugge e cancella il cookie dal browser.
 - Il messaggio di errore dell'accesso è sempre lo stesso, sia che il nome utente esista
-  sia che la password sia errata, e il confronto viene eseguito anche per un utente
-  inesistente, così il tempo di risposta non rivela nulla.
-- Dopo cinque tentativi falliti l'account resta bloccato per quindici minuti, anche se poi
-  arriva la password giusta.
+  sia che la password sia errata, così non rivela quali account esistono.
 
 ### 12.4 Richieste che modificano dati
 
