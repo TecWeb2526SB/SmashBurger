@@ -109,3 +109,16 @@ function vai_a(string $pagina = '', array $parametri = []): void
     header('Location: ' . url($pagina, $parametri));
     exit;
 }
+
+/**
+ * Restituisce le sezioni del pannello di controllo come coppie etichetta/indirizzo.
+ */
+function menu_controllo(): array
+{
+    return [
+        'Ordini' => url('controllo'),
+        'Prodotti' => url('controllo-prodotti'),
+        'Sedi' => url('controllo-sedi'),
+        'Utenti' => url('controllo-utenti'),
+    ];
+}
