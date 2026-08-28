@@ -182,3 +182,87 @@ function ordine_per_numero(PDO $pdo, string $numero, int $utenteId): ?array
 
     return $ordine;
 }
+
+/**
+ * Elenca gli stati che un ordine può assumere, nell'ordine in cui si susseguono.
+ */
+function ordine_stati(): array
+{
+    return ['ricevuto', 'in preparazione', 'pronto', 'ritirato', 'annullato'];
+}
+
+/**
+ * Restituisce gli ordini per il pannello, con i filtri opzionali su sede e stato.
+ */
+function ordini_tutti(PDO $pdo, ?int $sedeId = null, ?string $stato = null): array
+{
+    $sql = 'SELECT o.id, o.numero, o.ritiro_previsto, o.stato, o.metodo_pagamento,
+                   o.stato_pagamento, o.totale_centesimi, o.creato_il,
+                   s.citta, u.nome_utente
+            FROM ordini o
+            INNER JOIN sedi s ON s.id = o.sede_id
+            INNER JOIN utenti u ON u.id = o.utente_id';
+    $condizioni = [];
+    $parametri = [];
+
+    if ($sedeId !== null) {
+        $condizioni[] = 'o.sede_id = :sede';
+        $parametri['sede'] = $sedeId;
+    }
+
+    if ($stato !== null) {
+        $condizioni[] = 'o.stato = :stato';
+        $parametri['stato'] = $stato;
+    }
+
+    if ($condizioni !== []) {
+        $sql .= ' WHERE ' . implode(' AND ', $condizioni);
+    }
+
+    $sql .= ' ORDER BY o.ritiro_previsto DESC';
+
+    $query = $pdo->prepare($sql);
+    $query->execute($parametri);
+
+    return $query->fetchAll();
+}
+
+/**
+ * Cambia lo stato di un ordine.
+ *
+ * @return array{ok: bool, messaggio: string}
+ */
+function ordine_cambia_stato(PDO $pdo, int $ordineId, string $stato): array
+{
+    if (!in_array($stato, ordine_stati(), true)) {
+        return ['ok' => false, 'messaggio' => 'Stato non valido.'];
+    }
+
+    $aggiornamento = $pdo->prepare('UPDATE ordini SET stato = :stato WHERE id = :id');
+    $aggiornamento->execute(['stato' => $stato, 'id' => $ordineId]);
+
+    if ($aggiornamento->rowCount() === 0) {
+        return ['ok' => false, 'messaggio' => 'Ordine non trovato.'];
+    }
+
+    return ['ok' => true, 'messaggio' => 'Stato dell\'ordine aggiornato.'];
+}
+
+/**
+ * Segna un ordine come pagato, per gli incassi in contanti al ritiro.
+ *
+ * @return array{ok: bool, messaggio: string}
+ */
+function ordine_segna_pagato(PDO $pdo, int $ordineId): array
+{
+    $aggiornamento = $pdo->prepare(
+        'UPDATE ordini SET stato_pagamento = :stato WHERE id = :id'
+    );
+    $aggiornamento->execute(['stato' => 'pagato', 'id' => $ordineId]);
+
+    if ($aggiornamento->rowCount() === 0) {
+        return ['ok' => false, 'messaggio' => 'Ordine già segnato come pagato.'];
+    }
+
+    return ['ok' => true, 'messaggio' => 'Pagamento registrato.'];
+}

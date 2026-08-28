@@ -246,3 +246,17 @@ function utente_cancella(PDO $pdo, int $utenteId): void
     $pdo->prepare('DELETE FROM utenti WHERE id = :id')->execute(['id' => $utenteId]);
 }
 
+
+/**
+ * Interrompe la pagina se chi la richiede non è un amministratore.
+ */
+function utente_richiedi_amministratore(): void
+{
+    utente_richiedi_accesso();
+
+    if (!utente_e_amministratore()) {
+        http_response_code(403);
+        messaggio_imposta('errore', 'Questa pagina è riservata agli amministratori.');
+        vai_a('area-personale');
+    }
+}
