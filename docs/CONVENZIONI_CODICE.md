@@ -231,6 +231,9 @@ completa e validata**. Fino ad allora le pagine restano senza stile.
   risposta lo script prende il frammento che serve e sostituisce quello già in pagina.
 - I punti di aggancio nel markup sono attributi `data-modulo` sui moduli aggiornabili e
   `data-ordine` sulle righe che si aggiornano da sole.
+- Quando più pulsanti agiscono su righe diverse dentro lo stesso modulo, ognuno porta
+  l'identificativo della riga come valore: il browser invia solo il pulsante premuto e il
+  modulo resta uno.
 - Nessuna scrittura di stili da codice: si aggiunge o si toglie una classe o un attributo.
 - Nomi di funzioni e variabili in `camelCaseItaliano` (`inizializzaTema`,
   `aggiornaCarrello`, `quantitaCorrente`).
