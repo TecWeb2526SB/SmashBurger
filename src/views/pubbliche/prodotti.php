@@ -1,0 +1,71 @@
+<?php
+/**
+ * Elenco del catalogo con il filtro per categoria.
+ *
+ * Riceve $categorie, $categoriaAttiva e $prodotti dal controller.
+ */
+?>
+<h1>Menu e prezzi</h1>
+
+<p>
+    Il menu è lo stesso in tutte le sedi. I prezzi sono comprensivi di IVA e gli allergeni
+    sono indicati sotto ogni prodotto.
+</p>
+
+<nav aria-label="Categorie del menu">
+    <ul>
+        <li>
+            <?php if ($categoriaAttiva === null): ?>
+                <span aria-current="true">Tutte le categorie</span>
+            <?php else: ?>
+                <a href="<?php echo e(url('prodotti')); ?>">Tutte le categorie</a>
+            <?php endif; ?>
+        </li>
+        <?php foreach ($categorie as $categoria): ?>
+            <li>
+                <?php if (($categoriaAttiva['slug'] ?? null) === $categoria['slug']): ?>
+                    <span aria-current="true"><?php echo e($categoria['nome']); ?></span>
+                <?php else: ?>
+                    <a href="<?php echo e(url('prodotti', ['categoria' => $categoria['slug']])); ?>">
+                        <?php echo e($categoria['nome']); ?>
+                    </a>
+                <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</nav>
+
+<section>
+    <h2><?php echo e($categoriaAttiva['nome'] ?? 'Tutto il menu'); ?></h2>
+
+    <?php if ($prodotti === []): ?>
+        <p>Non ci sono prodotti in questa categoria.</p>
+    <?php else: ?>
+        <ul class="griglia">
+            <?php foreach ($prodotti as $prodotto): ?>
+                <li>
+                    <article class="scheda">
+                        <h3><?php echo e($prodotto['nome']); ?></h3>
+
+                        <?php if (!empty($prodotto['immagine'])): ?>
+                            <img src="<?php echo e($prodotto['immagine']); ?>"
+                                alt="<?php echo e($prodotto['nome']); ?>"
+                                loading="lazy" />
+                        <?php endif; ?>
+
+                        <p><?php echo e($prodotto['descrizione']); ?></p>
+                        <p><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></p>
+
+                        <?php if (!empty($prodotto['allergeni'])): ?>
+                            <p>Allergeni: <?php echo e($prodotto['allergeni']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if ((int) $prodotto['disponibile'] !== 1): ?>
+                            <p><span class="etichetta">Non disponibile</span></p>
+                        <?php endif; ?>
+                    </article>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+</section>
