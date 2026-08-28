@@ -119,7 +119,7 @@ Il titolo sta entro 60 caratteri, la descrizione entro 160.
 | chi-siamo | Chi siamo - Smash Burger | Come lavoriamo la carne, come nasce lo smash e come sono organizzate le nostre quattro sedi. |
 | sedi | Sedi e orari - Smash Burger | Indirizzi, orari di apertura e indicazioni per il ritiro nelle sedi di Padova, Treviso, Vicenza e Udine. |
 | privacy | Privacy policy - Smash Burger | Quali dati raccogliamo, per quali finalità, per quanto tempo e come esercitare i tuoi diritti. |
-| accessibilita | Accessibilità - Smash Burger | Stato di conformità del sito alle linee guida WCAG 2.1 AA e modalita' per segnalare un problema. |
+| accessibilita | Accessibilità - Smash Burger | Stato di conformità del sito alle linee guida WCAG 2.1 AA e modalità per segnalare un problema. |
 | mappa-sito | Mappa del sito - Smash Burger | Elenco completo delle pagine del sito, ordinate per area. |
 
 Le pagine di accesso, area personale, carrello, pagamento, ricevuta e pannello non hanno
