@@ -76,3 +76,36 @@ function menu_principale(): array
 
     return $voci;
 }
+
+/**
+ * Salva un messaggio da mostrare dopo un redirect.
+ *
+ * @param string $tipo  'successo' oppure 'errore'
+ */
+function messaggio_imposta(string $tipo, string $testo): void
+{
+    $_SESSION['messaggio'] = ['tipo' => $tipo, 'testo' => $testo];
+}
+
+/**
+ * Legge il messaggio salvato e lo rimuove dalla sessione, così compare una volta sola.
+ */
+function messaggio_leggi(): ?array
+{
+    $messaggio = $_SESSION['messaggio'] ?? null;
+    unset($_SESSION['messaggio']);
+
+    return $messaggio;
+}
+
+/**
+ * Invia il browser a un'altra pagina del sito e interrompe l'esecuzione.
+ *
+ * Viene usata dopo ogni richiesta POST che modifica dati, così un aggiornamento della
+ * pagina non ripete l'operazione.
+ */
+function vai_a(string $pagina = '', array $parametri = []): void
+{
+    header('Location: ' . url($pagina, $parametri));
+    exit;
+}

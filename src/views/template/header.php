@@ -42,3 +42,8 @@
 
     <main id="contenuto">
         <?php include __DIR__ . '/breadcrumb.php'; ?>
+
+        <?php $messaggio = messaggio_leggi(); ?>
+        <?php if ($messaggio !== null): ?>
+            <p class="avviso" role="status"><?php echo e($messaggio['testo']); ?></p>
+        <?php endif; ?>
