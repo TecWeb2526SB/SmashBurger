@@ -48,7 +48,7 @@
                         <h3><?php echo e($prodotto['nome']); ?></h3>
 
                         <?php if (!empty($prodotto['immagine'])): ?>
-                            <img src="<?php echo e($prodotto['immagine']); ?>"
+                            <img src="<?php echo e(immagine_url($prodotto['immagine'])); ?>"
                                 alt="<?php echo e($prodotto['nome']); ?>"
                                 loading="lazy" />
                         <?php endif; ?>

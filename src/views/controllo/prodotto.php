@@ -80,7 +80,7 @@
         <legend>Immagine</legend>
 
         <?php if (!empty($prodotto['immagine'])): ?>
-            <p><img src="<?php echo e($prodotto['immagine']); ?>" alt="Immagine attuale di <?php echo e($prodotto['nome']); ?>" /></p>
+            <p><img src="<?php echo e(immagine_url($prodotto['immagine'])); ?>" alt="Immagine attuale di <?php echo e($prodotto['nome']); ?>" /></p>
         <?php endif; ?>
 
         <p>

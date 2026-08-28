@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $caricamento = immagine_salva($_FILES['immagine']);
 
         if ($caricamento['ok']) {
-            $valori['immagine'] = $caricamento['percorso'];
+            $valori['immagine'] = $caricamento['nome'];
         } else {
             $errori['immagine'] = $caricamento['messaggio'];
         }
