@@ -10,7 +10,7 @@
 
 <p>
     Ordina online e ritira a Padova, Treviso, Vicenza o Udine. La carne finisce sulla
-    piastra quando arriva il tuo ordine, per questo servono venti minuti.
+    piastra quando arriva il tuo ordine.
 </p>
 
 <p><a href="<?php echo e(url('prodotti')); ?>">Vai al menu e ai prezzi</a></p>
@@ -39,7 +39,7 @@
 
     <ol>
         <li>Scegli i prodotti dal menu e mettili nel carrello.</li>
-        <li>Indica la sede e l'orario di ritiro, a partire da venti minuti dopo l'ordine.</li>
+        <li>Indica la sede e scegli uno degli orari di ritiro disponibili.</li>
         <li>Paghi con carta adesso, oppure in contanti quando ritiri.</li>
     </ol>
 </section>
