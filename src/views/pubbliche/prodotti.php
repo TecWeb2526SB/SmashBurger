@@ -5,20 +5,20 @@
  * Riceve $categorie, $categoriaAttiva e $prodotti dal controller.
  */
 ?>
-<h1>Menu e prezzi</h1>
+<h1>Menu</h1>
 
 <p>
-    Il menu è lo stesso in tutte le sedi. I prezzi sono comprensivi di IVA e gli allergeni
-    sono indicati sotto ogni prodotto.
+    Il menu è lo stesso in tutte le sedi. I prezzi sono comprensivi di IVA e sotto ogni
+    prodotto trovi gli allergeni.
 </p>
 
 <nav aria-label="Categorie del menu">
     <ul>
         <li>
             <?php if ($categoriaAttiva === null): ?>
-                <span aria-current="true">Tutte le categorie</span>
+                <span aria-current="true">Tutto il menu</span>
             <?php else: ?>
-                <a href="<?php echo e(url('prodotti')); ?>">Tutte le categorie</a>
+                <a href="<?php echo e(url('prodotti')); ?>">Tutto il menu</a>
             <?php endif; ?>
         </li>
         <?php foreach ($categorie as $categoria): ?>
@@ -63,7 +63,11 @@
                         <?php if ((int) $prodotto['disponibile'] !== 1): ?>
                             <p><span class="etichetta">Non disponibile</span></p>
                         <?php elseif (!utente_autenticato()): ?>
-                            <p><a href="<?php echo e(url('accedi')); ?>">Accedi per ordinare</a></p>
+                            <p>
+                                Per ordinare serve un account:
+                                <a href="<?php echo e(url('accedi')); ?>">accedi</a> oppure
+                                <a href="<?php echo e(url('registrati')); ?>">registrati</a>.
+                            </p>
                         <?php else: ?>
                             <form method="post" action="<?php echo e(url('carrello')); ?>">
                                 <?php echo campo_csrf(); ?>
