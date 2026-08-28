@@ -19,8 +19,7 @@
     <h2>Che cosa trovi nel menu</h2>
 
     <p>
-        Burger, contorni, bevande e dessert. Stesso menu e stessi prezzi in tutte le sedi,
-        con gli allergeni indicati su ogni prodotto.
+        Burger, contorni, bevande e dessert, con gli allergeni indicati su ogni prodotto.
     </p>
 
     <ul>

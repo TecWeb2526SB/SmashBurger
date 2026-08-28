@@ -8,8 +8,8 @@
 <h1>Sedi e orari</h1>
 
 <p>
-    Le quattro sedi preparano lo stesso menu. Il ritiro avviene nella sede scelta al
-    momento dell'ordine.
+    Tutte le sedi aprono ogni giorno dalle 11:30 alle 22:30. Il ritiro avviene nella sede
+    che scegli al momento dell'ordine.
 </p>
 
 <?php foreach ($sedi as $sede): ?>

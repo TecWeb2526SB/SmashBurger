@@ -7,16 +7,16 @@
 
 <p>
     Smash Burger prepara hamburger con la tecnica dello smash: la carne viene schiacciata
-    sulla piastra rovente, così la superficie forma una crosta e l'interno resta succoso.
+    sulla piastra rovente, la superficie forma una crosta e l'interno resta succoso.
 </p>
 
 <section>
     <h2>Come lavoriamo</h2>
 
     <p>
-        Ogni hamburger viene cotto dopo la conferma dell'ordine. Il pane arriva
-        giornalmente, la carne viene lavorata in sede e le salse sono preparate
-        internamente.
+        Il patty è sottile e cuoce in un paio di minuti su piastra molto calda: è la
+        temperatura a creare la crosta scura in superficie. Un hamburger così non regge
+        l'attesa, quindi va in piastra quando serve.
     </p>
 </section>
 
@@ -26,12 +26,14 @@
     <figure>
         <img src="images/locale-interno.webp"
             alt="Bancone di un locale Smash Burger con la cucina a vista sul fondo" />
-        <figcaption>La cucina è a vista in tutte le sedi.</figcaption>
+        <figcaption>La cucina è a vista: mentre aspetti vedi la piastra al lavoro.</figcaption>
     </figure>
 </section>
 
 <section>
     <h2>Dove siamo</h2>
+
+    <p>Quattro sedi in Veneto e Friuli.</p>
 
     <ul>
         <?php foreach ($sedi as $sede): ?>
