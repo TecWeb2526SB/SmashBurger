@@ -53,7 +53,7 @@ function menu_principale(): array
 {
     $voci = [
         'Home' => url(),
-        'Prodotti' => url('prodotti'),
+        'Menu' => url('prodotti'),
         'Servizi' => url('servizi'),
         'Chi siamo' => url('chi-siamo'),
         'Sedi' => url('sedi'),

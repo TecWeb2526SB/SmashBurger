@@ -12,6 +12,14 @@
     prodotto trovi gli allergeni.
 </p>
 
+<?php if (!utente_autenticato()): ?>
+    <p>
+        Per ordinare serve un account:
+        <a href="<?php echo e(url('accedi')); ?>">accedi</a> oppure
+        <a href="<?php echo e(url('registrati')); ?>">registrati</a>.
+    </p>
+<?php endif; ?>
+
 <nav aria-label="Categorie del menu">
     <ul>
         <li>
@@ -63,11 +71,6 @@
                         <?php if ((int) $prodotto['disponibile'] !== 1): ?>
                             <p><span class="etichetta">Non disponibile</span></p>
                         <?php elseif (!utente_autenticato()): ?>
-                            <p>
-                                Per ordinare serve un account:
-                                <a href="<?php echo e(url('accedi')); ?>">accedi</a> oppure
-                                <a href="<?php echo e(url('registrati')); ?>">registrati</a>.
-                            </p>
                         <?php else: ?>
                             <form method="post" action="<?php echo e(url('carrello')); ?>">
                                 <?php echo campo_csrf(); ?>

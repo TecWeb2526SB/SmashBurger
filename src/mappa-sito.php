@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/risorse.php';
 $sezioni = [
     'Pagine pubbliche' => [
         'Home' => url(),
-        'Menu e prezzi' => url('prodotti'),
+        'Menu' => url('prodotti'),
         'Servizi' => url('servizi'),
         'Chi siamo' => url('chi-siamo'),
         'Sedi e orari' => url('sedi'),

@@ -22,8 +22,8 @@ foreach ($categorie as $categoria) {
 mostra_pagina('pubbliche/prodotti.php', [
     'titolo' => 'Menu e prezzi - Smash Burger',
     'descrizione' => 'Burger, contorni, bevande e dessert con prezzi e allergeni. Scegli i prodotti e ritirali nella sede che preferisci.',
-    'pagina' => 'Prodotti',
-    'breadcrumb' => [['Home', url()], ['Prodotti', null]],
+    'pagina' => 'Menu',
+    'breadcrumb' => [['Home', url()], ['Menu', null]],
     'categorie' => $categorie,
     'categoriaAttiva' => $categoriaAttiva,
     'prodotti' => catalogo_prodotti($pdo, $categoriaAttiva['slug'] ?? null),
