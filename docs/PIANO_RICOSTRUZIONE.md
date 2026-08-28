@@ -253,8 +253,9 @@ Fine fase: `rebuild` unito in `main`, progetto installato e consegnato.
 ## 7. Modo di lavorare
 
 - Un commit per unità coerente (una pagina, una funzione di dominio, una sezione di CSS).
-- Messaggi di commit in italiano, senza firme di co-autori e senza riferimenti a
-  strumenti.
+- Messaggi di commit di una riga sola, in italiano, senza corpo, senza firme di co-autori
+  e senza riferimenti a strumenti. Prefisso `feat:`, `fix:` o `chore:` come nel resto
+  della cronologia.
 - Commit e push avvengono solo su richiesta esplicita.
 - Nessun commit lascia una pagina non validata.
 - Le verifiche della sezione 13 delle convenzioni si eseguono prima di ogni commit, non a fine fase.

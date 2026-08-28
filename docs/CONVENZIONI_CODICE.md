@@ -320,4 +320,5 @@ un'eccezione.
 5. La navigazione da tastiera raggiunge ogni controllo con focus visibile.
 6. I budget del punto 12 sono rispettati.
 7. Il file non contiene caratteri fuori dall'elenco ammesso al punto 2.3.
-8. Il messaggio di commit non contiene firme di co-autori né riferimenti a strumenti.
+8. Il messaggio di commit è di una riga sola, senza corpo, senza firme di co-autori
+   e senza riferimenti a strumenti.
