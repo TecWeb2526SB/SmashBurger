@@ -145,10 +145,10 @@ INSERT INTO utenti (nome_utente, email, password_hash, ruolo) VALUES
     ('user', 'user@smashburger.it', '$2y$12$MtBkmlTz0i1pXAlYwdR1QuNqNS5p6Kt.aAN3y.za3m6hVaROr92LO', 'cliente');
 
 INSERT INTO sedi (slug, nome, citta, provincia, indirizzo, cap, telefono, email, note_ritiro, ordine) VALUES
-    ('padova', 'Smash Burger Padova', 'Padova', 'PD', 'Via Roma 42', '35122', '049 111 2201', 'padova@smashburger.it', 'Ritiro al banco vicino alla cassa principale.', 1),
-    ('treviso', 'Smash Burger Treviso', 'Treviso', 'TV', 'Piazza dei Signori 8', '31100', '0422 321 780', 'treviso@smashburger.it', 'Ritiro mostrando il numero dell''ordine al banco.', 2),
-    ('vicenza', 'Smash Burger Vicenza', 'Vicenza', 'VI', 'Corso Palladio 64', '36100', '0444 210 995', 'vicenza@smashburger.it', 'Area di ritiro dedicata all''interno del locale.', 3),
-    ('udine', 'Smash Burger Udine', 'Udine', 'UD', 'Via Mercatovecchio 21', '33100', '0432 442 118', 'udine@smashburger.it', 'Ritiro al banco laterale, ingresso da via Mercatovecchio.', 4);
+    ('padova', 'Smash Burger Padova', 'Padova', 'PD', 'Via Roma 42', '35122', '049 111 2201', 'padova@smashburger.it', 'Siamo in zona a traffico limitato: il parcheggio più vicino è quello di Prato della Valle, dieci minuti a piedi.', 1),
+    ('treviso', 'Smash Burger Treviso', 'Treviso', 'TV', 'Piazza dei Signori 8', '31100', '0422 321 780', 'treviso@smashburger.it', 'Ingresso senza gradini sulla piazza, il banco del ritiro è subito a destra.', 2),
+    ('vicenza', 'Smash Burger Vicenza', 'Vicenza', 'VI', 'Corso Palladio 64', '36100', '0444 210 995', 'vicenza@smashburger.it', 'Corso pedonale, si arriva a piedi o in bici: rastrelliera davanti al locale.', 3),
+    ('udine', 'Smash Burger Udine', 'Udine', 'UD', 'Via Mercatovecchio 21', '33100', '0432 442 118', 'udine@smashburger.it', 'Sotto i portici, con un ingresso dedicato solo ai ritiri.', 4);
 
 -- Tutte le sedi aprono ogni giorno con lo stesso orario.
 INSERT INTO orari_sedi (sede_id, giorno, apertura, chiusura, chiuso)

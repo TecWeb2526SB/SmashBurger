@@ -39,7 +39,7 @@
             'cap' => 'CAP',
             'telefono' => 'Telefono',
             'email' => 'Email',
-            'note_ritiro' => 'Note per il ritiro',
+            'note_ritiro' => 'Come arrivare e dove ritirare',
         ];
         ?>
         <?php foreach ($etichette as $campo => $etichetta): ?>
@@ -49,6 +49,12 @@
                     id="<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
                     <?php echo $campo === 'note_ritiro' ? '' : 'required="required"'; ?>
                     value="<?php echo e((string) $valori[$campo]); ?>" />
+                <?php if ($campo === 'note_ritiro'): ?>
+                    <small id="aiuto-note_ritiro">
+                        Un'informazione pratica che cambia da sede a sede: parcheggio, accesso,
+                        ingresso del ritiro.
+                    </small>
+                <?php endif; ?>
                 <?php if (isset($errori[$campo])): ?>
                     <small id="errore-<?php echo e($campo); ?>"><?php echo e($errori[$campo]); ?></small>
                 <?php endif; ?>
