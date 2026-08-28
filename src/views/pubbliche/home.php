@@ -6,17 +6,22 @@
  * Riceve $categorie e $sedi dal controller.
  */
 ?>
-<h1>Hamburger smash, pronti da ritirare</h1>
+<h1>Smash burger, schiacciati al momento</h1>
 
 <p>
-    Prepariamo hamburger schiacciati sulla piastra al momento dell'ordine.
-    Scegli i prodotti, indica la sede e l'orario, e ritira senza fare la coda.
+    Ordina online e ritira a Padova, Treviso, Vicenza o Udine. La carne finisce sulla
+    piastra quando arriva il tuo ordine, per questo servono venti minuti.
 </p>
 
 <p><a href="<?php echo e(url('prodotti')); ?>">Vai al menu e ai prezzi</a></p>
 
 <section>
     <h2>Che cosa trovi nel menu</h2>
+
+    <p>
+        Burger, contorni, bevande e dessert. Stesso menu e stessi prezzi in tutte le sedi,
+        con gli allergeni indicati su ogni prodotto.
+    </p>
 
     <ul>
         <?php foreach ($categorie as $categoria): ?>
@@ -30,17 +35,19 @@
 </section>
 
 <section>
-    <h2>Come funziona l'ordine</h2>
+    <h2>Come funziona</h2>
 
     <ol>
-        <li>Scegli i prodotti dal menu e aggiungili al carrello.</li>
-        <li>Indica la sede e l'orario di ritiro fra quelli disponibili.</li>
-        <li>Paghi online oppure in cassa al momento del ritiro.</li>
+        <li>Scegli i prodotti dal menu e mettili nel carrello.</li>
+        <li>Indica la sede e l'orario di ritiro, a partire da venti minuti dopo l'ordine.</li>
+        <li>Paghi con carta adesso, oppure in contanti quando ritiri.</li>
     </ol>
 </section>
 
 <section>
-    <h2>Le nostre sedi</h2>
+    <h2>Dove siamo</h2>
+
+    <p>Quattro sedi, aperte tutti i giorni dalle 11:30 alle 22:30.</p>
 
     <ul>
         <?php foreach ($sedi as $sede): ?>
