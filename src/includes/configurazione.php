@@ -28,6 +28,10 @@ define('TELEFONO_SITO', '049 111 2201');
 // Minuti di attesa fra la conferma dell'ordine e il primo orario di ritiro possibile.
 define('MINUTI_PREPARAZIONE', 20);
 
+// Dopo questo numero di accessi falliti l'account resta bloccato per i minuti indicati.
+define('TENTATIVI_ACCESSO_MASSIMI', 5);
+define('MINUTI_BLOCCO_ACCESSO', 15);
+
 /**
  * Costruisce un indirizzo relativo a partire dal nome di una pagina.
  *
@@ -61,12 +65,37 @@ set_exception_handler(function (Throwable $errore): void {
     include __DIR__ . '/../errors/500.php';
 });
 
+/**
+ * Indica se la richiesta corrente viaggia su HTTPS, tenendo conto di un eventuale
+ * proxy che inoltra il protocollo originale nell'intestazione X-Forwarded-Proto.
+ */
+function richiesta_su_https(): bool
+{
+    $https = strtolower((string) ($_SERVER['HTTPS'] ?? ''));
+    $inoltrato = strtolower(trim(explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? ''))[0]));
+
+    return $https === 'on' || $https === '1' || $inoltrato === 'https';
+}
+
+// Intestazioni di sicurezza inviate da PHP: valgono anche dove .htaccess non viene letto.
+header('Content-Type: text/html; charset=UTF-8');
+header('X-Content-Type-Options: nosniff');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('X-Frame-Options: SAMEORIGIN');
+header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'");
+
 // La sessione serve per l'accesso, per il token CSRF e per la sede scelta.
+// La modalità stretta impedisce di far adottare al browser un identificativo scelto
+// dall'attaccante, e i cookie sono l'unico canale ammesso per l'identificativo.
 if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+
     session_name('smashburger');
     session_set_cookie_params([
         'lifetime' => 0,
         'path' => '/',
+        'secure' => richiesta_su_https(),
         'httponly' => true,
         'samesite' => 'Lax',
     ]);
