@@ -52,7 +52,7 @@ function utente_email_valida(string $email): bool
  */
 function utente_password_valida(string $password): bool
 {
-    return strlen($password) >= 8;
+    return strlen($password) >= 8 && strlen($password) <= 128;
 }
 
 /**
@@ -78,10 +78,30 @@ function utente_per_nome(PDO $pdo, string $nome): ?array
 function utente_accedi(PDO $pdo, string $nome, string $password): array
 {
     $utente = utente_per_nome($pdo, $nome);
+    $generico = 'Nome utente o password non corretti.';
 
-    if ($utente === null || !password_verify($password, $utente['password_hash'])) {
-        return ['ok' => false, 'messaggio' => 'Nome utente o password non corretti.'];
+    if ($utente === null) {
+        // Il confronto viene eseguito comunque, così il tempo di risposta non rivela
+        // se il nome utente esiste.
+        password_verify($password, '$2y$12$usernonesistenteusernonesist.4bJEBIhPIm2Ee.7Q7bDrEeMhVjBTC');
+
+        return ['ok' => false, 'messaggio' => $generico];
     }
+
+    if ($utente['bloccato_fino'] !== null && strtotime($utente['bloccato_fino']) > time()) {
+        return [
+            'ok' => false,
+            'messaggio' => 'Troppi tentativi di accesso. Riprova fra ' . MINUTI_BLOCCO_ACCESSO . ' minuti.',
+        ];
+    }
+
+    if (!password_verify($password, $utente['password_hash'])) {
+        utente_registra_tentativo_fallito($pdo, (int) $utente['id'], (int) $utente['tentativi_falliti']);
+
+        return ['ok' => false, 'messaggio' => $generico];
+    }
+
+    utente_azzera_tentativi($pdo, (int) $utente['id']);
 
     if ((int) $utente['attivo'] !== 1) {
         return ['ok' => false, 'messaggio' => 'Questo account non è attivo.'];
@@ -104,6 +124,16 @@ function utente_accedi(PDO $pdo, string $nome, string $password): array
 function utente_esci(): void
 {
     $_SESSION = [];
+
+    $parametri = session_get_cookie_params();
+    setcookie(session_name(), '', [
+        'expires' => time() - 3600,
+        'path' => $parametri['path'],
+        'secure' => $parametri['secure'],
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+
     session_destroy();
     session_start();
     session_regenerate_id(true);
@@ -232,4 +262,31 @@ function utente_aggiorna_password(PDO $pdo, int $utenteId, string $attuale, stri
 function utente_cancella(PDO $pdo, int $utenteId): void
 {
     $pdo->prepare('DELETE FROM utenti WHERE id = :id')->execute(['id' => $utenteId]);
+}
+
+/**
+ * Aumenta il contatore dei tentativi falliti e blocca l'account quando supera il limite.
+ */
+function utente_registra_tentativo_fallito(PDO $pdo, int $utenteId, int $tentativiAttuali): void
+{
+    $tentativi = $tentativiAttuali + 1;
+    $bloccoFino = null;
+
+    if ($tentativi >= TENTATIVI_ACCESSO_MASSIMI) {
+        $tentativi = 0;
+        $bloccoFino = date('Y-m-d H:i:s', time() + MINUTI_BLOCCO_ACCESSO * 60);
+    }
+
+    $pdo->prepare(
+        'UPDATE utenti SET tentativi_falliti = :tentativi, bloccato_fino = :blocco WHERE id = :id'
+    )->execute(['tentativi' => $tentativi, 'blocco' => $bloccoFino, 'id' => $utenteId]);
+}
+
+/**
+ * Azzera contatore e blocco dopo un accesso riuscito.
+ */
+function utente_azzera_tentativi(PDO $pdo, int $utenteId): void
+{
+    $pdo->prepare('UPDATE utenti SET tentativi_falliti = 0, bloccato_fino = NULL WHERE id = :id')
+        ->execute(['id' => $utenteId]);
 }
