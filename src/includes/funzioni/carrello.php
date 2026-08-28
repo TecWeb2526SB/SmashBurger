@@ -181,6 +181,28 @@ function carrello_aggiorna_quantita(PDO $pdo, int $utenteId, int $rigaId, int $q
 }
 
 /**
+ * Aumenta o diminuisce di uno la quantità di una riga.
+ *
+ * Arrivata a zero la riga viene tolta, come per l'aggiornamento diretto.
+ *
+ * @param int $variazione  1 per aumentare, -1 per diminuire
+ * @return array{ok: bool, messaggio: string}
+ */
+function carrello_varia_quantita(PDO $pdo, int $utenteId, int $rigaId, int $variazione): array
+{
+    $carrelloId = carrello_id($pdo, $utenteId);
+    $query = $pdo->prepare('SELECT quantita FROM righe_carrello WHERE id = :riga AND carrello_id = :carrello');
+    $query->execute(['riga' => $rigaId, 'carrello' => $carrelloId]);
+    $quantita = $query->fetchColumn();
+
+    if ($quantita === false) {
+        return ['ok' => false, 'messaggio' => 'Riga del carrello non trovata.'];
+    }
+
+    return carrello_aggiorna_quantita($pdo, $utenteId, $rigaId, (int) $quantita + $variazione);
+}
+
+/**
  * Toglie una riga dal carrello dell'utente.
  *
  * @return array{ok: bool, messaggio: string}

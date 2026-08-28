@@ -41,6 +41,7 @@
                     <th scope="col">Prezzo</th>
                     <th scope="col">Quantità</th>
                     <th scope="col">Subtotale</th>
+                    <th scope="col">Azioni</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +50,9 @@
                         <th scope="row"><?php echo e($riga['nome']); ?></th>
                         <td><?php echo e(prezzo((int) $riga['prezzo_centesimi'])); ?></td>
                         <td>
+                            <button type="submit" name="diminuisci" value="<?php echo (int) $riga['id']; ?>"
+                                aria-label="Togli una unità di <?php echo e($riga['nome']); ?>">-</button>
+
                             <label for="quantita-<?php echo (int) $riga['id']; ?>">
                                 Quantità di <?php echo e($riga['nome']); ?>
                             </label>
@@ -56,22 +60,30 @@
                                 name="quantita[<?php echo (int) $riga['id']; ?>]"
                                 value="<?php echo (int) $riga['quantita']; ?>"
                                 min="0" max="<?php echo QUANTITA_MASSIMA; ?>" required="required" />
+
+                            <button type="submit" name="aumenta" value="<?php echo (int) $riga['id']; ?>"
+                                aria-label="Aggiungi una unità di <?php echo e($riga['nome']); ?>">+</button>
                         </td>
                         <td><?php echo e(prezzo((int) $riga['subtotale_centesimi'])); ?></td>
+                        <td>
+                            <button type="submit" name="togli" value="<?php echo (int) $riga['id']; ?>">
+                                Togli <?php echo e($riga['nome']); ?>
+                            </button>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
                 <tr>
                     <th scope="row" colspan="2">Totale, <?php echo (int) $articoli; ?> articoli</th>
-                    <td colspan="2"><?php echo e(prezzo((int) $totale)); ?></td>
+                    <td colspan="3"><?php echo e(prezzo((int) $totale)); ?></td>
                 </tr>
             </tfoot>
         </table>
 
         <p>
             <button type="submit">Aggiorna il carrello</button>
-            <small id="aiuto-quantita">Metti la quantità a zero per togliere un prodotto.</small>
+            <small id="aiuto-quantita">Cambia più quantità insieme e premi Aggiorna, oppure usa i pulsanti sulla riga.</small>
         </p>
     </form>
 

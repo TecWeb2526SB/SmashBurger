@@ -22,6 +22,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         vai_a($ritorno);
     }
 
+    // I pulsanti della singola riga portano l'identificativo come valore, così il
+    // browser invia solo quello premuto e il modulo resta uno solo.
+    foreach (['aumenta' => 1, 'diminuisci' => -1] as $pulsante => $variazione) {
+        if (isset($_POST[$pulsante])) {
+            $esito = carrello_varia_quantita($pdo, $utenteId, (int) $_POST[$pulsante], $variazione);
+            messaggio_imposta($esito['ok'] ? 'successo' : 'errore', $esito['messaggio']);
+            vai_a($ritorno);
+        }
+    }
+
+    if (isset($_POST['togli'])) {
+        $esito = carrello_rimuovi($pdo, $utenteId, (int) $_POST['togli']);
+        messaggio_imposta($esito['ok'] ? 'successo' : 'errore', $esito['messaggio']);
+        vai_a($ritorno);
+    }
+
     $azione = (string) ($_POST['azione'] ?? '');
 
     switch ($azione) {
