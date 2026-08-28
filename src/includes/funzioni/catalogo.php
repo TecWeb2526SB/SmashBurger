@@ -57,3 +57,15 @@ function prodotto_per_slug(PDO $pdo, string $slug): ?array
 
     return $prodotto === false ? null : $prodotto;
 }
+
+/**
+ * Restituisce un prodotto a partire dal suo identificativo, oppure null.
+ */
+function prodotto_per_id(PDO $pdo, int $prodottoId): ?array
+{
+    $query = $pdo->prepare('SELECT * FROM prodotti WHERE id = :id');
+    $query->execute(['id' => $prodottoId]);
+    $prodotto = $query->fetch();
+
+    return $prodotto === false ? null : $prodotto;
+}
