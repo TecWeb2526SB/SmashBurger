@@ -290,7 +290,75 @@ Obiettivo: WCAG 2.1 livello AA, verificato con Pa11y e Lighthouse.
 - tabelle con `<caption>` e intestazioni con `scope`;
 - aggiornamenti dinamici annunciati con `role="status"`.
 
-## 12. Budget quantitativi
+## 12. Sicurezza
+
+Le difese stanno nel codice, non nella fiducia verso chi invia la richiesta. Ogni dato che
+arriva da fuori, cioè da `$_GET`, `$_POST`, `$_COOKIE`, dagli header e dalla sessione, è
+considerato ostile finché non viene validato.
+
+### 12.1 Database
+
+- Tutte le query usano prepared statement con parametri nominati. Nessun valore viene
+  concatenato dentro una stringa SQL, nemmeno se sembra un numero.
+- Le parti di query costruite dal codice contengono solo testo fisso scritto da noi.
+- L'emulazione dei prepared statement resta disattivata: i parametri arrivano tipizzati al
+  database. Un segnaposto vale per una sola occorrenza, quindi un valore ripetuto ha nomi
+  distinti.
+- Gli identificativi che arrivano dall'esterno si usano sempre insieme a un vincolo di
+  proprietà, ad esempio la riga del carrello si cerca dentro il carrello di chi la chiede.
+
+### 12.2 Output
+
+- Ogni valore stampato nel markup passa da `e()`. Non esistono eccezioni per i dati letti
+  dal database: anche quelli sono stati scritti da qualcuno.
+- I valori numerici si stampano con un cast esplicito, ad esempio `(int) $riga['id']`.
+- Non si stampa mai contenuto dell'utente dentro attributi di evento, dentro URL non
+  validati o dentro blocchi di script, che comunque non esistono.
+
+### 12.3 Sessione e accesso
+
+- Il cookie di sessione è `HttpOnly`, `SameSite=Lax` e diventa `Secure` quando la
+  richiesta viaggia su HTTPS.
+- La sessione usa la modalità stretta e accetta l'identificativo solo dal cookie: un
+  identificativo scelto dall'attaccante non viene adottato.
+- Dopo un accesso riuscito l'identificativo di sessione viene rigenerato.
+- L'uscita svuota la sessione, la distrugge e cancella il cookie dal browser.
+- Il messaggio di errore dell'accesso è sempre lo stesso, sia che il nome utente esista
+  sia che la password sia errata, e il confronto viene eseguito anche per un utente
+  inesistente, così il tempo di risposta non rivela nulla.
+- Dopo cinque tentativi falliti l'account resta bloccato per quindici minuti, anche se poi
+  arriva la password giusta.
+
+### 12.4 Richieste che modificano dati
+
+- Ogni azione che cambia stato viaggia in `POST` e verifica il token CSRF prima di
+  produrre effetti. Nessuna modifica avviene su una richiesta `GET`, compresa l'uscita.
+- Dopo l'azione si risponde con un redirect verso una pagina del sito, indicata per nome:
+  non si costruiscono mai destinazioni a partire da dati della richiesta.
+- Quando un modulo deve indicare la pagina di ritorno, il valore viene confrontato con un
+  elenco chiuso di pagine ammesse.
+
+### 12.5 File e configurazione
+
+- Le cartelle `includes/`, `views/` e `database/` non sono raggiungibili dal web: una
+  richiesta diretta riceve la pagina 403. Senza questa regola lo schema del database
+  sarebbe scaricabile.
+- L'elenco automatico del contenuto delle cartelle è disattivato.
+- I file il cui nome inizia con un punto non sono serviti.
+- Gli errori non compaiono nella pagina: finiscono nel log del server e la richiesta si
+  chiude con la pagina 500.
+- Le credenziali del database non stanno nel codice versionato: in sviluppo arrivano
+  dall'ambiente, in produzione da un file privato fuori dal repository.
+- Gli allegati caricati dal pannello si accettano solo con estensione e tipo in elenco
+  chiuso, con un nome generato dal server e mai quello inviato dal browser.
+
+### 12.6 Intestazioni
+
+Il sito invia `Content-Security-Policy` senza `unsafe-inline`, `X-Content-Type-Options`,
+`X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`. La politica dei contenuti
+resta severa perché non esistono stili né script inline da autorizzare.
+
+## 13. Budget quantitativi
 
 Valori massimi per l'applicazione completa. Superarli richiede una semplificazione, non
 un'eccezione.
@@ -309,7 +377,7 @@ un'eccezione.
 | Tabelle del database | 10 |
 | Peso di una singola immagine | 300 KB |
 
-## 13. Verifica prima di ogni commit
+## 14. Verifica prima di ogni commit
 
 1. Il markup di ogni pagina toccata passa il validatore W3C senza errori ed è
    sintatticamente XML.
@@ -318,7 +386,7 @@ un'eccezione.
 4. La pagina funziona con JavaScript disabilitato, e ogni validazione lato client ha la
    gemella lato server.
 5. La navigazione da tastiera raggiunge ogni controllo con focus visibile.
-6. I budget del punto 12 sono rispettati.
+6. I budget del punto 13 sono rispettati.
 7. Il file non contiene caratteri fuori dall'elenco ammesso al punto 2.3.
 8. Il messaggio di commit è di una riga sola, senza corpo, senza firme di co-autori
    e senza riferimenti a strumenti.

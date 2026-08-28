@@ -231,7 +231,7 @@ Fine fase: `rebuild` unito in `main`, progetto installato e consegnato.
 | Accessibilità | convenzioni sezione 11, controlli Pa11y e Lighthouse in ogni fase |
 | Reperibilità dei contenuti | fasi 1 e 5, mappa del sito, sitemap, breadcrumb |
 | CRUD con modifica e cancellazione | fase 4 su prodotti, sedi, utenti; profilo utente in fase 3 |
-| Validazione client e server | convenzioni, sezioni 4 e 8, fase 7 |
+| Validazione client e server | convenzioni, sezioni 4, 8 e 12, fase 7 |
 | Dati su database in forma normale | fase 2, nove tabelle con chiavi esterne |
 | Indipendenza da browser e dimensione schermo | fase 6, media query e unità relative |
 | Link relativi | convenzioni sezione 3 |
@@ -259,6 +259,6 @@ Fine fase: `rebuild` unito in `main`, progetto installato e consegnato.
   della cronologia.
 - Commit e push avvengono solo su richiesta esplicita.
 - Nessun commit lascia una pagina non validata.
-- Le verifiche della sezione 13 delle convenzioni si eseguono prima di ogni commit, non a fine fase.
+- Le verifiche della sezione 14 delle convenzioni si eseguono prima di ogni commit, non a fine fase.
 - Le eccezioni ai budget si discutono e, se accettate, si annotano nelle convenzioni con
   la motivazione tecnica.
