@@ -35,7 +35,7 @@ ambito tecnico, e i nomi imposti da standard, linguaggi o dalla specifica del co
 | `id`, `slug`, `hash`, `token`, `cookie`, `log` | senza equivalente italiano d'uso |
 | `email`, `password`, `username` (come `nome_utente` quando è un campo nostro) | uso corrente consolidato |
 | `csrf`, `http`, `url`, `pdo`, `sql`, `json` | sigle e nomi propri di tecnologie |
-| `header`, `footer`, `nav`, `main`, `section`, `article`, `form`, `label`, `button` | nomi di elementi HTML: mai tradotti nel markup |
+| `header`, `footer`, `nav`, `main`, `section`, `article`, `form`, `label`, `button` | nomi di elementi HTML: mai tradotti, nel markup e nei nomi dei file dei template |
 | `flex`, `grid`, `media query`, `viewport` | nomi di funzionalità CSS |
 | `breadcrumb` | "briciole di pane" non è d'uso corrente nel codice |
 | `container`, `wrapper` | nome consolidato per l'elemento che delimita il contenuto |
@@ -101,7 +101,7 @@ src/
 |   |-- database.php     connessione PDO
 |   `-- funzioni/        funzioni di dominio, un file per area
 |-- views/
-|   |-- template/        intestazione.php, pie-pagina.php, breadcrumb.php
+|   |-- template/        header.php, footer.php, breadcrumb.php
 |   `-- <area>/          viste raggruppate per area
 |-- styles/stile.css     unico foglio di stile
 |-- scripts/script.js    unico file di comportamento

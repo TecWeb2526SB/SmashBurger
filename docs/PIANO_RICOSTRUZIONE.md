@@ -72,7 +72,7 @@ Nove tabelle, nomi in italiano, importi in centesimi:
 | `categorie` | nome, slug, ordine |
 | `prodotti` | categoria_id, nome, slug, descrizione, allergeni, immagine, prezzo_centesimi, disponibile |
 | `carrelli` | utente_id, sede_id, stato, aggiornato_il |
-| `righe_carrello` | carrello_id, prodotto_id, quantita, prezzo_centesimi |
+| `righe_carrello` | carrello_id, prodotto_id, quantita |
 | `ordini` | utente_id, sede_id, numero_ordine, ritiro_previsto, stato, metodo_pagamento, stato_pagamento, totale_centesimi, creato_il |
 | `righe_ordine` | ordine_id, prodotto_id, nome_prodotto, quantita, prezzo_centesimi |
 
@@ -125,10 +125,11 @@ Fine fase: capitolo dell'analisi scritto in `docs/` e riusabile nella relazione.
 2. `includes/configurazione.php`: costanti, contatti, sessione, funzione degli URL.
    Nessuna gestione di richieste al suo interno.
 3. `includes/database.php`: connessione PDO.
-4. `includes/funzioni/`: `sicurezza.php` (CSRF, escaping), `utenti.php`, `catalogo.php`,
-   `carrello.php`, `ordini.php`, `sedi.php`.
-5. `views/template/`: `intestazione.php`, `pie-pagina.php`, `breadcrumb.php`, senza query
-   e senza logica di pagina.
+4. `includes/funzioni/`: `pagina.php` (escaping, prezzi, composizione della pagina),
+   `sicurezza.php` (CSRF), `utenti.php`, `sedi.php`, `catalogo.php`. I file
+   `carrello.php` e `ordini.php` nascono nella fase 3, insieme alle pagine che li usano.
+5. `views/template/`: `header.php`, `footer.php`, `breadcrumb.php`, senza query e senza
+   logica di pagina.
 6. Home funzionante, priva di stile, validata W3C e conforme alla sintassi XML.
 
 Fine fase: la home mostra dati reali dal database ed è validata.
