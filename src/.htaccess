@@ -1,36 +1,27 @@
-# Configurazione Apache per la gestione delle rotte (routing)
-# Questo file istruisce Apache su come gestire le richieste in arrivo.
+# Configurazione di Apache per il sito.
+#
+# Tutte le regole usano percorsi relativi alla cartella che contiene questo file, così
+# il sito funziona sia servito dalla radice del dominio sia da una sottocartella.
 
-# Gestione degli Errori HTTP personalizzati
-# Istruisce Apache su quali file mostrare per determinati codici di errore.
-ErrorDocument 403 errors/403.php
-ErrorDocument 404 errors/404.php
-ErrorDocument 500 errors/500.php
-
-# Abilitiamo il motore di riscrittura degli URL (URL rewriting)
 RewriteEngine On
 
-# Lasciamo invariati file e directory reali (css, js, txt, xml, immagini, ecc.)
+# I file e le cartelle che esistono davvero vengono serviti senza modifiche.
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Riscriviamo internamente solo i controller root-level senza estensione
+# Un indirizzo senza estensione viene servito dal file .php con lo stesso nome.
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^([A-Za-z0-9_-]+)$ $1.php [L,QSA]
 
-# Regola: Se il file o la directory richiesti non esistono fisicamente sul server...
-# RewriteCond %{REQUEST_FILENAME} !-f
-# RewriteCond %{REQUEST_FILENAME} !-d
+# Qualsiasi altro indirizzo mostra la pagina 404, che imposta da sola il codice di stato.
+# La direttiva ErrorDocument non viene usata perché accetta solo percorsi assoluti,
+# che impedirebbero l'installazione in una sottocartella.
+RewriteRule ^ errors/404.php [L]
 
-# ...allora reindirizza tutto al file index.php mantenendo i parametri della query string.
-# Questo è essenziale per il funzionamento del routing in applicazioni PHP moderne.
-# RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
-
-# Protezione extra: impediamo l'accesso a file sensibili (come .env o .git)
+# I file il cui nome inizia con un punto non sono raggiungibili dal web.
 <FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
+    Require all denied
 </FilesMatch>
 
 <IfModule mod_headers.c>
@@ -38,5 +29,6 @@ RewriteRule ^([A-Za-z0-9_-]+)$ $1.php [L,QSA]
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set Permissions-Policy "camera=(), geolocation=(), microphone=()"
-    Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; connect-src 'self'; font-src 'self'; form-action 'self'; frame-ancestors 'self'; frame-src https://www.openstreetmap.org; img-src 'self' data:; manifest-src 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+    # Il sito non contiene stili né script inline: la politica non ammette eccezioni.
+    Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'"
 </IfModule>
