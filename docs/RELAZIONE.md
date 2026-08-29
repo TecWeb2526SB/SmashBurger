@@ -23,7 +23,7 @@ Da completare nei punti segnati con `[da compilare]` e da esportare in PDF per l
 
 ## 1. Analisi degli utenti e delle ricerche
 
-Il contenuto di questo capitolo sta in `ANALISI_UTENTI.md`: classi di utenza con obiettivi
+Il contenuto di questo capitolo sta in `ANALISI_REQUISITI.md`: classi di utenza con obiettivi
 e requisiti, elenco delle ricerche a cui il sito risponde con la pagina che le soddisfa,
 struttura della navigazione, titoli e descrizioni.
 

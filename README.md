@@ -101,7 +101,7 @@ Le pagine controllate arrivano da [`src/sitemap.xml`](src/sitemap.xml) e da
 | --- | --- |
 | [Vincoli d'esame](docs/VINCOLI_ESAME.md) | requisiti del corso, fonte di verità |
 | [Convenzioni di codice](docs/CONVENZIONI_CODICE.md) | regole di scrittura, componenti, sicurezza |
-| [Analisi degli utenti](docs/ANALISI_UTENTI.md) | classi di utenza, ricerche, titoli delle pagine |
+| [Analisi dei requisiti](docs/ANALISI_REQUISITI.md) | ruoli, funzionalità, dati, classi di utenza, ricerche, titoli delle pagine |
 | [Piano di ricostruzione](docs/PIANO_RICOSTRUZIONE.md) | fasi del lavoro e stato |
 | [Ricognizione](docs/RICOGNIZIONE.md) | fotografia del codice precedente, storico |
 
