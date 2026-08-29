@@ -25,7 +25,7 @@ define('NOME_SITO', 'Smash Burger');
 
 // Numero aggiunto agli indirizzi del foglio di stile e dello script: cambiandolo, il
 // browser scarica la versione nuova invece di riusare quella in memoria.
-define('VERSIONE_RISORSE', '1');
+define('VERSIONE_RISORSE', '2');
 define('EMAIL_SITO', 'info@smashburger.it');
 define('TELEFONO_SITO', '049 111 2201');
 

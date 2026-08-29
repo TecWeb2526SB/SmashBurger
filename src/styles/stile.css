@@ -14,6 +14,25 @@
  * contenuto, schede, tabelle, moduli, avvisi, piede, schermo piccolo, stampa.
  */
 
+/* Il carattere del sito viaggia con il sito: nessuna richiesta a servizi esterni, così
+   le pagine hanno lo stesso aspetto ovunque e restano leggibili anche senza rete.
+   Cabin, di Pablo Impallari, licenza SIL Open Font, copia in styles/caratteri. */
+@font-face {
+    font-family: "Cabin";
+    src: url("caratteri/cabin-regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Cabin";
+    src: url("caratteri/cabin-bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --fondo: #FAF7F2;
     --superficie: #FFFFFF;
@@ -39,8 +58,8 @@
     /* Impostazione umanistica: forme aperte e leggibili anche nei testi lunghi.
        Il primo nome sarà il carattere installato nel progetto, gli altri sono le
        alternative già presenti sui vari sistemi. */
-    --carattere-testo: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
-    --carattere-titoli: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    --carattere-testo: "Cabin", "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    --carattere-titoli: "Cabin", "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 
     --spazio: clamp(0.75rem, 0.55rem + 0.8vw, 1.25rem);
     --linea: 0.125rem;

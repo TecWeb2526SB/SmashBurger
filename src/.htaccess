@@ -34,6 +34,11 @@ RewriteRule ^ errors/404.php [L]
 
 # Le intestazioni valgono anche per i file statici; le pagine PHP le impostano di nuovo
 # per restare protette dove .htaccess non viene letto.
+# I file di testo e i caratteri viaggiano compressi.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript font/ttf image/svg+xml
+</IfModule>
+
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
