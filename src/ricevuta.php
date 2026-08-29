@@ -8,7 +8,7 @@
 
 require_once __DIR__ . '/includes/risorse.php';
 
-utente_richiedi_accesso();
+utente_richiedi_cliente();
 
 $numero = trim((string) ($_GET['numero'] ?? ''));
 $ordine = $numero === '' ? null : ordine_per_numero($pdo, $numero, (int) utente_corrente()['id']);

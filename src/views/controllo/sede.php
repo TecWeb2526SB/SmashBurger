@@ -6,15 +6,13 @@
  * $giorni.
  */
 ?>
-<h1>Pannello di controllo</h1>
+<h1><?php echo $sede === null ? 'Nuova sede' : 'Modifica la sede di ' . e($sede['citta']); ?></h1>
 
 <?php include __DIR__ . '/navigazione.php'; ?>
 
-<h2><?php echo $sede === null ? 'Nuova sede' : 'Modifica la sede di ' . e($sede['citta']); ?></h2>
-
 <?php if ($errori !== []): ?>
     <div role="alert">
-        <h3>Controlla i dati inseriti</h3>
+        <h2>Controlla i dati inseriti</h2>
         <ul>
             <?php foreach ($errori as $campo => $testo): ?>
                 <li><a href="#<?php echo e($campo); ?>"><?php echo e($testo); ?></a></li>
@@ -77,14 +75,18 @@
         </p>
     </fieldset>
 
-    <p>
-        <button type="submit"><?php echo $sede === null ? 'Crea la sede' : 'Salva le modifiche'; ?></button>
-        <a href="<?php echo e(url('controllo-sedi')); ?>">Annulla</a>
+    <p class="navigazione-pagina">
+        <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('controllo-sedi')); ?>">
+            <?php echo icona('freccia-sinistra'); ?> Torna alle sedi
+        </a>
+        <button type="submit" data-tipo="positivo">
+            <?php echo $sede === null ? 'Crea la sede' : 'Salva le modifiche'; ?>
+        </button>
     </p>
 </form>
 
 <?php if ($sede !== null): ?>
-    <h3>Orari di apertura</h3>
+    <h2>Orari di apertura</h2>
 
     <form method="post" action="<?php echo e(url('controllo-sede', ['id' => $sede['id']])); ?>">
         <?php echo campo_csrf(); ?>

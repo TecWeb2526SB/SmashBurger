@@ -7,14 +7,12 @@
  * essere aggiornata da sola senza ricaricare la pagina.
  */
 ?>
-<h1>Pannello di controllo</h1>
+<h1>Ordini</h1>
 
 <?php include __DIR__ . '/navigazione.php'; ?>
 
-<h2>Ordini</h2>
-
 <form method="get" action="<?php echo e(url('controllo')); ?>">
-    <fieldset>
+    <fieldset class="riga-campi">
         <legend>Filtri</legend>
 
         <p>

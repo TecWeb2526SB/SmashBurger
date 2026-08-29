@@ -6,7 +6,7 @@
  * con un collegamento.
  */
 ?>
-<nav aria-label="Sezioni del pannello">
+<nav class="sezioni" aria-label="Sezioni del pannello">
     <ul>
         <?php foreach (menu_controllo() as $etichetta => $indirizzo): ?>
             <li>

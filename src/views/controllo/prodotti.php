@@ -6,15 +6,13 @@
  * conferma di cancellazione.
  */
 ?>
-<h1>Pannello di controllo</h1>
+<h1>Prodotti</h1>
 
 <?php include __DIR__ . '/navigazione.php'; ?>
 
-<h2>Prodotti</h2>
-
 <?php if ($daCancellare !== null): ?>
     <section role="alert">
-        <h3>Vuoi cancellare <?php echo e($daCancellare['nome']); ?>?</h3>
+        <h2>Vuoi cancellare <?php echo e($daCancellare['nome']); ?>?</h2>
         <p>Il prodotto sparisce dal menu. Gli ordini già registrati restano leggibili.</p>
 
         <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>">
@@ -29,7 +27,11 @@
     </section>
 <?php endif; ?>
 
-<p><a href="<?php echo e(url('controllo-prodotto')); ?>">Aggiungi un prodotto</a></p>
+<p class="azione-principale">
+    <a class="pulsante" href="<?php echo e(url('controllo-prodotto')); ?>">
+        <?php echo icona('piu'); ?> Aggiungi un prodotto
+    </a>
+</p>
 
 <table>
     <caption>Prodotti a catalogo</caption>
@@ -50,12 +52,18 @@
                 <td><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></td>
                 <td><?php echo (int) $prodotto['disponibile'] === 1 ? 'sì' : 'no'; ?></td>
                 <td>
-                    <a href="<?php echo e(url('controllo-prodotto', ['id' => $prodotto['id']])); ?>">
-                        Modifica <?php echo e($prodotto['nome']); ?>
-                    </a>
-                    <a href="<?php echo e(url('controllo-prodotti', ['cancella' => $prodotto['id']])); ?>">
-                        Cancella <?php echo e($prodotto['nome']); ?>
-                    </a>
+                    <span class="azioni-riga">
+                        <a class="pulsante" data-tipo="indietro"
+                            href="<?php echo e(url('controllo-prodotto', ['id' => $prodotto['id']])); ?>">
+                            <?php echo icona('matita'); ?>
+                            <span class="solo-lettori">Modifica <?php echo e($prodotto['nome']); ?></span>
+                        </a>
+                        <a class="pulsante" data-tipo="negativo"
+                            href="<?php echo e(url('controllo-prodotti', ['cancella' => $prodotto['id']])); ?>">
+                            <?php echo icona('cestino'); ?>
+                            <span class="solo-lettori">Cancella <?php echo e($prodotto['nome']); ?></span>
+                        </a>
+                    </span>
                 </td>
             </tr>
         <?php endforeach; ?>

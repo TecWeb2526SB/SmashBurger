@@ -6,15 +6,13 @@
  * azioni non compaiono, perché si usa la pagina profilo.
  */
 ?>
-<h1>Pannello di controllo</h1>
+<h1>Utenti</h1>
 
 <?php include __DIR__ . '/navigazione.php'; ?>
 
-<h2>Utenti</h2>
-
 <?php if ($daCancellare !== null): ?>
     <section role="alert">
-        <h3>Vuoi cancellare l'account <?php echo e($daCancellare['nome_utente']); ?>?</h3>
+        <h2>Vuoi cancellare l'account <?php echo e($daCancellare['nome_utente']); ?>?</h2>
         <p>Vengono cancellati anche il carrello e gli ordini di questo account.</p>
 
         <form method="post" action="<?php echo e(url('controllo-utenti')); ?>">
@@ -86,8 +84,10 @@
                             </button>
                         </form>
 
-                        <a href="<?php echo e(url('controllo-utenti', ['cancella' => $utente['id']])); ?>">
-                            Cancella <?php echo e($utente['nome_utente']); ?>
+                        <a class="pulsante" data-tipo="negativo"
+                            href="<?php echo e(url('controllo-utenti', ['cancella' => $utente['id']])); ?>">
+                            <?php echo icona('cestino'); ?>
+                            <span class="solo-lettori">Cancella <?php echo e($utente['nome_utente']); ?></span>
                         </a>
                     <?php endif; ?>
                 </td>

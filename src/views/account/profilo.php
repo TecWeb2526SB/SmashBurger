@@ -74,13 +74,17 @@
                     <?php echo campo_csrf(); ?>
                     <input type="hidden" name="azione" value="cancella" />
                     <p>
-                        <button type="submit">Sì, cancella il mio account</button>
-                        <a href="<?php echo e(url('profilo')); ?>">Annulla</a>
+                        <button type="submit" data-tipo="negativo">Sì, cancella il mio account</button>
+                        <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('profilo')); ?>">Annulla</a>
                     </p>
                 </form>
             </div>
         <?php else: ?>
-            <p><a href="<?php echo e(url('profilo', ['cancella' => 1])); ?>">Cancella il mio account</a></p>
+            <p>
+                <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('profilo', ['cancella' => 1])); ?>">
+                    <?php echo icona('cestino'); ?> Cancella il mio account
+                </a>
+            </p>
         <?php endif; ?>
     </section>
 <?php endif; ?>

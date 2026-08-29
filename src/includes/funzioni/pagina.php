@@ -77,9 +77,10 @@ function menu_azioni(): array
 
     if (utente_e_amministratore()) {
         $voci['Controllo'] = url('controllo');
+    } else {
+        $voci['Carrello'] = url('carrello');
     }
 
-    $voci['Carrello'] = url('carrello');
     $voci['Area personale'] = url('area-personale');
     $voci['Esci'] = url('esci');
 

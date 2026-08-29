@@ -255,6 +255,22 @@ function utente_cancella(PDO $pdo, int $utenteId): void
 
 
 /**
+ * Interrompe la pagina se chi la richiede non ha un account cliente.
+ *
+ * Le pagine di acquisto valgono per chi ordina: un amministratore gestisce il servizio e
+ * non compra, quindi viene mandato al pannello.
+ */
+function utente_richiedi_cliente(): void
+{
+    utente_richiedi_accesso();
+
+    if (utente_e_amministratore()) {
+        messaggio_imposta('errore', 'Gli ordini si fanno con un account cliente.');
+        vai_a('controllo');
+    }
+}
+
+/**
  * Interrompe la pagina se chi la richiede non è un amministratore.
  */
 function utente_richiedi_amministratore(): void

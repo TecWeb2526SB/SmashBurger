@@ -6,15 +6,13 @@
  * $errori.
  */
 ?>
-<h1>Pannello di controllo</h1>
+<h1><?php echo $prodotto === null ? 'Nuovo prodotto' : 'Modifica ' . e($prodotto['nome']); ?></h1>
 
 <?php include __DIR__ . '/navigazione.php'; ?>
 
-<h2><?php echo $prodotto === null ? 'Nuovo prodotto' : 'Modifica ' . e($prodotto['nome']); ?></h2>
-
 <?php if ($errori !== []): ?>
     <div role="alert">
-        <h3>Controlla i dati inseriti</h3>
+        <h2>Controlla i dati inseriti</h2>
         <ul>
             <?php foreach ($errori as $campo => $testo): ?>
                 <li><a href="#<?php echo e($campo); ?>"><?php echo e($testo); ?></a></li>
@@ -90,8 +88,12 @@
         </p>
     </fieldset>
 
-    <p>
-        <button type="submit"><?php echo $prodotto === null ? 'Crea il prodotto' : 'Salva le modifiche'; ?></button>
-        <a href="<?php echo e(url('controllo-prodotti')); ?>">Annulla</a>
+    <p class="navigazione-pagina">
+        <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('controllo-prodotti')); ?>">
+            <?php echo icona('freccia-sinistra'); ?> Torna ai prodotti
+        </a>
+        <button type="submit" data-tipo="positivo">
+            <?php echo $prodotto === null ? 'Crea il prodotto' : 'Salva le modifiche'; ?>
+        </button>
     </p>
 </form>

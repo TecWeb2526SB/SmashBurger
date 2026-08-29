@@ -225,7 +225,9 @@ header nav ul {
 
 header nav a { text-decoration: none; }
 header nav a:hover { text-decoration: underline; text-decoration-thickness: 0.125rem; }
-header nav [aria-current] {
+/* La pagina attiva è segnata allo stesso modo nel menu e nelle azioni personali. */
+header nav [aria-current],
+.azioni [aria-current] {
     display: inline-block;
     width: fit-content;
     padding-bottom: 0.3rem;
@@ -569,6 +571,45 @@ button.cestino {
 
 button.cestino:hover { background: var(--ketchup); color: var(--su-ketchup); }
 
+/* ---------- menu di sezione ---------- */
+
+/* Voci affiancate dentro un riquadro, separate da una linea: quella attiva ha il fondo
+   chiaro e la lineetta del marchio, come nella barra in alto. */
+.sezioni {
+    margin-bottom: calc(var(--spazio) * 1.5);
+}
+
+.sezioni ul {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    border: var(--linea) solid var(--bordo);
+    border-radius: var(--raggio);
+    list-style: none;
+    overflow: hidden;
+}
+
+.sezioni li + li {
+    border-left: var(--linea-sottile) solid var(--bordo-tenue);
+}
+
+.sezioni a,
+.sezioni [aria-current] {
+    display: block;
+    padding: 0.55rem 1.1rem;
+    text-decoration: none;
+}
+
+.sezioni a:visited { color: var(--testo); }
+.sezioni a:hover { background: var(--bordo-tenue); }
+
+.sezioni [aria-current] {
+    background: var(--superficie);
+    box-shadow: inset 0 -0.1875rem 0 var(--ketchup);
+    font-weight: 700;
+}
+
 /* ---------- navigazione fra le pagine ---------- */
 
 /* Chiude ogni pagina interna: indietro a sinistra, avanzamento a destra, con le frecce
@@ -601,6 +642,14 @@ button.cestino:hover { background: var(--ketchup); color: var(--su-ketchup); }
 .pulsante[data-tipo="indietro"]:visited { color: var(--testo); }
 .pulsante[data-tipo="indietro"]:hover { background: var(--bordo-tenue); }
 
+button[data-tipo="negativo"] {
+    border-color: var(--ketchup);
+    background: var(--ketchup);
+    color: var(--su-ketchup);
+}
+
+button[data-tipo="negativo"]:hover { background: var(--fondo); color: var(--ketchup); }
+
 button[data-tipo="positivo"] {
     border-color: var(--pickle);
     background: var(--pickle);
@@ -614,6 +663,23 @@ button[data-tipo="positivo"]:hover { background: var(--fondo); color: var(--test
 
 /* La regola sopra userebbe display anche sugli elementi nascosti: qui vale il contrario. */
 button[hidden], .pulsante[hidden] { display: none; }
+
+/* L'azione che apre un inserimento sta sopra l'elenco, allineata a destra. */
+.azione-principale {
+    display: flex;
+    justify-content: flex-end;
+    max-width: none;
+}
+
+/* Le azioni su una riga di tabella sono icone affiancate. */
+.azioni-riga {
+    display: inline-flex;
+    gap: 0.4rem;
+}
+
+.azioni-riga .pulsante {
+    padding: 0.35rem 0.5rem;
+}
 
 /* ---------- elenchi di scelte ---------- */
 
@@ -652,6 +718,16 @@ button[hidden], .pulsante[hidden] { display: none; }
 }
 
 .scelte .icona { width: 1.4rem; height: 1.4rem; }
+
+/* Campi affiancati su una riga sola, con il pulsante allineato in fondo. */
+.riga-campi {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: var(--spazio);
+}
+
+.riga-campi p { margin: 0; }
 
 /* ---------- avvisi ed etichette ---------- */
 

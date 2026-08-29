@@ -77,6 +77,8 @@
 
                         <?php if ((int) $prodotto['disponibile'] !== 1): ?>
                             <p><span class="etichetta" data-tipo="negativo">Non disponibile</span></p>
+                        <?php elseif (utente_e_amministratore()): ?>
+                            <p><a href="<?php echo e(url('controllo-prodotti')); ?>">Gestisci nel pannello</a></p>
                         <?php elseif (!utente_autenticato()): ?>
                             <p><a href="<?php echo e(url('accedi')); ?>">Accedi per ordinare</a></p>
                         <?php else: ?>

@@ -9,7 +9,7 @@
 
 require_once __DIR__ . '/includes/risorse.php';
 
-utente_richiedi_accesso();
+utente_richiedi_cliente();
 
 $utenteId = (int) utente_corrente()['id'];
 $riepilogo = carrello_riepilogo($pdo, $utenteId);

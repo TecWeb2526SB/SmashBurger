@@ -6,15 +6,13 @@
  * di cancellazione.
  */
 ?>
-<h1>Pannello di controllo</h1>
+<h1>Sedi</h1>
 
 <?php include __DIR__ . '/navigazione.php'; ?>
 
-<h2>Sedi</h2>
-
 <?php if ($daCancellare !== null): ?>
     <section role="alert">
-        <h3>Vuoi cancellare la sede di <?php echo e($daCancellare['citta']); ?>?</h3>
+        <h2>Vuoi cancellare la sede di <?php echo e($daCancellare['citta']); ?>?</h2>
         <p>Una sede con ordini registrati non può essere cancellata, solo disattivata.</p>
 
         <form method="post" action="<?php echo e(url('controllo-sedi')); ?>">
@@ -29,7 +27,11 @@
     </section>
 <?php endif; ?>
 
-<p><a href="<?php echo e(url('controllo-sede')); ?>">Aggiungi una sede</a></p>
+<p class="azione-principale">
+    <a class="pulsante" href="<?php echo e(url('controllo-sede')); ?>">
+        <?php echo icona('piu'); ?> Aggiungi una sede
+    </a>
+</p>
 
 <table>
     <caption>Sedi registrate</caption>
@@ -48,12 +50,18 @@
                 <td><?php echo e($sede['indirizzo']); ?></td>
                 <td><?php echo (int) $sede['attiva'] === 1 ? 'sì' : 'no'; ?></td>
                 <td>
-                    <a href="<?php echo e(url('controllo-sede', ['id' => $sede['id']])); ?>">
-                        Modifica la sede di <?php echo e($sede['citta']); ?>
-                    </a>
-                    <a href="<?php echo e(url('controllo-sedi', ['cancella' => $sede['id']])); ?>">
-                        Cancella la sede di <?php echo e($sede['citta']); ?>
-                    </a>
+                    <span class="azioni-riga">
+                        <a class="pulsante" data-tipo="indietro"
+                            href="<?php echo e(url('controllo-sede', ['id' => $sede['id']])); ?>">
+                            <?php echo icona('matita'); ?>
+                            <span class="solo-lettori">Modifica la sede di <?php echo e($sede['citta']); ?></span>
+                        </a>
+                        <a class="pulsante" data-tipo="negativo"
+                            href="<?php echo e(url('controllo-sedi', ['cancella' => $sede['id']])); ?>">
+                            <?php echo icona('cestino'); ?>
+                            <span class="solo-lettori">Cancella la sede di <?php echo e($sede['citta']); ?></span>
+                        </a>
+                    </span>
                 </td>
             </tr>
         <?php endforeach; ?>
