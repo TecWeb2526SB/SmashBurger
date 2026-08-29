@@ -42,6 +42,7 @@ ambito tecnico, e i nomi imposti da standard, linguaggi o dalla specifica del co
 | `toggle` | nessun equivalente italiano conciso per il controllo a due stati |
 | `includes/`, `views/`, `styles/`, `scripts/`, `database/`, `images/` | struttura di directory raccomandata da `REGOLE.md` |
 | `e()` | funzione di escaping, nome breve usato in ogni riga di markup |
+| `manager` | ruolo del responsabile di sede: un traducente esiste ("responsabile"), il termine inglese resta per scelta esplicita del gruppo |
 
 ### 2.2 Termini che si traducono sempre
 
@@ -90,7 +91,14 @@ markup HTML.
 Le lettere accentate si scrivono direttamente, non come entità HTML: il documento
 dichiara la codifica UTF-8 e il database usa `utf8mb4`.
 
-## 3. Struttura delle directory
+## 3. Architettura e struttura delle directory
+
+Il pattern è **Page Controller**: un file per URL nella radice di `src/` fa da
+controller. La logica di dominio in `includes/funzioni/` è **Transaction Script**,
+funzioni per operazione, non oggetti di dominio. Le viste in `views/` sono **Template
+View**, PHP semplice dentro il markup, senza motore di template. Nessun front
+controller, nessun router, nessuna classe con autoload: alla scala di questo progetto,
+circa 30 pagine, l'indirezione in più non semplifica nulla e va contro il principio 5.
 
 ```text
 src/
@@ -115,7 +123,12 @@ Regole:
 - ogni URL corrisponde a un controller nella root di `src/`; niente controller annidati,
   niente instradamento interno;
 - tutti i percorsi nel markup sono **relativi** (vincolo di consegna);
-- gli URL non contengono l'estensione `.php` (riscrittura in `src/.htaccess`).
+- gli URL non contengono l'estensione `.php` (riscrittura in `src/.htaccess`);
+- ogni pagina è descritta una sola volta, in un elenco unico
+  (`includes/pagine.php`): slug, ruoli ammessi, posizione nel menu o nel piede di
+  pagina. Da questo elenco derivano il menu, il controllo di accesso di ogni
+  controller, `sitemap.xml` e l'elenco delle pagine riservate dei controlli di
+  qualità, invece di essere riscritti in quattro punti diversi.
 
 ## 4. PHP
 
@@ -218,12 +231,14 @@ campi ripetute in ogni riga di un elenco.
 Il foglio di stile si scrive **solo quando la struttura HTML di tutte le pagine è
 completa e validata**. Fino ad allora le pagine restano senza stile.
 
-- **Un solo file**: `src/styles/stile.css`, collegato con un solo `<link>`. Nessun
-  `@import`, nessun secondo foglio, nessuno stile altrove.
-- Lo stile per la stampa è una `@media print` dentro lo stesso file, in fondo.
-- Ordine interno: proprietà personalizzate su `:root`, reset minimo, elementi base,
-  layout, i dodici componenti nell'ordine della tabella, media query per schermo piccolo,
-  media query di stampa.
+- **Tre file**: `src/styles/stile.css` (layout e componenti), `src/styles/mobile.css`
+  (schermo piccolo), `src/styles/stampa.css` (stampa), collegati con tre `<link>` e
+  l'attributo `media` (`screen`, `screen and (max-width: ...)`, `print`). Nessun
+  `@import`, nessun foglio in più, nessuno stile altrove.
+- `stile.css` ha l'ordine interno: proprietà personalizzate su `:root`, reset minimo,
+  elementi base, layout, i quindici componenti nell'ordine della tabella. `mobile.css` e
+  `stampa.css` contengono solo gli scostamenti dal foglio base, non lo ripetono: il
+  `media` sul `<link>` decide già quando si applicano.
 - Colori, spaziature, raggi e ombre solo tramite proprietà personalizzate dichiarate su
   `:root`; nessun colore ripetuto nel corpo del foglio.
 - Layout con Flexbox e Grid (valutati positivamente dai vincoli d'esame); misure in unità
@@ -239,7 +254,13 @@ completa e validata**. Fino ad allora le pagine restano senza stile.
 ## 8. JavaScript
 
 - **Un solo file**: `src/scripts/script.js`, caricato con `defer` dall'intestazione
-  comune. Nessun altro file, nessuno script inline, nessuna dipendenza esterna.
+  comune. Nessun altro file, nessuno script inline, nessuna dipendenza esterna. Nessuna
+  minificazione o passo di build: la compressione e la cache di lunga durata già attive
+  in `.htaccess` rendono il risparmio trascurabile rispetto al costo di introdurre un
+  passo di compilazione.
+- Prima di scrivere una funzione nuova, si verifica se `inviaModulo()` più
+  `aggiornaPagina()`, o il validatore generico dei moduli, coprono già il caso: la
+  maggior parte dei comportamenti è una variazione di un pattern che esiste già.
 - Organizzazione interna: una funzione `inizializza<Area>()` per ogni comportamento, tutte
   richiamate da un unico ascoltatore di `DOMContentLoaded`.
 - Ogni funzione parte da un elemento del DOM: se il selettore non trova nulla, esce
@@ -394,16 +415,16 @@ un'eccezione.
 
 | Metrica | Limite |
 | --- | --- |
-| File CSS | 1 |
+| File CSS | 3 |
 | File JavaScript | 1 |
 | Attributi `style`, blocchi `<style>`, script inline, gestori inline | 0 |
 | Classi CSS distinte | 50 |
 | `id` presenti nel markup | 30 |
-| Righe di CSS | 1200 |
-| Righe di JavaScript | 400 |
+| Righe di CSS, totale sui tre file | 1200 |
+| Righe di JavaScript | 450 |
 | Righe di un file di funzioni | 300 |
 | Righe di una vista | 150 |
-| Tabelle del database | 10 |
+| Tabelle del database | 12 |
 | Peso di una singola immagine | 300 KB |
 
 ## 14. Verifica prima di ogni commit
