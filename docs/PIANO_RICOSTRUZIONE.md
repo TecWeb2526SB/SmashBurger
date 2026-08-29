@@ -194,7 +194,7 @@ Da iniziare solo a fasi 3, 4 e 5 chiuse.
 Fine fase: `src/styles/stile.css` unico, un solo `<link>`, validazione CSS W3C senza
 errori.
 
-### Fase 7: comportamento
+### Fase 7: comportamento (completata)
 
 Solo miglioramenti su funzionalità già complete, tutti dentro `src/scripts/script.js`.
 Fatti:
@@ -213,7 +213,7 @@ Resta da valutare dopo qualche prova sul telefono:
 
 Fine fase: un solo file, massimo 400 righe, ogni funzione degrada correttamente.
 
-### Fase 8: qualità, consegna, relazione
+### Fase 8: qualità, consegna, relazione (in corso)
 
 1. `src/sitemap.xml` e i workflow sono già allineati alle pagine attuali: resta da
    rileggerli quando il foglio di stile e gli script sono completi.
@@ -222,13 +222,15 @@ Fine fase: un solo file, massimo 400 righe, ogni funzione degrada correttamente.
 3. Eseguire i controlli su GitHub: validatore Nu, sintassi XML, validatore CSS, Pa11y,
    Lighthouse.
 4. Verificare i permessi dei file PHP e il deploy su `tecweb.studenti.math.unipd.it`.
-5. Produrre il dump del database per la consegna su Moodle.
+5. Produrre il dump del database per la consegna su Moodle: il comando è in
+   `docs/CONSEGNA.md`, provato in locale su nove tabelle.
 6. Scrivere la relazione: prima pagina con indirizzo del sito, credenziali per ogni classe
    di utenza ed email del referente; corpo con analisi utenti e ricerche (fase 1),
    progettazione, realizzazione, test e ruoli dei componenti del gruppo.
-7. Riscrivere `README.md`, `docs/GUIDA_SVILUPPO.md` e `docs/documentazione.md`
-   sull'architettura nuova, compresa la struttura di `.github`; archiviare
-   `docs/RICOGNIZIONE.md`.
+7. Documentazione riscritta: `README.md` e `docs/GUIDA_SVILUPPO.md` descrivono il
+   progetto attuale, `docs/documentazione.md` è stato tolto perché ripeteva il README,
+   `docs/RICOGNIZIONE.md` è dichiarato storico. Restano da compilare i punti segnati in
+   `docs/RELAZIONE.md` e da seguire `docs/CONSEGNA.md`.
 
 Fine fase: `rebuild` unito in `main`, progetto installato e consegnato.
 
