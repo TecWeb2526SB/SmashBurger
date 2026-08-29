@@ -160,7 +160,7 @@ Ogni azione verifica ruolo e token CSRF lato server e risponde con un redirect.
 Fine fase: pannello completo, costruito con gli stessi dodici componenti delle pagine
 pubbliche.
 
-### Fase 5: testi definitivi
+### Fase 5: testi definitivi (completata)
 
 Durante le fasi 3 e 4 il markup usa il materiale in `docs/contenuti/`, che viene dal sito
 attuale ed è provvisorio. Qui si riscrive tutto il testo, prima di passare al foglio di
@@ -180,7 +180,7 @@ Criteri:
 Fine fase: nessun testo segnaposto residuo, `docs/contenuti/` non serve più al codice e
 resta solo come materiale di partenza.
 
-### Fase 6: foglio di stile
+### Fase 6: foglio di stile (completata)
 
 Da iniziare solo a fasi 3, 4 e 5 chiuse.
 
@@ -204,11 +204,12 @@ Fatti:
 3. orari di ritiro che si aggiornano al cambio della sede;
 4. messaggi di errore dei moduli accanto ai campi, ricavati dai vincoli del markup.
 
-Restano da fare dopo il foglio di stile, perché dipendono dalla presentazione:
-
 5. tema chiaro e scuro, con la preferenza salvata in un cookie e applicata lato server,
-   così non serve script nell'intestazione;
-6. apertura del menu su schermo piccolo.
+   così non serve script nell'intestazione.
+
+Resta da valutare dopo qualche prova sul telefono:
+
+6. apertura del menu su schermo piccolo, se il menu a riga intera non basta.
 
 Fine fase: un solo file, massimo 400 righe, ogni funzione degrada correttamente.
 
