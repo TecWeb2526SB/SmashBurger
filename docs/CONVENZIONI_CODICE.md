@@ -171,7 +171,7 @@ d'esame. In pratica:
 
 ## 6. Catalogo dei componenti
 
-Sono ammessi questi dodici componenti. Non se ne introducono altri senza aggiornare la
+Sono ammessi questi tredici componenti. Non se ne introducono altri senza aggiornare la
 tabella.
 
 | Componente | Markup | Uso |
@@ -187,10 +187,17 @@ tabella.
 | Pulsante | `<button>`, variante `class="secondario"` | azioni |
 | Avviso | `<p class="avviso" role="status">` | esito di un'operazione |
 | Etichetta | `<span class="etichetta">` | stato ordine, disponibilità |
+| Filtri | `<nav class="filtri">` con lista di collegamenti | restringere un elenco, come le categorie del menu |
 | Piè di pagina | `<footer>` con liste di link | uguale su tutte le pagine |
 
-Il pannello di controllo usa gli stessi dodici componenti delle pagine pubbliche: non ha
-un proprio insieme di stili.
+Il pannello di controllo usa gli stessi componenti delle pagine pubbliche: non ha un
+proprio insieme di stili.
+
+Le varianti si esprimono con attributi e non con classi nuove: `data-tipo` distingue
+avvisi ed etichette (`attenzione`, `errore`, `positivo`, `negativo`), `data-stato`
+distingue i campi (`ok`, `attenzione`, `errore`). La classe `solo-lettori` toglie dalla
+vista un testo che deve restare per chi usa un lettore di schermo, come le etichette dei
+campi ripetute in ogni riga di un elenco.
 
 ## 7. CSS
 

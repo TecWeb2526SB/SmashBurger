@@ -53,7 +53,7 @@
                             <button type="submit" name="diminuisci" value="<?php echo (int) $riga['id']; ?>"
                                 aria-label="Togli una unità di <?php echo e($riga['nome']); ?>">-</button>
 
-                            <label for="quantita-<?php echo (int) $riga['id']; ?>">
+                            <label class="solo-lettori" for="quantita-<?php echo (int) $riga['id']; ?>">
                                 Quantità di <?php echo e($riga['nome']); ?>
                             </label>
                             <input type="number" id="quantita-<?php echo (int) $riga['id']; ?>"

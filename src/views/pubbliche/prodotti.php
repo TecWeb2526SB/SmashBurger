@@ -20,7 +20,7 @@
     </p>
 <?php endif; ?>
 
-<nav aria-label="Categorie del menu">
+<nav class="filtri" aria-label="Categorie del menu">
     <ul>
         <li>
             <?php if ($categoriaAttiva === null): ?>
@@ -53,24 +53,32 @@
             <?php foreach ($prodotti as $prodotto): ?>
                 <li>
                     <article class="scheda">
+                        <p class="immagine">
+                            <?php if (!empty($prodotto['immagine'])): ?>
+                                <img src="<?php echo e(immagine_url($prodotto['immagine'])); ?>"
+                                    alt="<?php echo e($prodotto['nome']); ?>"
+                                    loading="lazy" />
+                            <?php endif; ?>
+                        </p>
+
                         <h3><?php echo e($prodotto['nome']); ?></h3>
 
-                        <?php if (!empty($prodotto['immagine'])): ?>
-                            <img src="<?php echo e(immagine_url($prodotto['immagine'])); ?>"
-                                alt="<?php echo e($prodotto['nome']); ?>"
-                                loading="lazy" />
-                        <?php endif; ?>
+                        <p class="descrizione"><?php echo e($prodotto['descrizione']); ?></p>
 
-                        <p><?php echo e($prodotto['descrizione']); ?></p>
-                        <p><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></p>
+                        <p class="allergeni">
+                            <?php if (!empty($prodotto['allergeni'])): ?>
+                                Allergeni: <?php echo e($prodotto['allergeni']); ?>
+                            <?php else: ?>
+                                Nessun allergene dichiarato
+                            <?php endif; ?>
+                        </p>
 
-                        <?php if (!empty($prodotto['allergeni'])): ?>
-                            <p>Allergeni: <?php echo e($prodotto['allergeni']); ?></p>
-                        <?php endif; ?>
+                        <p class="prezzo"><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></p>
 
                         <?php if ((int) $prodotto['disponibile'] !== 1): ?>
                             <p><span class="etichetta" data-tipo="negativo">Non disponibile</span></p>
                         <?php elseif (!utente_autenticato()): ?>
+                            <p><a href="<?php echo e(url('accedi')); ?>">Accedi per ordinare</a></p>
                         <?php else: ?>
                             <form method="post" action="<?php echo e(url('carrello')); ?>">
                                 <?php echo campo_csrf(); ?>
@@ -78,7 +86,7 @@
                                 <input type="hidden" name="ritorno" value="prodotti" />
                                 <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
                                 <p>
-                                    <label for="quantita-<?php echo (int) $prodotto['id']; ?>">
+                                    <label class="solo-lettori" for="quantita-<?php echo (int) $prodotto['id']; ?>">
                                         Quantità di <?php echo e($prodotto['nome']); ?>
                                     </label>
                                     <input type="number" id="quantita-<?php echo (int) $prodotto['id']; ?>"

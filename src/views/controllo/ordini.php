@@ -78,7 +78,7 @@
                             <input type="hidden" name="azione" value="aggiorna" />
                             <input type="hidden" name="ordine_id" value="<?php echo (int) $ordine['id']; ?>" />
 
-                            <label for="stato-<?php echo (int) $ordine['id']; ?>">
+                            <label class="solo-lettori" for="stato-<?php echo (int) $ordine['id']; ?>">
                                 Stato dell'ordine <?php echo e($ordine['numero']); ?>
                             </label>
                             <select id="stato-<?php echo (int) $ordine['id']; ?>" name="stato">
@@ -90,7 +90,7 @@
                                 <?php endforeach; ?>
                             </select>
 
-                            <label for="pagamento-<?php echo (int) $ordine['id']; ?>">
+                            <label class="solo-lettori" for="pagamento-<?php echo (int) $ordine['id']; ?>">
                                 Pagamento dell'ordine <?php echo e($ordine['numero']); ?>
                             </label>
                             <select id="pagamento-<?php echo (int) $ordine['id']; ?>" name="stato_pagamento">

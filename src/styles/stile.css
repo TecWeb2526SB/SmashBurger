@@ -228,7 +228,7 @@ main {
     padding-block: calc(var(--spazio) * 2);
 }
 
-main > nav ol {
+nav[aria-label="Percorso"] ol {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -238,7 +238,40 @@ main > nav ol {
     color: var(--testo-tenue);
 }
 
-main > nav li + li::before { content: "/ "; }
+nav[aria-label="Percorso"] li + li::before { content: "/ "; }
+
+/* ---------- filtri ---------- */
+
+/* Elenco di scelte che restringono quello che si vede sotto: ogni voce è un
+   collegamento, quella attiva non lo è e resta piena. */
+.filtri ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.filtri a,
+.filtri [aria-current] {
+    display: inline-block;
+    padding: 0.3rem 0.85rem;
+    border: var(--linea) solid var(--bordo);
+    border-radius: 2rem;
+    text-decoration: none;
+}
+
+.filtri a:hover {
+    background: var(--bordo-tenue);
+}
+
+.filtri a:visited { color: var(--testo); }
+
+.filtri [aria-current] {
+    background: var(--primario);
+    color: var(--su-primario);
+    font-weight: 700;
+}
 
 section { margin: 0 0 calc(var(--spazio) * 2); }
 
@@ -263,9 +296,48 @@ section { margin: 0 0 calc(var(--spazio) * 2); }
 }
 
 .scheda h3 { margin-bottom: 0.25em; }
-.scheda img { margin: 0 0 var(--spazio); }
 .scheda p { margin-bottom: 0.5rem; }
 .scheda form { margin-top: auto; }
+
+/* Le schede dentro una griglia hanno tutte le stesse righe: immagine, nome,
+   descrizione, allergeni, prezzo, azione. Sovrapponendo due schede, ogni parte cade
+   allo stesso punto anche quando i testi hanno lunghezze diverse. */
+.griglia .scheda {
+    display: grid;
+    grid-template-rows: auto 2.6em 4.8em 2.8em auto 1fr;
+    gap: 0;
+}
+
+/* Le tre righe della descrizione e le due degli allergeni hanno altezza fissa: un testo
+   più lungo viene nascosto invece di spostare in basso il prezzo e il pulsante. */
+.griglia .scheda .descrizione,
+.griglia .scheda .allergeni {
+    overflow: hidden;
+}
+
+.griglia .scheda .immagine {
+    margin-bottom: var(--spazio);
+    aspect-ratio: 4 / 3;
+    background: var(--bordo-tenue);
+    border-radius: var(--raggio);
+    overflow: hidden;
+}
+
+.griglia .scheda .immagine img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.griglia .scheda .allergeni {
+    color: var(--testo-tenue);
+    font-size: 0.875rem;
+}
+
+.griglia .scheda .prezzo {
+    font-size: 1.125rem;
+    font-weight: 700;
+}
 
 /* ---------- tabelle ---------- */
 
@@ -340,6 +412,19 @@ input[data-stato="ok"], select[data-stato="ok"] { --bordo-campo: var(--pickle); 
 input[data-stato="attenzione"], select[data-stato="attenzione"] { --bordo-campo: var(--senape-testo); }
 input[data-stato="errore"], select[data-stato="errore"],
 input[aria-invalid], select[aria-invalid] { --bordo-campo: var(--ketchup); }
+
+/* Testo destinato a chi usa un lettore di schermo: resta nel documento e viene letto,
+   ma non occupa spazio sullo schermo. */
+.solo-lettori {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
 
 small {
     display: block;

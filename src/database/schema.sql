@@ -172,7 +172,7 @@ INSERT INTO prodotti (categoria_id, nome, slug, descrizione, allergeni, immagine
     ((SELECT id FROM categorie WHERE slug = 'burger'), 'Chicken Burger', 'chicken-burger', 'Tender di pollo, maionese, insalata.', 'glutine, uova', 'chicken-burger.webp', 1050),
     ((SELECT id FROM categorie WHERE slug = 'burger'), 'Piccante', 'piccante', 'Patty di carne, nduja, spianata piccante, provola, cipolla caramellata.', 'glutine, lattosio', 'piccante.webp', 1350),
     ((SELECT id FROM categorie WHERE slug = 'burger'), 'Italiano', 'italiano', 'Patty di carne, caciocavallo, pomodori secchi, maionese al basilico e pinoli.', 'glutine, lattosio, frutta a guscio', 'italiano.webp', 1400),
-    ((SELECT id FROM categorie WHERE slug = 'burger'), 'Chicken BBQ', 'chicken-bbq', 'Sovracoscia di pollo, salsa barbecue e miele, bacon, insalata coleslaw, edamer fuso.', 'glutine, lattosio', 'chicken-bbq.webp', 1300),
+    ((SELECT id FROM categorie WHERE slug = 'burger'), 'Chicken BBQ', 'chicken-bbq', 'Sovracoscia di pollo, salsa barbecue, bacon, coleslaw, edamer fuso.', 'glutine, lattosio', 'chicken-bbq.webp', 1300),
     ((SELECT id FROM categorie WHERE slug = 'burger'), 'Vegan Burger', 'vegan-burger', 'Pollo vegetale, coleslaw vegana, maionese piccante vegana, lattuga.', 'glutine, soia', 'vegan-burger.webp', 1250),
     ((SELECT id FROM categorie WHERE slug = 'contorni'), 'Patate fritte', 'patate-fritte', 'Patate fritte con sale.', 'possibili tracce di glutine', 'patate.webp', 390),
     ((SELECT id FROM categorie WHERE slug = 'contorni'), 'Chicken wings', 'chicken-wings', 'Alette di pollo speziate con salsa barbecue.', 'senape, soia', 'chicken-wings.webp', 550),
