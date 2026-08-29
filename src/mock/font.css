@@ -1,0 +1,65 @@
+/* Prove tipografiche: ogni blocco mostra le stesse parti con una famiglia diversa. */
+
+.prova {
+    margin-bottom: calc(var(--spazio) * 2);
+    padding: var(--spazio);
+    border: var(--linea) solid var(--bordo);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+}
+
+.prova > h2 {
+    margin-bottom: 0.25rem;
+    font-family: system-ui, sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ketchup);
+}
+
+.prova > p:first-of-type {
+    margin-bottom: var(--spazio);
+    font-family: system-ui, sans-serif;
+    font-size: 0.875rem;
+    color: var(--testo-tenue);
+}
+
+.saggio {
+    display: grid;
+    gap: 0.5rem;
+    padding-top: var(--spazio);
+    border-top: var(--linea-sottile) solid var(--bordo-tenue);
+}
+
+.saggio .marchio-prova {
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ketchup);
+}
+
+.saggio .titolo-prova { font-size: 2rem; font-weight: 700; line-height: 1.1; }
+.saggio .sezione-prova { font-size: 1.4rem; font-weight: 700; }
+.saggio .prezzo-prova { font-size: 1.125rem; font-weight: 700; }
+.saggio .testo-prova { max-width: 34rem; }
+
+/* Le famiglie in prova. I nomi fra parentesi sono i caratteri liberi equivalenti che
+   verrebbero installati nel progetto, così l'aspetto resta identico su ogni computer. */
+[data-carattere="sistema"] .saggio { font-family: system-ui, sans-serif; }
+[data-carattere="grottesca"] .saggio { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+[data-carattere="geometrica"] .saggio { font-family: Futura, "Century Gothic", sans-serif; }
+[data-carattere="umanistica"] .saggio { font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif; }
+[data-carattere="condensata"] .saggio .marchio-prova,
+[data-carattere="condensata"] .saggio .titolo-prova,
+[data-carattere="condensata"] .saggio .sezione-prova {
+    font-family: Impact, "Haettenschweiler", "Arial Narrow Bold", sans-serif;
+    letter-spacing: 0.01em;
+}
+[data-carattere="condensata"] .saggio { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+[data-carattere="grazie"] .saggio .marchio-prova,
+[data-carattere="grazie"] .saggio .titolo-prova,
+[data-carattere="grazie"] .saggio .sezione-prova {
+    font-family: Georgia, "Times New Roman", serif;
+}
+[data-carattere="grazie"] .saggio { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }

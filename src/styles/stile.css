@@ -36,8 +36,11 @@
     --senape-testo: #8A6410;
 
     /* Lo spazio di base cresce con la finestra, fra 0.75 e 1.25 rem. */
-    --carattere-testo: system-ui, sans-serif;
-    --carattere-titoli: system-ui, sans-serif;
+    /* Impostazione umanistica: forme aperte e leggibili anche nei testi lunghi.
+       Il primo nome sarà il carattere installato nel progetto, gli altri sono le
+       alternative già presenti sui vari sistemi. */
+    --carattere-testo: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    --carattere-titoli: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
 
     --spazio: clamp(0.75rem, 0.55rem + 0.8vw, 1.25rem);
     --linea: 0.125rem;
@@ -45,7 +48,7 @@
     --raggio: 0.2rem;
     --misura: 42rem;
     --larghezza: 72rem;
-    --altezza-barra: 3.5rem;
+    --altezza-barra: 4rem;
 }
 
 /* Senza scelta esplicita si segue l'impostazione del sistema. */
@@ -186,7 +189,7 @@ header {
 
 .marchio {
     margin: 0;
-    font-size: 1.125rem;
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem);
     font-weight: 700;
     letter-spacing: 0.02em;
     text-transform: uppercase;
