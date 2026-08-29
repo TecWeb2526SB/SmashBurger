@@ -171,7 +171,7 @@ d'esame. In pratica:
 
 ## 6. Catalogo dei componenti
 
-Sono ammessi questi tredici componenti. Non se ne introducono altri senza aggiornare la
+Sono ammessi questi quindici componenti. Non se ne introducono altri senza aggiornare la
 tabella.
 
 | Componente | Markup | Uso |
@@ -188,10 +188,24 @@ tabella.
 | Avviso | `<p class="avviso" role="status">` | esito di un'operazione |
 | Etichetta | `<span class="etichetta">` | stato ordine, disponibilità |
 | Filtri | `<nav class="filtri">` con lista di collegamenti | restringere un elenco, come le categorie del menu |
+| Elenco di scelte | `<ul class="scelte">` con controllo ed etichetta per riga | opzioni alternative dentro un modulo |
+| Navigazione di pagina | `<p class="navigazione-pagina">` | chiude le pagine interne: ritorno a sinistra, avanzamento a destra |
 | Footer | `<footer>` con liste di link | uguale su tutte le pagine |
 
 Il pannello di controllo usa gli stessi componenti delle pagine pubbliche: non ha un
 proprio insieme di stili.
+
+Le pagine interne, cioè quelle che fanno parte di un percorso come carrello, conferma
+d'ordine, ricevuta e profilo, si chiudono sempre con la navigazione di pagina: a sinistra
+il ritorno al passo precedente con la freccia rivolta a sinistra, a destra l'avanzamento
+con la freccia rivolta a destra. Il pulsante che porta avanti usa il colore delle
+conferme, quello che torna indietro resta neutro.
+
+Le icone stanno tutte in `images/icone.svg` e si richiamano dal markup con la funzione
+`icona()`, che produce un riferimento al simbolo. Sono decorative e nascoste ai lettori
+di schermo: accompagnano sempre un testo, e quando il testo non è visibile viene messo in
+un elemento con la classe `solo-lettori`. Nessuna libreria di icone esterna: il sito non
+carica risorse da altri domini.
 
 Le varianti si esprimono con attributi e non con classi nuove: `data-tipo` distingue
 avvisi ed etichette (`attenzione`, `errore`, `positivo`, `negativo`), `data-stato`

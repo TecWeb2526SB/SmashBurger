@@ -159,3 +159,17 @@ function tema_salva(string $tema): void
         'samesite' => 'Lax',
     ]);
 }
+
+/**
+ * Restituisce il markup di un'icona presa dalla raccolta in images/icone.svg.
+ *
+ * L'icona accompagna sempre un testo, quindi è nascosta ai lettori di schermo.
+ *
+ * @param string $nome  identificativo del simbolo, ad esempio 'carta'
+ */
+function icona(string $nome): string
+{
+    return '<svg class="icona" aria-hidden="true" focusable="false">'
+        . '<use href="images/icone.svg#' . e($nome) . '" />'
+        . '</svg>';
+}

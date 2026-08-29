@@ -8,6 +8,12 @@
 ?>
 <h1>Profilo</h1>
 
+<p class="navigazione-pagina">
+    <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('area-personale')); ?>">
+        <?php echo icona('freccia-sinistra'); ?> Torna all'area personale
+    </a>
+</p>
+
 <p>Nome utente: <?php echo e($utente['nome_utente']); ?></p>
 
 <section>

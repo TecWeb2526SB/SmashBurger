@@ -58,4 +58,11 @@
     <p>Stato: <?php echo e($ordine['stato_pagamento']); ?></p>
 </section>
 
-<p><a href="<?php echo e(url('area-personale')); ?>">Torna all'area personale</a></p>
+<p class="navigazione-pagina">
+    <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('area-personale')); ?>">
+        <?php echo icona('freccia-sinistra'); ?> Torna all'area personale
+    </a>
+    <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('prodotti')); ?>">
+        Ordina di nuovo <?php echo icona('freccia-destra'); ?>
+    </a>
+</p>

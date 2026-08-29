@@ -30,12 +30,8 @@ $paginaCorrente = app_pagina_corrente();
 
     <header>
         <button type="button" class="apri-menu" aria-expanded="false" aria-controls="pannello-menu">
-            <svg class="icona icona-righe" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M3 6h18M3 12h18M3 18h18" />
-            </svg>
-            <svg class="icona icona-croce" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <path d="M5 5l14 14M19 5L5 19" />
-            </svg>
+            <span class="icona-righe"><?php echo icona('menu'); ?></span>
+            <span class="icona-croce"><?php echo icona('croce'); ?></span>
             <span class="solo-lettori quando-chiuso">Apri il menu</span>
             <span class="solo-lettori quando-aperto">Chiudi il menu</span>
         </button>
@@ -63,13 +59,8 @@ $paginaCorrente = app_pagina_corrente();
                 <input type="hidden" name="tema" value="<?php echo $temaScelto === 'scuro' ? 'chiaro' : 'scuro'; ?>" />
                 <input type="hidden" name="ritorno" value="<?php echo e($paginaCorrente); ?>" />
                 <button type="submit">
-                    <svg class="icona icona-luna" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" />
-                    </svg>
-                    <svg class="icona icona-sole" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <circle cx="12" cy="12" r="4.5" />
-                        <path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M19.8 4.2l-2.1 2.1M6.3 17.7l-2.1 2.1" />
-                    </svg>
+                    <span class="icona-luna"><?php echo icona('luna'); ?></span>
+                    <span class="icona-sole"><?php echo icona('sole'); ?></span>
                     <span class="solo-scuro">Tema chiaro</span>
                     <span class="solo-chiaro">Tema scuro</span>
                 </button>

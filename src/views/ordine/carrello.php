@@ -68,9 +68,7 @@
                         <td>
                             <button type="submit" name="togli" value="<?php echo (int) $riga['id']; ?>"
                                 class="cestino" data-tipo="negativo">
-                                <svg class="icona" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                                    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-                                </svg>
+                                <?php echo icona('cestino'); ?>
                                 <span class="solo-lettori">Togli <?php echo e($riga['nome']); ?></span>
                             </button>
                         </td>
@@ -91,12 +89,17 @@
         </p>
     </form>
 
-    <p class="azioni-tabella">
-        <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('carrello', ['svuota' => 1])); ?>">
-            Svuota il carrello
+    <p class="navigazione-pagina">
+        <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('prodotti')); ?>">
+            <?php echo icona('freccia-sinistra'); ?> Torna al menu
         </a>
-        <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('pagamento')); ?>">
-            Procedi all'ordine
-        </a>
+        <span class="gruppo-azioni">
+            <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('carrello', ['svuota' => 1])); ?>">
+                <?php echo icona('cestino'); ?> Svuota il carrello
+            </a>
+            <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('pagamento')); ?>">
+                Procedi all'ordine <?php echo icona('freccia-destra'); ?>
+            </a>
+        </span>
     </p>
 <?php endif; ?>

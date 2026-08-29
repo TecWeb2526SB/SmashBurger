@@ -94,21 +94,31 @@
             <fieldset>
                 <legend>Pagamento</legend>
 
-                <p>
-                    <input type="radio" id="pagamento-carta" name="metodo_pagamento" value="carta"
-                        checked="checked" required="required" />
-                    <label for="pagamento-carta">Con carta, adesso</label>
-                </p>
-
-                <p>
-                    <input type="radio" id="pagamento-contanti" name="metodo_pagamento" value="contanti" />
-                    <label for="pagamento-contanti">In contanti, al ritiro</label>
-                </p>
+                <ul class="scelte">
+                    <li>
+                        <input type="radio" id="pagamento-carta" name="metodo_pagamento" value="carta"
+                            checked="checked" required="required" />
+                        <label for="pagamento-carta">
+                            <?php echo icona('carta'); ?> Con carta, adesso
+                        </label>
+                    </li>
+                    <li>
+                        <input type="radio" id="pagamento-contanti" name="metodo_pagamento" value="contanti" />
+                        <label for="pagamento-contanti">
+                            <?php echo icona('contanti'); ?> In contanti, al ritiro
+                        </label>
+                    </li>
+                </ul>
             </fieldset>
 
-            <p><button type="submit">Conferma l'ordine</button></p>
+            <p class="navigazione-pagina">
+                <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('carrello')); ?>">
+                    <?php echo icona('freccia-sinistra'); ?> Torna al carrello
+                </a>
+                <button type="submit" data-tipo="positivo">
+                    Conferma l'ordine <?php echo icona('freccia-destra'); ?>
+                </button>
+            </p>
         </form>
     <?php endif; ?>
 </section>
-
-<p><a href="<?php echo e(url('carrello')); ?>">Torna al carrello</a></p>
