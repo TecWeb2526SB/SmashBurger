@@ -1,6 +1,7 @@
 <?php
 /**
- * Riepilogo dell'account e storico degli ordini. Riceve $utente e $ordini.
+ * Riepilogo dell'account. Lo storico degli ordini compare solo per chi ordina, quindi non
+ * per gli amministratori. Riceve $utente e $ordini.
  */
 ?>
 <h1>Area personale</h1>
@@ -13,6 +14,7 @@
     </a>
 </p>
 
+<?php if (!utente_e_amministratore()): ?>
 <section>
     <h2>I tuoi ordini</h2>
 
@@ -52,6 +54,7 @@
         </table>
     <?php endif; ?>
 </section>
+<?php endif; ?>
 
 <p class="navigazione-pagina">
     <?php if (!utente_e_amministratore()): ?>

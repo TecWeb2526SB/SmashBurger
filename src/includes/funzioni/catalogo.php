@@ -11,7 +11,14 @@
  */
 function catalogo_categorie(PDO $pdo): array
 {
-    return $pdo->query('SELECT id, nome, slug FROM categorie ORDER BY ordine, nome')->fetchAll();
+    return $pdo->query(
+        'SELECT c.id, c.nome, c.slug, c.descrizione,
+                COUNT(CASE WHEN p.disponibile = 1 THEN 1 END) AS prodotti
+         FROM categorie c
+         LEFT JOIN prodotti p ON p.categoria_id = c.id
+         GROUP BY c.id
+         ORDER BY c.ordine, c.nome'
+    )->fetchAll();
 }
 
 /**

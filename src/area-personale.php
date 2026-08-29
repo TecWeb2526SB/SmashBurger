@@ -14,5 +14,5 @@ mostra_pagina('account/area-personale.php', [
     'pagina' => 'Area personale',
     'breadcrumb' => [['Home', url()], ['Area personale', null]],
     'utente' => $utente,
-    'ordini' => ordini_utente($pdo, (int) $utente['id']),
+    'ordini' => utente_e_amministratore() ? [] : ordini_utente($pdo, (int) $utente['id']),
 ]);

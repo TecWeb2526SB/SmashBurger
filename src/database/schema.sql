@@ -58,6 +58,7 @@ CREATE TABLE categorie (
     id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(80) NOT NULL,
     slug VARCHAR(80) NOT NULL UNIQUE,
+    descrizione VARCHAR(255) NOT NULL DEFAULT '',
     ordine TINYINT UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB;
 
@@ -159,11 +160,11 @@ CROSS JOIN (
     UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7
 ) g;
 
-INSERT INTO categorie (nome, slug, ordine) VALUES
-    ('Burger', 'burger', 1),
-    ('Contorni', 'contorni', 2),
-    ('Bevande', 'bevande', 3),
-    ('Dessert', 'dessert', 4);
+INSERT INTO categorie (nome, slug, descrizione, ordine) VALUES
+    ('Burger', 'burger', 'Carne schiacciata sulla piastra al momento, con pane e salse preparati in sede. Ci sono anche una versione di pollo e una vegetale.', 1),
+    ('Contorni', 'contorni', 'Patate fritte, pollo e panzerotti da accompagnare al burger o da dividere.', 2),
+    ('Bevande', 'bevande', 'Acqua, birra artigianale e bibite alla spina.', 3),
+    ('Dessert', 'dessert', 'Gelato e milkshake nei gusti vaniglia, banana e fragola.', 4);
 
 INSERT INTO prodotti (categoria_id, nome, slug, descrizione, allergeni, immagine, prezzo_centesimi) VALUES
     ((SELECT id FROM categorie WHERE slug = 'burger'), 'Cheeseburger', 'cheeseburger', 'Patty di carne, cheddar, cetriolini, ketchup.', 'glutine, lattosio', 'cheeseburger.webp', 1090),
