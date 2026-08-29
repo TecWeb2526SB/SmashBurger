@@ -36,6 +36,9 @@
     --senape-testo: #8A6410;
 
     /* Lo spazio di base cresce con la finestra, fra 0.75 e 1.25 rem. */
+    --carattere-testo: system-ui, sans-serif;
+    --carattere-titoli: system-ui, sans-serif;
+
     --spazio: clamp(0.75rem, 0.55rem + 0.8vw, 1.25rem);
     --linea: 0.125rem;
     --linea-sottile: 0.0625rem;
@@ -90,12 +93,12 @@ body {
     margin: 0;
     background: var(--fondo);
     color: var(--testo);
-    font-family: system-ui, sans-serif;
+    font-family: var(--carattere-testo);
     font-size: 1rem;
     line-height: 1.6;
 }
 
-h1, h2, h3 { line-height: 1.2; margin: 0 0 0.5em; }
+h1, h2, h3 { font-family: var(--carattere-titoli); line-height: 1.2; margin: 0 0 0.5em; }
 h1 { font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem); letter-spacing: -0.01em; }
 h2 { font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem); }
 h3 { font-size: 1.125rem; }
@@ -152,7 +155,7 @@ header {
     z-index: 2;
     min-height: var(--altezza-barra);
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: var(--spazio);
     padding: 0.6rem var(--spazio);
@@ -162,11 +165,17 @@ header {
 
 .pannello {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: var(--spazio);
     flex: 1;
+    min-width: 0;
 }
+
+/* La navigazione può stringersi, le azioni no: restano leggibili fino alla soglia in cui
+   la barra diventa il pannello a scomparsa. */
+.pannello nav { min-width: 0; }
+.pannello .azioni { flex-shrink: 0; }
 
 /* Sullo schermo largo il pannello è la barra: l'attributo che lo nasconde vale solo
    dove il pulsante del menu è in uso. */
@@ -199,6 +208,7 @@ header nav a { text-decoration: none; }
 header nav a:hover { text-decoration: underline; text-decoration-thickness: 0.125rem; }
 header nav [aria-current] {
     display: inline-block;
+    width: fit-content;
     padding-bottom: 0.3rem;
     box-shadow: inset 0 -0.1875rem 0 var(--ketchup);
     font-weight: 700;
@@ -562,24 +572,20 @@ footer li { line-height: 1.8; }
 
 /* ---------- schermo piccolo ---------- */
 
-@media (max-width: 48rem) {
-    main { padding-block: var(--spazio); }
-
-    table, thead, tbody, tfoot, tr, th, td { display: block; }
-    thead { display: none; }
-    tr { border-bottom: var(--linea) solid var(--bordo); }
-    td, th { border: 0; padding: 0.25rem 0.75rem; }
-
-    .griglia { grid-template-columns: 1fr; }
-
+/* Sotto questa larghezza la barra non tiene tutte le voci su una riga: la navigazione
+   diventa un pannello che si apre dal pulsante. */
+@media (max-width: 64rem) {
     /* Senza script il menu resta sempre in pagina: il pulsante compare solo quando
        c'è qualcosa che sa aprirlo e chiuderlo. */
     .con-script .apri-menu {
         display: inline-flex;
         align-items: center;
-        gap: 0.4rem;
+        justify-content: center;
+        padding: 0.5rem;
         order: -1;
     }
+
+    .apri-menu .icona { width: 1.5rem; height: 1.5rem; }
 
     /* Il pannello copre la pagina: voci di navigazione in alto, azioni personali
        sotto, tema in fondo. */
@@ -608,13 +614,17 @@ footer li { line-height: 1.8; }
         margin: 0;
     }
 
+    /* Le voci del sito restano in alto, il resto scende al fondo del pannello. */
+    .pannello .azioni { margin-top: auto; }
+
     .pannello nav a,
-    .pannello nav [aria-current],
     .pannello .azioni a {
         display: block;
         padding-block: 0.4rem;
         font-size: 1.125rem;
     }
+
+    .pannello nav [aria-current] { font-size: 1.125rem; }
 
     /* Le azioni personali stanno staccate dalle voci del sito. */
     .pannello .azioni {
@@ -633,6 +643,20 @@ footer li { line-height: 1.8; }
     .pannello .tema button { width: 100%; }
 
     .chiudi-menu { align-self: flex-end; }
+}
+
+/* ---------- schermo piccolo ---------- */
+
+@media (max-width: 40rem) {
+    main { padding-block: var(--spazio); }
+
+    /* Le tabelle diventano elenchi: su una colonna sola le colonne non stanno. */
+    table, thead, tbody, tfoot, tr, th, td { display: block; }
+    thead { display: none; }
+    tr { border-bottom: var(--linea) solid var(--bordo); }
+    td, th { border: 0; padding: 0.25rem 0.75rem; }
+
+    .griglia { grid-template-columns: 1fr; }
 }
 
 /* ---------- stampa ---------- */

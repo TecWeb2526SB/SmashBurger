@@ -36,8 +36,8 @@ $paginaCorrente = app_pagina_corrente();
             <svg class="icona icona-croce" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                 <path d="M5 5l14 14M19 5L5 19" />
             </svg>
-            <span class="quando-chiuso">Menu</span>
-            <span class="quando-aperto">Chiudi</span>
+            <span class="solo-lettori quando-chiuso">Apri il menu</span>
+            <span class="solo-lettori quando-aperto">Chiudi il menu</span>
         </button>
 
         <p class="marchio"><a href="<?php echo e(url()); ?>"><?php echo e(NOME_SITO); ?></a></p>
