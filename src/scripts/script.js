@@ -131,6 +131,14 @@ function inizializzaCarrello() {
             modulo.submit();
         }
     });
+
+    // La quantità digitata parte da sola: il pulsante di aggiornamento resta solo per
+    // chi naviga senza script ed è nascosto dal foglio di stile.
+    modulo.addEventListener('change', (evento) => {
+        if (evento.target.type === 'number') {
+            modulo.requestSubmit();
+        }
+    });
 }
 
 /* =============================================================================
@@ -203,9 +211,6 @@ function inizializzaMenu() {
         return;
     }
 
-    // La classe dice al foglio di stile che c'è qualcosa in grado di aprire il pannello:
-    // senza script il menu resta in pagina e il pulsante non compare.
-    document.documentElement.classList.add('con-script');
     pannello.hidden = true;
 
     const apri = (aperto) => {
@@ -390,4 +395,9 @@ function collega() {
     inizializzaOrariRitiro();
 }
 
-document.addEventListener('DOMContentLoaded', collega);
+document.addEventListener('DOMContentLoaded', () => {
+    // Il foglio di stile distingue le pagine servite con lo script attivo: senza, i
+    // comandi che dipendono da lui restano visibili e funzionanti.
+    document.documentElement.classList.add('con-script');
+    collega();
+});

@@ -461,13 +461,28 @@ input, select {
     max-width: 100%;
 }
 
-input[type="number"] { width: 5rem; }
+/* Le frecce del campo numerico non servono: la quantità si cambia con i pulsanti. */
+input[type="number"] {
+    width: 4rem;
+    text-align: center;
+    appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
 input[type="checkbox"], input[type="radio"] { width: auto; }
 /* Stato del campo: il bordo è l'unico segnale, un colore per significato. */
 input[data-stato="ok"], select[data-stato="ok"] { --bordo-campo: var(--pickle); }
 input[data-stato="attenzione"], select[data-stato="attenzione"] { --bordo-campo: var(--senape-testo); }
 input[data-stato="errore"], select[data-stato="errore"],
 input[aria-invalid], select[aria-invalid] { --bordo-campo: var(--ketchup); }
+
+/* Il pulsante di aggiornamento serve solo senza script: con lo script la quantità
+   si applica appena cambia. */
+.con-script .aggiorna-carrello { display: none; }
 
 /* Testo destinato a chi usa un lettore di schermo: resta nel documento e viene letto,
    ma non occupa spazio sullo schermo. */
@@ -508,6 +523,57 @@ button.secondario {
     background: transparent;
     color: var(--testo);
     border-color: var(--bordo);
+}
+
+/* Un collegamento che avvia un'azione ha l'aspetto di un pulsante. */
+.pulsante {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: var(--linea) solid var(--primario);
+    border-radius: var(--raggio);
+    background: var(--primario);
+    color: var(--su-primario);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.pulsante:visited { color: var(--su-primario); }
+.pulsante:hover { background: var(--fondo); color: var(--testo); }
+
+.pulsante[data-tipo="positivo"] {
+    border-color: var(--pickle);
+    background: var(--pickle);
+    color: var(--su-pickle);
+}
+
+.pulsante[data-tipo="positivo"]:visited { color: var(--su-pickle); }
+
+.pulsante[data-tipo="negativo"] {
+    border-color: var(--ketchup);
+    background: transparent;
+    color: var(--ketchup);
+}
+
+.pulsante[data-tipo="negativo"]:visited { color: var(--ketchup); }
+.pulsante[data-tipo="negativo"]:hover { background: var(--ketchup); color: var(--su-ketchup); }
+
+/* Il cestino sta sulla riga della tabella: solo l'icona, il testo resta per i lettori. */
+button.cestino {
+    padding: 0.35rem 0.5rem;
+    border-color: var(--ketchup);
+    background: transparent;
+    color: var(--ketchup);
+}
+
+button.cestino:hover { background: var(--ketchup); color: var(--su-ketchup); }
+
+/* Le azioni che chiudono una tabella stanno in fondo, allineate a destra. */
+.azioni-tabella {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--spazio);
+    max-width: none;
 }
 
 /* ---------- avvisi ed etichette ---------- */

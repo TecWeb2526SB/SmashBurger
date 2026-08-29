@@ -66,8 +66,12 @@
                         </td>
                         <td><?php echo e(prezzo((int) $riga['subtotale_centesimi'])); ?></td>
                         <td>
-                            <button type="submit" name="togli" value="<?php echo (int) $riga['id']; ?>">
-                                Togli <?php echo e($riga['nome']); ?>
+                            <button type="submit" name="togli" value="<?php echo (int) $riga['id']; ?>"
+                                class="cestino" data-tipo="negativo">
+                                <svg class="icona" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+                                </svg>
+                                <span class="solo-lettori">Togli <?php echo e($riga['nome']); ?></span>
                             </button>
                         </td>
                     </tr>
@@ -81,12 +85,18 @@
             </tfoot>
         </table>
 
-        <p>
+        <p class="aggiorna-carrello">
             <button type="submit">Aggiorna il carrello</button>
-            <small id="aiuto-quantita">Cambia più quantità insieme e premi Aggiorna, oppure usa i pulsanti sulla riga.</small>
+            <small id="aiuto-quantita">Dopo aver cambiato le quantità premi Aggiorna.</small>
         </p>
     </form>
 
-    <p><a href="<?php echo e(url('pagamento')); ?>">Scegli sede e orario di ritiro</a></p>
-    <p><a href="<?php echo e(url('carrello', ['svuota' => 1])); ?>">Svuota il carrello</a></p>
+    <p class="azioni-tabella">
+        <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('carrello', ['svuota' => 1])); ?>">
+            Svuota il carrello
+        </a>
+        <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('pagamento')); ?>">
+            Procedi all'ordine
+        </a>
+    </p>
 <?php endif; ?>
