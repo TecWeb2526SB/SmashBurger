@@ -39,6 +39,18 @@ RewriteRule ^ errors/404.php [L]
     AddOutputFilterByType DEFLATE text/html text/css application/javascript font/ttf image/svg+xml
 </IfModule>
 
+# Le risorse statiche restano valide a lungo: quando cambiano, cambia il numero di
+# versione nel loro indirizzo.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+</IfModule>
+
 <IfModule mod_headers.c>
     Header always set X-Content-Type-Options "nosniff"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"

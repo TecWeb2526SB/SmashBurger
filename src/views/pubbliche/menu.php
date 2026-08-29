@@ -50,14 +50,15 @@
         <p>Non ci sono prodotti in questa categoria.</p>
     <?php else: ?>
         <ul class="griglia">
-            <?php foreach ($prodotti as $prodotto): ?>
+            <?php foreach ($prodotti as $indice => $prodotto): ?>
                 <li>
                     <article class="scheda">
                         <p class="immagine">
                             <?php if (!empty($prodotto['immagine'])): ?>
                                 <img src="<?php echo e(immagine_url($prodotto['immagine'])); ?>"
                                     alt="<?php echo e($prodotto['nome']); ?>"
-                                    loading="lazy" />
+                                    width="800" height="600"
+                                    <?php echo $indice === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?> />
                             <?php endif; ?>
                         </p>
 

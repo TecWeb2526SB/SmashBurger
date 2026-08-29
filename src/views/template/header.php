@@ -19,6 +19,8 @@ $paginaCorrente = app_pagina_corrente();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title><?php echo e($titolo ?? NOME_SITO); ?></title>
     <meta name="description" content="<?php echo e($descrizione ?? ''); ?>" />
+    <link rel="preload" as="font" type="font/ttf" crossorigin="anonymous"
+        href="styles/caratteri/cabin-regular.ttf" />
     <link rel="stylesheet" href="styles/stile.css?v=<?php echo e(VERSIONE_RISORSE); ?>" />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
     <link rel="manifest" href="site.webmanifest" />

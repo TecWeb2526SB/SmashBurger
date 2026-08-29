@@ -36,6 +36,9 @@ jobs:
           curl -fsSL https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
           java -jar vnu.jar --errors-only .tmp/pagine/*.html
 
+      - name: Installa xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
       - name: Verifica che il markup rispetti la sintassi XML
         run: |
           esito=0

@@ -10,8 +10,9 @@ RUN apt-get update && apt-get install -y \
     # Pulizia della cache di apt per ridurre la dimensione dell'immagine finale
     && rm -rf /var/lib/apt/lists/*
 
-# Abilitiamo i moduli Apache necessari per routing e header di sicurezza
-RUN a2enmod rewrite headers
+# Moduli Apache usati dal sito: riscrittura degli indirizzi, header di sicurezza,
+# compressione e scadenze delle risorse statiche
+RUN a2enmod rewrite headers deflate expires
 
 # Impostiamo la directory di lavoro all'interno del container
 WORKDIR /var/www/html
