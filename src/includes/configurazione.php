@@ -24,7 +24,7 @@ define('DB_PASSWORD', (string) ($configurazioneServer['DB_PASSWORD'] ?? getenv('
 define('NOME_SITO', 'Smash Burger');
 
 // Cambiando questo numero il browser scarica di nuovo foglio di stile e script.
-define('VERSIONE_RISORSE', '3');
+define('VERSIONE_RISORSE', '4');
 define('EMAIL_SITO', 'info@smashburger.it');
 define('TELEFONO_SITO', '049 111 2201');
 

@@ -13,13 +13,17 @@
  */
 
 /* Cabin, di Pablo Impallari, licenza SIL Open Font. I file sono nel progetto: le pagine
-   non fanno richieste a servizi esterni. */
+   non fanno richieste a servizi esterni.
+
+   font-display: optional lascia il carattere di riserva quando Cabin non è pronto in
+   tempo: il testo non viene ridisegnato a metà lettura e la pagina non si sposta sotto
+   gli occhi. Dalla visita successiva il carattere è in memoria e viene usato subito. */
 @font-face {
     font-family: "Cabin";
     src: url("caratteri/cabin-regular.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 @font-face {
@@ -27,7 +31,7 @@
     src: url("caratteri/cabin-bold.ttf") format("truetype");
     font-weight: 700;
     font-style: normal;
-    font-display: swap;
+    font-display: optional;
 }
 
 :root {
@@ -265,10 +269,6 @@ header nav [aria-current],
 .icona {
     width: 1.125rem;
     height: 1.125rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
 }
 
 .icona-luna, .icona-sole, .icona-righe, .icona-croce { display: inline-flex; }
@@ -482,11 +482,6 @@ input[type="number"] {
     appearance: textfield;
 }
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-    appearance: none;
-    margin: 0;
-}
 input[type="checkbox"], input[type="radio"] { width: auto; min-height: 0; }
 /* Stato del campo: il bordo è l'unico segnale, un colore per significato. */
 input[data-stato="ok"], select[data-stato="ok"] { --bordo-campo: var(--pickle); }
@@ -507,7 +502,6 @@ input[aria-invalid], select[aria-invalid] { --bordo-campo: var(--ketchup); }
     margin: -1px;
     padding: 0;
     overflow: hidden;
-    clip-path: inset(50%);
     white-space: nowrap;
 }
 

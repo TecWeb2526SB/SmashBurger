@@ -52,7 +52,7 @@ jobs:
           exit $esito
 
       - name: Valida il foglio di stile
-        run: npx --yes css-validator http://127.0.0.1:8080/styles/stile.css
+        run: npx --yes css-validator src/styles/stile.css
 
       - name: Conserva le pagine scaricate
         if: always()
