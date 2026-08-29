@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="styles/stile.css" />
     <link rel="icon" type="image/svg+xml" href="images/favicon.svg" />
     <link rel="manifest" href="site.webmanifest" />
+    <script src="scripts/script.js" defer="defer"></script>
 </head>
 
 <body>

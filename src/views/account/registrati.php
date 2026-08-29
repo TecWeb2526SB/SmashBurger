@@ -25,7 +25,9 @@
         <p>
             <label for="nome_utente">Nome utente</label>
             <input type="text" id="nome_utente" name="nome_utente" required="required"
-                minlength="3" maxlength="32" autocomplete="username"
+                minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+"
+                title="Sono ammesse lettere, cifre, punto, trattino e trattino basso."
+                autocomplete="username"
                 value="<?php echo e($valori['nome_utente']); ?>"
                 <?php echo isset($errori['nome_utente']) ? 'aria-invalid="true" aria-describedby="errore-nome_utente"' : ''; ?> />
             <?php if (isset($errori['nome_utente'])): ?>
