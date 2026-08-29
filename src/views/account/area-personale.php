@@ -37,7 +37,7 @@
                         <th scope="row"><?php echo e($ordine['numero']); ?></th>
                         <td><?php echo e($ordine['citta']); ?></td>
                         <td><?php echo e(date('d/m/Y H:i', strtotime($ordine['ritiro_previsto']))); ?></td>
-                        <td><span class="etichetta"><?php echo e($ordine['stato']); ?></span></td>
+                        <td><span class="etichetta" data-tipo="<?php echo e(ordine_tipo_stato($ordine['stato'])); ?>"><?php echo e($ordine['stato']); ?></span></td>
                         <td><?php echo e(prezzo((int) $ordine['totale_centesimi'])); ?></td>
                         <td>
                             <a href="<?php echo e(url('ricevuta', ['numero' => $ordine['numero']])); ?>">

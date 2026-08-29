@@ -43,8 +43,11 @@
         <p>
             <label for="password_nuova">Nuova password</label>
             <input type="password" id="password_nuova" name="password_nuova"
-                required="required" minlength="8" autocomplete="new-password" />
-            <small id="aiuto-password-nuova">Almeno 8 caratteri.</small>
+                required="required" minlength="<?php echo PASSWORD_MINIMO; ?>"
+                maxlength="<?php echo PASSWORD_MASSIMO; ?>"
+                pattern="[A-Za-z0-9!?@#$%&amp;*+_.-]+" title="<?php echo e(PASSWORD_CONDIZIONI); ?>"
+                autocomplete="new-password" aria-describedby="condizioni-password-nuova" />
+            <small id="condizioni-password-nuova"><?php echo e(PASSWORD_CONDIZIONI); ?></small>
         </p>
 
         <p><button type="submit">Aggiorna password</button></p>

@@ -16,7 +16,7 @@
         <p><?php echo e($ordine['note_ritiro']); ?></p>
     <?php endif; ?>
 
-    <p>Stato dell'ordine: <span class="etichetta"><?php echo e($ordine['stato']); ?></span></p>
+    <p>Stato dell'ordine: <span class="etichetta" data-tipo="<?php echo e(ordine_tipo_stato($ordine['stato'])); ?>"><?php echo e($ordine['stato']); ?></span></p>
 </section>
 
 <section>

@@ -48,11 +48,18 @@ function utente_email_valida(string $email): bool
 }
 
 /**
- * Verifica la lunghezza minima della password scelta in fase di registrazione.
+ * Verifica lunghezza e caratteri della password scelta.
+ *
+ * I limiti sono gli stessi scritti accanto al campo e ripetuti nel markup, così il
+ * controllo del browser e quello del server dicono la stessa cosa.
  */
 function utente_password_valida(string $password): bool
 {
-    return strlen($password) >= 8 && strlen($password) <= 128;
+    $lunghezza = strlen($password);
+
+    return $lunghezza >= PASSWORD_MINIMO
+        && $lunghezza <= PASSWORD_MASSIMO
+        && preg_match(PASSWORD_CARATTERI_REGOLA, $password) === 1;
 }
 
 /**
@@ -139,7 +146,7 @@ function utente_registra(PDO $pdo, string $nome, string $email, string $password
     }
 
     if (!utente_password_valida($password)) {
-        $errori['password'] = 'La password deve avere almeno 8 caratteri.';
+        $errori['password'] = PASSWORD_CONDIZIONI;
     }
 
     if ($errori !== []) {
@@ -229,7 +236,7 @@ function utente_aggiorna_password(PDO $pdo, int $utenteId, string $attuale, stri
     }
 
     if (!utente_password_valida($nuova)) {
-        return ['ok' => false, 'messaggio' => 'La nuova password deve avere almeno 8 caratteri.'];
+        return ['ok' => false, 'messaggio' => PASSWORD_CONDIZIONI];
     }
 
     $pdo->prepare('UPDATE utenti SET password_hash = :hash WHERE id = :id')

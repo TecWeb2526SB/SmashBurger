@@ -69,7 +69,7 @@
                         <?php endif; ?>
 
                         <?php if ((int) $prodotto['disponibile'] !== 1): ?>
-                            <p><span class="etichetta">Non disponibile</span></p>
+                            <p><span class="etichetta" data-tipo="negativo">Non disponibile</span></p>
                         <?php elseif (!utente_autenticato()): ?>
                         <?php else: ?>
                             <form method="post" action="<?php echo e(url('carrello')); ?>">

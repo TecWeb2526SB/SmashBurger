@@ -192,6 +192,20 @@ function ordine_stati(): array
 }
 
 /**
+ * Traduce lo stato di un ordine nel tipo di etichetta da mostrare: positivo quando
+ * l'ordine è arrivato in fondo, negativo quando è stato annullato, neutro negli altri
+ * casi.
+ */
+function ordine_tipo_stato(string $stato): string
+{
+    return match ($stato) {
+        'pronto', 'ritirato' => 'positivo',
+        'annullato' => 'negativo',
+        default => '',
+    };
+}
+
+/**
  * Restituisce gli ordini per il pannello, con i filtri opzionali su sede e stato.
  */
 function ordini_tutti(PDO $pdo, ?int $sedeId = null, ?string $stato = null): array

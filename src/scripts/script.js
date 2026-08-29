@@ -195,6 +195,35 @@ function inizializzaOrariRitiro() {
 }
 
 /* =============================================================================
+   Tema chiaro e scuro
+   Il modulo funziona anche senza script: qui si evita solo il ricaricamento.
+   ============================================================================= */
+
+function inizializzaTema() {
+    const modulo = document.querySelector('[data-modulo="tema"]');
+
+    if (!modulo || giaCollegato(modulo, 'collegatoTema')) {
+        return;
+    }
+
+    modulo.addEventListener('submit', (evento) => {
+        evento.preventDefault();
+
+        const scelto = modulo.querySelector('[name="tema"]').value;
+        const radice = document.documentElement;
+
+        radice.classList.toggle('tema-scuro', scelto === 'scuro');
+        radice.classList.toggle('tema-chiaro', scelto === 'chiaro');
+
+        // Un anno, come il cookie scritto dal server.
+        document.cookie = `tema=${scelto}; path=/; max-age=31536000; samesite=lax`;
+
+        // Il modulo propone sempre il tema opposto a quello in uso.
+        modulo.querySelector('[name="tema"]').value = scelto === 'scuro' ? 'chiaro' : 'scuro';
+    });
+}
+
+/* =============================================================================
    Moduli
    I vincoli scritti nel markup diventano messaggi visibili accanto ai campi.
    ============================================================================= */
@@ -211,6 +240,7 @@ function segnalaCampo(campo, messaggio) {
 
     if (!messaggio) {
         campo.removeAttribute('aria-invalid');
+        campo.dataset.stato = campo.value === '' ? '' : 'ok';
         riga?.remove();
 
         return;
@@ -219,10 +249,18 @@ function segnalaCampo(campo, messaggio) {
     if (!riga) {
         riga = document.createElement('small');
         riga.id = identificativo;
+        riga.dataset.tipo = 'errore';
         campo.insertAdjacentElement('afterend', riga);
     }
 
-    riga.textContent = messaggio;
+    // La parola iniziale sta nel testo e non nel foglio di stile, così viene letta da
+    // qualsiasi lettore di schermo.
+    riga.textContent = '';
+    const parola = document.createElement('b');
+    parola.textContent = 'Errore:';
+    riga.append(parola, ` ${messaggio}`);
+
+    campo.dataset.stato = 'errore';
     campo.setAttribute('aria-invalid', 'true');
     campo.setAttribute('aria-describedby', identificativo);
 }
@@ -254,6 +292,10 @@ function messaggioErrore(campo) {
 
     if (stato.patternMismatch) {
         return campo.title || 'Il valore contiene caratteri non ammessi.';
+    }
+
+    if (stato.tooLong) {
+        return `Al massimo ${campo.maxLength} caratteri.`;
     }
 
     if (stato.rangeUnderflow || stato.rangeOverflow) {
@@ -304,6 +346,7 @@ function inizializzaModuli() {
    ============================================================================= */
 
 function collega() {
+    inizializzaTema();
     inizializzaModuli();
     inizializzaCarrello();
     inizializzaOrdini();

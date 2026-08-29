@@ -48,6 +48,7 @@
                 <input type="<?php echo $campo === 'email' ? 'email' : 'text'; ?>"
                     id="<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
                     <?php echo $campo === 'note_ritiro' ? '' : 'required="required"'; ?>
+                    <?php echo isset($errori[$campo]) ? 'data-stato="errore" aria-invalid="true"' : ''; ?>
                     value="<?php echo e((string) $valori[$campo]); ?>" />
                 <?php if ($campo === 'note_ritiro'): ?>
                     <small id="aiuto-note_ritiro">
@@ -56,7 +57,9 @@
                     </small>
                 <?php endif; ?>
                 <?php if (isset($errori[$campo])): ?>
-                    <small id="errore-<?php echo e($campo); ?>"><?php echo e($errori[$campo]); ?></small>
+                    <small id="errore-<?php echo e($campo); ?>" data-tipo="errore">
+                        <b>Errore:</b> <?php echo e($errori[$campo]); ?>
+                    </small>
                 <?php endif; ?>
             </p>
         <?php endforeach; ?>

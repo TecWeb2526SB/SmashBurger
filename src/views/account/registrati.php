@@ -29,9 +29,11 @@
                 title="Sono ammesse lettere, cifre, punto, trattino e trattino basso."
                 autocomplete="username"
                 value="<?php echo e($valori['nome_utente']); ?>"
-                <?php echo isset($errori['nome_utente']) ? 'aria-invalid="true" aria-describedby="errore-nome_utente"' : ''; ?> />
+                <?php echo isset($errori['nome_utente']) ? 'data-stato="errore" aria-invalid="true" aria-describedby="errore-nome_utente"' : ''; ?> />
             <?php if (isset($errori['nome_utente'])): ?>
-                <small id="errore-nome_utente"><?php echo e($errori['nome_utente']); ?></small>
+                <small id="errore-nome_utente" data-tipo="errore">
+                    <b>Errore:</b> <?php echo e($errori['nome_utente']); ?>
+                </small>
             <?php endif; ?>
         </p>
 
@@ -39,20 +41,26 @@
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required="required" maxlength="160"
                 autocomplete="email" value="<?php echo e($valori['email']); ?>"
-                <?php echo isset($errori['email']) ? 'aria-invalid="true" aria-describedby="errore-email"' : ''; ?> />
+                <?php echo isset($errori['email']) ? 'data-stato="errore" aria-invalid="true" aria-describedby="errore-email"' : ''; ?> />
             <?php if (isset($errori['email'])): ?>
-                <small id="errore-email"><?php echo e($errori['email']); ?></small>
+                <small id="errore-email" data-tipo="errore">
+                    <b>Errore:</b> <?php echo e($errori['email']); ?>
+                </small>
             <?php endif; ?>
         </p>
 
         <p>
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required="required"
-                minlength="8" autocomplete="new-password"
-                <?php echo isset($errori['password']) ? 'aria-invalid="true" aria-describedby="errore-password"' : ''; ?> />
-            <small id="aiuto-password">Almeno 8 caratteri.</small>
+                minlength="<?php echo PASSWORD_MINIMO; ?>" maxlength="<?php echo PASSWORD_MASSIMO; ?>"
+                pattern="[A-Za-z0-9!?@#$%&amp;*+_.-]+" title="<?php echo e(PASSWORD_CONDIZIONI); ?>"
+                autocomplete="new-password" aria-describedby="condizioni-password"
+                <?php echo isset($errori['password']) ? 'data-stato="errore" aria-invalid="true"' : ''; ?> />
+            <small id="condizioni-password"><?php echo e(PASSWORD_CONDIZIONI); ?></small>
             <?php if (isset($errori['password'])): ?>
-                <small id="errore-password"><?php echo e($errori['password']); ?></small>
+                <small id="errore-password" data-tipo="errore">
+                    <b>Errore:</b> <?php echo e($errori['password']); ?>
+                </small>
             <?php endif; ?>
         </p>
     </fieldset>

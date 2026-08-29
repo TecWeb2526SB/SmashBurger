@@ -22,11 +22,23 @@ define('DB_UTENTE', (string) ($configurazioneServer['DB_UTENTE'] ?? getenv('DB_U
 define('DB_PASSWORD', (string) ($configurazioneServer['DB_PASSWORD'] ?? getenv('DB_PASSWORD') ?: 'password'));
 
 define('NOME_SITO', 'Smash Burger');
+
+// Numero aggiunto agli indirizzi del foglio di stile e dello script: cambiandolo, il
+// browser scarica la versione nuova invece di riusare quella in memoria.
+define('VERSIONE_RISORSE', '1');
 define('EMAIL_SITO', 'info@smashburger.it');
 define('TELEFONO_SITO', '049 111 2201');
 
 // Minuti di attesa fra la conferma dell'ordine e il primo orario di ritiro possibile.
 define('MINUTI_PREPARAZIONE', 20);
+
+// Regole della password, usate dal controllo lato server, dal markup e dal testo mostrato
+// accanto al campo: un solo posto da cambiare.
+define('PASSWORD_MINIMO', 8);
+define('PASSWORD_MASSIMO', 64);
+define('PASSWORD_CARATTERI', '!?@#$%&*+-_.');
+define('PASSWORD_CARATTERI_REGOLA', '/^[A-Za-z0-9!?@#$%&*+\-_.]+$/');
+define('PASSWORD_CONDIZIONI', 'Da 8 a 64 caratteri. Ammessi lettere, cifre e i simboli ! ? @ # $ % & * + - _ . senza spazi.');
 
 /**
  * Costruisce un indirizzo relativo a partire dal nome di una pagina.
@@ -79,6 +91,22 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header('X-Frame-Options: SAMEORIGIN');
 header("Content-Security-Policy: default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'");
+
+/**
+ * Restituisce il nome della pagina che il browser sta chiedendo, senza estensione.
+ *
+ * Serve ai moduli che devono riportare alla pagina di partenza. Il valore viene ripulito
+ * da tutto quello che non è un nome di pagina, e chi lo riceve lo confronta comunque con
+ * i controller esistenti.
+ */
+function app_pagina_corrente(): string
+{
+    $percorso = (string) parse_url((string) ($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
+    $nome = basename(trim($percorso, '/'));
+    $nome = preg_replace('/\.php$/i', '', $nome);
+
+    return preg_match('/^[A-Za-z0-9_-]+$/', (string) $nome) === 1 ? (string) $nome : '';
+}
 
 // La sessione serve per l'accesso, per il token CSRF e per la sede scelta.
 // La modalità stretta impedisce di far adottare al browser un identificativo scelto

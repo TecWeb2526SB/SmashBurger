@@ -29,6 +29,7 @@ function prezzo(int $centesimi): string
  *
  * Le chiavi di $dati diventano variabili locali disponibili nella vista e nei template.
  * Chiavi riconosciute dai template:
+ * - sediPiede: sedi mostrate nel piede, aggiunte qui e non dai controller
  * - titolo: contenuto del tag title, entro 60 caratteri
  * - descrizione: contenuto del meta description
  * - pagina: nome della pagina corrente, usato per segnalare la voce di menu attiva
@@ -38,6 +39,11 @@ function prezzo(int $centesimi): string
  */
 function mostra_pagina(string $vista, array $dati = []): void
 {
+    // Il piede mostra le sedi su ogni pagina: la lettura avviene qui, una volta sola,
+    // così le viste restano senza query.
+    global $pdo;
+    $dati['sediPiede'] = sedi_tutte($pdo);
+
     extract($dati, EXTR_SKIP);
 
     include __DIR__ . '/../../views/template/header.php';
@@ -46,32 +52,40 @@ function mostra_pagina(string $vista, array $dati = []): void
 }
 
 /**
- * Restituisce le voci del menu principale come coppie etichetta/indirizzo, nell'ordine
- * di visualizzazione. Le voci cambiano in base allo stato di accesso e al ruolo.
+ * Voci del menu principale: la navigazione del sito, uguale per tutti.
  */
 function menu_principale(): array
 {
-    $voci = [
+    return [
         'Home' => url(),
         'Menu' => url('prodotti'),
         'Servizi' => url('servizi'),
         'Chi siamo' => url('chi-siamo'),
         'Sedi' => url('sedi'),
     ];
+}
 
+/**
+ * Voci che stanno a destra nell'intestazione: riguardano la persona, non il sito, e
+ * cambiano con lo stato di accesso e con il ruolo.
+ */
+function menu_azioni(): array
+{
     if (!utente_autenticato()) {
-        $voci['Accedi'] = url('accedi');
-
-        return $voci;
+        return [
+            'Registrati' => url('registrati'),
+            'Accedi' => url('accedi'),
+        ];
     }
 
-    $voci['Carrello'] = url('carrello');
-    $voci['Area personale'] = url('area-personale');
+    $voci = [];
 
     if (utente_e_amministratore()) {
         $voci['Controllo'] = url('controllo');
     }
 
+    $voci['Carrello'] = url('carrello');
+    $voci['Area personale'] = url('area-personale');
     $voci['Esci'] = url('esci');
 
     return $voci;
@@ -121,4 +135,32 @@ function menu_controllo(): array
         'Sedi' => url('controllo-sedi'),
         'Utenti' => url('controllo-utenti'),
     ];
+}
+
+/**
+ * Restituisce il tema scelto dalla persona: 'chiaro', 'scuro' oppure stringa vuota
+ * quando non è stata fatta nessuna scelta e vale l'impostazione del sistema.
+ */
+function tema_scelto(): string
+{
+    $tema = (string) ($_COOKIE['tema'] ?? '');
+
+    return in_array($tema, ['chiaro', 'scuro'], true) ? $tema : '';
+}
+
+/**
+ * Salva la scelta del tema in un cookie che dura un anno.
+ *
+ * Il cookie non contiene dati personali e serve solo a evitare che la pagina compaia con
+ * i colori sbagliati prima che il foglio di stile venga applicato.
+ */
+function tema_salva(string $tema): void
+{
+    setcookie('tema', $tema, [
+        'expires' => time() + 31536000,
+        'path' => '/',
+        'secure' => richiesta_su_https(),
+        'httponly' => false,
+        'samesite' => 'Lax',
+    ]);
 }

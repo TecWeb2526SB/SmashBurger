@@ -1,5 +1,488 @@
 /*
  * Foglio di stile unico del sito.
- * Viene scritto nella fase 6 del piano, quando la struttura di tutte le pagine è
- * completa. Fino ad allora le pagine restano senza presentazione.
+ *
+ * Impostazione "Banco": superfici piatte, bordi netti, nessuna ombra, colore usato a
+ * blocchi. I tre colori dell'identità hanno un significato ciascuno: ketchup per marchio,
+ * errori e cancellazioni, senape per attenzione e stati in corso, pickle per conferme e
+ * stati positivi. L'azione principale usa il neutro scuro, così nessun colore di stato
+ * viene sprecato sui pulsanti.
+ *
+ * Le misure sono tutte in unità relative: il testo e le spaziature seguono la dimensione
+ * scelta nel browser e la larghezza della finestra.
+ *
+ * Ordine delle sezioni: variabili, elementi di base, larghezza comune, intestazione,
+ * contenuto, schede, tabelle, moduli, avvisi, piede, schermo piccolo, stampa.
  */
+
+:root {
+    --fondo: #FAF7F2;
+    --superficie: #FFFFFF;
+    --testo: #1F1D1B;
+    --testo-tenue: #5C5751;
+    --bordo: #1F1D1B;
+    --bordo-tenue: #D9D2C7;
+
+    --ketchup: #C8102E;
+    --senape: #E0A81C;
+    --pickle: #4C7A2E;
+    --su-ketchup: #FFFFFF;
+    --su-senape: #1F1D1B;
+    --su-pickle: #FFFFFF;
+
+    --primario: #1F1D1B;
+    --su-primario: #FAF7F2;
+    /* Il senape pieno su fondo chiaro non arriva al contrasto minimo: per il testo
+       serve la versione scura. */
+    --senape-testo: #8A6410;
+
+    /* Lo spazio di base cresce con la finestra, fra 0.75 e 1.25 rem. */
+    --spazio: clamp(0.75rem, 0.55rem + 0.8vw, 1.25rem);
+    --linea: 0.125rem;
+    --linea-sottile: 0.0625rem;
+    --raggio: 0.2rem;
+    --misura: 42rem;
+    --larghezza: 72rem;
+}
+
+/* Senza scelta esplicita si segue l'impostazione del sistema. */
+@media (prefers-color-scheme: dark) {
+    :root:not(.tema-chiaro) {
+        --fondo: #1A1918;
+        --superficie: #232120;
+        --testo: #F2EDE6;
+        --testo-tenue: #B3ACA3;
+        --bordo: #F2EDE6;
+        --bordo-tenue: #3A3735;
+        --ketchup: #F2556B;
+        --pickle: #8FC46A;
+        --su-ketchup: #1A1918;
+        --su-pickle: #1A1918;
+        --primario: #F2EDE6;
+        --su-primario: #1A1918;
+        --senape-testo: #E0A81C;
+    }
+}
+
+:root.tema-scuro {
+    --fondo: #1A1918;
+    --superficie: #232120;
+    --testo: #F2EDE6;
+    --testo-tenue: #B3ACA3;
+    --bordo: #F2EDE6;
+    --bordo-tenue: #3A3735;
+
+    --ketchup: #F2556B;
+    --pickle: #8FC46A;
+    --su-ketchup: #1A1918;
+    --su-pickle: #1A1918;
+
+    --primario: #F2EDE6;
+    --su-primario: #1A1918;
+    --senape-testo: #E0A81C;
+}
+
+/* ---------- elementi di base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--testo);
+    font-family: system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+h1, h2, h3 { line-height: 1.2; margin: 0 0 0.5em; }
+h1 { font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem); letter-spacing: -0.01em; }
+h2 { font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem); }
+h3 { font-size: 1.125rem; }
+p, ul, ol, table, form { margin: 0 0 var(--spazio); }
+p, li { max-width: var(--misura); }
+
+a { color: inherit; text-underline-offset: 0.2em; }
+a:hover { text-decoration-thickness: 0.125rem; }
+a:visited { color: var(--senape-testo); }
+
+:focus-visible {
+    outline: 0.1875rem solid var(--primario);
+    outline-offset: 0.125rem;
+}
+
+/* Sui campi il focus non aggiunge un secondo anello: ispessisce quello che già c'è,
+   così il colore del bordo resta l'unico segnale di stato. */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: var(--linea) solid var(--bordo-campo);
+    outline-offset: 0;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* ---------- larghezza comune ---------- */
+
+.container {
+    max-width: var(--larghezza);
+    margin-inline: auto;
+    padding-inline: var(--spazio);
+}
+
+/* ---------- intestazione ---------- */
+
+body > a:first-child {
+    position: absolute;
+    left: -100vw;
+}
+
+body > a:first-child:focus {
+    position: static;
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: var(--primario);
+    color: var(--su-primario);
+}
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spazio);
+    max-width: var(--larghezza);
+    margin-inline: auto;
+    padding: var(--spazio);
+    border-bottom: var(--linea) solid var(--bordo);
+}
+
+.marchio {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.marchio a { color: var(--ketchup); text-decoration: none; }
+.marchio a:visited { color: var(--ketchup); }
+
+header nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+header nav a { text-decoration: none; }
+header nav a:hover { text-decoration: underline; text-decoration-thickness: 0.125rem; }
+header nav [aria-current] {
+    display: inline-block;
+    padding-bottom: 0.3rem;
+    box-shadow: inset 0 -0.1875rem 0 var(--ketchup);
+    font-weight: 700;
+}
+
+/* Le azioni restano a destra: il margine automatico spinge il gruppo a fine riga. */
+.azioni {
+    display: flex;
+    align-items: center;
+    gap: var(--spazio);
+    margin-left: auto;
+}
+
+.azioni form { margin: 0; }
+
+.azioni button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-width: 9.5rem;
+    padding: 0.375rem 0.75rem;
+    border-color: var(--bordo);
+    background: transparent;
+    color: var(--testo);
+}
+
+.azioni button:hover { background: var(--primario); color: var(--su-primario); }
+
+.icona {
+    width: 1.125rem;
+    height: 1.125rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.icona-sole, .solo-scuro { display: none; }
+:root.tema-scuro .icona-sole, :root.tema-scuro .solo-scuro { display: inline; }
+:root.tema-scuro .icona-luna, :root.tema-scuro .solo-chiaro { display: none; }
+
+/* ---------- contenuto ---------- */
+
+main {
+    display: block;
+    padding-block: calc(var(--spazio) * 2);
+}
+
+main > nav ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--testo-tenue);
+}
+
+main > nav li + li::before { content: "/ "; }
+
+section { margin: 0 0 calc(var(--spazio) * 2); }
+
+/* ---------- schede e griglia ---------- */
+
+.griglia {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: var(--spazio);
+    padding: 0;
+    list-style: none;
+}
+
+.scheda {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: var(--spazio);
+    border: var(--linea) solid var(--bordo);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+}
+
+.scheda h3 { margin-bottom: 0.25em; }
+.scheda img { margin: 0 0 var(--spazio); }
+.scheda p { margin-bottom: 0.5rem; }
+.scheda form { margin-top: auto; }
+
+/* ---------- tabelle ---------- */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--superficie);
+    border: var(--linea) solid var(--bordo);
+}
+
+caption {
+    padding: 0.5rem 0;
+    text-align: left;
+    font-weight: 700;
+}
+
+th, td {
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    border-bottom: var(--linea-sottile) solid var(--bordo-tenue);
+    vertical-align: top;
+}
+
+thead th {
+    border-bottom: var(--linea) solid var(--bordo);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+tfoot td {
+    border-top: var(--linea) solid var(--bordo);
+    border-bottom: 0;
+    font-weight: 700;
+}
+
+/* ---------- moduli ---------- */
+
+fieldset {
+    margin: 0 0 var(--spazio);
+    padding: var(--spazio);
+    border: var(--linea) solid var(--bordo);
+    border-radius: var(--raggio);
+}
+
+legend {
+    padding: 0 0.5rem;
+    font-weight: 700;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.9375rem;
+}
+
+input, select {
+    --bordo-campo: var(--bordo);
+    padding: 0.5rem;
+    border: var(--linea) solid var(--bordo-campo);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+    color: var(--testo);
+    font: inherit;
+    max-width: 100%;
+}
+
+input[type="number"] { width: 5rem; }
+input[type="checkbox"], input[type="radio"] { width: auto; }
+/* Stato del campo: il bordo è l'unico segnale, un colore per significato. */
+input[data-stato="ok"], select[data-stato="ok"] { --bordo-campo: var(--pickle); }
+input[data-stato="attenzione"], select[data-stato="attenzione"] { --bordo-campo: var(--senape-testo); }
+input[data-stato="errore"], select[data-stato="errore"],
+input[aria-invalid], select[aria-invalid] { --bordo-campo: var(--ketchup); }
+
+small {
+    display: block;
+    color: var(--testo-tenue);
+    font-size: 0.875rem;
+}
+
+small[data-tipo="attenzione"] { color: var(--senape-testo); font-weight: 700; }
+small[data-tipo="errore"] { color: var(--ketchup); font-weight: 700; }
+
+button {
+    padding: 0.5rem 1rem;
+    border: var(--linea) solid var(--primario);
+    border-radius: var(--raggio);
+    background: var(--primario);
+    color: var(--su-primario);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+button:hover { background: var(--fondo); color: var(--testo); }
+
+button.secondario {
+    background: transparent;
+    color: var(--testo);
+    border-color: var(--bordo);
+}
+
+/* ---------- avvisi ed etichette ---------- */
+
+.avviso {
+    max-width: none;
+    margin-bottom: var(--spazio);
+    padding: 0.75rem var(--spazio);
+    border: var(--linea-sottile) solid var(--bordo-tenue);
+    border-left: 0.375rem solid var(--pickle);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+}
+
+.avviso b { text-transform: none; }
+.avviso[data-tipo="attenzione"] { border-left-color: var(--senape); }
+.avviso[data-tipo="errore"] { border-left-color: var(--ketchup); }
+
+[role="alert"] {
+    max-width: none;
+    padding: 0.75rem var(--spazio);
+    border: var(--linea-sottile) solid var(--bordo-tenue);
+    border-left: 0.375rem solid var(--ketchup);
+    border-radius: var(--raggio);
+    background: var(--superficie);
+}
+
+.etichetta {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--raggio);
+    background: var(--senape);
+    color: var(--su-senape);
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.etichetta[data-tipo="positivo"] { background: var(--pickle); color: var(--su-pickle); }
+.etichetta[data-tipo="negativo"] { background: var(--ketchup); color: var(--su-ketchup); }
+
+/* ---------- piè di pagina ---------- */
+
+footer {
+    margin-top: calc(var(--spazio) * 3);
+    padding-block: calc(var(--spazio) * 2);
+    border-top: var(--linea) solid var(--bordo);
+    background: var(--superficie);
+}
+
+footer .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--spazio) calc(var(--spazio) * 2);
+}
+
+footer section { margin: 0; }
+
+footer h2 {
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+footer li { line-height: 1.8; }
+
+.nota {
+    max-width: var(--larghezza);
+    margin: calc(var(--spazio) * 1.5) auto 0;
+    padding: var(--spazio) var(--spazio) 0;
+    border-top: var(--linea-sottile) solid var(--bordo-tenue);
+    color: var(--testo-tenue);
+    font-size: 0.875rem;
+}
+
+/* ---------- schermo piccolo ---------- */
+
+@media (max-width: 40rem) {
+    main { padding-block: var(--spazio); }
+    header { gap: 0.5rem var(--spazio); }
+    header nav { order: 3; width: 100%; }
+    header nav ul { gap: 0 1rem; }
+    table, thead, tbody, tfoot, tr, th, td { display: block; }
+    thead { display: none; }
+    tr { border-bottom: var(--linea) solid var(--bordo); }
+    td, th { border: 0; padding: 0.25rem 0.75rem; }
+}
+
+/* ---------- stampa ---------- */
+
+@media print {
+    :root {
+        --fondo: #FFFFFF;
+        --superficie: #FFFFFF;
+        --testo: #000000;
+        --testo-tenue: #333333;
+        --bordo: #000000;
+        --bordo-tenue: #999999;
+    }
+
+    header nav, .azioni, form, .avviso, footer ul { display: none; }
+
+    body { font-size: 11pt; }
+
+    main { padding: 0; }
+
+    a { text-decoration: underline; }
+
+    /* L'indirizzo di un collegamento interno non serve su carta, quello esterno sì. */
+    main a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.9em; }
+
+    .scheda, table { break-inside: avoid; }
+}
