@@ -52,9 +52,12 @@ jobs:
           exit $esito
 
       # Gli avvisi sulle variabili, che il validatore non può controllare staticamente,
-      # non sono errori: il passo fallisce solo se il foglio ha errori veri.
-      - name: Valida il foglio di stile
-        run: npx --yes css-validator --warning no src/styles/stile.css
+      # non sono errori: il passo fallisce solo se un foglio ha errori veri.
+      - name: Valida i fogli di stile
+        run: |
+          for foglio in src/styles/stile.css src/styles/mobile.css src/styles/stampa.css; do
+            npx --yes css-validator --warning no "$foglio"
+          done
 
       - name: Conserva le pagine scaricate
         if: always()
