@@ -14,7 +14,7 @@ utente_richiedi_accesso();
 $utenteId = (int) utente_corrente()['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // La pagina di ritorno arriva dal modulo: si accettano solo i due valori previsti.
+    // La pagina di ritorno arriva dal modulo: ammessi solo i due valori previsti.
     $ritorno = ((string) ($_POST['ritorno'] ?? 'carrello')) === 'prodotti' ? 'prodotti' : 'carrello';
 
     if (!csrf_valido($_POST['token_csrf'] ?? null)) {
@@ -22,8 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         vai_a($ritorno);
     }
 
-    // I pulsanti della singola riga portano l'identificativo come valore, così il
-    // browser invia solo quello premuto e il modulo resta uno solo.
+    // Ogni pulsante di riga porta l'identificativo come valore: il browser invia solo
+    // quello premuto.
     foreach (['aumenta' => 1, 'diminuisci' => -1] as $pulsante => $variazione) {
         if (isset($_POST[$pulsante])) {
             $esito = carrello_varia_quantita($pdo, $utenteId, (int) $_POST[$pulsante], $variazione);

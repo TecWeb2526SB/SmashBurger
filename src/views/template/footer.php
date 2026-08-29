@@ -2,7 +2,7 @@
 /**
  * Chiusura di ogni pagina: fine del contenuto, footer con contatti, informazioni e sedi.
  *
- * Riceve $sediPiede da mostra_pagina(), che le legge una volta per tutte le pagine.
+ * Riceve $sediFooter da mostra_pagina(), che le legge una volta per tutte le pagine.
  */
 ?>
     </main>
@@ -29,8 +29,8 @@
             <section>
                 <h2>Sedi</h2>
                 <ul>
-                    <?php foreach ($sediPiede ?? [] as $sedePiede): ?>
-                        <li><?php echo e($sedePiede['citta']); ?>, <?php echo e($sedePiede['indirizzo']); ?></li>
+                    <?php foreach ($sediFooter ?? [] as $sedeFooter): ?>
+                        <li><?php echo e($sedeFooter['citta']); ?>, <?php echo e($sedeFooter['indirizzo']); ?></li>
                     <?php endforeach; ?>
                 </ul>
             </section>

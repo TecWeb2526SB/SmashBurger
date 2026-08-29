@@ -1,13 +1,9 @@
 /*
- * Comportamento del sito.
+ * Comportamento del sito. File unico, caricato con defer da tutte le pagine.
  *
- * Il file è unico e viene caricato con defer da tutte le pagine. Ogni funzione parte da
- * un elemento del DOM e, se non lo trova, esce subito: così lo stesso file serve pagine
- * diverse senza controlli aggiuntivi.
- *
- * Tutto quello che c'è qui è un miglioramento di qualcosa che funziona già senza
- * JavaScript. Se una richiesta fallisce, il modulo viene inviato dal browser nel modo
- * consueto.
+ * Ogni funzione parte da un elemento del DOM ed esce se non lo trova. Le operazioni qui
+ * dentro migliorano moduli che funzionano già da soli: in caso di errore l'invio torna
+ * al browser.
  */
 
 /* =============================================================================

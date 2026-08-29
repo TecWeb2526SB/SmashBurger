@@ -176,7 +176,7 @@ tabella.
 
 | Componente | Markup | Uso |
 | --- | --- | --- |
-| Intestazione | `<header>` con `<nav>` e lista di link | uguale su tutte le pagine |
+| Header | `<header>` con `<nav>` e lista di link | uguale su tutte le pagine |
 | Breadcrumb | `<nav aria-label="Percorso">` con `<ol>` | tutte le pagine tranne la home |
 | Sezione | `<section>` con intestazione propria | blocco di contenuto |
 | Scheda | `<article class="scheda">` | prodotto, sede, ordine |
@@ -188,7 +188,7 @@ tabella.
 | Avviso | `<p class="avviso" role="status">` | esito di un'operazione |
 | Etichetta | `<span class="etichetta">` | stato ordine, disponibilità |
 | Filtri | `<nav class="filtri">` con lista di collegamenti | restringere un elenco, come le categorie del menu |
-| Piè di pagina | `<footer>` con liste di link | uguale su tutte le pagine |
+| Footer | `<footer>` con liste di link | uguale su tutte le pagine |
 
 Il pannello di controllo usa gli stessi componenti delle pagine pubbliche: non ha un
 proprio insieme di stili.
@@ -367,7 +367,7 @@ considerato ostile finché non viene validato.
 - Gli allegati caricati dal pannello si accettano solo con estensione e tipo in elenco
   chiuso, con un nome generato dal server e mai quello inviato dal browser.
 
-### 12.6 Intestazioni
+### 12.6 Header di risposta
 
 Il sito invia `Content-Security-Policy` senza `unsafe-inline`, `X-Content-Type-Options`,
 `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy`. La politica dei contenuti

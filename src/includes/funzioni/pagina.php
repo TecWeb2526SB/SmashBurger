@@ -27,22 +27,17 @@ function prezzo(int $centesimi): string
 /**
  * Compone una pagina completa: header, vista del contenuto e footer.
  *
- * Le chiavi di $dati diventano variabili locali disponibili nella vista e nei template.
- * Chiavi riconosciute dai template:
- * - sediPiede: sedi mostrate nel piede, aggiunte qui e non dai controller
- * - titolo: contenuto del tag title, entro 60 caratteri
- * - descrizione: contenuto del meta description
- * - pagina: nome della pagina corrente, usato per segnalare la voce di menu attiva
- * - breadcrumb: elenco di coppie [etichetta, indirizzo], con indirizzo nullo sull'ultima
+ * Le chiavi di $dati diventano variabili disponibili nella vista e nei template:
+ * titolo, descrizione, pagina attiva nel menu, breadcrumb come coppie
+ * [etichetta, indirizzo], e sediFooter, aggiunta qui e non dai controller.
  *
  * @param string $vista  percorso della vista dentro views/, ad esempio 'pubbliche/home.php'
  */
 function mostra_pagina(string $vista, array $dati = []): void
 {
-    // Il piede mostra le sedi su ogni pagina: la lettura avviene qui, una volta sola,
-    // così le viste restano senza query.
+    // Le sedi servono al footer di ogni pagina: la lettura sta qui e non nelle viste.
     global $pdo;
-    $dati['sediPiede'] = sedi_tutte($pdo);
+    $dati['sediFooter'] = sedi_tutte($pdo);
 
     extract($dati, EXTR_SKIP);
 
@@ -66,7 +61,7 @@ function menu_principale(): array
 }
 
 /**
- * Voci che stanno a destra nell'intestazione: riguardano la persona, non il sito, e
+ * Voci che stanno a destra nell'header: riguardano la persona, non il sito, e
  * cambiano con lo stato di accesso e con il ruolo.
  */
 function menu_azioni(): array

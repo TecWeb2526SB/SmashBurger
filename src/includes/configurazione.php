@@ -23,8 +23,7 @@ define('DB_PASSWORD', (string) ($configurazioneServer['DB_PASSWORD'] ?? getenv('
 
 define('NOME_SITO', 'Smash Burger');
 
-// Numero aggiunto agli indirizzi del foglio di stile e dello script: cambiandolo, il
-// browser scarica la versione nuova invece di riusare quella in memoria.
+// Cambiando questo numero il browser scarica di nuovo foglio di stile e script.
 define('VERSIONE_RISORSE', '2');
 define('EMAIL_SITO', 'info@smashburger.it');
 define('TELEFONO_SITO', '049 111 2201');
@@ -32,8 +31,8 @@ define('TELEFONO_SITO', '049 111 2201');
 // Minuti di attesa fra la conferma dell'ordine e il primo orario di ritiro possibile.
 define('MINUTI_PREPARAZIONE', 20);
 
-// Regole della password, usate dal controllo lato server, dal markup e dal testo mostrato
-// accanto al campo: un solo posto da cambiare.
+// Regole della password: valgono per il controllo lato server, per gli attributi del
+// markup e per il testo mostrato accanto al campo.
 define('PASSWORD_MINIMO', 8);
 define('PASSWORD_MASSIMO', 64);
 define('PASSWORD_CARATTERI', '!?@#$%&*+-_.');
@@ -62,8 +61,7 @@ function url(string $pagina = '', array $parametri = []): string
     return $indirizzo;
 }
 
-// Gli errori non vengono stampati nella pagina: finiscono nel log del server e la
-// richiesta si chiude con la pagina di errore 500.
+// Gli errori finiscono nel log del server; la richiesta si chiude con la pagina 500.
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
@@ -75,7 +73,7 @@ set_exception_handler(function (Throwable $errore): void {
 
 /**
  * Indica se la richiesta corrente viaggia su HTTPS, tenendo conto di un eventuale
- * proxy che inoltra il protocollo originale nell'intestazione X-Forwarded-Proto.
+ * proxy che inoltra il protocollo originale nell'header X-Forwarded-Proto.
  */
 function richiesta_su_https(): bool
 {
@@ -85,7 +83,7 @@ function richiesta_su_https(): bool
     return $https === 'on' || $https === '1' || $inoltrato === 'https';
 }
 
-// Intestazioni di sicurezza inviate da PHP: valgono anche dove .htaccess non viene letto.
+// Header di sicurezza inviati da PHP: valgono anche dove .htaccess non viene letto.
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
@@ -108,9 +106,8 @@ function app_pagina_corrente(): string
     return preg_match('/^[A-Za-z0-9_-]+$/', (string) $nome) === 1 ? (string) $nome : '';
 }
 
-// La sessione serve per l'accesso, per il token CSRF e per la sede scelta.
-// La modalità stretta impedisce di far adottare al browser un identificativo scelto
-// dall'attaccante, e i cookie sono l'unico canale ammesso per l'identificativo.
+// La sessione tiene accesso, token CSRF e sede scelta. La modalità stretta rifiuta gli
+// identificativi non generati dal server, che viaggiano solo nel cookie.
 if (session_status() === PHP_SESSION_NONE) {
     ini_set('session.use_strict_mode', '1');
     ini_set('session.use_only_cookies', '1');

@@ -40,8 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     vai_a('controllo-utenti');
 }
 
-// Il collegamento di cancellazione porta qui in GET e mostra solo la richiesta di
-// conferma: la cancellazione avviene con il modulo in POST.
+// Il collegamento porta qui in GET e mostra la conferma; la cancellazione avviene in POST.
 $daCancellare = null;
 if (isset($_GET['cancella'])) {
     $query = $pdo->prepare('SELECT id, nome_utente FROM utenti WHERE id = :id');

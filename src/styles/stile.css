@@ -1,22 +1,19 @@
 /*
  * Foglio di stile unico del sito.
  *
- * Impostazione "Banco": superfici piatte, bordi netti, nessuna ombra, colore usato a
- * blocchi. I tre colori dell'identità hanno un significato ciascuno: ketchup per marchio,
- * errori e cancellazioni, senape per attenzione e stati in corso, pickle per conferme e
- * stati positivi. L'azione principale usa il neutro scuro, così nessun colore di stato
- * viene sprecato sui pulsanti.
+ * Ruolo dei colori: ketchup per il marchio, gli errori e le cancellazioni; senape per le
+ * segnalazioni di attenzione e gli stati in corso; pickle per le conferme e gli stati
+ * positivi; neutro scuro per l'azione principale dei moduli.
  *
- * Le misure sono tutte in unità relative: il testo e le spaziature seguono la dimensione
- * scelta nel browser e la larghezza della finestra.
+ * Tutte le misure sono in unità relative, quindi seguono la dimensione del testo
+ * impostata nel browser e la larghezza della finestra.
  *
- * Ordine delle sezioni: variabili, elementi di base, larghezza comune, intestazione,
- * contenuto, schede, tabelle, moduli, avvisi, piede, schermo piccolo, stampa.
+ * Sezioni, nell'ordine: caratteri, variabili, elementi di base, larghezza comune, header,
+ * contenuto, filtri, schede, tabelle, moduli, avvisi, footer, schermo piccolo, stampa.
  */
 
-/* Il carattere del sito viaggia con il sito: nessuna richiesta a servizi esterni, così
-   le pagine hanno lo stesso aspetto ovunque e restano leggibili anche senza rete.
-   Cabin, di Pablo Impallari, licenza SIL Open Font, copia in styles/caratteri. */
+/* Cabin, di Pablo Impallari, licenza SIL Open Font. I file sono nel progetto: le pagine
+   non fanno richieste a servizi esterni. */
 @font-face {
     font-family: "Cabin";
     src: url("caratteri/cabin-regular.ttf") format("truetype");
@@ -155,7 +152,7 @@ img { max-width: 100%; height: auto; display: block; }
     padding-inline: var(--spazio);
 }
 
-/* ---------- intestazione ---------- */
+/* ---------- header ---------- */
 
 body > a:first-child {
     position: absolute;
@@ -551,7 +548,7 @@ button.secondario {
 .etichetta[data-tipo="positivo"] { background: var(--pickle); color: var(--su-pickle); }
 .etichetta[data-tipo="negativo"] { background: var(--ketchup); color: var(--su-ketchup); }
 
-/* ---------- piè di pagina ---------- */
+/* ---------- footer ---------- */
 
 footer {
     margin-top: calc(var(--spazio) * 3);
