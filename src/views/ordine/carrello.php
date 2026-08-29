@@ -27,7 +27,7 @@
 
 <?php if ($righe === []): ?>
     <p>Il carrello è vuoto.</p>
-    <p><a href="<?php echo e(url('prodotti')); ?>">Vai al menu</a></p>
+    <p><a href="<?php echo e(url('menu')); ?>">Vai al menu</a></p>
 <?php else: ?>
     <form method="post" action="<?php echo e(url('carrello')); ?>" data-modulo="carrello">
         <?php echo campo_csrf(); ?>
@@ -90,7 +90,7 @@
     </form>
 
     <p class="navigazione-pagina">
-        <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('prodotti')); ?>">
+        <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('menu')); ?>">
             <?php echo icona('freccia-sinistra'); ?> Torna al menu
         </a>
         <span class="gruppo-azioni">

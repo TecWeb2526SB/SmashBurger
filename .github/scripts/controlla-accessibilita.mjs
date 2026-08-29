@@ -60,7 +60,7 @@ async function accedi(utente, password) {
  * controllate vuote, cioè nello stato meno interessante.
  */
 async function preparaCarrello(cookie) {
-    const pagina = await fetch(`${base}/prodotti`, { headers: { Cookie: cookie } });
+    const pagina = await fetch(`${base}/menu`, { headers: { Cookie: cookie } });
     const markup = await pagina.text();
     const token = markup.match(/name="token_csrf" value="([a-f0-9]+)"/)?.[1];
     const prodotto = markup.match(/name="prodotto_id" value="(\d+)"/)?.[1];

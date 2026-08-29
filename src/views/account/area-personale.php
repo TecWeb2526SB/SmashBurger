@@ -58,7 +58,7 @@
 
 <p class="navigazione-pagina">
     <?php if (!utente_e_amministratore()): ?>
-        <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('prodotti')); ?>">
+        <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('menu')); ?>">
             Vai al menu <?php echo icona('freccia-destra'); ?>
         </a>
     <?php endif; ?>

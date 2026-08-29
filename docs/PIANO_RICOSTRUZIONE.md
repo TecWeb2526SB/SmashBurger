@@ -28,7 +28,7 @@ Documenti collegati: `docs/VINCOLI_ESAME.md` (requisiti obbligatori), `REGOLE.md
 
 ### 2.1 Cosa resta
 
-- Pagine informative: home, prodotti, servizi, chi siamo, sedi, privacy, accessibilità,
+- Pagine informative: home, menu, servizi, chi siamo, sedi, privacy, accessibilità,
   mappa del sito, pagine di errore.
 - Registrazione, accesso, uscita, profilo modificabile, elenco dei propri ordini.
 - Catalogo con categorie, carrello, pagamento con scelta della sede e dell'orario di
@@ -51,7 +51,7 @@ Documenti collegati: `docs/VINCOLI_ESAME.md` (requisiti obbligatori), `REGOLE.md
 
 | Area | File |
 | --- | --- |
-| Pubblica | `index.php`, `prodotti.php`, `servizi.php`, `chi-siamo.php`, `sedi.php`, `privacy.php`, `accessibilita.php`, `mappa-sito.php` |
+| Pubblica | `index.php`, `menu.php`, `servizi.php`, `chi-siamo.php`, `sedi.php`, `privacy.php`, `accessibilita.php`, `mappa-sito.php` |
 | Account | `accedi.php`, `registrati.php`, `esci.php`, `area-personale.php`, `profilo.php` |
 | Acquisto | `carrello.php`, `pagamento.php`, `ricevuta.php` |
 | Controllo | `controllo.php` (ordini), `controllo-prodotti.php`, `controllo-prodotto.php`, `controllo-sedi.php`, `controllo-sede.php`, `controllo-utenti.php` |
@@ -136,7 +136,7 @@ Fine fase: la home mostra dati reali dal database ed è validata.
 
 ### Fase 3: struttura delle pagine pubbliche e utente (completata)
 
-Nell'ordine: prodotti, sedi, servizi, chi siamo, pagine informative, accesso e
+Nell'ordine: menu, sedi, servizi, chi siamo, pagine informative, accesso e
 registrazione, area personale e profilo, carrello, pagamento, ricevuta, pagine di errore.
 
 Per ogni pagina: controller, vista, funzioni di dominio necessarie, validazione W3C,

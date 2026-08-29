@@ -26,7 +26,7 @@
             <?php if ($categoriaAttiva === null): ?>
                 <span aria-current="true">Tutto il menu</span>
             <?php else: ?>
-                <a href="<?php echo e(url('prodotti')); ?>">Tutto il menu</a>
+                <a href="<?php echo e(url('menu')); ?>">Tutto il menu</a>
             <?php endif; ?>
         </li>
         <?php foreach ($categorie as $categoria): ?>
@@ -34,7 +34,7 @@
                 <?php if (($categoriaAttiva['slug'] ?? null) === $categoria['slug']): ?>
                     <span aria-current="true"><?php echo e($categoria['nome']); ?></span>
                 <?php else: ?>
-                    <a href="<?php echo e(url('prodotti', ['categoria' => $categoria['slug']])); ?>">
+                    <a href="<?php echo e(url('menu', ['categoria' => $categoria['slug']])); ?>">
                         <?php echo e($categoria['nome']); ?>
                     </a>
                 <?php endif; ?>
@@ -85,7 +85,7 @@
                             <form method="post" action="<?php echo e(url('carrello')); ?>">
                                 <?php echo campo_csrf(); ?>
                                 <input type="hidden" name="azione" value="aggiungi" />
-                                <input type="hidden" name="ritorno" value="prodotti" />
+                                <input type="hidden" name="ritorno" value="menu" />
                                 <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
                                 <p>
                                     <label class="solo-lettori" for="quantita-<?php echo (int) $prodotto['id']; ?>">

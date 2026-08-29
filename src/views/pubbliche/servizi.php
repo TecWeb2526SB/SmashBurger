@@ -11,7 +11,7 @@
     <h2>Ordine con ritiro</h2>
 
     <p>
-        Componi l'ordine dal <a href="<?php echo e(url('prodotti')); ?>">menu</a> e scegli
+        Componi l'ordine dal <a href="<?php echo e(url('menu')); ?>">menu</a> e scegli
         la sede. Al momento della conferma trovi gli orari di ritiro disponibili per oggi,
         dentro la fascia di apertura.
     </p>
@@ -31,7 +31,7 @@
 
     <p>
         Gli allergeni sono indicati su ogni prodotto nel
-        <a href="<?php echo e(url('prodotti')); ?>">menu</a>. Se hai un'intolleranza che non
+        <a href="<?php echo e(url('menu')); ?>">menu</a>. Se hai un'intolleranza che non
         trovi elencata, chiedi in sede prima di ordinare.
     </p>
 </section>

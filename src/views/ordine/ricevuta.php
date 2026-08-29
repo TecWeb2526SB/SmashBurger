@@ -62,7 +62,7 @@
     <a class="pulsante" data-tipo="indietro" href="<?php echo e(url('area-personale')); ?>">
         <?php echo icona('freccia-sinistra'); ?> Torna all'area personale
     </a>
-    <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('prodotti')); ?>">
+    <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('menu')); ?>">
         Ordina di nuovo <?php echo icona('freccia-destra'); ?>
     </a>
 </p>

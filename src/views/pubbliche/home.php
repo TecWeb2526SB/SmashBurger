@@ -13,7 +13,7 @@
     piastra quando arriva il tuo ordine.
 </p>
 
-<p><a href="<?php echo e(url('prodotti')); ?>">Vai al menu e ai prezzi</a></p>
+<p><a href="<?php echo e(url('menu')); ?>">Vai al menu e ai prezzi</a></p>
 
 <section id="categorie">
     <h2>Che cosa trovi nel menu</h2>
@@ -46,7 +46,7 @@
             <p><?php echo (int) $categoriaScelta['prodotti']; ?> prodotti disponibili.</p>
             <p>
                 <a class="pulsante" data-tipo="positivo"
-                    href="<?php echo e(url('prodotti', ['categoria' => $categoriaScelta['slug']])); ?>">
+                    href="<?php echo e(url('menu', ['categoria' => $categoriaScelta['slug']])); ?>">
                     Vai a <?php echo e($categoriaScelta['nome']); ?> nel menu
                     <?php echo icona('freccia-destra'); ?>
                 </a>

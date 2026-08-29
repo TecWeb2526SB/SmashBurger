@@ -79,11 +79,11 @@ Il sito deve servire anche:
 | smash burger padova | trovare il locale | sedi |
 | hamburger padova centro | trovare dove mangiare vicino | sedi |
 | hamburger treviso, vicenza, udine | trovare il locale in città | sedi |
-| smash burger menu prezzi | valutare prima di andare | prodotti |
-| hamburger da asporto padova | ordinare e ritirare | home, prodotti |
+| smash burger menu prezzi | valutare prima di andare | menu |
+| hamburger da asporto padova | ordinare e ritirare | home, menu |
 | ordinare hamburger online ritiro in sede | ordinare | home, carrello |
-| hamburger vegano padova | dieta senza carne | prodotti |
-| allergeni hamburger | esigenza alimentare | prodotti |
+| hamburger vegano padova | dieta senza carne | menu |
+| allergeni hamburger | esigenza alimentare | menu |
 | orari smash burger | sapere se è aperto | sedi |
 | che cos'è lo smash burger | curiosità sul prodotto | chi siamo |
 | hamburger per gruppi, eventi | organizzare | servizi |
@@ -114,7 +114,7 @@ Il titolo sta entro 60 caratteri, la descrizione entro 160.
 | Pagina | Titolo | Descrizione |
 | --- | --- | --- |
 | home | Smash Burger: ordina online e ritira in sede | Hamburger smash preparati al momento nelle sedi di Padova, Treviso, Vicenza e Udine. Ordina online e scegli l'orario di ritiro. |
-| prodotti | Menu e prezzi - Smash Burger | Burger, contorni, bevande e dessert con prezzi e allergeni. Scegli i prodotti e ritirali nella sede che preferisci. |
+| menu | Menu e prezzi - Smash Burger | Burger, contorni, bevande e dessert con prezzi e allergeni. Scegli i prodotti e ritirali nella sede che preferisci. |
 | servizi | Servizi: asporto, gruppi, eventi - Smash Burger | Ordine con ritiro in sede, proposte per gruppi ed eventi, informazioni su allergeni e modalità di pagamento. |
 | chi-siamo | Chi siamo - Smash Burger | Come lavoriamo la carne, come nasce lo smash e come sono organizzate le nostre quattro sedi. |
 | sedi | Sedi e orari - Smash Burger | Indirizzi, orari di apertura e indicazioni per il ritiro nelle sedi di Padova, Treviso, Vicenza e Udine. |

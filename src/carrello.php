@@ -15,7 +15,7 @@ $utenteId = (int) utente_corrente()['id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // La pagina di ritorno arriva dal modulo: ammessi solo i due valori previsti.
-    $ritorno = ((string) ($_POST['ritorno'] ?? 'carrello')) === 'prodotti' ? 'prodotti' : 'carrello';
+    $ritorno = ((string) ($_POST['ritorno'] ?? 'carrello')) === 'menu' ? 'menu' : 'carrello';
 
     if (!csrf_valido($_POST['token_csrf'] ?? null)) {
         messaggio_imposta('errore', 'La pagina è rimasta aperta troppo a lungo, riprova.');

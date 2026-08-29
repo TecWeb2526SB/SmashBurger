@@ -53,7 +53,7 @@ function menu_principale(): array
 {
     return [
         'Home' => url(),
-        'Menu' => url('prodotti'),
+        'Menu' => url('menu'),
         'Servizi' => url('servizi'),
         'Chi siamo' => url('chi-siamo'),
         'Sedi' => url('sedi'),
