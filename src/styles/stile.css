@@ -42,6 +42,7 @@
     --raggio: 0.2rem;
     --misura: 42rem;
     --larghezza: 72rem;
+    --altezza-barra: 3.5rem;
 }
 
 /* Senza scelta esplicita si segue l'impostazione del sistema. */
@@ -144,20 +145,39 @@ body > a:first-child:focus {
     color: var(--su-primario);
 }
 
+/* La testata resta in vista mentre si scorre. */
 header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    min-height: var(--altezza-barra);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spazio);
-    max-width: var(--larghezza);
-    margin-inline: auto;
-    padding: var(--spazio);
+    padding: 0.6rem var(--spazio);
     border-bottom: var(--linea) solid var(--bordo);
+    background: var(--fondo);
 }
+
+.pannello {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spazio);
+    flex: 1;
+}
+
+/* Sullo schermo largo il pannello è la barra: l'attributo che lo nasconde vale solo
+   dove il pulsante del menu è in uso. */
+.pannello[hidden] { display: flex; }
+
+/* Il pulsante del menu serve solo sullo schermo piccolo. */
+.apri-menu { display: none; }
 
 .marchio {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -218,6 +238,13 @@ header nav [aria-current] {
 }
 
 .icona-sole, .solo-scuro { display: none; }
+
+/* Il pulsante del menu mostra le righe quando è chiuso e la croce quando è aperto. */
+.icona-croce, .apri-menu .quando-aperto { display: none; }
+.apri-menu[aria-expanded="true"] .icona-croce,
+.apri-menu[aria-expanded="true"] .quando-aperto { display: inline; }
+.apri-menu[aria-expanded="true"] .icona-righe,
+.apri-menu[aria-expanded="true"] .quando-chiuso { display: none; }
 :root.tema-scuro .icona-sole, :root.tema-scuro .solo-scuro { display: inline; }
 :root.tema-scuro .icona-luna, :root.tema-scuro .solo-chiaro { display: none; }
 
@@ -535,15 +562,77 @@ footer li { line-height: 1.8; }
 
 /* ---------- schermo piccolo ---------- */
 
-@media (max-width: 40rem) {
+@media (max-width: 48rem) {
     main { padding-block: var(--spazio); }
-    header { gap: 0.5rem var(--spazio); }
-    header nav { order: 3; width: 100%; }
-    header nav ul { gap: 0 1rem; }
+
     table, thead, tbody, tfoot, tr, th, td { display: block; }
     thead { display: none; }
     tr { border-bottom: var(--linea) solid var(--bordo); }
     td, th { border: 0; padding: 0.25rem 0.75rem; }
+
+    .griglia { grid-template-columns: 1fr; }
+
+    /* Senza script il menu resta sempre in pagina: il pulsante compare solo quando
+       c'è qualcosa che sa aprirlo e chiuderlo. */
+    .con-script .apri-menu {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        order: -1;
+    }
+
+    /* Il pannello copre la pagina: voci di navigazione in alto, azioni personali
+       sotto, tema in fondo. */
+    /* Il pannello parte sotto la barra: il marchio e il pulsante restano in vista,
+       così lo stesso pulsante che ha aperto il pannello lo richiude. */
+    .con-script .pannello {
+        position: fixed;
+        inset: var(--altezza-barra) 0 0 0;
+        z-index: 3;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: calc(var(--spazio) * 1.5);
+        padding: calc(var(--spazio) * 2) var(--spazio);
+        overflow-y: auto;
+        background: var(--fondo);
+    }
+
+    .con-script .pannello[hidden] { display: none; }
+
+    .pannello nav ul,
+    .pannello .azioni {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spazio);
+        margin: 0;
+    }
+
+    .pannello nav a,
+    .pannello nav [aria-current],
+    .pannello .azioni a {
+        display: block;
+        padding-block: 0.4rem;
+        font-size: 1.125rem;
+    }
+
+    /* Le azioni personali stanno staccate dalle voci del sito. */
+    .pannello .azioni {
+        padding-top: var(--spazio);
+        border-top: var(--linea) solid var(--bordo-tenue);
+    }
+
+    /* Il cambio tema chiude l'elenco, in fondo al pannello. */
+    .pannello .tema {
+        order: 1;
+        margin-top: var(--spazio);
+        padding-top: var(--spazio);
+        border-top: var(--linea) solid var(--bordo-tenue);
+    }
+
+    .pannello .tema button { width: 100%; }
+
+    .chiudi-menu { align-self: flex-end; }
 }
 
 /* ---------- stampa ---------- */

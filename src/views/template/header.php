@@ -29,8 +29,20 @@ $paginaCorrente = app_pagina_corrente();
     <a href="#contenuto">Vai al contenuto</a>
 
     <header>
+        <button type="button" class="apri-menu" aria-expanded="false" aria-controls="pannello-menu">
+            <svg class="icona icona-righe" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M3 6h18M3 12h18M3 18h18" />
+            </svg>
+            <svg class="icona icona-croce" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M5 5l14 14M19 5L5 19" />
+            </svg>
+            <span class="quando-chiuso">Menu</span>
+            <span class="quando-aperto">Chiudi</span>
+        </button>
+
         <p class="marchio"><a href="<?php echo e(url()); ?>"><?php echo e(NOME_SITO); ?></a></p>
 
+        <div class="pannello" id="pannello-menu">
         <nav aria-label="Navigazione principale">
             <ul>
                 <?php foreach (menu_principale() as $etichetta => $indirizzo): ?>
@@ -46,7 +58,7 @@ $paginaCorrente = app_pagina_corrente();
         </nav>
 
         <div class="azioni">
-            <form method="post" action="<?php echo e(url('tema')); ?>" data-modulo="tema">
+            <form method="post" action="<?php echo e(url('tema')); ?>" data-modulo="tema" class="tema">
                 <?php echo campo_csrf(); ?>
                 <input type="hidden" name="tema" value="<?php echo $temaScelto === 'scuro' ? 'chiaro' : 'scuro'; ?>" />
                 <input type="hidden" name="ritorno" value="<?php echo e($paginaCorrente); ?>" />
@@ -70,6 +82,7 @@ $paginaCorrente = app_pagina_corrente();
                     <a href="<?php echo e($indirizzo); ?>"><?php echo e($etichetta); ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
+        </div>
         </div>
     </header>
 

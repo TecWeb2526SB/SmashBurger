@@ -195,6 +195,46 @@ function inizializzaOrariRitiro() {
 }
 
 /* =============================================================================
+   Menu su schermo piccolo
+   Il pulsante apre e chiude il pannello che copre la pagina.
+   ============================================================================= */
+
+function inizializzaMenu() {
+    const pulsante = document.querySelector('.apri-menu');
+    const pannello = document.getElementById('pannello-menu');
+
+    if (!pulsante || !pannello || giaCollegato(pulsante, 'collegatoMenu')) {
+        return;
+    }
+
+    // La classe dice al foglio di stile che c'è qualcosa in grado di aprire il pannello:
+    // senza script il menu resta in pagina e il pulsante non compare.
+    document.documentElement.classList.add('con-script');
+    pannello.hidden = true;
+
+    const apri = (aperto) => {
+        pannello.hidden = !aperto;
+        pulsante.setAttribute('aria-expanded', aperto ? 'true' : 'false');
+
+        if (aperto) {
+            pannello.querySelector('a, button')?.focus();
+        } else {
+            pulsante.focus();
+        }
+    };
+
+    pulsante.addEventListener('click', () => apri(pannello.hidden));
+
+    // Il tasto di uscita chiude il pannello, come ci si aspetta da una finestra che
+    // copre la pagina.
+    document.addEventListener('keydown', (evento) => {
+        if (evento.key === 'Escape' && !pannello.hidden) {
+            apri(false);
+        }
+    });
+}
+
+/* =============================================================================
    Tema chiaro e scuro
    Il modulo funziona anche senza script: qui si evita solo il ricaricamento.
    ============================================================================= */
@@ -346,6 +386,7 @@ function inizializzaModuli() {
    ============================================================================= */
 
 function collega() {
+    inizializzaMenu();
     inizializzaTema();
     inizializzaModuli();
     inizializzaCarrello();
