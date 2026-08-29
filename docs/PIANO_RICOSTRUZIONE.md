@@ -196,13 +196,19 @@ errori.
 
 ### Fase 7: comportamento
 
-Solo miglioramenti su funzionalità già complete, tutti dentro `src/scripts/script.js`:
+Solo miglioramenti su funzionalità già complete, tutti dentro `src/scripts/script.js`.
+Fatti:
 
-1. tema chiaro e scuro (la preferenza si salva in un cookie e viene applicata lato server,
-   così non serve script nell'intestazione);
-2. aggiornamento delle quantità del carrello senza ricaricare la pagina;
-3. apertura del menu su schermo piccolo;
-4. validazione dei moduli prima dell'invio, gemella di quella PHP.
+1. aggiornamento del carrello senza ricaricare la pagina;
+2. aggiornamento di stato e pagamento di un ordine sulla sua riga del pannello;
+3. orari di ritiro che si aggiornano al cambio della sede;
+4. messaggi di errore dei moduli accanto ai campi, ricavati dai vincoli del markup.
+
+Restano da fare dopo il foglio di stile, perché dipendono dalla presentazione:
+
+5. tema chiaro e scuro, con la preferenza salvata in un cookie e applicata lato server,
+   così non serve script nell'intestazione;
+6. apertura del menu su schermo piccolo.
 
 Fine fase: un solo file, massimo 400 righe, ogni funzione degrada correttamente.
 
