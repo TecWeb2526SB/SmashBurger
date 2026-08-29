@@ -24,7 +24,8 @@
     <h2>Il locale</h2>
 
     <figure>
-        <img src="images/locale-interno.webp" width="1400" height="1400"
+        <img src="images/locale-interno.webp" width="900" height="900"
+            fetchpriority="high"
             alt="Bancone di un locale Smash Burger con la cucina a vista sul fondo" />
         <figcaption>La cucina è a vista: mentre aspetti vedi la piastra al lavoro.</figcaption>
     </figure>

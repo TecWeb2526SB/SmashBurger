@@ -57,7 +57,6 @@
                             <?php if (!empty($prodotto['immagine'])): ?>
                                 <img src="<?php echo e(immagine_url($prodotto['immagine'])); ?>"
                                     alt="<?php echo e($prodotto['nome']); ?>"
-                                    width="800" height="600"
                                     <?php echo $indice === 0 ? 'fetchpriority="high"' : 'loading="lazy"'; ?> />
                             <?php endif; ?>
                         </p>
