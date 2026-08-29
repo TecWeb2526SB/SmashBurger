@@ -1,7 +1,9 @@
-# Ricognizione del codice esistente
+# Ricognizione del codice precedente
 
-Fotografia dello stato del repository prima della ricostruzione di PHP, HTML, CSS e
-JavaScript. I dati numerici sono misurati sul commit `6113b63` di `main`.
+Documento storico: descrive il codice com'era prima della ricostruzione, misurato sul
+commit `6113b63` di `main`. Serve a spiegare da dove si è partiti e perché sono state
+prese certe decisioni; non descrive il codice attuale, per quello valgono il README e la
+guida allo sviluppo.
 
 ---
 

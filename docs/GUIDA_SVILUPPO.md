@@ -1,95 +1,106 @@
-# Guida allo Sviluppo - SmashBurger
+# Guida allo sviluppo
 
-Questa guida descrive come estendere il progetto SmashBurger rispettando l'architettura e le specifiche definite in `REGOLE.md`.
-
----
-
-## 1. Come creare una Nuova Pagina
-Il progetto segue un pattern **Model-View-Controller (MVC)** semplificato. Per aggiungere una pagina (es: `menu.php`):
-
-1.  **Crea il Controller**: Crea un file `src/menu.php` nella root directory.
-    ```php
-    <?php
-    require_once __DIR__ . '/includes/resources.php'; // Inizializza tutto
-    $pageTitle = 'Il Nostro Menù - SmashBurger';    // Variabile per <title>
-    $breadcrumbLabel = 'Menù';                      // Etichetta per breadcrumbs
-
-    include_once __DIR__ . '/views/template/header.php'; // Header comune
-    include_once __DIR__ . '/views/menu.php';            // Contenuto specifico
-    include_once __DIR__ . '/views/template/footer.php'; // Footer comune
-    ```
-2.  **Crea la View**: Crea il file `src/views/menu.php` con solo il markup del contenuto.
-    ```html
-    <section>
-        <h2>I Nostri Burgers</h2>
-        <!-- Contenuto della pagina -->
-    </section>
-    ```
+Come lavorare su questo progetto. Le regole di scrittura del codice stanno in
+`CONVENZIONI_CODICE.md`, i requisiti del corso in `VINCOLI_ESAME.md`.
 
 ---
 
-## 2. Implementare Funzioni Backend
-Tutta la logica di business deve essere separata dalla presentazione.
+## 1. Come è organizzato il codice
 
-*   **Funzioni di Utilità**: Aggiungi script in `src/includes/functions/` (es: `utility.php`) e includili in `resources.php`.
-*   **Classi (Modelli)**: Crea classi per la gestione dei dati in `src/includes/class/` (es: `User.php`, `Burger.php`).
-*   **Database**: Usa sempre la variabile globale `$pdo` definita in `db_connection.php` e utilizza **Prepared Statements** per la sicurezza.
-    ```php
-    $stmt = $pdo->prepare("SELECT * FROM burgers WHERE id = ?");
-    $stmt->execute([$id]);
-    $burger = $stmt->fetch();
-    ```
+Ogni indirizzo del sito corrisponde a un file nella radice di `src/`. Il file è un
+controller: carica le risorse comuni, legge e controlla l'input, chiama le funzioni di
+dominio e passa i dati già pronti alla vista.
 
----
+```php
+<?php
+require_once __DIR__ . '/includes/risorse.php';
 
-## 3. Accedere a phpMyAdmin
-Per gestire il database visualmente:
-*   **URL**: `http://localhost:8081`
-*   **Server**: `db`
-*   **Username**: Quello definito nel file `.env` (es: `admin_db`)
-*   **Password**: Quella definita nel file `.env` (es: `SuperSegreta!2026`)
+mostra_pagina('pubbliche/servizi.php', [
+    'titolo' => 'Servizi - Smash Burger',
+    'descrizione' => 'Come funziona l\'ordine con ritiro in sede.',
+    'pagina' => 'Servizi',
+    'breadcrumb' => [['Home', url()], ['Servizi', null]],
+]);
+```
 
----
+La vista contiene solo markup, con `if` e `foreach` dove servono e ogni valore stampato
+attraverso `e()`. Le query stanno nelle funzioni di dominio, mai nelle viste.
 
-## 4. Scrittura del Codice (HTML, CSS, JS)
+| Cartella | Contenuto |
+| --- | --- |
+| `includes/` | `configurazione.php`, `database.php`, `risorse.php` |
+| `includes/funzioni/` | una coppia di file per area: lettura pubblica e gestione dal pannello |
+| `views/template/` | `header.php`, `footer.php`, `breadcrumb.php` |
+| `views/<area>/` | viste raggruppate per area: pubbliche, account, ordine, controllo, informazioni |
 
-### HTML (Struttura)
-*   Usa **tag semantici** HTML5 (`<nav>`, `<main>`, `<article>`, `<section>`, etc.).
-*   **Accessibilità**: Ogni immagine deve avere `alt=""` (se decorativa) o descrittivo. I link devono avere testi chiari.
-*   **Link**: Usa **esclusivamente link relativi** (es: `href="menu.php"` o `src="styles/img/logo.png"`).
+## 2. Aggiungere una pagina
 
-### CSS (Presentazione)
-*   I file CSS vanno in `src/styles/css/`.
-*   Importa i nuovi file in `src/styles/resources.css` tramite `@import`.
-*   Usa **unità relative** (`em`, `rem`, `%`) per font e dimensioni.
-*   Garantisci un contrasto minimo di 4.5:1 per il testo.
+1. Crea il controller `src/nome-pagina.php` sul modello sopra.
+2. Crea la vista in `src/views/<area>/nome-pagina.php`.
+3. Se la pagina è pubblica, aggiungila a `src/sitemap.xml`: i controlli di qualità leggono
+   da lì l'elenco delle pagine da verificare.
+4. Se deve comparire nel menu, aggiungila a `menu_principale()` in
+   `includes/funzioni/pagina.php`.
+5. Se è riservata, chiama `utente_richiedi_accesso()`, `utente_richiedi_cliente()` oppure
+   `utente_richiedi_amministratore()` come prima istruzione dopo le risorse, e aggiungila
+   a `.github/scripts/pagine-riservate.json`.
 
-### JavaScript (Comportamento)
-*   I file JS vanno in `src/styles/js/`.
-*   Usa l'attributo `defer` nel tag `<script>` per non bloccare il caricamento della pagina.
-*   Assicurati che le funzionalità di base funzionino anche se JS è disabilitato (**Graceful Degradation**).
+## 3. Aggiungere un'operazione che modifica dati
 
----
+1. Scrivi la funzione di dominio nel file dell'area, che restituisce
+   `['ok' => bool, 'messaggio' => string]` oppure un elenco di errori per campo.
+2. Nel controller, verifica `$_SERVER['REQUEST_METHOD'] === 'POST'` e `csrf_valido()`
+   prima di qualsiasi effetto.
+3. Chiudi con `messaggio_imposta()` e `vai_a()`: dopo una modifica si risponde sempre con
+   un redirect.
+4. Nel modulo inserisci `campo_csrf()`.
+5. Se l'operazione cancella dati, fai passare l'utente da una conferma: il collegamento
+   porta alla pagina in `GET` con l'identificativo, la cancellazione avviene in `POST`.
 
-## 5. Validazione
-Prima di consegnare:
-1.  **HTML**: Valida il markup con [W3C Validator](https://validator.w3.org/). Deve essere privo di errori.
-2.  **CSS**: Valida i fogli di stile con [W3C CSS Validator](https://jigsaw.w3.org/css-validator/).
-3.  **Accessibilità**: Controlla l'accessibilità con Lighthouse, WAVE o Mauve per garantire la conformità WCAG 2.1 AA.
+## 4. Interfaccia
 
----
+I componenti ammessi e le loro varianti sono elencati nelle convenzioni. In pratica:
 
-## 6. Ottimizzazione SEO (Search Engine Optimization)
-Come da specifica (punto 6), ogni pagina deve essere ottimizzata per i motori di ricerca:
+- le varianti si esprimono con `data-tipo` e `data-stato`, non con classi nuove;
+- le icone si richiamano con `icona('nome')` e vivono in `images/icone.svg`;
+- le pagine interne si chiudono con `<p class="navigazione-pagina">`, ritorno a sinistra e
+  avanzamento a destra;
+- i colori si prendono dalle proprietà su `:root`, mai scritti nel corpo del foglio.
 
-*   **Titolo della Pagina (`$pageTitle`)**:
-    - Massimo **60 caratteri**.
-    - Deve essere unico per ogni pagina (es: "Menù | SmashBurger").
-*   **Descrizione della Pagina (`$pageDescription`)**:
-    - Definisci questa variabile in ogni controller prima di includere l'header.
-    - Scrivi una descrizione concisa e attraente del contenuto della pagina.
-*   **Markup Semantico**:
-    - L'uso corretto di `<h1>`, `<h2>`, `<article>`, etc., non serve solo all'accessibilità, ma aiuta i crawler dei motori di ricerca a capire la gerarchia dei contenuti.
-*   **Validazione W3C**:
-    - Un codice senza errori (HTML e CSS) è premiato dai motori di ricerca.
+Il foglio di stile è uno solo e non ha selettori per `id`. Prima di aggiungere una classe,
+controlla se una esistente copre il caso.
 
+## 5. Comportamento
+
+Tutto quello che c'è in `scripts/script.js` migliora qualcosa che già funziona senza. Il
+file è diviso in aree separate da un titolo, ogni funzione esce se non trova il suo
+elemento, e in caso di errore l'invio torna al browser.
+
+Per aggiornare una parte di pagina senza ricaricarla: metti `data-modulo` sul modulo,
+invia con `inviaModulo()` e sostituisci il frammento con `aggiornaPagina()`.
+
+## 6. Database
+
+Lo schema sta in `src/database/schema.sql` e viene caricato al primo avvio del contenitore.
+Dopo averlo modificato serve ricreare il volume:
+
+```bash
+docker compose -f docker-compose.develop.yml down -v && docker compose -f docker-compose.develop.yml up -d
+```
+
+Gli importi sono interi in centesimi. Le date usano `DATETIME`. Le righe degli ordini
+congelano nome e prezzo del prodotto al momento dell'acquisto.
+
+## 7. Prima di consegnare una modifica
+
+1. Il markup della pagina passa il validatore W3C ed è ben formato come XML.
+2. Pa11y non segnala errori.
+3. La pagina funziona con JavaScript disabilitato.
+4. La navigazione da tastiera raggiunge ogni comando con il focus visibile.
+5. I budget delle convenzioni sono rispettati.
+
+In locale il controllo di accessibilità si esegue con lo stesso script della CI:
+
+```bash
+npm install pa11y@8 && node .github/scripts/controlla-accessibilita.mjs
+```
