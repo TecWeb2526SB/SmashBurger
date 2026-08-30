@@ -1,0 +1,59 @@
+# Configurazione di Apache per il sito.
+#
+# Tutte le regole usano percorsi relativi alla cartella che contiene questo file, cosi'
+# il sito funziona sia servito dalla radice del dominio sia da una sottocartella.
+
+# Nessun elenco automatico del contenuto delle cartelle.
+Options -Indexes
+
+RewriteEngine On
+
+# Le cartelle di lavoro non sono raggiungibili dal web: contengono codice incluso dai
+# controller, lo schema del database e le viste, che da sole non formano una pagina.
+# La richiesta finisce sulla pagina 403, che imposta da sola il codice di stato.
+RewriteRule ^(includes|views|database)/ errors/403.php [L]
+
+# I file e le cartelle che esistono davvero vengono serviti senza modifiche.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Un indirizzo senza estensione viene servito dal file .php con lo stesso nome.
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([A-Za-z0-9_-]+)$ $1.php [L,QSA]
+
+# Qualsiasi altro indirizzo mostra la pagina 404, che imposta da sola il codice di stato.
+# La direttiva ErrorDocument non viene usata perche' accetta solo percorsi assoluti, che
+# impedirebbero l'installazione in una sottocartella.
+RewriteRule ^ errors/404.php [L]
+
+# I file il cui nome inizia con un punto non sono raggiungibili dal web.
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# I file di testo e i caratteri viaggiano compressi.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript font/ttf image/svg+xml
+</IfModule>
+
+# Le risorse statiche restano valide a lungo: quando cambiano, cambia il numero di
+# versione nel loro indirizzo.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType font/ttf "access plus 1 year"
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Permissions-Policy "camera=(), geolocation=(), microphone=()"
+    # Il sito non contiene stili ne' script inline: la politica non ammette eccezioni.
+    Header always set Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; img-src 'self' data:; object-src 'none'"
+</IfModule>

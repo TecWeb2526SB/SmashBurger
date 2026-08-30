@@ -1,0 +1,126 @@
+<?php
+/**
+ * Funzioni di presentazione: protezione dell'output, formato dei prezzi, messaggi fra
+ * una richiesta e l'altra e composizione della pagina a partire da una vista.
+ */
+
+/**
+ * Protegge un valore prima di stamparlo nel markup.
+ *
+ * Converte i caratteri speciali in entita' HTML, comprese le virgolette singole, come
+ * richiesto da un documento che deve restare valido anche come XML.
+ */
+function e(?string $valore): string
+{
+    return htmlspecialchars((string) $valore, ENT_QUOTES | ENT_XML1, 'UTF-8');
+}
+
+/**
+ * Trasforma un importo in centesimi nella forma usata nelle pagine, ad esempio
+ * 1090 diventa "10,90 euro".
+ */
+function prezzo(int $centesimi): string
+{
+    return number_format($centesimi / 100, 2, ',', '.') . ' euro';
+}
+
+/**
+ * Formatta una data e ora del database nella forma letta nelle pagine.
+ */
+function data_ora(string $valore): string
+{
+    return date('d/m/Y H:i', strtotime($valore));
+}
+
+/**
+ * Formatta una data del database nella forma letta nelle pagine.
+ */
+function data_breve(string $valore): string
+{
+    return date('d/m/Y', strtotime($valore));
+}
+
+/**
+ * Restituisce il markup di un'icona presa dalla raccolta in images/icone.svg.
+ *
+ * L'icona accompagna sempre un testo, quindi e' nascosta ai lettori di schermo.
+ */
+function icona(string $nome): string
+{
+    return '<svg class="icona" aria-hidden="true" focusable="false">'
+        . '<use href="' . e(risorsa('images/icone.svg')) . '#' . e($nome) . '" />'
+        . '</svg>';
+}
+
+/**
+ * Salva un messaggio da mostrare dopo un redirect.
+ *
+ * @param string $tipo 'successo' oppure 'errore'
+ */
+function messaggio_imposta(string $tipo, string $testo): void
+{
+    $_SESSION['messaggio'] = ['tipo' => $tipo, 'testo' => $testo];
+}
+
+/**
+ * Legge il messaggio salvato e lo rimuove dalla sessione, cosi' compare una volta sola.
+ */
+function messaggio_leggi(): ?array
+{
+    $messaggio = $_SESSION['messaggio'] ?? null;
+    unset($_SESSION['messaggio']);
+
+    return $messaggio;
+}
+
+/**
+ * Invia il browser a un'altra pagina del sito e interrompe l'esecuzione.
+ *
+ * Viene usata dopo ogni richiesta POST che modifica dati, cosi' un aggiornamento della
+ * pagina non ripete l'operazione. La destinazione e' sempre una pagina nostra indicata
+ * per nome, mai un valore costruito con dati della richiesta.
+ */
+function vai_a(string $pagina = '', array $parametri = []): void
+{
+    header('Location: ' . url($pagina, $parametri));
+    exit;
+}
+
+/**
+ * Mostra una pagina di errore con il proprio codice di stato e interrompe l'esecuzione.
+ *
+ * @param int $codice 401, 403, 404 oppure 500
+ */
+function errore(int $codice): void
+{
+    http_response_code($codice);
+    require __DIR__ . '/../../errors/' . $codice . '.php';
+    exit;
+}
+
+/**
+ * Compone una pagina completa: intestazione, vista del contenuto e piede.
+ *
+ * Titolo e descrizione arrivano da includes/pagine.php e possono essere sostituiti da
+ * $dati, come fanno le pagine di dettaglio di prodotto e sede, che li ricavano dai
+ * propri contenuti.
+ *
+ * @param string $vista percorso della vista dentro views/, ad esempio 'pubbliche/home.php'
+ * @param array  $dati  variabili disponibili nella vista, piu' titolo, descrizione e breadcrumb
+ */
+function mostra_pagina(string $vista, array $dati = []): void
+{
+    $slug = pagina_corrente();
+    $definizione = pagina_dati($slug) ?? [];
+
+    $titolo = $dati['titolo'] ?? ($definizione['titolo'] ?? NOME_SITO);
+    $descrizione = $dati['descrizione'] ?? ($definizione['descrizione'] ?? '');
+    $breadcrumb = $dati['breadcrumb'] ?? [];
+
+    unset($dati['titolo'], $dati['descrizione'], $dati['breadcrumb']);
+    extract($dati, EXTR_SKIP);
+
+    require __DIR__ . '/../../views/template/header.php';
+    require __DIR__ . '/../../views/' . $vista;
+    require __DIR__ . '/../../views/template/footer.php';
+}

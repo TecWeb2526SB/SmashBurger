@@ -1,0 +1,14 @@
+{
+    "name": "Smash Burger",
+    "short_name": "Smash Burger",
+    "lang": "it",
+    "start_url": "./",
+    "display": "browser",
+    "icons": [
+        {
+            "src": "images/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /accedi
+Disallow: /registrati
+Disallow: /area-personale
+Disallow: /profilo
+Disallow: /carrello
+Disallow: /pagamento
+Disallow: /ricevuta
+Disallow: /prenota
+Disallow: /controllo
