@@ -3,14 +3,10 @@
  * Parte iniziale di ogni pagina: testa del documento, intestazione del sito, menu e
  * apertura del contenuto.
  *
- * Riceve $titolo, $descrizione e $breadcrumb da mostra_pagina(). Le voci del menu
- * derivano da includes/pagine.php e sono gia' filtrate per il ruolo di chi guarda.
+ * Riceve $titolo, $descrizione, $breadcrumb, $ruoloCorrente e $slugCorrente da
+ * mostra_pagina(). Le voci del menu derivano da includes/pagine.php e sono gia' filtrate
+ * per il ruolo di chi guarda: qui non si interroga il database.
  */
-
-// La pagina 500 viene mostrata anche quando la connessione al database non riesce e
-// $pdo non esiste: in quel caso il menu resta quello di chi non ha fatto l'accesso.
-$ruoloCorrente = isset($pdo) ? ruolo_corrente($pdo) : null;
-$slugCorrente = pagina_corrente();
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">

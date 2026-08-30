@@ -110,8 +110,17 @@ function errore(int $codice): void
  */
 function mostra_pagina(string $vista, array $dati = []): void
 {
-    $slug = pagina_corrente();
-    $definizione = pagina_dati($slug) ?? [];
+    // La connessione e' una variabile globale creata da database.php: qui serve solo a
+    // ricavare il ruolo di chi guarda, che i template usano per il menu. Le viste non
+    // interrogano il database da sole.
+    global $pdo;
+
+    $slugCorrente = pagina_corrente();
+    $definizione = pagina_dati($slugCorrente) ?? [];
+
+    // Quando la connessione non c'e', cioe' nella pagina 500, il menu e' quello di chi
+    // non ha fatto l'accesso.
+    $ruoloCorrente = isset($pdo) ? ruolo_corrente($pdo) : null;
 
     $titolo = $dati['titolo'] ?? ($definizione['titolo'] ?? NOME_SITO);
     $descrizione = $dati['descrizione'] ?? ($definizione['descrizione'] ?? '');
