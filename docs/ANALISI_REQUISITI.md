@@ -1,16 +1,13 @@
 # Analisi dei requisiti
 
 Definisce ruoli, funzionalità, dati e criteri di contenuto del prodotto finale. È il
-documento che fa fede sulle decisioni di perimetro del progetto: assorbe
-`docs/ANALISI_UTENTI.md`, che non esiste più come file separato.
+documento che fa fede sulle decisioni di perimetro del progetto.
 
-Gerarchia dei documenti: `VINCOLI_ESAME.md` e `REGOLE.md` restano vincolanti, sono la
-fonte di verità del corso e non sono in discussione. `CONSEGNA.md` descrive una
-procedura operativa e non va contraddetto. Questo documento fa fede su tutti gli altri
-documenti di analisi e pianificazione del progetto: dove li contraddice, prevale lui.
-`docs/PIANO_RICOSTRUZIONE.md` resta da allineare, a valle delle scelte di questo
-documento (sezione 15); `docs/RICOGNIZIONE.md` è dichiaratamente storico e non è
-interessato da questa analisi.
+Il progetto ha due documenti di riferimento: `REGOLE.md`, che raccoglie vincoli d'esame,
+convenzioni di codice e procedura di consegna, e questo, che descrive che cosa il
+prodotto deve fare. La parte I di `REGOLE.md` è imposta dal corso e prevale su tutto,
+compreso questo documento; sulle sue parti II e III, cioè le convenzioni scelte dal
+gruppo, prevale invece questa analisi.
 
 ---
 
@@ -91,10 +88,11 @@ carrello, pagamento, ricevuta.
 Chi è: personale che gestisce il servizio quotidiano di una singola sede. Uno per sede.
 
 1. Gestisce gli orari della propria sede.
-2. Gestisce la disponibilità e la quantità dei prodotti nella propria sede: rende un
-   prodotto disponibile o non disponibile e ne aggiorna manualmente la quantità
-   residua. Non tocca nome, prezzo, descrizione, allergeni o immagine del prodotto, che
-   restano di competenza dell'amministratore.
+2. Gestisce la disponibilità e la quantità dei prodotti nella propria sede: un comando
+   per riga mette il prodotto dentro o fuori dal menu, e un campo per riga aggiorna la
+   quantità quando rifornisce. Gli ordini la scalano da soli (sezione 5.1). Non tocca
+   nome, prezzo, descrizione, allergeni o immagine del prodotto, che restano di
+   competenza dell'amministratore.
 3. Approva o rifiuta le prenotazioni della sala eventi della propria sede; può
    dichiarare la sala non disponibile, sospendendo le nuove prenotazioni.
 4. Vede gli ordini della propria sede, con le stesse informazioni visibili al cliente, e
@@ -145,11 +143,18 @@ Un prodotto ha due gruppi di dati.
 Il primo è comune a tutte le sedi e lo gestisce solo l'amministratore: nome, prezzo,
 descrizione, allergeni, immagine, categoria.
 
-Il secondo è specifico per sede e lo gestisce il manager della sede: disponibile o non
-disponibile, quantità residua aggiornata a mano. Vive nella tabella `disponibilita_prodotti`
-(`sede_id`, `prodotto_id`, `disponibile`, `quantita`). Non esiste scarico automatico
-della quantità alla conferma di un ordine: l'aggiornamento resta una scelta manuale del
-manager.
+Il secondo è specifico per sede e vive nella tabella `disponibilita_prodotti`
+(`sede_id`, `prodotto_id`, `disponibile`, `quantita`). La **disponibilità effettiva** è
+`disponibile = 1 AND quantita > 0`: l'interruttore manuale del manager e la quantità
+residua sono due condizioni distinte, entrambe necessarie.
+
+L'interruttore non è un doppione dello zero. Serve a togliere un prodotto dal menu di una
+sede pur avendo merce a magazzino, per esempio quando un macchinario è guasto; lo zero
+toglie il prodotto da solo, senza che nessuno debba ricordarsene.
+
+La quantità viene **scalata automaticamente alla conferma di un ordine** e ripristinata
+quando l'ordine viene annullato. Il manager la alza a mano quando rifornisce. Le regole
+esatte sono nella sezione 5.1.
 
 Una categoria si crea, modifica e cancella da un modulo dedicato del pannello
 amministratore, non in modo implicito scrivendo un nome nuovo nel modulo prodotto: un
@@ -201,7 +206,7 @@ rimozione già presenti, e sotto compare la griglia dei prodotti disponibili nel
 scelta, in forma essenziale (immagine, nome, prezzo), senza aprire la pagina di
 dettaglio. Ogni prodotto della griglia è un pulsante che aggiunge una unità al carrello:
 un solo modulo, un pulsante per prodotto, lo stesso meccanismo già descritto in
-`CONVENZIONI_CODICE.md` §8. Restano cliccabili anche i prodotti già aggiunti, per
+`REGOLE.md` §17. Restano cliccabili anche i prodotti già aggiunti, per
 aumentarne ancora la quantità.
 
 Il riepilogo, durante la scelta dei prodotti, sta fisso in fondo alla pagina: subtotale a
@@ -212,7 +217,39 @@ La procedura d'ordine segue cinque passi fissi: scelta della sede, scelta dei pr
 scelta tra ritiro e consegna a domicilio, metodo di pagamento, e infine il cliente arriva
 allo storico dei propri ordini (sezione 2.2), da cui apre la ricevuta del nuovo ordine.
 Ritiro o domicilio e metodo di pagamento restano sulla stessa pagina di conferma, in due
-riquadri separati, come già previsto dal piano di ricostruzione.
+riquadri separati.
+
+### 5.1 Movimento della quantità
+
+Lo scarico avviene alla **conferma dell'ordine**, non all'aggiunta al carrello: prenotare
+la merce nel carrello obbligherebbe a rilasciarla alla scadenza dei 15 minuti, una
+complicazione che il carrello non persistente evita per costruzione.
+
+Due clienti che ordinano l'ultimo pezzo nello stesso momento non devono poterlo comprare
+entrambi. Lo scarico avviene in transazione, con un aggiornamento che scala solo se la
+quantità basta, e si verifica quante righe ha toccato:
+
+```sql
+UPDATE disponibilita_prodotti
+   SET quantita = quantita - :quantita
+ WHERE sede_id = :sede AND prodotto_id = :prodotto AND quantita >= :quantita
+```
+
+Zero righe toccate significa che la merce è finita mentre la persona stava pagando. Lo
+schema porta anche un vincolo `CHECK (quantita >= 0)` come rete di sicurezza.
+
+Se la quantità non basta più, **l'ordine non viene creato**: si torna al carrello con un
+avviso che nomina il prodotto e la quantità ancora disponibile, e la persona decide come
+procedere. Nessuna riga viene ridotta o rimossa automaticamente.
+
+L'annullamento di un ordine **ripristina** la quantità scalata, perché quei prodotti non
+sono stati venduti. Il ripristino avviene solo nella transizione verso lo stato annullato,
+non a ogni salvataggio: un ordine già annullato non restituisce la merce una seconda
+volta.
+
+La quantità si controlla in tre punti, con severità crescente: quando si aggiunge al
+carrello e quando si mostra il carrello è una cortesia verso chi ordina, alla conferma è
+la difesa che decide.
 
 Il carrello non è persistente: si elimina quando l'ordine viene completato, e scade da
 solo se resta inattivo per 15 minuti, per evitare di mostrare un riepilogo con una
@@ -234,6 +271,51 @@ passa per `ordini` e `righe_ordine`, ma per una tabella propria, `prenotazioni`.
 Dati previsti: `sede_id`, `utente_id`, `data`, `ora_inizio`, `ora_fine` (durata fissa di
 tre ore), `numero_persone`, `stato` (in attesa, approvata, rifiutata, annullata). Due
 prenotazioni sulla stessa sala non possono sovrapporsi.
+
+La persona sceglie la data, poi una fascia fra quelle libere di quel giorno, poi il
+numero di persone. Le fasce già occupate non sono selezionabili. Se la sala è dichiarata
+non disponibile, la pagina lo dice e non mostra il modulo.
+
+---
+
+### 6.1 Flussi delle pagine interne
+
+Manager e amministratore condividono le stesse viste, filtrate per sede (13.9). Il
+pattern è uniforme: elenco in tabella, un modulo per riga per le azioni semplici, e per
+le operazioni distruttive una conferma nella stessa pagina, raggiunta con un collegamento
+in `GET` che porta l'identificativo e chiusa da un modulo in `POST`. Non si usano
+finestre modali: richiederebbero JavaScript per aprirsi e impongono trappola del focus,
+chiusura da tastiera e ritorno del focus, complessità che la conferma in pagina evita.
+
+| Pagina | Manager | Amministratore |
+| --- | --- | --- |
+| `controllo` | ordini della propria sede, cambio stato e stato pagamento per riga, incasso a 30 giorni con grafico | come il manager, con in più il filtro per sede |
+| `controllo-ordine` | righe, cliente, indirizzo o orario di ritiro, annullamento con motivo e rimborso simulato | idem, su ogni sede |
+| `controllo-prodotti` | elenco della propria sede, comando di disponibilità e campo quantità per riga | stesso elenco con filtro sede e collegamento ai dati comuni |
+| `controllo-prodotto` | non accessibile | creazione, modifica, cancellazione dei dati comuni e dell'immagine |
+| `controllo-categorie` | non accessibile | creazione, rinomina, cancellazione con conferma |
+| `controllo-sedi` | non accessibile: entra direttamente sulla propria | elenco delle quattro sedi |
+| `controllo-sede` | nome, città, provincia, indirizzo, CAP, telefono, email, note per il ritiro, sette orari settimanali, comando della sala eventi | idem, su ogni sede |
+| `controllo-prenotazioni` | approva o rifiuta per riga | idem, su ogni sede |
+| `controllo-contatti` | non accessibile | elenco, testo del messaggio in un `<details>` per riga, cambio stato |
+| `controllo-utenti` | non accessibile | cambio ruolo, attivazione, cancellazione con conferma; promuovendo un manager si sceglie la sede, che non deve già averne uno |
+
+Il modulo di `controllo-prodotto` segue lo stesso ordine e raggruppamento della pagina
+pubblica del prodotto (immagine, nome, categoria, prezzo, descrizione, allergeni), con
+etichette regolari su ogni campo, e si chiude con un collegamento alla pagina pubblica per
+verificare il risultato. Non ne imita il layout: ogni campo deve avere un'etichetta
+visibile, cosa che la pagina pubblica non ha, e stilare gli stessi componenti due volte
+peserebbe sul budget del foglio di stile.
+
+La categoria di un prodotto si sceglie da un elenco a discesa delle categorie esistenti.
+Non si crea scrivendo un nome nuovo nel modulo del prodotto: un refuso produrrebbe una
+categoria duplicata invece di un errore.
+
+Le pagine interne del cliente seguono lo stesso principio di sobrietà: l'area personale
+raccoglie ordini, prenotazioni e dati del profilo in tre elenchi, ed è la pagina su cui
+atterra il redirect dopo ogni operazione conclusa; il profilo tiene moduli separati per
+dati anagrafici, password, indirizzo di consegna, metodo di pagamento e cancellazione
+dell'account, ognuno con il proprio salvataggio.
 
 ---
 
@@ -354,12 +436,12 @@ contro tutto il resto", ma pagine pubbliche di presentazione contro pagine tecni
 1. Nessun dato di pagamento reale viene mai raccolto o salvato: solo un'etichetta del
    metodo scelto.
 2. La password usa lo stesso insieme di caratteri ammessi definito in
-   `CONVENZIONI_CODICE.md` §2.3, lunghezza minima 8 caratteri, nessun limite massimo
+   `REGOLE.md` §11.3, lunghezza minima 8 caratteri, nessun limite massimo
    restrittivo.
-3. Ambiente PHP 8.1 e MariaDB 10.6, come richiesto da `VINCOLI_ESAME.md`.
+3. Ambiente PHP 8.1 e MariaDB 10.6, come richiesto da `REGOLE.md`.
 4. Accessibilità WCAG 2.1 AA, tre fogli di stile (`stile.css`, `mobile.css`,
    `stampa.css`), un solo file JavaScript, nessuna dipendenza esterna: vedi
-   `CONVENZIONI_CODICE.md`. In
+   `REGOLE.md`. In
    particolare il sito deve restare utilizzabile da chi naviga solo da tastiera, da chi
    usa uno screen reader, da chi ha una ridotta percezione dei colori, da chi ingrandisce
    il testo fino al 200 per cento e da chi ha una connessione lenta o un dispositivo
@@ -386,10 +468,15 @@ della società di consegna simulata, non su un controllo eseguito dal sito.
 
 ### 13.2 Catalogo e disponibilità per sede
 
-Confermata la disponibilità specifica per sede. Reintroduce, in forma più semplice,
-quanto rimosso in fase 2 del piano di ricostruzione (`branch_products`,
-`branch_inventory`): una sola tabella di raccordo sede/prodotto con disponibilità e
-quantità, aggiornata solo a mano dal manager, senza scarico automatico agli ordini.
+Confermata la disponibilità specifica per sede: una sola tabella di raccordo
+sede/prodotto con interruttore manuale e quantità.
+
+La quantità **viene scalata dagli ordini** e ripristinata dagli annullamenti, e uno zero
+rende il prodotto non disponibile in quella sede senza bisogno di toccare l'interruttore.
+Una prima versione di questo documento prevedeva un aggiornamento solo manuale: un numero
+che nessuno tiene allineato agli ordini reali non descrive niente, quindi la regola è
+stata cambiata. Le conseguenze tecniche, cioè transazione, aggiornamento condizionale e
+vincolo di non negatività, stanno nella sezione 5.1.
 
 ### 13.3 Incasso visibile al manager
 
@@ -418,7 +505,7 @@ sede ha una sola sala e nessun altro attributo oltre alla disponibilità.
 
 ### 13.8 Budget delle tabelle
 
-Alzato da 10 a 12 in `CONVENZIONI_CODICE.md` §13: le 9 tabelle attuali più
+Alzato da 10 a 12 in `REGOLE.md` §22: le 9 tabelle attuali più
 `disponibilita_prodotti`, `prenotazioni`, `messaggi_contatto`.
 
 ### 13.9 Pannello di controllo condiviso
@@ -428,7 +515,7 @@ filtrate per `sede_id`, non un albero di viste separato.
 
 ### 13.10 Grafico dell'incasso
 
-Confermato: nessun sedicesimo componente nel catalogo di `CONVENZIONI_CODICE.md` §6. Il
+Confermato: nessun sedicesimo componente nel catalogo di `REGOLE.md` §15. Il
 grafico estende il pattern già esistente delle icone, vedi 12.6.
 
 ### 13.11 Un manager per sede
@@ -463,7 +550,7 @@ storico, non compare da sola subito dopo il pagamento.
 Confermata una barra fissa in fondo alla pagina con subtotale e pulsante di conferma; il
 dettaglio dei prodotti scelti si apre da una freccia. Corrisponde all'elemento HTML
 nativo `<details>`/`<summary>`, che non richiede JavaScript. Non è nel catalogo dei 15
-componenti di `CONVENZIONI_CODICE.md` §6: si valuta se aggiungerlo quando si scrive il
+componenti di `REGOLE.md` §15: si valuta se aggiungerlo quando si scrive il
 CSS.
 
 ### 13.15 Carrello non persistente
@@ -471,9 +558,8 @@ CSS.
 Confermato: il carrello si elimina al completamento dell'ordine e scade da solo se resta
 inattivo per 15 minuti (alzato da 10 per lasciare margine a controlli automatici lenti,
 come quello di accessibilità, senza doverlo gestire caso per caso). Nessuna colonna
-nuova: si riusa `aggiornato_il`, già prevista dal modello dati del carrello in
-`PIANO_RICOSTRUZIONE.md`, aggiornata a ogni modifica e controllata quando il carrello
-viene richiesto di nuovo.
+nuova: si riusa `aggiornato_il` sulla tabella `carrelli`, aggiornata a ogni modifica e
+controllata quando il carrello viene richiesto di nuovo.
 
 ### 13.16 Tre fogli di stile
 
@@ -482,13 +568,38 @@ confermata che era finita in questo documento: `stile.css`, `mobile.css`, `stamp
 nomi italiani coerenti con `stile.css` già esistente. Il budget e il workflow di
 validazione sono aggiornati di conseguenza.
 
-### 13.17 Verifica automatica delle soglie
+### 13.17 Scarico automatico della quantità
+
+Deciso che la quantità per sede si muove con gli ordini: scalata alla conferma,
+ripristinata dall'annullamento, e a zero il prodotto esce dal menu di quella sede. Regole
+in 5.1. Sostituisce la versione a solo aggiornamento manuale di 13.2.
+
+### 13.18 Pagine aggiunte all'inventario
+
+Aggiunte `errors/401.php`, `controllo-categorie.php` e `controllo-ordine.php`. Totale a
+31 pagine, motivazioni nella sezione 14.
+
+### 13.19 Conferme senza finestre modali
+
+Le operazioni distruttive del pannello si confermano in pagina, non con una finestra
+modale: l'elemento `<dialog>` non si apre senza JavaScript, e un modal accessibile
+richiede trappola del focus, chiusura da tastiera e ritorno del focus all'elemento che lo
+ha aperto. La pagina `controllo-ordine` fornisce già il contesto isolato che un modal
+darebbe.
+
+### 13.20 Budget rialzati
+
+`REGOLE.md` §22: CSS da 1200 a 1600 righe, JavaScript da 450 a 500, classi da 50 a 60,
+`id` da 30 a 40. I valori precedenti erano tarati su 22 pagine e due ruoli. Gli `id` si
+contano dopo aver tolto i suffissi generati per riga.
+
+### 13.21 Verifica automatica delle soglie
 
 Confermate due verifiche nuove nel workflow `Qualità`, oltre a quelle già esistenti
 (validatore Nu, sintassi XML, validatore CSS, Pa11y WCAG2AA, Lighthouse a soglia 90,
 invariate):
 
-- un controllo dei budget quantitativi di `CONVENZIONI_CODICE.md` §13 (file e righe di
+- un controllo dei budget quantitativi di `REGOLE.md` §22 (file e righe di
   CSS e JavaScript, tabelle, peso delle immagini, classi e `id` distinti, questi ultimi
   normalizzati togliendo i suffissi numerici generati per riga), al posto della sola
   verifica manuale prevista oggi;
@@ -503,9 +614,9 @@ insieme al codice che controllano, non prima.
 
 ## 14. Inventario delle pagine
 
-Ventisei controller fissi più due a parametro. Il dettaglio di prodotto e di sede sono
-controller a sé, non l'elenco che si apre in un secondo modo: stesso principio già in
-uso tra `controllo-prodotti.php`/`controllo-prodotto.php` e
+Il dettaglio di prodotto e di sede sono controller a sé, non l'elenco che si apre in un
+secondo modo: stesso principio già in uso tra
+`controllo-prodotti.php`/`controllo-prodotto.php` e
 `controllo-sedi.php`/`controllo-sede.php`. L'identificativo passa per query string sullo
 `slug` già presente in tabella (`prodotto?slug=...`, `sede?slug=...`), senza bisogno di
 una nuova regola in `.htaccess`.
@@ -516,29 +627,37 @@ una nuova regola in `.htaccess`.
 | Account | accedi, registrati, esci, area-personale, profilo | account proprio |
 | Ordine | carrello, pagamento, ricevuta | cliente |
 | Prenotazione | prenota, avviata dalla pagina della sede scelta | cliente |
-| Controllo | controllo (ordini e incasso), controllo-prodotti, controllo-prodotto, controllo-sedi, controllo-sede, controllo-utenti, controllo-prenotazioni, controllo-contatti | manager sulla propria sede, admin su tutte |
+| Controllo | controllo (ordini e incasso), controllo-ordine, controllo-prodotti, controllo-prodotto, controllo-categorie, controllo-sedi, controllo-sede, controllo-utenti, controllo-prenotazioni, controllo-contatti | manager sulla propria sede, admin su tutte |
 | Informazioni | privacy, accessibilità, mappa-sito | ospite |
-| Errori | 403, 404, 500 | - |
+| Errori | 401, 403, 404, 500 | - |
+
+Trentuno pagine in tutto. Tre sono state aggiunte rispetto alla prima stesura di questo
+documento, ognuna per una ragione precisa:
+
+- `errors/401.php`, imposta da `REGOLE.md` §5.1 per chi tenta di aprire una risorsa che
+  richiede l'accesso, distinta dalla 403 di chi è autenticato ma non ha i permessi;
+- `controllo-categorie.php`, perché la sezione 3 vuole le categorie gestite da un modulo
+  dedicato, e perché senza di essa non esisterebbe nessun posto dove rinominarle o
+  cancellarle, mentre i vincoli d'esame chiedono modifica e cancellazione per ogni dato
+  inserito;
+- `controllo-ordine.php`, perché righe dell'ordine, cliente, indirizzo di consegna e
+  annullamento con motivo non stanno in una cella di tabella.
 
 `prenota` apre una nuova area di viste, `views/prenotazione/`, parallela a `ordine/`.
-`controllo-prenotazioni` e `controllo-contatti` entrano nell'area `controllo/` già
-esistente, condivisa da manager e amministratore (13.9).
-
-Ventotto pagine in tutto, contro le 22 dell'obiettivo precedente in
-`PIANO_RICOSTRUZIONE.md`: coerente con il perimetro esteso deciso in questa analisi, si
-aggiorna quel numero quando si rivede il piano (sezione 15).
+Le pagine di controllo entrano tutte nell'area `controllo/`, condivisa da manager e
+amministratore (13.9).
 
 ---
 
 ## 15. Ricadute su altri documenti
 
-Effetti delle decisioni di questa analisi su testi già scritti altrove nel progetto, da
-sistemare nella sessione di consolidamento della documentazione.
+Effetti ancora aperti delle decisioni di questa analisi su altri file del progetto.
+`REGOLE.md` e' gia' allineato; `PIANO_RICOSTRUZIONE.md` e `RICOGNIZIONE.md` sono stati
+eliminati, perche' descrivevano un perimetro superato e codice che viene riscritto.
 
-| Documento | Cosa non è più corretto |
+| File | Cosa non è più corretto |
 | --- | --- |
-| `docs/PIANO_RICOSTRUZIONE.md` | prossimo da rivedere: le fasi 2 e 3, segnate completate, coprono un perimetro più stretto di quello deciso qui; il modello dati della sezione 3 non prevede manager, sale eventi, contatti, disponibilità per sede |
-| `docs/RICOGNIZIONE.md` | documento storico: non descrive lo stato attuale per definizione, resta com'è finché non si decide altrimenti |
-| `docs/CONSEGNA.md` | §3 e §6 parlano di "due utenze" e "nove tabelle": con tre ruoli autenticati e dodici tabelle (sezione 13.6/13.8) i numeri cambiano. Non è una contraddizione procedurale: la procedura di consegna resta valida, sono conteggi da aggiornare quando lo schema è scritto |
-| `docs/RELAZIONE.md` | la tabella delle credenziali in prima pagina ha solo due righe, ne serve una terza per il manager |
-| `src/sitemap.xml`, `.github/scripts/pagine-riservate.json` | elencano le pagine di oggi, non le ventotto della sezione 14; da rigenerare dall'elenco unico proposto in `CONVENZIONI_CODICE.md` §3 quando esiste |
+| `docs/RELAZIONE.md` | la tabella delle credenziali in prima pagina ha solo due righe, ne serve una terza per il manager; mancano i punti richiesti da `REGOLE.md` §5.4 |
+| `README.md` | descrive il sito precedente: due ruoli, solo ritiro, un foglio di stile, nove tabelle |
+| `src/sitemap.xml`, `.github/scripts/pagine-riservate.json` | elencano le pagine di oggi, non le trentuno della sezione 14; da rigenerare dall'elenco unico previsto da `REGOLE.md` §12 quando esiste |
+| `README.md` | descrive il sito precedente: due ruoli, ritiro senza consegna, un solo foglio di stile, nove tabelle |
