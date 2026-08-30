@@ -15,3 +15,6 @@ require_once __DIR__ . '/funzioni/utenti.php';
 require_once __DIR__ . '/funzioni/sedi.php';
 require_once __DIR__ . '/funzioni/catalogo.php';
 require_once __DIR__ . '/funzioni/contatti.php';
+require_once __DIR__ . '/funzioni/profilo.php';
+require_once __DIR__ . '/funzioni/ordini.php';
+require_once __DIR__ . '/funzioni/prenotazioni.php';
