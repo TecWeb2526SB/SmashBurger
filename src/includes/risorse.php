@@ -21,3 +21,4 @@ require_once __DIR__ . '/funzioni/ordini.php';
 require_once __DIR__ . '/funzioni/carrello.php';
 require_once __DIR__ . '/funzioni/ordini-scrittura.php';
 require_once __DIR__ . '/funzioni/prenotazioni.php';
+require_once __DIR__ . '/funzioni/prenotazioni-gestione.php';
