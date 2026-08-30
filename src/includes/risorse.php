@@ -14,3 +14,4 @@ require_once __DIR__ . '/database.php';
 require_once __DIR__ . '/funzioni/utenti.php';
 require_once __DIR__ . '/funzioni/sedi.php';
 require_once __DIR__ . '/funzioni/catalogo.php';
+require_once __DIR__ . '/funzioni/contatti.php';
