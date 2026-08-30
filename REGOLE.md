@@ -601,13 +601,19 @@ Gli `id` si contano dopo aver tolto i suffissi generati per riga: `quantita-12` 
 `quantita-45` sono lo stesso `id` ai fini del budget, perche' il loro numero cresce con i
 dati e non con il codice.
 
+Il limite degli `id` serve a impedirne l'uso come appiglio per lo stile, non a
+scoraggiare l'accessibilita': ogni campo di un modulo ha bisogno del proprio `id` per la
+`<label>`, e ogni messaggio di errore o testo di aiuto ne ha bisogno per
+`aria-describedby`. Il conto resta legittimo finche' ogni `id` rientra nei tre motivi
+ammessi alla sezione 14 e nessuno compare nei fogli di stile.
+
 | Metrica | Limite |
 | --- | --- |
 | File CSS | 3 |
 | File JavaScript | 1 |
 | Attributi `style`, blocchi `<style>`, script inline, gestori inline | 0 |
 | Classi CSS distinte | 60 |
-| `id` presenti nel markup | 40 |
+| `id` presenti nel markup | 60 |
 | Righe di CSS, totale sui tre file | 1600 |
 | Righe di JavaScript | 500 |
 | Righe di un file di funzioni | 300 |

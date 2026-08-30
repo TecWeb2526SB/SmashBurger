@@ -33,6 +33,9 @@ print('  nessun carattere vietato' if not trovati else f'  {trovati} caratteri v
 sys.exit(1 if trovati else 0)
 PY
 
+# I limiti qui sotto sono gli stessi della tabella in REGOLE.md sezione 22: cambiandone
+# uno va cambiato anche l'altro, altrimenti il documento e il controllo dicono cose
+# diverse.
 echo "== budget di REGOLE.md sezione 22 =="
 python - <<'PY' || segnala "budget superati"
 import pathlib, re, sys
@@ -67,7 +70,7 @@ for f in pathlib.Path('src').rglob('*.php'):
         identificativi.add(re.sub(r'-?\d+$', '', valore.split('<')[0]).strip('-'))
 
 controlli.append(('classi CSS distinte', len(classi), 60))
-controlli.append(('id distinti', len(identificativi - {''}), 40))
+controlli.append(('id distinti', len(identificativi - {''}), 60))
 
 for nome, valore, limite in controlli:
     stato = 'ok' if valore <= limite else 'OLTRE IL LIMITE'

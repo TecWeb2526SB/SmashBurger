@@ -154,3 +154,18 @@ function sede_del_manager(PDO $pdo): ?array
 
     return $sede === false ? null : $sede;
 }
+
+/**
+ * Sede a cui il pannello deve restare limitato per chi guarda.
+ *
+ * Restituisce l'identificativo della sede per un manager e null per l'amministratore,
+ * che vede tutte le sedi. Ogni funzione di gestione riceve questo valore e lo mette
+ * nella propria query: il vincolo di sede sta nel database, non in un controllo che si
+ * puo' dimenticare.
+ */
+function sede_limite(PDO $pdo): ?int
+{
+    $sede = sede_del_manager($pdo);
+
+    return $sede === null ? null : (int) $sede['id'];
+}
