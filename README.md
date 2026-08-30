@@ -99,11 +99,10 @@ Le pagine controllate arrivano da [`src/sitemap.xml`](src/sitemap.xml) e da
 
 | Documento | Contenuto |
 | --- | --- |
-| [Vincoli d'esame](docs/VINCOLI_ESAME.md) | requisiti del corso, fonte di verità |
-| [Convenzioni di codice](docs/CONVENZIONI_CODICE.md) | regole di scrittura, componenti, sicurezza |
-| [Analisi dei requisiti](docs/ANALISI_REQUISITI.md) | ruoli, funzionalità, dati, classi di utenza, ricerche, titoli delle pagine |
-| [Piano di ricostruzione](docs/PIANO_RICOSTRUZIONE.md) | fasi del lavoro e stato |
-| [Ricognizione](docs/RICOGNIZIONE.md) | fotografia del codice precedente, storico |
+| [Regole](REGOLE.md) | vincoli d'esame, convenzioni di codice, procedura di consegna |
+| [Analisi dei requisiti](docs/ANALISI_REQUISITI.md) | ruoli, funzionalità, dati, classi di utenza, ricerche, pagine |
+| [Piano di sviluppo](docs/PIANO_SVILUPPO.md) | fasi del lavoro e verifica |
+| [Relazione](docs/RELAZIONE.md) | scheletro del documento da consegnare |
 
 ## Deploy
 
