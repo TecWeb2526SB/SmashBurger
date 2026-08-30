@@ -66,8 +66,8 @@ carrello, pagamento, ricevuta.
 4. Consulta lo storico dei propri ordini e le relative ricevute.
 5. Modifica i propri dati, rimuove indirizzo, telefono e metodo di pagamento salvati,
    elimina il proprio account.
-6. Prenota la sala eventi di una sede scegliendo l'orario di inizio, per tre ore o fino
-   alla chiusura, senza sovrapporsi ad altre prenotazioni della stessa sala.
+6. Prenota la sala eventi di una sede scegliendo orario di inizio e durata, fra un'ora e
+   mezza e tre ore, senza sovrapporsi ad altre prenotazioni della stessa sala.
 7. Invia un messaggio dal modulo di contatto, scegliendo una categoria tra quelle
    previste.
 8. Non accede al pannello di gestione: gli ordini si effettuano solo da un profilo
@@ -272,17 +272,23 @@ Dati previsti: `sede_id`, `utente_id`, `data`, `ora_inizio`, `ora_fine`,
 `numero_persone`, `stato` (in attesa, approvata, rifiutata, annullata). Due prenotazioni
 sulla stessa sala non possono sovrapporsi.
 
-La persona sceglie la data, poi **l'orario di inizio**, poi il numero di persone. La sala
-resta occupata per tre ore, oppure fino alla chiusura se la sede chiude prima; sotto
-un'ora la sala non si prenota, perché non sarebbe un evento. Gli orari di inizio si
-propongono ogni mezz'ora dentro l'apertura.
+La persona sceglie la data, **l'orario di inizio** e **la durata**, fra un'ora e mezza e
+tre ore a passi di mezz'ora. Gli orari di inizio si propongono ogni mezz'ora dentro
+l'apertura.
 
-Gli orari già occupati non sono selezionabili, e lo è anche un orario la cui durata
-invaderebbe una prenotazione successiva: chi prenota alle 14:00 occuperebbe fino alle
-17:00, quindi quell'orario risulta chiuso se alle 15:00 c'è già qualcuno. Poiché gli
-orari proposti si sovrappongono fra loro, la difesa contro la doppia prenotazione sta
-tutta nel controllo di sovrapposizione, rifatto dentro la transazione al momento del
-salvataggio.
+Un orario compare fra quelli scelibili quando ci sta almeno la durata minima; la
+combinazione esatta di orario e durata viene poi controllata all'invio, perché con tre
+ore lo stesso orario potrebbe non bastare. Chi sceglie le 13:30 con una prenotazione già
+fissata alle 15:00 può prenotare un'ora e mezza ma non tre ore, e il messaggio di errore
+lo dice invece di limitarsi a rifiutare.
+
+Poiché gli orari proposti si sovrappongono fra loro, la difesa contro la doppia
+prenotazione sta tutta nel controllo di sovrapposizione, rifatto dentro la transazione al
+momento del salvataggio.
+
+La pagina mostra una tabella di come è occupata la sala quel giorno, con gli intervalli
+liberi e quelli presi. La tabella non dice **chi** ha prenotato né per che cosa: serve a
+scegliere un orario, non a sapere chi c'è.
 
 Se la sala è dichiarata non disponibile, la pagina lo dice e non mostra il modulo.
 

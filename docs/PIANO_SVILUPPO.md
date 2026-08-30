@@ -79,7 +79,7 @@ dichiarate, `CHECK (quantita >= 0)` sulla disponibilita'.
 | `righe_carrello` | non copiano il prezzo, si legge dal prodotto |
 | `ordini` | modalita' ritiro o domicilio, indirizzo congelato, motivo di annullamento |
 | `righe_ordine` | congelano nome e prezzo del prodotto |
-| `prenotazioni` | orario di inizio libero, durata di tre ore o fino alla chiusura, senza sovrapposizioni per sede |
+| `prenotazioni` | orario di inizio e durata scelti da chi prenota, senza sovrapposizioni per sede |
 | `messaggi_contatto` | categoria da elenco chiuso |
 
 `utenti` si crea prima di `sedi`, quindi la chiave esterna non e' circolare.
@@ -131,10 +131,11 @@ minuti.
 
 ### Fase 6: prenotazioni
 
-`prenota.php` e `views/prenotazione/`, funzioni in `prenotazioni.php`. L'orario di inizio
-si sceglie liberamente e la sala resta occupata per tre ore, o fino alla chiusura; poiche'
-gli orari proposti si sovrappongono fra loro, la difesa e' tutta nel controllo di
-sovrapposizione. Rispetto di `sala_eventi_disponibile`.
+`prenota.php` e `views/prenotazione/`, funzioni in `prenotazioni.php`. Orario di inizio e
+durata si scelgono entrambi, fra un'ora e mezza e tre ore; poiche' gli orari proposti si
+sovrappongono fra loro, la difesa e' tutta nel controllo di sovrapposizione. La pagina
+mostra una tabella delle occupazioni del giorno, senza dati di chi ha prenotato. Rispetto
+di `sala_eventi_disponibile`.
 
 ### Fase 7: pannello di controllo
 

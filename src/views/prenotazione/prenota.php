@@ -2,7 +2,8 @@
 /**
  * Prenotazione della sala eventi.
  *
- * Riceve $sedi, $sede, $data, $fasce, $valori, $errori, $minimo e $massimo.
+ * Riceve $sedi, $sede, $data, $fasce, $occupazione, $durate, $valori, $errori, $minimo
+ * e $massimo.
  * Il primo modulo viaggia in GET perche' non modifica nulla: serve solo a mostrare le
  * orari liberi del giorno scelto.
  */
@@ -10,9 +11,9 @@
 <h1>Prenota la sala eventi</h1>
 
 <p>
-    Scegli l'orario di inizio: la sala resta tua per <?php echo (int) ORE_PRENOTAZIONE; ?> ore,
-    oppure fino alla chiusura se la sede chiude prima. La prenotazione viene poi
-    confermata dalla sede.
+    Scegli il giorno, l'orario di inizio e per quanto ti serve la sala, da
+    <?php echo e(reset($durate)); ?> a <?php echo e(end($durate)); ?>. La prenotazione
+    viene poi confermata dalla sede.
 </p>
 
 <?php if ($errori !== []): ?>
@@ -68,6 +69,8 @@
         <?php if ($fasce === []): ?>
             <p>Quel giorno la sede e' chiusa: scegli un altro giorno.</p>
         <?php else: ?>
+            <?php require __DIR__ . '/occupazione.php'; ?>
+
             <form method="post" action="<?php echo e(url('prenota')); ?>">
                 <?php echo campo_csrf(); ?>
                 <input type="hidden" name="sede" value="<?php echo e($sede['slug']); ?>" />
@@ -87,6 +90,10 @@
                                     <?php echo e($fascia['etichetta']); ?>
                                     <?php if ($fascia['occupata']): ?>
                                         <span class="etichetta" data-tipo="negativo">non disponibile</span>
+                                    <?php else: ?>
+                                        <span class="solo-lettori">
+                                            disponibile fino a <?php echo (int) $fascia['massimo']; ?> minuti
+                                        </span>
                                     <?php endif; ?>
                                 </label>
                             </li>
@@ -96,6 +103,19 @@
 
                 <fieldset>
                     <legend>Dettagli</legend>
+
+                    <p>
+                        <label for="durata">Per quanto tempo</label>
+                        <select id="durata" name="durata"
+                            <?php if (isset($errori['durata'])): ?>data-stato="errore"<?php endif; ?>>
+                            <?php foreach ($durate as $minuti => $etichetta): ?>
+                                <option value="<?php echo (int) $minuti; ?>"
+                                    <?php echo (int) $valori['durata'] === (int) $minuti ? 'selected="selected"' : ''; ?>>
+                                    <?php echo e($etichetta); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </p>
 
                     <p>
                         <label for="numero_persone">Quante persone siete</label>

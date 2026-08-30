@@ -36,8 +36,8 @@
     <h2>Sala eventi</h2>
     <p>
         Ogni sede ha una sala prenotabile per compleanni, feste di laurea e cene di
-        gruppo. Le prenotazioni durano <?php echo (int) ORE_PRENOTAZIONE; ?> ore e vanno
-        confermate dal personale della sede.
+        gruppo. Scegli orario di inizio e durata, e la prenotazione viene poi confermata
+        dal personale della sede.
     </p>
     <p><a href="<?php echo e(url('sedi')); ?>">Scegli la sede e prenota</a></p>
 </section>

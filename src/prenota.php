@@ -22,7 +22,7 @@ if ($slugSede !== '' && $sede === null) {
 }
 
 $data = is_string($_GET['data'] ?? null) && data_valida($_GET['data']) ? $_GET['data'] : '';
-$valori = ['numero_persone' => '', 'note' => '', 'fascia' => ''];
+$valori = ['numero_persone' => '', 'note' => '', 'fascia' => '', 'durata' => (string) MINUTI_MINIMI_PRENOTAZIONE];
 $errori = [];
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
@@ -45,7 +45,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $errori = prenotazione_errori($pdo, $sede, $dati);
 
     if ($errori === []) {
-        $fascia = fascia_scelta($pdo, (int) $sede['id'], $data, $valori['fascia']);
+        $fascia = fascia_scelta($pdo, (int) $sede['id'], $data, $valori['fascia'], (int) $valori['durata']);
         $esito = prenotazione_crea($pdo, (int) $sede['id'], (int) $utente['id'], $dati, $fascia);
 
         messaggio_imposta($esito['ok'] ? 'successo' : 'errore', $esito['messaggio']);
@@ -66,6 +66,8 @@ mostra_pagina('prenotazione/prenota.php', [
     'sede' => $sede,
     'data' => $data,
     'fasce' => $sede === null || $data === '' ? [] : fasce_prenotabili($pdo, (int) $sede['id'], $data),
+    'occupazione' => $sede === null || $data === '' ? [] : occupazione_del_giorno($pdo, (int) $sede['id'], $data),
+    'durate' => durate_prenotabili(),
     'valori' => $valori,
     'errori' => $errori,
     'minimo' => date('Y-m-d'),
