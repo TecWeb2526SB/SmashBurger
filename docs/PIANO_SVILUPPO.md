@@ -79,7 +79,7 @@ dichiarate, `CHECK (quantita >= 0)` sulla disponibilita'.
 | `righe_carrello` | non copiano il prezzo, si legge dal prodotto |
 | `ordini` | modalita' ritiro o domicilio, indirizzo congelato, motivo di annullamento |
 | `righe_ordine` | congelano nome e prezzo del prodotto |
-| `prenotazioni` | slot di tre ore, senza sovrapposizioni per sede |
+| `prenotazioni` | orario di inizio libero, durata di tre ore o fino alla chiusura, senza sovrapposizioni per sede |
 | `messaggi_contatto` | categoria da elenco chiuso |
 
 `utenti` si crea prima di `sedi`, quindi la chiave esterna non e' circolare.
@@ -131,8 +131,10 @@ minuti.
 
 ### Fase 6: prenotazioni
 
-`prenota.php` e `views/prenotazione/`, funzioni in `prenotazioni.php`. Slot di tre ore,
-niente sovrapposizioni, rispetto di `sala_eventi_disponibile`.
+`prenota.php` e `views/prenotazione/`, funzioni in `prenotazioni.php`. L'orario di inizio
+si sceglie liberamente e la sala resta occupata per tre ore, o fino alla chiusura; poiche'
+gli orari proposti si sovrappongono fra loro, la difesa e' tutta nel controllo di
+sovrapposizione. Rispetto di `sala_eventi_disponibile`.
 
 ### Fase 7: pannello di controllo
 

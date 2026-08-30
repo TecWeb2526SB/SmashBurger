@@ -18,8 +18,14 @@ const QUANTITA_MASSIMA = 20;
 // Minuti di inattivita' dopo i quali un carrello viene considerato scaduto.
 const MINUTI_CARRELLO = 15;
 
-// Durata fissa di una prenotazione della sala eventi.
+// Durata di una prenotazione della sala eventi, accorciata quando la sede chiude prima.
 const ORE_PRENOTAZIONE = 3;
+
+// Passo con cui si propongono gli orari di inizio della sala.
+const MINUTI_PASSO_PRENOTAZIONE = 30;
+
+// Sotto questa durata la sala non si prenota: piu' corta non sarebbe un evento.
+const MINUTI_MINIMI_PRENOTAZIONE = 60;
 
 // Finestra su cui si calcola l'incasso mostrato al manager.
 const GIORNI_INCASSO = 30;

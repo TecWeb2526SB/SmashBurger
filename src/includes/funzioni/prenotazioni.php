@@ -2,14 +2,18 @@
 /**
  * Prenotazioni della sala eventi.
  *
- * Ogni sede ha una sola sala, quindi la prenotazione punta direttamente alla sede. Le
- * fasce durano ORE_PRENOTAZIONE ore e non si sovrappongono per costruzione: partono
- * dall'orario di apertura e avanzano di una fascia alla volta finche' entrano
- * nell'orario di chiusura.
+ * Ogni sede ha una sola sala, quindi la prenotazione punta direttamente alla sede.
  *
- * La non sovrapposizione si verifica qui e non con un vincolo di unicita': due
- * prenotazioni rifiutate o annullate possono legittimamente avere la stessa fascia, e
- * MariaDB 10.6 non permette un indice unico limitato alle sole righe attive.
+ * L'orario di inizio si sceglie liberamente, a passi di MINUTI_PASSO_PRENOTAZIONE dentro
+ * l'orario di apertura; la prenotazione dura ORE_PRENOTAZIONE ore, oppure meno se la
+ * sede chiude prima, e comunque mai meno di MINUTI_MINIMI_PRENOTAZIONE.
+ *
+ * Poiche' gli inizi possibili si sovrappongono fra loro, la difesa contro la doppia
+ * prenotazione e' interamente nel controllo di sovrapposizione: un orario risulta libero
+ * solo se l'intervallo che genera non tocca nessuna prenotazione attiva. Il controllo sta
+ * nel codice e non in un vincolo di unicita' perche' due prenotazioni rifiutate o
+ * annullate possono legittimamente avere lo stesso orario, e MariaDB 10.6 non permette un
+ * indice unico limitato alle sole righe attive.
  */
 
 /**
@@ -37,7 +41,11 @@ function giorni_prenotabili(): int
 }
 
 /**
- * Fasce di una sede in un giorno, con l'indicazione di quelle gia' occupate.
+ * Orari di inizio proposti per una sede in un giorno.
+ *
+ * Ogni voce porta l'intervallo che genera e se quell'intervallo e' libero. Un orario
+ * risulta occupato anche quando la prenotazione esistente comincia dopo: prenotare alle
+ * 14:00 con una prenotazione gia' fissata alle 15:00 significherebbe sovrapporsi.
  *
  * @return array elenco di ['inizio', 'fine', 'etichetta', 'occupata']
  */
@@ -50,43 +58,67 @@ function fasce_prenotabili(PDO $pdo, int $sedeId, string $data): array
         return [];
     }
 
-    $occupate = fasce_occupate($pdo, $sedeId, $data);
-    $durata = ORE_PRENOTAZIONE * 3600;
+    $attive = prenotazioni_attive_del_giorno($pdo, $sedeId, $data);
 
     $momento = strtotime($data . ' ' . $orario['apertura']);
     $chiusura = strtotime($data . ' ' . $orario['chiusura']);
+    $passo = MINUTI_PASSO_PRENOTAZIONE * 60;
     $fasce = [];
 
-    while ($momento + $durata <= $chiusura) {
+    while ($chiusura - $momento >= MINUTI_MINIMI_PRENOTAZIONE * 60) {
+        // La durata piena si accorcia solo per l'ultima parte della giornata.
+        $termine = min($momento + ORE_PRENOTAZIONE * 3600, $chiusura);
         $inizio = date('H:i:s', $momento);
-        $fine = date('H:i:s', $momento + $durata);
+        $fine = date('H:i:s', $termine);
+
+        $etichetta = substr($inizio, 0, 5) . ' - ' . substr($fine, 0, 5);
+
+        if ($termine === $chiusura && $chiusura - $momento < ORE_PRENOTAZIONE * 3600) {
+            $etichetta .= ', fino alla chiusura';
+        }
 
         $fasce[] = [
             'inizio' => $inizio,
             'fine' => $fine,
-            'etichetta' => substr($inizio, 0, 5) . ' - ' . substr($fine, 0, 5),
-            'occupata' => in_array($inizio, $occupate, true),
+            'etichetta' => $etichetta,
+            'occupata' => intervallo_occupato($attive, $inizio, $fine),
         ];
 
-        $momento += $durata;
+        $momento += $passo;
     }
 
     return $fasce;
 }
 
 /**
- * Orari di inizio gia' occupati in una sede per un giorno.
+ * Prenotazioni che occupano la sala di una sede in un giorno.
  */
-function fasce_occupate(PDO $pdo, int $sedeId, string $data): array
+function prenotazioni_attive_del_giorno(PDO $pdo, int $sedeId, string $data): array
 {
     $query = $pdo->prepare(
-        'SELECT ora_inizio FROM prenotazioni
+        'SELECT ora_inizio, ora_fine FROM prenotazioni
           WHERE sede_id = :sede AND data = :data
             AND stato IN (\'in attesa\', \'approvata\')'
     );
     $query->execute([':sede' => $sedeId, ':data' => $data]);
 
-    return array_column($query->fetchAll(), 'ora_inizio');
+    return $query->fetchAll();
+}
+
+/**
+ * Verifica se un intervallo tocca una delle prenotazioni gia' fissate.
+ *
+ * Due intervalli si sovrappongono quando ognuno comincia prima che l'altro finisca.
+ */
+function intervallo_occupato(array $attive, string $inizio, string $fine): bool
+{
+    foreach ($attive as $presa) {
+        if ($presa['ora_inizio'] < $fine && $presa['ora_fine'] > $inizio) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 /**
@@ -155,7 +187,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     $fascia = fascia_scelta($pdo, (int) $sede['id'], $data, (string) ($dati['fascia'] ?? ''));
 
     if ($fascia === null) {
-        $errori['fascia'] = 'Scegli una delle fasce libere di quel giorno.';
+        $errori['fascia'] = 'Scegli uno degli orari liberi di quel giorno.';
     } elseif (prenotazione_sovrapposta($pdo, (int) $sede['id'], $data, $fascia['inizio'], $fascia['fine'])) {
         $errori['fascia'] = 'Questa fascia e stata appena occupata: scegline un altra.';
     }

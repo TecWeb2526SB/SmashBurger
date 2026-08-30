@@ -4,14 +4,15 @@
  *
  * Riceve $sedi, $sede, $data, $fasce, $valori, $errori, $minimo e $massimo.
  * Il primo modulo viaggia in GET perche' non modifica nulla: serve solo a mostrare le
- * fasce libere del giorno scelto.
+ * orari liberi del giorno scelto.
  */
 ?>
 <h1>Prenota la sala eventi</h1>
 
 <p>
-    La sala si prenota per fasce di <?php echo (int) ORE_PRENOTAZIONE; ?> ore. La
-    prenotazione viene poi confermata dalla sede.
+    Scegli l'orario di inizio: la sala resta tua per <?php echo (int) ORE_PRENOTAZIONE; ?> ore,
+    oppure fino alla chiusura se la sede chiude prima. La prenotazione viene poi
+    confermata dalla sede.
 </p>
 
 <?php if ($errori !== []): ?>
@@ -51,7 +52,7 @@
                 value="<?php echo e($data); ?>" />
         </p>
 
-        <p><button type="submit">Vedi le fasce libere</button></p>
+        <p><button type="submit">Vedi gli orari liberi</button></p>
     </fieldset>
 </form>
 
@@ -62,7 +63,7 @@
     </p>
 <?php elseif ($sede !== null && $data !== ''): ?>
     <section>
-        <h2>Fasce del <?php echo e(data_breve($data)); ?> a <?php echo e($sede['citta']); ?></h2>
+        <h2>Orari del <?php echo e(data_breve($data)); ?> a <?php echo e($sede['citta']); ?></h2>
 
         <?php if ($fasce === []): ?>
             <p>Quel giorno la sede e' chiusa: scegli un altro giorno.</p>
@@ -73,7 +74,7 @@
                 <input type="hidden" name="data" value="<?php echo e($data); ?>" />
 
                 <fieldset>
-                    <legend>Scegli la fascia</legend>
+                    <legend>Scegli l'orario di inizio</legend>
 
                     <ul class="scelte">
                         <?php foreach ($fasce as $fascia): ?>
@@ -85,7 +86,7 @@
                                 <label for="fascia-<?php echo e(str_replace(':', '', $fascia['inizio'])); ?>">
                                     <?php echo e($fascia['etichetta']); ?>
                                     <?php if ($fascia['occupata']): ?>
-                                        <span class="etichetta" data-tipo="negativo">gia occupata</span>
+                                        <span class="etichetta" data-tipo="negativo">non disponibile</span>
                                     <?php endif; ?>
                                 </label>
                             </li>

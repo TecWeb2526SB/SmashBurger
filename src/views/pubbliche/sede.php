@@ -56,8 +56,8 @@
     <h2>Sala eventi</h2>
     <?php if ((int) $sede['sala_eventi_disponibile'] === 1): ?>
         <p>
-            La sala si prenota per fasce di <?php echo (int) ORE_PRENOTAZIONE; ?> ore ed e'
-            adatta a compleanni, feste di laurea e cene di gruppo.
+            Scegli l'orario di inizio: la sala resta tua per <?php echo (int) ORE_PRENOTAZIONE; ?> ore,
+            oppure fino alla chiusura. E' adatta a compleanni, feste di laurea e cene di gruppo.
         </p>
         <p><a href="<?php echo e(url('prenota', ['sede' => $sede['slug']])); ?>">Prenota la sala</a></p>
     <?php else: ?>
