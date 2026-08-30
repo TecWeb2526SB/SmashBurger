@@ -120,3 +120,42 @@ function fascia_leggibile(array $orario): string
 
     return substr($orario['apertura'], 0, 5) . ' - ' . substr($orario['chiusura'], 0, 5);
 }
+
+/**
+ * Orari di ritiro selezionabili per una sede.
+ *
+ * Restituisce fasce di quindici minuti dentro l'apertura, a partire da mezz'ora dopo
+ * adesso, per i prossimi giorni. Le coppie sono valore per il modulo ed etichetta
+ * leggibile.
+ *
+ * @param int $giorni quanti giorni considerare, a partire da oggi
+ */
+function orari_ritiro_disponibili(PDO $pdo, int $sedeId, int $giorni = 3): array
+{
+    $orari = orari_sede($pdo, $sedeId);
+    $primoUtile = time() + 30 * 60;
+    $slot = [];
+
+    for ($scarto = 0; $scarto < $giorni; $scarto++) {
+        $giorno = strtotime('+' . $scarto . ' day');
+        $orario = $orari[(int) date('N', $giorno)];
+
+        if ((int) $orario['chiuso'] === 1 || $orario['apertura'] === null) {
+            continue;
+        }
+
+        $data = date('Y-m-d', $giorno);
+        $momento = strtotime($data . ' ' . $orario['apertura']);
+        $chiusura = strtotime($data . ' ' . $orario['chiusura']);
+
+        while ($momento <= $chiusura) {
+            if ($momento >= $primoUtile) {
+                $slot[date('Y-m-d H:i:s', $momento)] = date('d/m/Y H:i', $momento);
+            }
+
+            $momento += 15 * 60;
+        }
+    }
+
+    return $slot;
+}

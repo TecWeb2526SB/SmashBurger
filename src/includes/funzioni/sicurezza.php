@@ -79,11 +79,13 @@ function identificativo(array $sorgente, string $nome): ?int
  * Legge uno slug dalla richiesta.
  *
  * Ammette solo lettere minuscole, cifre e trattini: un valore di altra forma non puo'
- * esistere nel database, quindi la richiesta si chiude con la pagina 404 senza query.
+ * esistere nel database, quindi la richiesta si chiude senza nemmeno interrogarlo.
+ *
+ * @param array|null $sorgente da dove leggere; per difetto la query string
  */
-function slug_richiesto(string $nome): ?string
+function slug_richiesto(string $nome, ?array $sorgente = null): ?string
 {
-    $valore = $_GET[$nome] ?? null;
+    $valore = ($sorgente ?? $_GET)[$nome] ?? null;
 
     if (!is_string($valore) || preg_match('/^[a-z0-9-]{1,120}$/', $valore) !== 1) {
         return null;
