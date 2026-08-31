@@ -78,11 +78,11 @@ $campiConsegna = [
             <ul class="scelte">
                 <?php foreach (['' => 'Nessuna preferenza', 'carta' => 'Carta', 'contanti' => 'Contanti'] as $valore => $etichetta): ?>
                     <li>
-                        <input type="radio" id="metodo-<?php echo e($valore === '' ? 'nessuno' : $valore); ?>"
-                            name="metodo" value="<?php echo e($valore); ?>"
-                            <?php echo ($utente['metodo_pagamento_preferito'] ?? '') === $valore ? 'checked="checked"' : ''; ?> />
                         <label for="metodo-<?php echo e($valore === '' ? 'nessuno' : $valore); ?>">
-                            <?php echo e($etichetta); ?>
+                            <input type="radio" id="metodo-<?php echo e($valore === '' ? 'nessuno' : $valore); ?>"
+                                name="metodo" value="<?php echo e($valore); ?>"
+                                <?php echo ($utente['metodo_pagamento_preferito'] ?? '') === $valore ? 'checked="checked"' : ''; ?> />
+                            <span><?php echo e($etichetta); ?></span>
                         </label>
                     </li>
                 <?php endforeach; ?>

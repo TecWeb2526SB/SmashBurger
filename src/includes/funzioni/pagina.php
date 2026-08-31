@@ -41,6 +41,56 @@ function data_breve(string $valore): string
 }
 
 /**
+ * Descrive la fotografia esterna di una sede in base a cio' che si vede davvero.
+ */
+function testo_alternativo_sede(string $slug, string $citta): string
+{
+    $descrizioni = [
+        'padova' => 'Esterno della sede Smash Burger di Padova sotto un portico, con insegna rossa e interni colorati visibili dalle vetrate.',
+        'treviso' => 'Esterno della sede Smash Burger di Treviso, con ampia insegna rossa e bancone senape visibile dalle vetrate.',
+        'vicenza' => 'Esterno della sede Smash Burger di Vicenza, con insegna rossa e interni verdi, rossi e senape visibili dalle vetrate.',
+        'udine' => 'Esterno ad angolo della sede Smash Burger di Udine, con insegna rossa, scala interna e punto di ritiro visibili dalle vetrate.',
+    ];
+
+    return $descrizioni[$slug]
+        ?? 'Esterno della sede Smash Burger di ' . $citta . ', visto dalla strada.';
+}
+
+/**
+ * Tema scelto da chi guarda: 'chiaro', 'scuro', oppure stringa vuota quando non ha
+ * ancora scelto e vale la preferenza del sistema.
+ *
+ * Il valore arriva da un cookie e viene confrontato con un elenco chiuso: un cookie
+ * manomesso non finisce mai dentro l'attributo class della pagina.
+ */
+function tema_corrente(): string
+{
+    $scelto = $_COOKIE[COOKIE_TEMA] ?? '';
+
+    return in_array($scelto, ['chiaro', 'scuro'], true) ? $scelto : '';
+}
+
+/**
+ * Salva il tema per un anno. Un valore fuori dall'elenco cancella il cookie e riporta
+ * alla preferenza del sistema.
+ */
+function tema_salva(string $tema): void
+{
+    if (!in_array($tema, ['chiaro', 'scuro'], true)) {
+        setcookie(COOKIE_TEMA, '', ['expires' => time() - 3600, 'path' => '/']);
+
+        return;
+    }
+
+    setcookie(COOKIE_TEMA, $tema, [
+        'expires' => time() + 31536000,
+        'path' => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
+/**
  * Restituisce il markup di un'icona presa dalla raccolta in images/icone.svg.
  *
  * L'icona accompagna sempre un testo, quindi e' nascosta ai lettori di schermo.
@@ -48,7 +98,7 @@ function data_breve(string $valore): string
 function icona(string $nome): string
 {
     return '<svg class="icona" aria-hidden="true" focusable="false">'
-        . '<use href="' . e(risorsa('images/icone.svg')) . '#' . e($nome) . '" />'
+        . '<use href="' . e(risorsa('images/icone.svg', true)) . '#' . e($nome) . '" />'
         . '</svg>';
 }
 
@@ -99,7 +149,7 @@ function errore(int $codice): void
 }
 
 /**
- * Compone una pagina completa: intestazione, vista del contenuto e piede.
+ * Compone una pagina completa: intestazione, vista del contenuto e footer.
  *
  * Titolo e descrizione arrivano da includes/pagine.php e possono essere sostituiti da
  * $dati, come fanno le pagine di dettaglio di prodotto e sede, che li ricavano dai

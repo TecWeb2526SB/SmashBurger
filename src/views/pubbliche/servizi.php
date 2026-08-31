@@ -3,58 +3,78 @@
  * Descrizione dei servizi: ritiro, consegna, sala eventi, allergeni e pagamento.
  */
 ?>
-<h1>Servizi</h1>
+<section class="apertura-editoriale">
+    <div>
+        <p class="occhiello">Come vuoi mangiarlo?</p>
+        <h1>Servizi</h1>
+        <p class="introduzione">
+            Ordina online, scegli come ricevere e lascia a noi il lavoro caldo. Ritiro,
+            consegna e una sala per le occasioni che meritano un tavolo lungo.
+        </p>
+        <p><a class="pulsante" data-tipo="positivo" href="<?php echo e(url('carrello')); ?>">Inizia un ordine</a></p>
+    </div>
 
-<p>
-    Da Smash Burger ordini online e scegli come ricevere: passi a ritirare in sede oppure
-    ti facciamo consegnare a casa. In ogni sede c'e' anche una sala per le ricorrenze.
-</p>
-
-<section>
-    <h2>Ritiro in sede</h2>
-    <p>
-        Scegli la sede, aggiungi i prodotti e indichi l'orario in cui passi. Prepariamo
-        l'ordine per quell'ora, cosi' non aspetti al banco.
-    </p>
-    <p>Il ritiro e' possibile solo negli orari di apertura della sede scelta.</p>
+    <figure class="istantanea">
+        <div class="foto-editoriale" role="img"
+            aria-label="Un addetto porge al cliente un vassoio con un burger fumante e patatine.">
+            <img src="<?php echo e(risorsa('images/servizi-ritiro.webp', true)); ?>"
+                width="1200" height="900" alt="" />
+            <span>Ritiro / pronto al banco</span>
+            <strong>Pronto quando lo sei tu</strong>
+        </div>
+        <figcaption>Ritiro, consegna o una serata intera da noi.</figcaption>
+    </figure>
 </section>
 
-<section>
-    <h2>Consegna a domicilio</h2>
-    <p>
-        Se preferisci restare a casa, indichi l'indirizzo al momento dell'ordine e la
-        consegna viene presa in carico da una societa' esterna dopo il pagamento.
-    </p>
-    <p>
-        Se la consegna non e' possibile, per esempio perche' l'indirizzo non e'
-        raggiungibile, l'ordine viene annullato e rimborsato: te lo comunichiamo via
-        email e lo vedi anche nella tua area personale.
-    </p>
-</section>
+<div class="griglia-servizi">
+    <section class="scheda-servizio servizio-ritiro">
+        <p class="indice-pannello">01 / Ritiro</p>
+        <h2>Passa, prendi, mordi.</h2>
+        <p>
+            Scegli la sede, aggiungi i prodotti e indica l'orario. Prepariamo l'ordine
+            per quel momento, cosi' al banco non perdi tempo.
+        </p>
+        <p class="nota-servizio">Disponibile negli orari di apertura della sede scelta.</p>
+    </section>
 
-<section>
-    <h2>Sala eventi</h2>
-    <p>
-        Ogni sede ha una sala prenotabile per compleanni, feste di laurea e cene di
-        gruppo. Scegli orario di inizio e durata, e la prenotazione viene poi confermata
-        dal personale della sede.
-    </p>
-    <p><a href="<?php echo e(url('sedi')); ?>">Scegli la sede e prenota</a></p>
-</section>
+    <section class="scheda-servizio servizio-consegna">
+        <p class="indice-pannello">02 / Consegna</p>
+        <h2>La piastra arriva a casa.</h2>
+        <p>
+            Inserisci l'indirizzo durante l'ordine. Dopo il pagamento la consegna viene
+            presa in carico da una societa' esterna.
+        </p>
+        <p class="nota-servizio">
+            Se l'indirizzo non e' raggiungibile, annulliamo e rimborsiamo l'ordine.
+        </p>
+    </section>
 
-<section>
-    <h2>Allergeni</h2>
-    <p>
-        Gli allergeni di ogni prodotto sono scritti nel menu e nella pagina del prodotto.
-        Se hai un'allergia, <a href="<?php echo e(url('contatti')); ?>">scrivici</a> prima di
-        ordinare: nelle nostre cucine si lavorano glutine, latte, uova e frutta a guscio.
-    </p>
-</section>
+    <section class="scheda-servizio servizio-eventi">
+        <p class="indice-pannello">03 / Eventi</p>
+        <h2>Porta la crew. Alla sala pensiamo noi.</h2>
+        <p>
+            Compleanni, feste di laurea e cene di gruppo: scegli sede, giorno, orario di
+            inizio e durata. Il personale ti confermera' la prenotazione.
+        </p>
+        <p><a class="pulsante secondario" href="<?php echo e(url('sedi')); ?>">Scegli la sede e prenota</a></p>
+    </section>
 
-<section>
-    <h2>Pagamento</h2>
-    <p>
-        Al momento dell'ordine scegli fra carta e contanti. Il pagamento con carta e'
-        simulato: il sito non chiede e non conserva nessun dato della tua carta.
-    </p>
-</section>
+    <section class="scheda-servizio servizio-info">
+        <p class="indice-pannello">04 / Allergeni</p>
+        <h2>Tutto scritto. Prima del morso.</h2>
+        <p>
+            Gli allergeni sono nel menu e nella scheda di ogni prodotto. Nelle cucine si
+            lavorano glutine, latte, uova e frutta a guscio.
+        </p>
+        <p><a href="<?php echo e(url('contatti')); ?>">Scrivici se hai un'allergia</a>.</p>
+    </section>
+
+    <section class="scheda-servizio servizio-pagamento">
+        <p class="indice-pannello">05 / Pagamento</p>
+        <h2>Carta o contanti. Senza sorprese.</h2>
+        <p>
+            Scegli il metodo al termine dell'ordine. Il pagamento con carta e' simulato:
+            il sito non chiede e non conserva nessun dato della tua carta.
+        </p>
+    </section>
+</div>

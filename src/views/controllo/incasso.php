@@ -2,9 +2,7 @@
 /**
  * Incasso del periodo, come numero e come grafico.
  *
- * Il grafico e' decorativo e nascosto ai lettori di schermo: gli stessi dati sono
- * disponibili come testo, con il totale in evidenza e il dettaglio giornaliero dentro
- * una tabella che si apre. Un disegno non deve essere l'unico modo di leggere un dato.
+ * Il grafico riporta date, scala monetaria e una descrizione testuale accessibile.
  */
 ?>
 <section class="incasso">
@@ -12,29 +10,12 @@
 
     <p class="totale"><?php echo e(prezzo($incasso)); ?></p>
 
-    <?php echo grafico_incasso($serie); ?>
+    <p class="didascalia-grafico">Incasso giornaliero, importi in euro.</p>
 
-    <details>
-        <summary>Vedi il dettaglio giorno per giorno</summary>
-
-        <table>
-            <caption>Incasso giornaliero degli ultimi <?php echo (int) GIORNI_INCASSO; ?> giorni</caption>
-            <thead>
-                <tr>
-                    <th scope="col">Giorno</th>
-                    <th scope="col">Incasso</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($serie as $giorno => $centesimi): ?>
-                    <tr>
-                        <th scope="row"><?php echo e(data_breve($giorno)); ?></th>
-                        <td><?php echo e(prezzo((int) $centesimi)); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </details>
+    <div class="contenitore-grafico" role="region" tabindex="0"
+        aria-label="Grafico dell'incasso giornaliero; scorri orizzontalmente per vedere tutte le date">
+        <?php echo grafico_incasso($serie); ?>
+    </div>
 
     <p><small>Gli ordini annullati non contano: la merce e' tornata a disposizione.</small></p>
 </section>

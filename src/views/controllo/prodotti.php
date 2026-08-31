@@ -31,7 +31,7 @@
 <?php endif; ?>
 
 <?php if ($amministratore): ?>
-    <p><a href="<?php echo e(url('controllo-prodotto')); ?>">Aggiungi un prodotto</a></p>
+    <p><a class="pulsante" href="<?php echo e(url('controllo-prodotto')); ?>">Aggiungi un prodotto</a></p>
 <?php endif; ?>
 
 <table>

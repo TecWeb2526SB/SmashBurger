@@ -4,4 +4,5 @@
 
 .env
 .tmp/
+.codex-audit/
 AGENTS.md

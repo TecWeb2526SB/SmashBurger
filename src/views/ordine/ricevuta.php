@@ -88,5 +88,5 @@
 </section>
 
 <p class="navigazione-pagina">
-    <a href="<?php echo e(url('area-personale')); ?>">Torna ai tuoi ordini</a>
+    <a class="collegamento-indietro" href="<?php echo e(url('area-personale')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna ai tuoi ordini</span></a>
 </p>

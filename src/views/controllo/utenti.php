@@ -21,9 +21,9 @@
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="azione" value="cancella" />
             <input type="hidden" name="utente_id" value="<?php echo (int) $daCancellare['id']; ?>" />
-            <p>
-                <button type="submit">Cancella <?php echo e($daCancellare['nome_utente']); ?></button>
-                <a href="<?php echo e(url('controllo-utenti')); ?>">Annulla</a>
+            <p class="azioni">
+                <button type="submit" data-tipo="negativo">Cancella <?php echo e($daCancellare['nome_utente']); ?></button>
+                <a class="pulsante secondario" href="<?php echo e(url('controllo-utenti')); ?>">Annulla</a>
             </p>
         </form>
     </section>
@@ -120,7 +120,7 @@
                             <?php echo $attivo ? 'Disattiva' : 'Attiva'; ?>
                             <span class="solo-lettori"><?php echo e($utente['nome_utente']); ?></span>
                         </button>
-                        <a href="<?php echo e(url('controllo-utenti', ['cancella' => $utente['id']])); ?>">
+                        <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('controllo-utenti', ['cancella' => $utente['id']])); ?>">
                             Cancella
                             <span class="solo-lettori"><?php echo e($utente['nome_utente']); ?></span>
                         </a>

@@ -23,11 +23,11 @@
         <ul class="scelte">
             <?php foreach ($sedi as $indice => $sede): ?>
                 <li>
-                    <input type="radio" id="sede-<?php echo e($sede['slug']); ?>" name="sede"
-                        value="<?php echo e($sede['slug']); ?>" required="required"
-                        <?php echo $indice === 0 ? 'checked="checked"' : ''; ?> />
                     <label for="sede-<?php echo e($sede['slug']); ?>">
-                        <?php echo e($sede['citta']); ?>, <?php echo e($sede['indirizzo']); ?>
+                        <input type="radio" id="sede-<?php echo e($sede['slug']); ?>" name="sede"
+                            value="<?php echo e($sede['slug']); ?>" required="required"
+                            <?php echo $indice === 0 ? 'checked="checked"' : ''; ?> />
+                        <span><?php echo e($sede['citta']); ?>, <?php echo e($sede['indirizzo']); ?></span>
                     </label>
                 </li>
             <?php endforeach; ?>

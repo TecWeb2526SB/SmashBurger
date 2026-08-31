@@ -1,38 +1,56 @@
 <?php
 /**
- * Chiusura di ogni pagina: fine del contenuto, piede con i collegamenti di servizio,
+ * Chiusura di ogni pagina: fine del contenuto, footer con i collegamenti di servizio,
  * contatti e badge di validazione.
  */
 ?>
     </main>
 
+    <a class="torna-su" href="#contenuto" title="Torna su">
+        <?php echo icona('freccia-su'); ?>
+        <span class="solo-lettori">Torna su</span>
+    </a>
+
     <footer>
-        <nav aria-label="Collegamenti di servizio">
-            <ul>
-                <?php foreach (pagine_del_menu('piede', $ruoloCorrente) as $slug => $etichetta): ?>
-                    <li><a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a></li>
-                <?php endforeach; ?>
-            </ul>
-        </nav>
+        <div class="footer-principale">
+            <section class="firma-footer">
+                <p class="marchio-footer"><?php echo e(NOME_SITO); ?></p>
+                <h2>La crosta fa il rumore. Il resto lo senti al primo morso.</h2>
+                <p>Quattro sedi, una sola regola: ogni burger si schiaccia quando lo ordini.</p>
+            </section>
 
-        <address>
-            <p>Scrivici a <a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a></p>
-            <p>Telefono <a href="tel:<?php echo e(str_replace(' ', '', TELEFONO_CONTATTO)); ?>"><?php echo e(TELEFONO_CONTATTO); ?></a></p>
-        </address>
+            <nav aria-label="Collegamenti di servizio">
+                <h2>Esplora</h2>
+                <ul>
+                    <?php foreach (pagine_del_menu('footer', $ruoloCorrente) as $slug => $etichetta): ?>
+                        <li><a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </nav>
 
-        <p>
-            <a href="https://validator.w3.org/">
-                <img src="<?php echo e(risorsa('images/w3chtml.png')); ?>" width="88" height="31"
-                    alt="Markup validato dal servizio del W3C" />
-            </a>
-            <a href="https://jigsaw.w3.org/css-validator/">
-                <img src="<?php echo e(risorsa('images/w3ccss.png')); ?>" width="88" height="31"
-                    alt="Fogli di stile validati dal servizio del W3C" />
-            </a>
-        </p>
+            <address>
+                <h2>Parliamone</h2>
+                <p><a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a></p>
+                <p><a href="tel:<?php echo e(str_replace(' ', '', TELEFONO_CONTATTO)); ?>"><?php echo e(TELEFONO_CONTATTO); ?></a></p>
+                <p>Ogni giorno<br />11:30 - 22:30</p>
+            </address>
+        </div>
 
-        <p><small>Smash Burger, progetto del corso di Tecnologie Web.</small></p>
+        <div class="footer-finale">
+            <p><small>Smash Burger, progetto del corso di Tecnologie Web.</small></p>
+            <p class="validazioni">
+                <a href="https://validator.w3.org/">
+                    <img src="<?php echo e(risorsa('images/w3chtml.png')); ?>" width="88" height="31"
+                        alt="Markup validato dal servizio del W3C" />
+                </a>
+                <a href="https://jigsaw.w3.org/css-validator/">
+                    <img src="<?php echo e(risorsa('images/w3ccss.png')); ?>" width="88" height="31"
+                        alt="Fogli di stile validati dal servizio del W3C" />
+                </a>
+            </p>
+        </div>
     </footer>
+    </div>
 
     <script src="<?php echo e(risorsa('scripts/script.js', true)); ?>" defer="defer"></script>
 </body>

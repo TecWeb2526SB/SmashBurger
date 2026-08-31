@@ -3,8 +3,7 @@
  * Carrello. Riceve $carrello, $sedi, $prodotti, $righe, $totale e $articoli.
  *
  * Senza sede scelta la pagina mostra solo l'elenco delle sedi. Con la sede scelta mostra
- * la griglia dei prodotti e, in fondo, il riepilogo dentro un elemento details, che si
- * apre e si chiude senza JavaScript.
+ * il riepilogo sempre visibile subito dopo il cambio sede, poi la griglia dei prodotti.
  */
 
 if ($carrello === null) {
@@ -38,6 +37,44 @@ if ($carrello === null) {
     <p><small>Cambiando sede il carrello viene svuotato, perche' la disponibilita' cambia da un locale all'altro.</small></p>
 </form>
 
+<section class="riepilogo">
+    <?php if ($righe === []): ?>
+        <header class="header-riepilogo">
+            <div>
+                <p class="occhiello">Riepilogo ordine</p>
+                <h2>Il tuo carrello</h2>
+            </div>
+        </header>
+        <div class="corpo-riepilogo">
+            <p>Il carrello e' vuoto: tocca un prodotto per aggiungerlo.</p>
+        </div>
+    <?php else: ?>
+        <header class="header-riepilogo">
+            <div>
+                <p class="occhiello">Riepilogo ordine</p>
+                <h2>Il tuo carrello</h2>
+            </div>
+            <p class="dati-riepilogo">
+                <span><?php echo (int) $articoli; ?> articoli</span>
+                <strong><?php echo e(prezzo($totale)); ?></strong>
+            </p>
+        </header>
+        <div class="corpo-riepilogo">
+            <?php require __DIR__ . '/carrello-righe.php'; ?>
+        </div>
+
+        <p class="navigazione-pagina azioni-riepilogo">
+            <span>
+                <small>Totale ordine</small>
+                <strong class="totale"><?php echo e(prezzo($totale)); ?></strong>
+            </span>
+            <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('pagamento')); ?>">
+                Procedi all'ordine
+            </a>
+        </p>
+    <?php endif; ?>
+</section>
+
 <?php if ($prodotti === []): ?>
     <p>In questo momento questa sede non ha prodotti disponibili.</p>
 <?php else: ?>
@@ -65,26 +102,3 @@ if ($carrello === null) {
         </ul>
     </form>
 <?php endif; ?>
-
-<section class="riepilogo">
-    <h2 class="solo-lettori">Riepilogo del carrello</h2>
-
-    <?php if ($righe === []): ?>
-        <p>Il carrello e' vuoto: tocca un prodotto per aggiungerlo.</p>
-    <?php else: ?>
-        <details>
-            <summary>
-                <?php echo (int) $articoli; ?> articoli, <?php echo e(prezzo($totale)); ?>
-            </summary>
-
-            <?php require __DIR__ . '/carrello-righe.php'; ?>
-        </details>
-
-        <p class="navigazione-pagina">
-            <span class="totale"><?php echo e(prezzo($totale)); ?></span>
-            <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('pagamento')); ?>">
-                Procedi all'ordine
-            </a>
-        </p>
-    <?php endif; ?>
-</section>

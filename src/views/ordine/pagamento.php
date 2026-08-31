@@ -53,14 +53,18 @@
 
         <ul class="scelte">
             <li>
-                <input type="radio" id="modalita-ritiro" name="modalita" value="ritiro"
-                    <?php echo $valori['modalita'] === 'ritiro' ? 'checked="checked"' : ''; ?> />
-                <label for="modalita-ritiro">Ritiro in sede a <?php echo e($carrello['citta']); ?></label>
+                <label for="modalita-ritiro">
+                    <input type="radio" id="modalita-ritiro" name="modalita" value="ritiro"
+                        <?php echo $valori['modalita'] === 'ritiro' ? 'checked="checked"' : ''; ?> />
+                    <span>Ritiro in sede a <?php echo e($carrello['citta']); ?></span>
+                </label>
             </li>
             <li>
-                <input type="radio" id="modalita-domicilio" name="modalita" value="domicilio"
-                    <?php echo $valori['modalita'] === 'domicilio' ? 'checked="checked"' : ''; ?> />
-                <label for="modalita-domicilio">Consegna a domicilio</label>
+                <label for="modalita-domicilio">
+                    <input type="radio" id="modalita-domicilio" name="modalita" value="domicilio"
+                        <?php echo $valori['modalita'] === 'domicilio' ? 'checked="checked"' : ''; ?> />
+                    <span>Consegna a domicilio</span>
+                </label>
             </li>
         </ul>
 
@@ -117,10 +121,12 @@
         <ul class="scelte">
             <?php foreach (['carta' => 'Carta', 'contanti' => 'Contanti alla consegna o al ritiro'] as $valore => $etichetta): ?>
                 <li>
-                    <input type="radio" id="pagamento-<?php echo e($valore); ?>" name="metodo_pagamento"
-                        value="<?php echo e($valore); ?>"
-                        <?php echo $valori['metodo_pagamento'] === $valore ? 'checked="checked"' : ''; ?> />
-                    <label for="pagamento-<?php echo e($valore); ?>"><?php echo e($etichetta); ?></label>
+                    <label for="pagamento-<?php echo e($valore); ?>">
+                        <input type="radio" id="pagamento-<?php echo e($valore); ?>" name="metodo_pagamento"
+                            value="<?php echo e($valore); ?>"
+                            <?php echo $valori['metodo_pagamento'] === $valore ? 'checked="checked"' : ''; ?> />
+                        <span><?php echo e($etichetta); ?></span>
+                    </label>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -129,7 +135,7 @@
     </fieldset>
 
     <p class="navigazione-pagina">
-        <a href="<?php echo e(url('carrello')); ?>">Torna al carrello</a>
+        <a class="collegamento-indietro" href="<?php echo e(url('carrello')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna al carrello</span></a>
         <button type="submit">Conferma l'ordine</button>
     </p>
 </form>

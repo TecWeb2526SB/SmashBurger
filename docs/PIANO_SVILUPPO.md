@@ -37,17 +37,11 @@ Lo svuotamento di `src/` conserva solo quello che non si ricostruisce scrivendo 
 Tutto il resto viene rimosso, compresi `.htaccess`, `robots.txt`, `sitemap.xml` e
 `site.webmanifest`: sono testo che riscriviamo.
 
-In `src/images/sedi/` stanno quattro **segnaposto** generati, uno per sede
-(`padova.webp`, `treviso.webp`, `vicenza.webp`, `udine.webp`), che dichiarano di esserlo
-in modo visibile. Servono a scrivere il markup e a far girare i controlli automatici
-prima di avere le fotografie vere.
-
-La sostituzione e' un semplice cambio di file, senza toccare il codice: i nomi sono gia'
-quelli definitivi. Le fotografie devono restare sotto i 300 KB e la loro provenienza va
-dichiarata in relazione (`REGOLE.md` §5.4 punto 7). Finche' sono segnaposto, il testo
-alternativo non deve descrivere un locale che nella pagina non si vede: si scrive il testo
-definitivo insieme alle fotografie vere, nella fase 8. Il controllo prima della consegna
-sta in `REGOLE.md` §31.
+In `src/images/sedi/` stanno le quattro immagini definitive generate per le sedi
+(`padova.webp`, `treviso.webp`, `vicenza.webp`, `udine.webp`). Le altre cinque immagini
+editoriali sono direttamente in `src/images/`. Tutte sono WebP sotto 300 KB; la loro
+provenienza artificiale e' dichiarata nella relazione e i testi alternativi descrivono i
+file effettivamente pubblicati.
 
 ## 3. Fasi
 

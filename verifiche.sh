@@ -50,9 +50,9 @@ js = list(pathlib.Path('src/scripts').glob('*.js'))
 
 controlli = [
     ('file CSS', len(css), 3),
-    ('righe CSS', righe(css), 1600),
+    ('righe CSS', righe(css), 2400),
     ('file JavaScript', len(js), 1),
-    ('righe JavaScript', righe(js), 500),
+    ('righe JavaScript', righe(js), 800),
 ]
 
 sql = pathlib.Path('src/database/schema.sql')
@@ -69,8 +69,8 @@ for f in pathlib.Path('src').rglob('*.php'):
     for valore in re.findall(r'\bid="([^"<>]*)"', testo):
         identificativi.add(re.sub(r'-?\d+$', '', valore.split('<')[0]).strip('-'))
 
-controlli.append(('classi CSS distinte', len(classi), 60))
-controlli.append(('id distinti', len(identificativi - {''}), 60))
+controlli.append(('classi CSS distinte', len(classi), 110))
+controlli.append(('id distinti', len(identificativi - {''}), 90))
 
 for nome, valore, limite in controlli:
     stato = 'ok' if valore <= limite else 'OLTRE IL LIMITE'

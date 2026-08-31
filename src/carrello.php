@@ -43,7 +43,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 
     // I pulsanti che agiscono su una riga portano il nome dell'azione e, come valore,
     // l'identificativo del prodotto: il browser invia solo quello premuto.
-    $prodottoId = null;
+    $prodottoId = $azione === 'aggiungi' ? identificativo($_POST, 'prodotto_id') : null;
 
     foreach (['aggiungi', 'diminuisci', 'togli'] as $nome) {
         if (isset($_POST[$nome])) {

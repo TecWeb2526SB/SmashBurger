@@ -12,5 +12,5 @@
 </p>
 
 <p>
-    <a href="<?php echo e(url()); ?>">Torna alla home</a>
+    <a class="collegamento-indietro" href="<?php echo e(url()); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna alla home</span></a>
 </p>

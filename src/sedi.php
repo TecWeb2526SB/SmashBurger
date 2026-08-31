@@ -1,6 +1,6 @@
 <?php
 /**
- * Elenco delle sedi con indirizzi e orari.
+ * Elenco sintetico delle sedi. Gli orari si leggono nel dettaglio di ogni locale.
  *
  * Le citta' compaiono nel testo e non solo dentro una mappa: le ricerche a cui il sito
  * deve rispondere sono in larga parte locali.
@@ -13,6 +13,4 @@ richiedi_permesso($pdo);
 mostra_pagina('pubbliche/sedi.php', [
     'breadcrumb' => [['Home', url()], ['Sedi', null]],
     'sedi' => sedi_attive($pdo),
-    'orari' => orari_di_tutte_le_sedi($pdo),
-    'giorni' => giorni_settimana(),
 ]);

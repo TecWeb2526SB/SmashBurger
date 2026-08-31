@@ -1,6 +1,10 @@
 <?php
 /**
- * Home: presenta il servizio, le categorie del menu e le sedi.
+ * Home: apertura del sito e rimandi alle altre pagine pubbliche.
+ *
+ * Il podio e' una scelta della casa, non una classifica calcolata sugli ordini: i tre
+ * slug stanno qui e i dati veri (nome, prezzo, immagine) arrivano dal catalogo, cosi'
+ * il collegamento e il prezzo non possono divergere da quelli del menu.
  */
 
 require_once __DIR__ . '/includes/risorse.php';
@@ -8,6 +12,6 @@ require_once __DIR__ . '/includes/risorse.php';
 richiedi_permesso($pdo);
 
 mostra_pagina('pubbliche/home.php', [
-    'categorie' => categorie_tutte($pdo),
+    'podio' => prodotti_per_slug($pdo, ['italiano', 'bacon-burger', 'vegan-burger']),
     'sedi' => sedi_attive($pdo),
 ]);

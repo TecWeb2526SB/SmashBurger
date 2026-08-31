@@ -68,6 +68,56 @@ function prodotto_per_slug(PDO $pdo, string $slug): ?array
 }
 
 /**
+ * Piu' prodotti a partire dai loro slug, nell'ordine in cui gli slug sono stati chiesti.
+ *
+ * L'ordine di uscita e' quello dell'elenco ricevuto e non quello del database, perche'
+ * chi chiama sta componendo una selezione in cui la posizione conta, come il podio della
+ * home. Uno slug inesistente viene semplicemente saltato.
+ *
+ * @param array $slug elenco di slug
+ */
+function prodotti_per_slug(PDO $pdo, array $slug): array
+{
+    if ($slug === []) {
+        return [];
+    }
+
+    // I segnaposto sono testo scritto qui, non dati della richiesta: il valore degli
+    // slug passa comunque dai parametri del prepared statement.
+    $segnaposto = [];
+    $parametri = [];
+
+    foreach (array_values($slug) as $indice => $valore) {
+        $segnaposto[] = ':slug' . $indice;
+        $parametri[':slug' . $indice] = $valore;
+    }
+
+    $query = $pdo->prepare(
+        'SELECT p.*, c.nome AS categoria_nome, c.slug AS categoria_slug
+           FROM prodotti p
+           JOIN categorie c ON c.id = p.categoria_id
+          WHERE p.slug IN (' . implode(', ', $segnaposto) . ')'
+    );
+    $query->execute($parametri);
+
+    $trovati = [];
+
+    foreach ($query->fetchAll() as $prodotto) {
+        $trovati[$prodotto['slug']] = $prodotto;
+    }
+
+    $ordinati = [];
+
+    foreach ($slug as $valore) {
+        if (isset($trovati[$valore])) {
+            $ordinati[] = $trovati[$valore];
+        }
+    }
+
+    return $ordinati;
+}
+
+/**
  * Sedi attive dove un prodotto e' disponibile in questo momento.
  *
  * Alimenta la pagina di dettaglio del prodotto, che dice dove trovarlo senza chiedere

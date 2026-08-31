@@ -18,11 +18,11 @@
 
         <form method="post" action="<?php echo e(url('controllo-categorie')); ?>">
             <?php echo campo_csrf(); ?>
-            <p>
-                <button type="submit" name="elimina" value="<?php echo (int) $daCancellare['id']; ?>">
+            <p class="azioni">
+                <button type="submit" name="elimina" value="<?php echo (int) $daCancellare['id']; ?>" data-tipo="negativo">
                     Cancella la categoria
                 </button>
-                <a href="<?php echo e(url('controllo-categorie')); ?>">Annulla</a>
+                <a class="pulsante secondario" href="<?php echo e(url('controllo-categorie')); ?>">Annulla</a>
             </p>
         </form>
     </section>
@@ -119,7 +119,7 @@
                             Salva
                             <span class="solo-lettori"><?php echo e($categoria['nome']); ?></span>
                         </button>
-                        <a href="<?php echo e(url('controllo-categorie', ['elimina' => $categoria['id']])); ?>">
+                        <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('controllo-categorie', ['elimina' => $categoria['id']])); ?>">
                             Cancella
                             <span class="solo-lettori"><?php echo e($categoria['nome']); ?></span>
                         </a>

@@ -228,13 +228,12 @@ Mentre lavori, raccogli il materiale che la docente chiede esplicitamente
 usato, quali test hai fatto oltre a quelli automatici, e se immagini o testi sono stati
 prodotti con strumenti di intelligenza artificiale.
 
-## Debito noto
+## Immagini definitive
 
-In `src/images/sedi/` ci sono quattro **segnaposto generati**, non fotografie: lo
-dichiarano visibilmente e il testo alternativo lo dice. Vanno sostituiti prima della
-consegna (`REGOLE.md` §31) e il testo alternativo va riscritto insieme alle foto vere.
-Tienine conto quando progetti la pagina della sede: il layout deve reggere sia il
-segnaposto sia una fotografia reale.
+Le immagini editoriali e delle quattro sedi sono integrate come WebP sotto 300 KB. Sono
+state prodotte con intelligenza artificiale e non rappresentano locali reali; la
+provenienza e' dichiarata nella relazione. I testi alternativi descrivono i file
+definitivi e il componente `foto-editoriale` mantiene leggibile il testo sovrapposto.
 
 ---
 

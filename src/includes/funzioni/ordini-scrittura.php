@@ -108,7 +108,7 @@ function disponibilita_ripristina(PDO $pdo, int $sedeId, int $prodottoId, int $q
 }
 
 /**
- * Inserisce la testata dell'ordine e restituisce il suo identificativo.
+ * Inserisce la header dell'ordine e restituisce il suo identificativo.
  *
  * L'indirizzo di consegna viene copiato qui e non letto dal profilo: un ordine deve
  * restare leggibile anche se la persona cambia i propri dati.

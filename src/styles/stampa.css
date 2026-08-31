@@ -1,0 +1,49 @@
+/*
+    Scostamenti per la stampa. Il foglio principale non si ripete: qui stanno solo le
+    regole che cambiano.
+
+    Su carta il colore di sfondo non si stampa e la navigazione non serve: resta il
+    contenuto, in nero su bianco.
+*/
+
+:root {
+    --sfondo: #ffffff;
+    --superficie: #ffffff;
+    --testo: #000000;
+    --identita: #000000;
+    --testo-su-identita: #ffffff;
+    --bordo: #999999;
+    --ombra: none;
+    --titolo-1: 1.75rem;
+    --titolo-2: 1.375rem;
+    --titolo-3: 1.125rem;
+}
+
+/* Navigazione e azioni non hanno senso su carta. */
+body > header nav,
+.pagina-scorribile > footer nav,
+.salta,
+.torna-su,
+button,
+.pulsante {
+    display: none;
+}
+
+body > header,
+main,
+.pagina-scorribile > footer {
+    max-width: none;
+    padding: 0;
+}
+
+/* L'indirizzo di un collegamento va scritto, altrimenti su carta si perde. */
+main a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: var(--testo-piccolo);
+}
+
+/* Una tessera non deve spezzarsi fra due pagine. */
+.scheda {
+    break-inside: avoid;
+    border: 0.0625rem solid var(--bordo);
+}

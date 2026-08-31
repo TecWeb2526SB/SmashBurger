@@ -367,8 +367,9 @@ Il markup è HTML5 **conforme anche alla sintassi XML**. In pratica:
 
 ## 15. Catalogo dei componenti
 
-Sono ammessi questi quindici componenti. Non se ne introducono altri senza aggiornare la
-tabella.
+Base di partenza: questi quindici componenti coprono il funzionale. In fase di stile
+(§22) il catalogo può crescere, ma non in silenzio: un componente nuovo si aggiunge qui
+con una riga, nello stesso momento in cui si scrive il suo CSS, non dopo.
 
 | Componente | Markup | Uso |
 | --- | --- | --- |
@@ -387,6 +388,7 @@ tabella.
 | Elenco di scelte | `<ul class="scelte">` con controllo ed etichetta per riga | opzioni alternative dentro un modulo |
 | Navigazione di pagina | `<p class="navigazione-pagina">` | chiude le pagine interne: ritorno a sinistra, avanzamento a destra |
 | Footer | `<footer>` con liste di link | uguale su tutte le pagine |
+| Richiamo | `<section class="richiamo">` con titolo, testo e un pulsante | blocco largo che manda a un'altra pagina raccontando un motivo per andarci (la sala eventi verso Servizi, il metodo di cottura verso Chi siamo), invece di un elenco di collegamenti |
 
 Il pannello di controllo usa gli stessi componenti delle pagine pubbliche: non ha un
 proprio insieme di stili. Vale sia per il manager sia per l'amministratore, che
@@ -612,14 +614,25 @@ ammessi alla sezione 14 e nessuno compare nei fogli di stile.
 | File CSS | 3 |
 | File JavaScript | 1 |
 | Attributi `style`, blocchi `<style>`, script inline, gestori inline | 0 |
-| Classi CSS distinte | 60 |
-| `id` presenti nel markup | 60 |
-| Righe di CSS, totale sui tre file | 1600 |
-| Righe di JavaScript | 500 |
+| Classi CSS distinte | 110 |
+| `id` presenti nel markup | 90 |
+| Righe di CSS, totale sui tre file | 2400 |
+| Righe di JavaScript | 800 |
 | Righe di un file di funzioni | 300 |
 | Righe di una vista | 150 |
 | Tabelle del database | 12 |
 | Peso di una singola immagine | 300 KB |
+
+Righe, classi e `id` sono stati rialzati una terza volta (`ANALISI_REQUISITI.md` §13.22)
+quando il lavoro è passato dal funzionale allo stile: i valori precedenti erano tarati
+per impedire che il markup si riempisse di appigli inutili durante la fase in cui si
+scriveva la logica, non per limitare quanti componenti visivi può avere un'identità
+grafica compiuta. Il principio del budget non cambia, cambia la fase a cui si applica: le
+classi descrivono ancora il ruolo del contenuto, non l'aspetto, e un componente nuovo si
+aggiunge ancora solo quando la semantica esistente non basta, aggiornando la sezione 15.
+Il catalogo dei quindici componenti stesso non è più un tetto rigido per lo stesso
+motivo, ma resta un riferimento da tenere aggiornato: un componente nuovo si aggiunge alla
+tabella, non si introduce in silenzio.
 
 ---
 
@@ -720,6 +733,10 @@ zip -r smashburger.zip src smashburger.sql relazione.pdf -x '*.DS_Store'
 - [ ] Le pagine 401, 403, 404 e 500 compaiono nei casi giusti, comprese le richieste con
       un identificativo inesistente o malformato.
 - [ ] Nessuna pagina produce scorrimento orizzontale sul telefono.
-- [ ] Le immagini in `src/images/sedi/` sono le fotografie reali e non i segnaposto.
+- [x] Le immagini in `src/images/sedi/` sono le immagini definitive nello stile scelto
+      (`docs/IDENTITA.md`, Piano immagini) e non piu' il segnaposto grigio. La catena non
+      esiste davvero: restano immagini prodotte con intelligenza artificiale, dichiarate
+      come tali in relazione (parte I, sezione 5.4 punto 7), non fotografie di un luogo
+      reale.
 - [ ] Il dump del database è aggiornato allo schema in `src/database/schema.sql`.
 - [ ] La relazione contiene la prima pagina richiesta e tutti i punti della sezione 5.4.

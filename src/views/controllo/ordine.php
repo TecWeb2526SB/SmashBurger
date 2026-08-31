@@ -34,9 +34,9 @@
                 <label for="rimborsa">Segna il pagamento come rimborsato</label>
             </p>
 
-            <p>
-                <button type="submit">Annulla l ordine</button>
-                <a href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id']])); ?>">Lascia com e</a>
+            <p class="azioni">
+                <button type="submit" data-tipo="negativo">Annulla l ordine</button>
+                <a class="pulsante secondario" href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id']])); ?>">Lascia com e</a>
             </p>
         </form>
     </section>
@@ -116,7 +116,7 @@
 </section>
 
 <p class="navigazione-pagina">
-    <a href="<?php echo e(url('controllo')); ?>">Torna agli ordini</a>
+    <a class="collegamento-indietro" href="<?php echo e(url('controllo')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna agli ordini</span></a>
     <?php if ($ordine['stato'] !== 'annullato'): ?>
         <a href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id'], 'annulla' => 1])); ?>">
             Annulla l ordine

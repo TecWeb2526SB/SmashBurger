@@ -10,7 +10,16 @@ const EMAIL_CONTATTO = 'informazioni@smashburger.it';
 const TELEFONO_CONTATTO = '049 1234567';
 
 // Cambia quando cambiano fogli di stile o script, per invalidare la cache del browser.
-const VERSIONE_RISORSE = '1';
+const VERSIONE_RISORSE = '31';
+
+// Vincoli delle immagini prodotto caricate dal pannello. Il limite di peso coincide
+// con il budget prestazionale richiesto anche agli asset editoriali del sito.
+const PESO_MASSIMO_IMMAGINE = 307200;
+const LATO_MINIMO_IMMAGINE = 300;
+const LATO_MASSIMO_IMMAGINE = 2000;
+
+// Cookie che ricorda il tema scelto: senza di esso vale la preferenza del sistema.
+const COOKIE_TEMA = 'tema';
 
 // Quantita' massima di uno stesso prodotto dentro un ordine.
 const QUANTITA_MASSIMA = 20;

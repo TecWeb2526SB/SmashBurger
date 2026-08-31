@@ -22,6 +22,7 @@ require_once __DIR__ . '/funzioni/carrello.php';
 require_once __DIR__ . '/funzioni/ordini-scrittura.php';
 require_once __DIR__ . '/funzioni/gestione-ordini.php';
 require_once __DIR__ . '/funzioni/grafico.php';
+require_once __DIR__ . '/funzioni/caricamenti.php';
 require_once __DIR__ . '/funzioni/gestione-catalogo.php';
 require_once __DIR__ . '/funzioni/gestione-sedi.php';
 require_once __DIR__ . '/funzioni/gestione-utenti.php';

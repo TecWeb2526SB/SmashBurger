@@ -22,9 +22,9 @@ $erroreDi = static function (string $sezioneAttesa, string $campo) use ($errori,
         <form method="post" action="<?php echo e(url('profilo')); ?>">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="azione" value="cancella" />
-            <p>
-                <button type="submit">Cancella il mio account</button>
-                <a href="<?php echo e(url('profilo')); ?>">Annulla</a>
+            <p class="azioni">
+                <button type="submit" data-tipo="negativo">Cancella il mio account</button>
+                <a class="pulsante secondario" href="<?php echo e(url('profilo')); ?>">Annulla</a>
             </p>
         </form>
     </section>
@@ -111,9 +111,9 @@ $erroreDi = static function (string $sezioneAttesa, string $campo) use ($errori,
 <section>
     <h2>Cancella l'account</h2>
     <p>La cancellazione elimina anche ordini e prenotazioni collegati.</p>
-    <p><a href="<?php echo e(url('profilo', ['cancella' => 1])); ?>">Cancella il mio account</a></p>
+    <p><a class="pulsante secondario" data-tipo="negativo" href="<?php echo e(url('profilo', ['cancella' => 1])); ?>">Cancella il mio account</a></p>
 </section>
 
 <p class="navigazione-pagina">
-    <a href="<?php echo e(url('area-personale')); ?>">Torna all'area personale</a>
+    <a class="collegamento-indietro" href="<?php echo e(url('area-personale')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna all'area personale</span></a>
 </p>

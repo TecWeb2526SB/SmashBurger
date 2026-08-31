@@ -50,17 +50,11 @@
                 </tr>
             <?php endforeach; ?>
         </tbody>
-        <tfoot>
-            <tr>
-                <th scope="row" colspan="3">Totale</th>
-                <td colspan="2"><?php echo e(prezzo($totale)); ?></td>
-            </tr>
-        </tfoot>
     </table>
 </form>
 
 <form method="post" action="<?php echo e(url('carrello')); ?>">
     <?php echo campo_csrf(); ?>
     <input type="hidden" name="azione" value="svuota" />
-    <p><button type="submit">Svuota il carrello</button></p>
+    <p><button class="azione-svuota" type="submit">Svuota il carrello</button></p>
 </form>

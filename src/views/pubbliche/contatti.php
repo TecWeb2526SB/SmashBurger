@@ -6,17 +6,23 @@
  * aria-describedby: chi usa un lettore di schermo li sente insieme all'etichetta.
  */
 ?>
-<h1>Contatti</h1>
+<section class="apertura-contatti">
+    <div>
+        <p class="occhiello">Parliamo chiaro</p>
+        <h1>Contatti</h1>
+        <p class="introduzione">
+            Ordine, prenotazione o segnalazione: scrivici qui. Rispondiamo via email,
+            di solito entro un giorno lavorativo.
+        </p>
+    </div>
 
-<p>
-    Per un ordine, una prenotazione o una segnalazione scrivici da qui. Rispondiamo via
-    email, di solito entro un giorno lavorativo.
-</p>
-
-<p>
-    Puoi anche scriverci a <a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a>
-    o telefonare al <a href="tel:<?php echo e(str_replace(' ', '', TELEFONO_CONTATTO)); ?>"><?php echo e(TELEFONO_CONTATTO); ?></a>.
-</p>
+    <aside class="contatti-diretti">
+        <p class="indice-pannello">Contatto diretto</p>
+        <p><span>Email</span><a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a></p>
+        <p><span>Telefono</span><a href="tel:<?php echo e(str_replace(' ', '', TELEFONO_CONTATTO)); ?>"><?php echo e(TELEFONO_CONTATTO); ?></a></p>
+        <p><span>Orari</span>Ogni giorno, 11:30 - 22:30</p>
+    </aside>
+</section>
 
 <?php if ($errori !== []): ?>
     <section class="avviso" role="alert" data-tipo="errore">
@@ -29,11 +35,11 @@
     </section>
 <?php endif; ?>
 
-<form method="post" action="<?php echo e(url('contatti')); ?>">
+<form class="modulo-contatto" method="post" action="<?php echo e(url('contatti')); ?>">
     <?php echo campo_csrf(); ?>
 
     <fieldset>
-        <legend>Il tuo messaggio</legend>
+        <legend>Raccontaci di cosa hai bisogno</legend>
 
         <p>
             <label for="nome">Nome</label>
@@ -96,7 +102,7 @@
     </fieldset>
 </form>
 
-<p>
+<p class="nota-privacy">
     I dati che scrivi qui servono solo a risponderti: leggi la
     <a href="<?php echo e(url('privacy')); ?>">privacy policy</a>.
 </p>

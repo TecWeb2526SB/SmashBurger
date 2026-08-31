@@ -41,11 +41,30 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         vai_a('controllo-prodotti');
     }
 
-    foreach (array_keys($valori) as $campo) {
+    foreach (['nome', 'slug', 'categoria_id', 'prezzo', 'descrizione', 'allergeni'] as $campo) {
         $valori[$campo] = is_string($_POST[$campo] ?? null) ? $_POST[$campo] : '';
     }
 
     $errori = prodotto_errori($pdo, $valori, $prodottoId);
+    $fileImmagine = is_array($_FILES['immagine'] ?? null)
+        ? $_FILES['immagine']
+        : ['error' => UPLOAD_ERR_NO_FILE];
+    $immagineObbligatoria = $prodotto === null || trim($valori['immagine']) === '';
+    $erroreImmagine = immagine_prodotto_errore($fileImmagine, $immagineObbligatoria);
+
+    if ($erroreImmagine !== null) {
+        $errori['immagine'] = $erroreImmagine;
+    }
+
+    if ($errori === [] && !immagine_prodotto_assente($fileImmagine)) {
+        $caricamento = immagine_prodotto_salva($fileImmagine);
+
+        if (!$caricamento['ok']) {
+            $errori['immagine'] = $caricamento['messaggio'];
+        } else {
+            $valori['immagine'] = $caricamento['nome'];
+        }
+    }
 
     if ($errori === []) {
         $esito = prodotto_salva($pdo, $valori, $prodottoId);

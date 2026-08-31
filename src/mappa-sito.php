@@ -18,6 +18,6 @@ mostra_pagina('informazioni/mappa-sito.php', [
         'Pagine principali' => pagine_del_menu('principale', $ruolo),
         'Il tuo account' => pagine_del_menu('azioni', $ruolo),
         'Pannello di controllo' => pagine_del_menu('controllo', $ruolo),
-        'Informazioni' => pagine_del_menu('piede', $ruolo),
+        'Informazioni' => pagine_del_menu('footer', $ruolo),
     ],
 ]);

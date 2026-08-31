@@ -60,6 +60,11 @@ Le varianti si esprimono con attributi e non con classi nuove. Tre colori di ide
 un significato ciascuno, un colore neutro per l'azione principale, e la coppia chiaro e
 scuro ottenuta cambiando solo i neutri. Tutte le misure sono in unità relative.
 
+Le nove immagini editoriali e delle sedi sono state prodotte con intelligenza artificiale:
+non rappresentano locali reali della catena. Gli originali sono stati ritagliati nel
+rapporto richiesto dai componenti, convertiti in WebP, privati dei metadati e mantenuti
+sotto 300 KB. Il testo alternativo e' stato scritto osservando i file definitivi.
+
 `[da compilare: eventuali schizzi o schermate]`
 
 ## 3. Realizzazione
@@ -81,8 +86,9 @@ Tutte le query usano prepared statement con parametri nominati. Ogni valore stam
 da una funzione di escaping. Ogni richiesta che modifica dati viaggia in POST con token
 CSRF e risponde con un redirect. Gli identificativi che arrivano dall'esterno si usano
 sempre insieme a un vincolo di proprietà. Le cartelle di codice non sono raggiungibili dal
-web. I caricamenti accettano solo immagini riconosciute dal contenuto, con nome generato
-dal server, e nella cartella dei caricamenti l'esecuzione di script è disattivata.
+web. I caricamenti accettano solo JPG, PNG e WebP entro 300 KB e fra 300 e 2000 pixel per
+lato; estensione, tipo MIME e dimensioni vengono verificati sul server, il nome e' generato
+casualmente e nella cartella dei caricamenti l'esecuzione di script e' disattivata.
 
 ### 3.3 Comportamento senza JavaScript
 

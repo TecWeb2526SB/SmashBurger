@@ -82,19 +82,21 @@
                     <ul class="scelte">
                         <?php foreach ($fasce as $fascia): ?>
                             <li>
-                                <input type="radio" id="fascia-<?php echo e(str_replace(':', '', $fascia['inizio'])); ?>"
-                                    name="fascia" value="<?php echo e($fascia['inizio']); ?>" required="required"
-                                    <?php echo $fascia['occupata'] ? 'disabled="disabled"' : ''; ?>
-                                    <?php echo $valori['fascia'] === $fascia['inizio'] ? 'checked="checked"' : ''; ?> />
                                 <label for="fascia-<?php echo e(str_replace(':', '', $fascia['inizio'])); ?>">
-                                    <?php echo e($fascia['etichetta']); ?>
-                                    <?php if ($fascia['occupata']): ?>
-                                        <span class="etichetta" data-tipo="negativo">non disponibile</span>
-                                    <?php else: ?>
-                                        <span class="solo-lettori">
-                                            disponibile fino a <?php echo (int) $fascia['massimo']; ?> minuti
-                                        </span>
-                                    <?php endif; ?>
+                                    <input type="radio" id="fascia-<?php echo e(str_replace(':', '', $fascia['inizio'])); ?>"
+                                        name="fascia" value="<?php echo e($fascia['inizio']); ?>" required="required"
+                                        <?php echo $fascia['occupata'] ? 'disabled="disabled"' : ''; ?>
+                                        <?php echo $valori['fascia'] === $fascia['inizio'] ? 'checked="checked"' : ''; ?> />
+                                    <span>
+                                        <?php echo e($fascia['etichetta']); ?>
+                                        <?php if ($fascia['occupata']): ?>
+                                            <span class="etichetta" data-tipo="negativo">non disponibile</span>
+                                        <?php else: ?>
+                                            <span class="solo-lettori">
+                                                disponibile fino a <?php echo (int) $fascia['massimo']; ?> minuti
+                                            </span>
+                                        <?php endif; ?>
+                                    </span>
                                 </label>
                             </li>
                         <?php endforeach; ?>
@@ -138,6 +140,6 @@
 <?php endif; ?>
 
 <p class="navigazione-pagina">
-    <a href="<?php echo e(url('sedi')); ?>">Torna alle sedi</a>
+    <a class="collegamento-indietro" href="<?php echo e(url('sedi')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna alle sedi</span></a>
     <a href="<?php echo e(url('area-personale')); ?>">Le tue prenotazioni</a>
 </p>

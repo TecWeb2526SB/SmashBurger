@@ -626,6 +626,16 @@ Restano manuali i limiti per funzione e per vista (§13), perché contarli bene 
 di riconoscere i confini di una funzione, non solo le righe. Gli script si scrivono
 insieme al codice che controllano, non prima.
 
+### 13.22 Budget rialzati una terza volta, per lo stile
+
+`REGOLE.md` §22: CSS da 1600 a 2400 righe, JavaScript da 500 a 800, classi da 60 a 110,
+`id` da 60 a 90; il catalogo dei quindici componenti di §15 smette di essere un tetto e
+diventa un punto di partenza documentato. La parte funzionale è chiusa, e i valori
+precedenti erano tarati su quella fase per impedire appigli di stile prematuri, non per
+limitare un'identità grafica compiuta. Restano fuori dalla revisione i limiti che non
+riguardano la grafica: tabelle del database, peso delle immagini, righe per funzione e
+per vista.
+
 ---
 
 ## 14. Inventario delle pagine

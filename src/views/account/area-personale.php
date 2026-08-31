@@ -76,6 +76,11 @@
             </thead>
             <tbody>
                 <?php foreach ($prenotazioni as $prenotazione): ?>
+                    <?php
+                    $tipoStato = in_array($prenotazione['stato'], ['rifiutata', 'annullata'], true)
+                        ? 'negativo'
+                        : (in_array($prenotazione['stato'], ['in attesa', 'in_attesa'], true) ? 'attenzione' : 'positivo');
+                    ?>
                     <tr>
                         <th scope="row"><?php echo e($prenotazione['citta']); ?></th>
                         <td><?php echo e(data_breve($prenotazione['data'])); ?></td>
@@ -85,7 +90,7 @@
                         </td>
                         <td><?php echo (int) $prenotazione['numero_persone']; ?></td>
                         <td>
-                            <span class="etichetta" data-tipo="<?php echo in_array($prenotazione['stato'], ['rifiutata', 'annullata'], true) ? 'negativo' : 'positivo'; ?>">
+                            <span class="etichetta" data-tipo="<?php echo e($tipoStato); ?>">
                                 <?php echo e($prenotazione['stato']); ?>
                             </span>
                         </td>

@@ -24,9 +24,9 @@ $nuovo = $prodotto === null;
         <form method="post" action="<?php echo e(url('controllo-prodotto')); ?>">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
-            <p>
-                <button type="submit" name="elimina" value="1">Cancella il prodotto</button>
-                <a href="<?php echo e(url('controllo-prodotto', ['prodotto' => $prodotto['id']])); ?>">Annulla</a>
+            <p class="azioni">
+                <button type="submit" name="elimina" value="1" data-tipo="negativo">Cancella il prodotto</button>
+                <a class="pulsante secondario" href="<?php echo e(url('controllo-prodotto', ['prodotto' => $prodotto['id']])); ?>">Annulla</a>
             </p>
         </form>
     </section>
@@ -43,8 +43,9 @@ $nuovo = $prodotto === null;
     </section>
 <?php endif; ?>
 
-<form method="post" action="<?php echo e(url('controllo-prodotto')); ?>">
+<form method="post" enctype="multipart/form-data" action="<?php echo e(url('controllo-prodotto')); ?>">
     <?php echo campo_csrf(); ?>
+    <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo PESO_MASSIMO_IMMAGINE; ?>" />
     <?php if (!$nuovo): ?>
         <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
     <?php endif; ?>
@@ -52,12 +53,29 @@ $nuovo = $prodotto === null;
     <fieldset>
         <legend>Dati del prodotto</legend>
 
+        <?php if (!$nuovo && $valori['immagine'] !== ''): ?>
+            <figure class="anteprima-prodotto">
+                <img src="<?php echo e(risorsa('uploads/prodotti/' . basename($valori['immagine']))); ?>"
+                    width="600" height="450"
+                    alt="Immagine attuale di <?php echo e($valori['nome']); ?>" />
+                <figcaption>Immagine attuale</figcaption>
+            </figure>
+        <?php endif; ?>
+
         <p>
-            <label for="immagine">Immagine</label>
-            <input type="text" id="immagine" name="immagine" maxlength="160"
-                aria-describedby="aiuto-immagine"
-                value="<?php echo e($valori['immagine']); ?>" />
-            <small id="aiuto-immagine">Nome del file dentro uploads/prodotti, per esempio cheeseburger.webp</small>
+            <label for="immagine"><?php echo $nuovo ? 'Immagine' : 'Sostituisci immagine'; ?></label>
+            <input type="file" id="immagine" name="immagine"
+                accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                aria-describedby="aiuto-immagine<?php echo isset($errori['immagine']) ? ' errore-immagine' : ''; ?>"
+                <?php if ($nuovo): ?>required="required"<?php endif; ?>
+                <?php if (isset($errori['immagine'])): ?>data-stato="errore"<?php endif; ?> />
+            <small id="aiuto-immagine">
+                JPG, PNG o WebP, da 300 x 300 a 2000 x 2000 pixel, massimo 300 KB.
+                <?php if (!$nuovo): ?>Se non scegli un file, resta l'immagine attuale.<?php endif; ?>
+            </small>
+            <?php if (isset($errori['immagine'])): ?>
+                <small id="errore-immagine"><?php echo e($errori['immagine']); ?></small>
+            <?php endif; ?>
         </p>
 
         <p>
@@ -132,9 +150,9 @@ $nuovo = $prodotto === null;
 </form>
 
 <p class="navigazione-pagina">
-    <a href="<?php echo e(url('controllo-prodotti')); ?>">Torna ai prodotti</a>
+    <a class="collegamento-indietro" href="<?php echo e(url('controllo-prodotti')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna ai prodotti</span></a>
     <?php if (!$nuovo): ?>
         <a href="<?php echo e(url('prodotto', ['slug' => $prodotto['slug']])); ?>">Vedi la pagina pubblica</a>
-        <a href="<?php echo e(url('controllo-prodotto', ['prodotto' => $prodotto['id'], 'elimina' => 1])); ?>">Cancella</a>
+        <a class="pulsante" data-tipo="negativo" href="<?php echo e(url('controllo-prodotto', ['prodotto' => $prodotto['id'], 'elimina' => 1])); ?>">Cancella</a>
     <?php endif; ?>
 </p>

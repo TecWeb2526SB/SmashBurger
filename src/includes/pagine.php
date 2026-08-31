@@ -11,7 +11,7 @@
  *   titolo       contenuto di <title>, entro 60 caratteri
  *   descrizione  contenuto di <meta name="description">, entro 160 caratteri
  *   ruoli        ruoli ammessi; array vuoto significa pagina pubblica
- *   menu         posizione nella navigazione: principale, azioni, controllo, piede
+ *   menu         posizione nella navigazione: principale, azioni, controllo, footer
  */
 function pagine(): array
 {
@@ -70,7 +70,7 @@ function pagine(): array
             'titolo' => 'Contatti e assistenza - Smash Burger',
             'descrizione' => 'Scrivici per un ordine, una prenotazione o una segnalazione: rispondiamo dal modulo dedicato.',
             'ruoli' => [],
-            'menu' => 'piede',
+            'menu' => 'footer',
         ],
 
         'accedi' => [
@@ -92,6 +92,15 @@ function pagine(): array
             'titolo' => 'Esci - Smash Burger',
             'descrizione' => '',
             'ruoli' => ['cliente', 'manager', 'amministratore'],
+            'menu' => null,
+        ],
+        // Non e' una pagina da guardare: risponde solo in POST e rimanda indietro.
+        // Resta elencata qui perche' ogni indirizzo del sito e' descritto in un posto solo.
+        'tema' => [
+            'etichetta' => 'Tema',
+            'titolo' => 'Tema - Smash Burger',
+            'descrizione' => '',
+            'ruoli' => [],
             'menu' => null,
         ],
         'area-personale' => [
@@ -214,21 +223,21 @@ function pagine(): array
             'titolo' => 'Privacy policy - Smash Burger',
             'descrizione' => 'Quali dati raccogliamo, per quali finalita, per quanto tempo e come esercitare i tuoi diritti.',
             'ruoli' => [],
-            'menu' => 'piede',
+            'menu' => 'footer',
         ],
         'accessibilita' => [
             'etichetta' => 'Accessibilita',
             'titolo' => 'Accessibilita - Smash Burger',
             'descrizione' => 'Stato di conformita del sito alle linee guida WCAG 2.1 AA e modalita per segnalare un problema.',
             'ruoli' => [],
-            'menu' => 'piede',
+            'menu' => 'footer',
         ],
         'mappa-sito' => [
             'etichetta' => 'Mappa del sito',
             'titolo' => 'Mappa del sito - Smash Burger',
             'descrizione' => 'Elenco completo delle pagine del sito, ordinate per area.',
             'ruoli' => [],
-            'menu' => 'piede',
+            'menu' => 'footer',
         ],
     ];
 }
