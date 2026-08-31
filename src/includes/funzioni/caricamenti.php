@@ -30,7 +30,7 @@ function immagine_prodotto_errore(array $file, bool $obbligatoria): ?string
     }
 
     if ($errore !== UPLOAD_ERR_OK) {
-        return "Il caricamento dell'immagine non e' riuscito. Riprova.";
+        return "Il caricamento dell'immagine non è riuscito. Riprova.";
     }
 
     $nome = is_string($file['name'] ?? null) ? $file['name'] : '';
@@ -38,7 +38,7 @@ function immagine_prodotto_errore(array $file, bool $obbligatoria): ?string
     $peso = filter_var($file['size'] ?? null, FILTER_VALIDATE_INT);
 
     if ($temporaneo === '' || !is_uploaded_file($temporaneo) || $peso === false || $peso <= 0) {
-        return "Il file caricato non e' un'immagine valida.";
+        return "Il file caricato non è un'immagine valida.";
     }
 
     if ($peso > PESO_MASSIMO_IMMAGINE) {
@@ -77,7 +77,7 @@ function immagine_prodotto_errore(array $file, bool $obbligatoria): ?string
 }
 
 /**
- * Sposta un'immagine gia' validata in uploads/prodotti con un nome casuale.
+ * Sposta un'immagine già validata in uploads/prodotti con un nome casuale.
  */
 function immagine_prodotto_salva(array $file): array
 {
@@ -91,22 +91,22 @@ function immagine_prodotto_salva(array $file): array
     $estensione = $estensioni[$rilevatore->file($temporaneo)] ?? null;
 
     if ($estensione === null) {
-        return ['ok' => false, 'messaggio' => "Il formato dell'immagine non e' supportato."];
+        return ['ok' => false, 'messaggio' => "Il formato dell'immagine non è supportato."];
     }
 
     $cartella = dirname(__DIR__, 2) . '/uploads/prodotti';
     if (!is_dir($cartella) && !mkdir($cartella, 0755, true) && !is_dir($cartella)) {
-        return ['ok' => false, 'messaggio' => "Non e' stato possibile preparare la cartella delle immagini."];
+        return ['ok' => false, 'messaggio' => "Non è stato possibile preparare la cartella delle immagini."];
     }
 
     try {
         $nome = bin2hex(random_bytes(16)) . '.' . $estensione;
     } catch (Throwable $errore) {
-        return ['ok' => false, 'messaggio' => "Non e' stato possibile generare il nome dell'immagine."];
+        return ['ok' => false, 'messaggio' => "Non è stato possibile generare il nome dell'immagine."];
     }
 
     if (!move_uploaded_file($temporaneo, $cartella . '/' . $nome)) {
-        return ['ok' => false, 'messaggio' => "Non e' stato possibile salvare l'immagine."];
+        return ['ok' => false, 'messaggio' => "Non è stato possibile salvare l'immagine."];
     }
 
     return ['ok' => true, 'nome' => $nome];

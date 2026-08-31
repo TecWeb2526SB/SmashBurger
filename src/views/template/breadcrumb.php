@@ -2,7 +2,7 @@
 /**
  * Percorso di navigazione, presente su tutte le pagine tranne la home.
  *
- * Riceve $breadcrumb come elenco di coppie [etichetta, indirizzo]; l'ultima voce e' la
+ * Riceve $breadcrumb come elenco di coppie [etichetta, indirizzo]; l'ultima voce è la
  * pagina corrente e non ha indirizzo.
  */
 

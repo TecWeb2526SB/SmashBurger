@@ -103,4 +103,4 @@
     </fieldset>
 </form>
 
-<p>Hai gia' un account? <a href="<?php echo e(url('accedi')); ?>">Accedi</a>.</p>
+<p>Hai già un account? <a href="<?php echo e(url('accedi')); ?>">Accedi</a>.</p>

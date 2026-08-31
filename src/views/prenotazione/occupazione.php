@@ -1,6 +1,6 @@
 <?php
 /**
- * Come e' occupata la sala in un giorno.
+ * Come è occupata la sala in un giorno.
  *
  * Mostra gli intervalli liberi e quelli presi senza dire nulla di chi ha prenotato:
  * serve a scegliere un orario, non a sapere chi c'e'.
@@ -8,7 +8,7 @@
 ?>
         <table>
             <caption>
-                Come e' occupata la sala di <?php echo e($sede['citta']); ?> il
+                Come è occupata la sala di <?php echo e($sede['citta']); ?> il
                 <?php echo e(data_breve($data)); ?>
             </caption>
             <thead>

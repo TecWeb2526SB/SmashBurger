@@ -17,5 +17,5 @@
         <?php echo grafico_incasso($serie); ?>
     </div>
 
-    <p><small>Gli ordini annullati non contano: la merce e' tornata a disposizione.</small></p>
+    <p><small>Gli ordini annullati non contano: la merce è tornata a disposizione.</small></p>
 </section>

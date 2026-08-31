@@ -2,7 +2,7 @@
 /**
  * Grafico dell'incasso, generato lato server.
  *
- * L'immagine e' un SVG scritto direttamente nel markup: non usa librerie, richieste
+ * L'immagine è un SVG scritto direttamente nel markup: non usa librerie, richieste
  * esterne o JavaScript. Date, importi e descrizione accessibile fanno parte dello
  * stesso grafico.
  */
@@ -10,7 +10,7 @@
 /**
  * Trova un intervallo monetario regolare per l'asse verticale.
  *
- * Il passo e' sempre un valore 1, 2, 5 o 10 moltiplicato per una potenza di dieci.
+ * Il passo è sempre un valore 1, 2, 5 o 10 moltiplicato per una potenza di dieci.
  * In questo modo la scala non cambia tra una linea e l'altra e il limite superiore
  * resta un importo leggibile, arrotondato sopra al maggiore incasso della serie.
  */

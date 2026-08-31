@@ -41,7 +41,7 @@
                 <p class="occhiello">Scelti dalla crew</p>
                 <h2>Il podio della piastra</h2>
             </div>
-            <p>Tre burger, tre caratteri. Se e' la prima volta che ordini da noi, parti da qui.</p>
+            <p>Tre burger, tre caratteri. Se è la prima volta che ordini da noi, parti da qui.</p>
         </header>
 
         <ol class="podio-classifica">
@@ -82,7 +82,7 @@
 <section class="racconto racconto-eventi">
     <figure class="istantanea">
         <div class="foto-editoriale" role="img"
-            aria-label="Un gruppo di ragazzi brinda a tavola con burger e patatine; uno skateboard e' appoggiato al tavolo.">
+            aria-label="Un gruppo di ragazzi brinda a tavola con burger e patatine; uno skateboard è appoggiato al tavolo.">
             <img src="<?php echo e(risorsa('images/home-eventi.webp', true)); ?>"
                 width="1200" height="900" loading="lazy" alt="" />
             <span>Sala eventi / la crew al completo</span>
@@ -93,7 +93,7 @@
 
     <div class="racconto-testo">
         <p class="occhiello">Sala eventi</p>
-        <h2>La sala e' vostra per una sera</h2>
+        <h2>La sala è vostra per una sera</h2>
         <p>
             Ogni sede ha uno spazio prenotabile. Scegli il giorno, l'orario di inizio e
             per quanto ti serve: al resto pensiamo noi.
@@ -128,7 +128,7 @@
 <section class="citta">
     <header class="header-sezione">
         <div>
-            <p class="occhiello">La sede giusta e' quella vicina</p>
+            <p class="occhiello">La sede giusta è quella vicina</p>
             <h2>Siamo dietro l'angolo</h2>
         </div>
         <p>Padova, Treviso, Vicenza e Udine. Aperti ogni giorno dalle 11:30 alle 22:30.</p>

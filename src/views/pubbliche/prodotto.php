@@ -48,7 +48,7 @@
 
     <?php if ($sediDisponibili === []): ?>
         <p>
-            In questo momento non e' disponibile in nessuna sede. Torna a trovarci, oppure
+            In questo momento non è disponibile in nessuna sede. Torna a trovarci, oppure
             guarda il resto del <a href="<?php echo e(url('menu')); ?>">menu</a>.
         </p>
     <?php else: ?>

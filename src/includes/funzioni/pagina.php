@@ -53,7 +53,7 @@ function testo_alternativo_sede(string $slug, string $citta): string
     ];
 
     return $descrizioni[$slug]
-        ?? 'Esterno della sede Smash Burger di ' . $citta . ', visto dalla strada.';
+        ?? 'Esterno della sede Smash Burger di ' . $città . ', visto dalla strada.';
 }
 
 /**
@@ -93,7 +93,7 @@ function tema_salva(string $tema): void
 /**
  * Restituisce il markup di un'icona presa dalla raccolta in images/icone.svg.
  *
- * L'icona accompagna sempre un testo, quindi e' nascosta ai lettori di schermo.
+ * L'icona accompagna sempre un testo, quindi è nascosta ai lettori di schermo.
  */
 function icona(string $nome): string
 {
@@ -127,7 +127,7 @@ function messaggio_leggi(): ?array
  * Invia il browser a un'altra pagina del sito e interrompe l'esecuzione.
  *
  * Viene usata dopo ogni richiesta POST che modifica dati, cosi' un aggiornamento della
- * pagina non ripete l'operazione. La destinazione e' sempre una pagina nostra indicata
+ * pagina non ripete l'operazione. La destinazione è sempre una pagina nostra indicata
  * per nome, mai un valore costruito con dati della richiesta.
  */
 function vai_a(string $pagina = '', array $parametri = []): void
@@ -160,7 +160,7 @@ function errore(int $codice): void
  */
 function mostra_pagina(string $vista, array $dati = []): void
 {
-    // La connessione e' una variabile globale creata da database.php: qui serve solo a
+    // La connessione è una variabile globale creata da database.php: qui serve solo a
     // ricavare il ruolo di chi guarda, che i template usano per il menu. Le viste non
     // interrogano il database da sole.
     global $pdo;
@@ -168,7 +168,7 @@ function mostra_pagina(string $vista, array $dati = []): void
     $slugCorrente = pagina_corrente();
     $definizione = pagina_dati($slugCorrente) ?? [];
 
-    // Quando la connessione non c'e', cioe' nella pagina 500, il menu e' quello di chi
+    // Quando la connessione non c'e', cioè nella pagina 500, il menu è quello di chi
     // non ha fatto l'accesso.
     $ruoloCorrente = isset($pdo) ? ruolo_corrente($pdo) : null;
 

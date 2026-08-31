@@ -94,8 +94,8 @@ function pagine(): array
             'ruoli' => ['cliente', 'manager', 'amministratore'],
             'menu' => null,
         ],
-        // Non e' una pagina da guardare: risponde solo in POST e rimanda indietro.
-        // Resta elencata qui perche' ogni indirizzo del sito e' descritto in un posto solo.
+        // Non è una pagina da guardare: risponde solo in POST e rimanda indietro.
+        // Resta elencata qui perchè ogni indirizzo del sito è descritto in un posto solo.
         'tema' => [
             'etichetta' => 'Tema',
             'titolo' => 'Tema - Smash Burger',
@@ -134,7 +134,7 @@ function pagine(): array
         ],
         'ricevuta' => [
             'etichetta' => 'Ricevuta',
-            'titolo' => 'Ricevuta dell ordine - Smash Burger',
+            'titolo' => 'Ricevuta dell\'ordine - Smash Burger',
             'descrizione' => '',
             'ruoli' => ['cliente'],
             'menu' => null,
@@ -281,7 +281,7 @@ function ruolo_ammesso(array $ammessi, ?string $ruolo): bool
 }
 
 /**
- * Slug delle pagine pubbliche che hanno una descrizione, cioe' quelle che ha senso
+ * Slug delle pagine pubbliche che hanno una descrizione, cioè quelle che ha senso
  * indicizzare. Alimenta la mappa del sito e sitemap.xml.
  */
 function pagine_pubbliche(): array

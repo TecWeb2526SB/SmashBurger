@@ -10,7 +10,7 @@
 
 <p>
     La disponibilita' cambia da un locale all'altro: scegli la sede e ti mostriamo solo
-    quello che c'e' davvero.
+    quello che c'è davvero.
 </p>
 
 <form method="post" action="<?php echo e(url('carrello')); ?>">

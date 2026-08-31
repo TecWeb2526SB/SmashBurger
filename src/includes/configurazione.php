@@ -10,7 +10,7 @@ const EMAIL_CONTATTO = 'informazioni@smashburger.it';
 const TELEFONO_CONTATTO = '049 1234567';
 
 // Cambia quando cambiano fogli di stile o script, per invalidare la cache del browser.
-const VERSIONE_RISORSE = '31';
+const VERSIONE_RISORSE = '32';
 
 // Vincoli delle immagini prodotto caricate dal pannello. Il limite di peso coincide
 // con il budget prestazionale richiesto anche agli asset editoriali del sito.
@@ -40,7 +40,7 @@ const MINUTI_PASSO_PRENOTAZIONE = 30;
 const GIORNI_INCASSO = 30;
 
 /**
- * Restituisce true quando la richiesta corrente viaggia su HTTPS.
+ * Restituisce true quando la richiesta corrente viaggià su HTTPS.
  *
  * Il server di consegna espone il sito anche in chiaro, quindi il cookie di sessione
  * diventa Secure solo quando serve davvero, altrimenti il browser lo scarterebbe.
@@ -56,7 +56,7 @@ function richiesta_su_https(): bool
  *
  * Si ricava da SCRIPT_NAME togliendo la parte di percorso che il file occupa dentro
  * src/: un controller sta nella radice, una pagina di errore sta in errors/. Serve
- * perche' il sito deve poter stare in una sottocartella qualsiasi.
+ * perchè il sito deve poter stare in una sottocartella qualsiasi.
  */
 function radice_applicazione(): string
 {
@@ -78,7 +78,7 @@ function radice_applicazione(): string
  * Un indirizzo inesistente come /sito/uno/due viene servito dalla pagina 404, e il
  * browser risolve i collegamenti relativi rispetto a /sito/uno/: senza questo prefisso
  * la pagina di errore perderebbe stile, menu e collegamenti, che invece servono proprio
- * li' per rimettere in strada chi si e' perso.
+ * li' per rimettere in strada chi si è perso.
  */
 function risalita(): string
 {

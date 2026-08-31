@@ -80,7 +80,7 @@
                             min="0" max="9999" />
                         <button type="submit">
                             Salva
-                            <span class="solo-lettori">la quantita di <?php echo e($prodotto['nome']); ?></span>
+                            <span class="solo-lettori">la quantità di <?php echo e($prodotto['nome']); ?></span>
                         </button>
                     </form>
                 </td>
@@ -98,6 +98,6 @@
 </table>
 
 <p>
-    Un prodotto compare nel menu del sito solo se e' nel menu di questa sede
-    <strong>e</strong> la quantita' e' maggiore di zero. Gli ordini la scalano da soli.
+    Un prodotto compare nel menu del sito solo se è nel menu di questa sede
+    <strong>e</strong> la quantita' è maggiore di zero. Gli ordini la scalano da soli.
 </p>

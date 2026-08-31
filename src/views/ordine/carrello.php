@@ -16,7 +16,7 @@ if ($carrello === null) {
 
 <p>
     Stai ordinando dalla sede di <?php echo e($carrello['citta']); ?>. Qui sotto trovi solo
-    quello che e' disponibile in questo locale.
+    quello che è disponibile in questo locale.
 </p>
 
 <form method="post" action="<?php echo e(url('carrello')); ?>" class="scelta-sede">
@@ -34,7 +34,7 @@ if ($carrello === null) {
         </select>
         <button type="submit">Cambia sede</button>
     </p>
-    <p><small>Cambiando sede il carrello viene svuotato, perche' la disponibilita' cambia da un locale all'altro.</small></p>
+    <p><small>Cambiando sede il carrello viene svuotato, perchè la disponibilita' cambia da un locale all'altro.</small></p>
 </form>
 
 <section class="riepilogo">
@@ -46,7 +46,7 @@ if ($carrello === null) {
             </div>
         </header>
         <div class="corpo-riepilogo">
-            <p>Il carrello e' vuoto: tocca un prodotto per aggiungerlo.</p>
+            <p>Il carrello è vuoto: tocca un prodotto per aggiungerlo.</p>
         </div>
     <?php else: ?>
         <header class="header-riepilogo">

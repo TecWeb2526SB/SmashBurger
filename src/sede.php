@@ -1,8 +1,8 @@
 <?php
 /**
- * Pagina pubblica di una singola sede, raggiunta con sede?slug=citta.
+ * Pagina pubblica di una singola sede, raggiunta con sede?slug=città.
  *
- * Risponde alle ricerche locali meglio dell'elenco, ed e' il punto da cui si avvia la
+ * Risponde alle ricerche locali meglio dell'elenco, ed è il punto da cui si avvia la
  * prenotazione della sala eventi.
  */
 

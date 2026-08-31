@@ -23,7 +23,7 @@ function sede_errori(array $dati): array
     }
 
     if (preg_match('/^[0-9]{5}$/', trim((string) ($dati['cap'] ?? ''))) !== 1) {
-        $errori['cap'] = 'Il CAP e composto da cinque cifre.';
+        $errori['cap'] = 'Il CAP è composto da cinque cifre.';
     }
 
     if (preg_match('/^[0-9 +().-]{6,30}$/', trim((string) ($dati['telefono'] ?? ''))) !== 1) {
@@ -47,11 +47,11 @@ function sede_errori(array $dati): array
 function sede_salva(PDO $pdo, int $sedeId, array $dati, ?int $limite): array
 {
     if ($limite !== null && $limite !== $sedeId) {
-        return ['ok' => false, 'messaggio' => 'Questa sede non e la tua.'];
+        return ['ok' => false, 'messaggio' => 'Questa sede non è la tua.'];
     }
 
     $pdo->prepare(
-        'UPDATE sedi SET nome = :nome, citta = :citta, provincia = :provincia,
+        'UPDATE sedi SET nome = :nome, città = :citta, provincia = :provincia,
                 indirizzo = :indirizzo, cap = :cap, telefono = :telefono, email = :email,
                 note_ritiro = :note
           WHERE id = :id'
@@ -74,12 +74,12 @@ function sede_salva(PDO $pdo, int $sedeId, array $dati, ?int $limite): array
  * Salva gli orari settimanali di una sede.
  *
  * Un giorno senza orario di apertura o con l'apertura dopo la chiusura viene registrato
- * come chiuso: e' l'unica lettura sensata di quei valori.
+ * come chiuso: è l'unica lettura sensata di quei valori.
  */
 function orari_salva(PDO $pdo, int $sedeId, array $dati, ?int $limite): array
 {
     if ($limite !== null && $limite !== $sedeId) {
-        return ['ok' => false, 'messaggio' => 'Questa sede non e la tua.'];
+        return ['ok' => false, 'messaggio' => 'Questa sede non è la tua.'];
     }
 
     $query = $pdo->prepare(
@@ -110,7 +110,7 @@ function orari_salva(PDO $pdo, int $sedeId, array $dati, ?int $limite): array
 }
 
 /**
- * Normalizza un orario scritto come hh:mm, oppure null se non e' valido.
+ * Normalizza un orario scritto come hh:mm, oppure null se non è valido.
  */
 function orario_valido(string $valore): ?string
 {
@@ -127,7 +127,7 @@ function orario_valido(string $valore): ?string
 function sala_cambia(PDO $pdo, int $sedeId, bool $disponibile, ?int $limite): array
 {
     if ($limite !== null && $limite !== $sedeId) {
-        return ['ok' => false, 'messaggio' => 'Questa sede non e la tua.'];
+        return ['ok' => false, 'messaggio' => 'Questa sede non è la tua.'];
     }
 
     $pdo->prepare('UPDATE sedi SET sala_eventi_disponibile = :valore WHERE id = :id')

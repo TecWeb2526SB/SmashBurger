@@ -32,7 +32,7 @@
 <div class="capitoli-storia">
     <section>
         <p class="indice-pannello">01 / La tecnica</p>
-        <h2>Che cos'e' lo smash</h2>
+        <h2>Che cos'è lo smash</h2>
         <div>
             <p>
                 La pallina di carne viene schiacciata appena tocca la piastra. Il contatto
@@ -53,7 +53,7 @@
                 La carne arriva fresca e viene macinata in giornata. Pane e salse sono
                 preparati per noi da fornitori della zona.
             </p>
-            <p>Ogni burger viene composto quando l'ordine entra in cucina.</p>
+            <p>Ogni burger vienè composto quando l'ordine entra in cucina.</p>
         </div>
     </section>
 
@@ -66,7 +66,7 @@
                 disponibilita' dei prodotti e prenotazioni della sala.
             </p>
             <p>
-                Quando ordini vedi solo cio' che e' davvero disponibile nel locale che
+                Quando ordini vedi solo cio' che è davvero disponibile nel locale che
                 hai scelto.
             </p>
         </div>

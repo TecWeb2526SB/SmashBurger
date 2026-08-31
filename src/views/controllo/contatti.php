@@ -12,7 +12,7 @@
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($messaggi === []): ?>
-    <p>Non e' arrivato nessun messaggio.</p>
+    <p>Non è arrivato nessun messaggio.</p>
 <?php else: ?>
     <form method="post" action="<?php echo e(url('controllo-contatti')); ?>">
         <?php echo campo_csrf(); ?>

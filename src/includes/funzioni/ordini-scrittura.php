@@ -11,17 +11,17 @@
  * Crea un ordine a partire dal carrello.
  *
  * Ogni riga scala la disponibilita' con un aggiornamento condizionale: se tocca zero
- * righe, la merce e' finita mentre la persona stava pagando, e l'intero ordine viene
+ * righe, la merce è finita mentre la persona stava pagando, e l'intero ordine viene
  * annullato senza crearne uno parziale.
  *
  * @param array $dati modalita', ritiro_previsto, metodo_pagamento e, per il domicilio,
- *                    l'indirizzo gia' validato
+ *                    l'indirizzo già validato
  * @return array ['ok' => bool, 'messaggio' => string, 'ordine_id' => int|null]
  */
 function ordine_crea(PDO $pdo, array $carrello, array $righe, array $dati): array
 {
     if ($righe === []) {
-        return ['ok' => false, 'messaggio' => 'Il carrello e vuoto.', 'ordine_id' => null];
+        return ['ok' => false, 'messaggio' => 'Il carrello è vuoto.', 'ordine_id' => null];
     }
 
     $sedeId = (int) $carrello['sede_id'];
@@ -39,7 +39,7 @@ function ordine_crea(PDO $pdo, array $carrello, array $righe, array $dati): arra
                 return [
                     'ok' => false,
                     'messaggio' => sprintf(
-                        'Nel frattempo %s non e piu disponibile nella quantita richiesta: ne restano %d.',
+                        'Nel frattempo %s non è piu disponibile nella quantità richiesta: ne restano %d.',
                         $riga['nome'],
                         $rimasti
                     ),
@@ -73,7 +73,7 @@ function ordine_crea(PDO $pdo, array $carrello, array $righe, array $dati): arra
 /**
  * Scala la disponibilita' di un prodotto in una sede.
  *
- * L'aggiornamento riesce solo se la quantita' basta e il prodotto e' ancora nel menu:
+ * L'aggiornamento riesce solo se la quantita' basta e il prodotto è ancora nel menu:
  * il database decide, non un controllo letto prima e diventato vecchio.
  *
  * @return bool false quando la merce non basta piu'
@@ -139,7 +139,7 @@ function ordine_inserisci(PDO $pdo, array $carrello, array $dati, int $totale): 
         ':paese' => $domicilio ? trim($dati['paese']) : null,
         ':telefono' => $domicilio ? trim($dati['telefono']) : null,
         ':metodo' => $dati['metodo_pagamento'],
-        // Il pagamento e' simulato: la carta risulta pagata subito, i contanti alla consegna.
+        // Il pagamento è simulato: la carta risulta pagata subito, i contanti alla consegna.
         ':stato_pagamento' => $dati['metodo_pagamento'] === 'carta' ? 'pagato' : 'in attesa',
         ':totale' => $totale,
     ]);
@@ -194,13 +194,13 @@ function ordine_annulla(PDO $pdo, int $ordineId, string $motivo, bool $rimborsa)
         if ($ordine === false) {
             $pdo->rollBack();
 
-            return ['ok' => false, 'messaggio' => 'L ordine non esiste.'];
+            return ['ok' => false, 'messaggio' => 'L\'ordine non esiste.'];
         }
 
         if ($ordine['stato'] === 'annullato') {
             $pdo->rollBack();
 
-            return ['ok' => false, 'messaggio' => 'Questo ordine era gia annullato.'];
+            return ['ok' => false, 'messaggio' => 'Questo ordine era già annullato.'];
         }
 
         foreach (righe_dell_ordine($pdo, $ordineId) as $riga) {

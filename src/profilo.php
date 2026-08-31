@@ -3,7 +3,7 @@
  * Profilo: dati personali, password, indirizzo di consegna, metodo di pagamento e
  * cancellazione dell'account.
  *
- * Ogni riquadro e' un modulo a se': salva per conto suo e torna qui con un avviso, cosi'
+ * Ogni riquadro è un modulo a se': salva per conto suo e torna qui con un avviso, cosi'
  * un errore in una sezione non fa perdere quello che si stava scrivendo nelle altre.
  */
 
@@ -69,7 +69,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         utente_esci();
         vai_a();
     } else {
-        // Nessun modulo del sito invia altri valori: la richiesta e' stata costruita a mano.
+        // Nessun modulo del sito invia altri valori: la richiesta è stata costruita a mano.
         errore(403);
     }
 }

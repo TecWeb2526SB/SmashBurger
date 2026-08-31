@@ -51,4 +51,35 @@
     if (header !== null && 'ResizeObserver' in window) {
         new ResizeObserver(aggiornaAltezzaHeader).observe(header);
     }
+
+    function inizializzaPagamento() {
+        var form = document.querySelector('form[data-modulo="sede"]');
+        if (!form) return;
+
+        var radioModalita = form.querySelectorAll('input[name="modalita"]');
+        if (radioModalita.length === 0) return;
+
+        function aggiornaModalita() {
+            var attiva = null;
+            for (var i = 0; i < radioModalita.length; i++) {
+                if (radioModalita[i].checked) {
+                    attiva = radioModalita[i];
+                    break;
+                }
+            }
+            if (attiva) {
+                form.setAttribute('data-modalita', attiva.value);
+            }
+        }
+
+        radioModalita.forEach(function (radio) {
+            radio.addEventListener('change', aggiornaModalita);
+        });
+
+        // Esegui all'avvio nel caso in cui il server non abbia impostato correttamente l'attributo,
+        // anche se l'abbiamo gia' fatto in PHP
+        aggiornaModalita();
+    }
+
+    inizializzaPagamento();
 }());

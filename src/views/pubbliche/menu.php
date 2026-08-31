@@ -53,7 +53,7 @@
 </nav>
 
 <?php if ($prodotti === []): ?>
-    <p class="stato-vuoto">Non c'e' ancora nessun prodotto in questa categoria.</p>
+    <p class="stato-vuoto">Non c'è ancora nessun prodotto in questa categoria.</p>
 <?php else: ?>
     <ul class="griglia griglia-menu">
         <?php foreach ($prodotti as $prodotto): ?>

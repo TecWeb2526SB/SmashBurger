@@ -5,7 +5,7 @@
  * I moduli di riga stanno fuori dalla tabella e i campi li raggiungono con l'attributo
  * form: un elemento form non puo' attraversare piu' celle.
  *
- * Sulla riga del proprio account non compaiono azioni: per quello c'e' il profilo.
+ * Sulla riga del proprio account non compaiono azioni: per quello c'è il profilo.
  */
 ?>
 <h1>Utenti</h1>
@@ -133,5 +133,5 @@
 
 <p>
     Per affidare una sede a un manager scegli il ruolo e la sede, poi salva. Una sede ha
-    al massimo un manager: se e' gia' occupata va prima liberata.
+    al massimo un manager: se è già occupata va prima liberata.
 </p>

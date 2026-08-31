@@ -3,7 +3,7 @@
  * Account visti dal pannello dell'amministratore: ruoli, attivazione, cancellazione.
  *
  * Promuovere qualcuno a manager significa assegnargli una sede, e una sede ha al massimo
- * un manager: il vincolo di unicita' sta nel database, qui si spiega perche' fallisce.
+ * un manager: il vincolo di unicita' sta nel database, qui si spiega perchè fallisce.
  */
 
 /**
@@ -20,7 +20,7 @@ function ruoli_assegnabili(): array
 function utenti_elenco(PDO $pdo): array
 {
     return $pdo->query(
-        'SELECT u.*, s.citta AS sede_citta, s.id AS sede_id,
+        'SELECT u.*, s.città AS sede_citta, s.id AS sede_id,
                 (SELECT COUNT(*) FROM ordini o WHERE o.utente_id = u.id) AS ordini
            FROM utenti u
            LEFT JOIN sedi s ON s.manager_id = u.id
@@ -65,7 +65,7 @@ function utente_cambia_ruolo(PDO $pdo, int $utenteId, string $ruolo, ?int $sedeI
             if ($assegna->rowCount() === 0) {
                 $pdo->rollBack();
 
-                return ['ok' => false, 'messaggio' => 'Quella sede ha gia un manager: liberala prima.'];
+                return ['ok' => false, 'messaggio' => 'Quella sede ha già un manager: liberala prima.'];
             }
         }
 
@@ -84,7 +84,7 @@ function utente_cambia_ruolo(PDO $pdo, int $utenteId, string $ruolo, ?int $sedeI
  * Attiva o disattiva un account.
  *
  * Un account disattivato non puo' piu' accedere, e la sessione eventualmente aperta
- * cade alla prima richiesta, perche' il ruolo viene riletto ogni volta.
+ * cade alla prima richiesta, perchè il ruolo viene riletto ogni volta.
  */
 function utente_cambia_stato(PDO $pdo, int $utenteId, bool $attivo): array
 {

@@ -2,7 +2,7 @@
 /**
  * Profilo. Riceve $utente, $errori, $sezione e $confermaCancellazione dal controller.
  *
- * Ogni riquadro e' un modulo indipendente: gli errori riguardano solo quello che e'
+ * Ogni riquadro è un modulo indipendente: gli errori riguardano solo quello che e'
  * stato inviato, indicato da $sezione.
  */
 

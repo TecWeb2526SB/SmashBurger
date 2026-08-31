@@ -3,7 +3,7 @@
  * Scheda di un prodotto: creazione, modifica e cancellazione dei dati comuni.
  *
  * Il modulo segue lo stesso ordine della pagina pubblica del prodotto, cosi' chi lo
- * compila sa gia' dove finira' ogni campo, ma con etichette regolari su ogni controllo.
+ * compila sa già dove finira' ogni campo, ma con etichette regolari su ogni controllo.
  */
 
 require_once __DIR__ . '/includes/risorse.php';

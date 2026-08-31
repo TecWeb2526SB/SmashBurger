@@ -2,7 +2,7 @@
 /**
  * Pagina mostrata a chi tenta di aprire una risorsa che richiede l'accesso.
  *
- * Si distingue dalla 403: qui il problema e' che nessuno ha fatto l'accesso, non che
+ * Si distingue dalla 403: qui il problema è che nessuno ha fatto l'accesso, non che
  * l'account collegato non abbia i permessi.
  */
 

@@ -17,8 +17,8 @@ $nuovo = $prodotto === null;
     <section class="avviso" role="alert" data-tipo="errore">
         <h2>Vuoi cancellare <?php echo e($prodotto['nome']); ?>?</h2>
         <p>
-            Sparisce dal menu di tutte le sedi. Gli ordini gia' fatti restano leggibili,
-            perche' hanno copiato nome e prezzo al momento dell acquisto.
+            Sparisce dal menu di tutte le sedi. Gli ordini già fatti restano leggibili,
+            perchè hanno copiato nome e prezzo al momento dell acquisto.
         </p>
 
         <form method="post" action="<?php echo e(url('controllo-prodotto')); ?>">

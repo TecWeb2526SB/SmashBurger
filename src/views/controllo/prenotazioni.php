@@ -11,7 +11,7 @@
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($prenotazioni === []): ?>
-    <p>Non c'e' nessuna prenotazione.</p>
+    <p>Non c'è nessuna prenotazione.</p>
 <?php else: ?>
     <form method="post" action="<?php echo e(url('controllo-prenotazioni')); ?>">
         <?php echo campo_csrf(); ?>

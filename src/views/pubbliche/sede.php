@@ -74,7 +74,7 @@
         <h2>Una sala per la tua crew</h2>
         <?php if ((int) $sede['sala_eventi_disponibile'] === 1): ?>
             <p>
-                Scegli giorno, orario di inizio e durata. La sala e' adatta a compleanni,
+                Scegli giorno, orario di inizio e durata. La sala è adatta a compleanni,
                 feste di laurea e cene di gruppo.
             </p>
             <p><a class="pulsante secondario" href="<?php echo e(url('prenota', ['sede' => $sede['slug']])); ?>">Prenota la sala</a></p>

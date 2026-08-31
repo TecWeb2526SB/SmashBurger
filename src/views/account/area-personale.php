@@ -46,7 +46,7 @@
                         <td>
                             <a href="<?php echo e(url('ricevuta', ['ordine' => $ordine['id']])); ?>">
                                 Apri la ricevuta
-                                <span class="solo-lettori">dell ordine <?php echo e($ordine['numero_ordine']); ?></span>
+                                <span class="solo-lettori">dell'ordine <?php echo e($ordine['numero_ordine']); ?></span>
                             </a>
                         </td>
                     </tr>

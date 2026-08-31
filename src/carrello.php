@@ -4,7 +4,7 @@
  *
  * Senza una sede scelta la pagina chiede da dove si vuole ordinare. Con la sede scelta
  * mostra la griglia dei prodotti disponibili li' e, in fondo, il riepilogo di quanto e'
- * gia' stato aggiunto.
+ * già stato aggiunto.
  */
 
 require_once __DIR__ . '/includes/risorse.php';
@@ -34,7 +34,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 
     if ($carrello === null) {
-        messaggio_imposta('errore', 'Il carrello e scaduto: scegli di nuovo la sede.');
+        messaggio_imposta('errore', 'Il carrello è scaduto: scegli di nuovo la sede.');
         vai_a('carrello');
     }
 

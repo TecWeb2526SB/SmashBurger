@@ -6,7 +6,7 @@
  * ci sono i dati che una persona inserisce su di se'.
  *
  * Ogni controllo di questo file ha la sua gemella lato client negli attributi del
- * markup, ma quella che decide e' questa.
+ * markup, ma quella che decide è questa.
  */
 
 /**
@@ -54,14 +54,14 @@ function utente_errori_registrazione(PDO $pdo, array $dati): array
     if (preg_match('/^[a-z0-9._-]{3,50}$/', $nomeUtente) !== 1) {
         $errori['nome_utente'] = 'Il nome utente accetta da 3 a 50 fra lettere minuscole, cifre, punto, trattino e trattino basso.';
     } elseif (utente_esiste($pdo, 'nome_utente', $nomeUtente)) {
-        $errori['nome_utente'] = 'Questo nome utente e gia in uso.';
+        $errori['nome_utente'] = 'Questo nome utente e già in uso.';
     }
 
     $email = trim((string) ($dati['email'] ?? ''));
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false || mb_strlen($email) > 160) {
         $errori['email'] = 'Scrivi un indirizzo email valido.';
     } elseif (utente_esiste($pdo, 'email', $email)) {
-        $errori['email'] = 'Questo indirizzo email e gia registrato.';
+        $errori['email'] = 'Questo indirizzo email e già registrato.';
     }
 
     $password = (string) ($dati['password'] ?? '');
@@ -77,9 +77,9 @@ function utente_errori_registrazione(PDO $pdo, array $dati): array
 }
 
 /**
- * Verifica se un valore e' gia' usato da un altro account.
+ * Verifica se un valore è già usato da un altro account.
  *
- * Il nome della colonna non arriva mai da fuori: e' uno dei due valori scritti qui.
+ * Il nome della colonna non arriva mai da fuori: è uno dei due valori scritti qui.
  */
 function utente_esiste(PDO $pdo, string $colonna, string $valore, ?int $escludiId = null): bool
 {
@@ -100,7 +100,7 @@ function utente_esiste(PDO $pdo, string $colonna, string $valore, ?int $escludiI
 }
 
 /**
- * Crea un account cliente con dati gia' validati.
+ * Crea un account cliente con dati già validati.
  */
 function utente_registra(PDO $pdo, array $dati): void
 {
@@ -138,7 +138,7 @@ function utente_aggiorna_dati(PDO $pdo, int $id, array $dati): array
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false || mb_strlen($email) > 160) {
         $errori['email'] = 'Scrivi un indirizzo email valido.';
     } elseif (utente_esiste($pdo, 'email', $email, $id)) {
-        $errori['email'] = 'Questo indirizzo email e gia registrato.';
+        $errori['email'] = 'Questo indirizzo email e già registrato.';
     }
 
     if ($errori !== []) {
@@ -168,7 +168,7 @@ function utente_cambia_password(PDO $pdo, int $id, string $attuale, string $nuov
     $hash = $query->fetchColumn();
 
     if ($hash === false || !password_verify($attuale, $hash)) {
-        return ['ok' => false, 'errori' => ['attuale' => 'La password attuale non e corretta.']];
+        return ['ok' => false, 'errori' => ['attuale' => 'La password attuale non è corretta.']];
     }
 
     $errore = password_errore($nuova);
@@ -199,7 +199,7 @@ function utente_salva_consegna(PDO $pdo, int $id, array $dati): array
     }
 
     $query = $pdo->prepare(
-        'UPDATE utenti SET indirizzo = :indirizzo, citta = :citta, provincia = :provincia,
+        'UPDATE utenti SET indirizzo = :indirizzo, città = :citta, provincia = :provincia,
                 cap = :cap, paese = :paese, telefono = :telefono
           WHERE id = :id'
     );
@@ -222,7 +222,7 @@ function utente_salva_consegna(PDO $pdo, int $id, array $dati): array
 function utente_rimuovi_consegna(PDO $pdo, int $id): void
 {
     $pdo->prepare(
-        'UPDATE utenti SET indirizzo = NULL, citta = NULL, provincia = NULL,
+        'UPDATE utenti SET indirizzo = NULL, città = NULL, provincia = NULL,
                 cap = NULL, paese = NULL, telefono = NULL
           WHERE id = :id'
     )->execute([':id' => $id]);

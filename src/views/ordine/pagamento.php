@@ -19,7 +19,7 @@
 <section>
     <h2>Che cosa hai ordinato</h2>
     <table>
-        <caption>Riepilogo dell ordine da <?php echo e($carrello['citta']); ?></caption>
+        <caption>Riepilogo dell'ordine da <?php echo e($carrello['citta']); ?></caption>
         <thead>
             <tr>
                 <th scope="col">Prodotto</th>
@@ -45,7 +45,7 @@
     </table>
 </section>
 
-<form method="post" action="<?php echo e(url('pagamento')); ?>" data-modulo="sede">
+<form method="post" action="<?php echo e(url('pagamento')); ?>" data-modulo="sede" data-modalita="<?php echo e($valori['modalita']); ?>">
     <?php echo campo_csrf(); ?>
 
     <fieldset>
@@ -55,9 +55,13 @@
             <li>
                 <label for="modalita-ritiro">
                     <input type="radio" id="modalita-ritiro" name="modalita" value="ritiro"
+                        <?php echo $slot === [] ? 'disabled="disabled"' : ''; ?>
                         <?php echo $valori['modalita'] === 'ritiro' ? 'checked="checked"' : ''; ?> />
                     <span>Ritiro in sede a <?php echo e($carrello['citta']); ?></span>
                 </label>
+                <?php if ($slot === []): ?>
+                    <small>Il ritiro in sede non è disponibile al momento.</small>
+                <?php endif; ?>
             </li>
             <li>
                 <label for="modalita-domicilio">
@@ -68,25 +72,27 @@
             </li>
         </ul>
 
-        <p>
-            <label for="ritiro_previsto">Orario di ritiro</label>
-            <select id="ritiro_previsto" name="ritiro_previsto"
-                <?php if (isset($errori['ritiro_previsto'])): ?>aria-describedby="errore-ritiro" data-stato="errore"<?php endif; ?>>
-                <?php foreach ($slot as $valore => $etichetta): ?>
-                    <option value="<?php echo e($valore); ?>"
-                        <?php echo $valore === $valori['ritiro_previsto'] ? 'selected="selected"' : ''; ?>>
-                        <?php echo e($etichetta); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-            <?php if (isset($errori['ritiro_previsto'])): ?>
-                <small id="errore-ritiro"><?php echo e($errori['ritiro_previsto']); ?></small>
-            <?php endif; ?>
-        </p>
-        <p><small>Serve solo per il ritiro in sede. Per la consegna a domicilio l'orario lo decide il corriere.</small></p>
+        <div class="campo-ritiro">
+            <p>
+                <label for="ritiro_previsto">Orario di ritiro</label>
+                <select id="ritiro_previsto" name="ritiro_previsto"
+                    <?php if (isset($errori['ritiro_previsto'])): ?>aria-describedby="errore-ritiro" data-stato="errore"<?php endif; ?>>
+                    <?php foreach ($slot as $valore => $etichetta): ?>
+                        <option value="<?php echo e($valore); ?>"
+                            <?php echo $valore === $valori['ritiro_previsto'] ? 'selected="selected"' : ''; ?>>
+                            <?php echo e($etichetta); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if (isset($errori['ritiro_previsto'])): ?>
+                    <small id="errore-ritiro"><?php echo e($errori['ritiro_previsto']); ?></small>
+                <?php endif; ?>
+            </p>
+            <p><small>Serve solo per il ritiro in sede. Per la consegna a domicilio l'orario lo decide il corriere.</small></p>
+        </div>
     </fieldset>
 
-    <fieldset>
+    <fieldset class="campi-consegna">
         <legend>Dove consegniamo</legend>
 
         <p><small>Compila solo se hai scelto la consegna a domicilio.</small></p>
@@ -131,7 +137,7 @@
             <?php endforeach; ?>
         </ul>
 
-        <p><small>Il pagamento e' simulato: non chiediamo e non conserviamo nessun dato della carta.</small></p>
+        <p><small>Il pagamento è simulato: non chiediamo e non conserviamo nessun dato della carta.</small></p>
     </fieldset>
 
     <p class="navigazione-pagina">

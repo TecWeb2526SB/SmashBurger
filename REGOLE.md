@@ -452,7 +452,8 @@ e validata**. Fino ad allora le pagine restano senza stile.
   senza errori. Così lo stesso file serve tutte le pagine.
 - Il JavaScript non genera il markup della pagina e non sostituisce moduli funzionanti: al
   massimo intercetta un invio, ripete la stessa richiesta e aggiorna una porzione già
-  presente.
+  presente, o mostra/nasconde elementi (es. tramite classi o attributi `data-*`) in base
+  alle scelte dell'utente.
 - Le richieste inviate dallo script sono le stesse dei moduli e ricevono la stessa
   risposta HTML: il server non espone una seconda rappresentazione dei dati.
 - I punti di aggancio nel markup sono attributi `data-modulo` sui moduli aggiornabili e

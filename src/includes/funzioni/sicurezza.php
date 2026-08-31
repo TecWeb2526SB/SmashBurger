@@ -42,7 +42,7 @@ function csrf_valido(): bool
 }
 
 /**
- * Interrompe la richiesta se non e' un POST con token valido.
+ * Interrompe la richiesta se non è un POST con token valido.
  *
  * Va chiamata dal controller prima di qualsiasi effetto sui dati.
  */
@@ -56,7 +56,7 @@ function richiedi_post_valido(): void
 /**
  * Legge un identificativo numerico dalla richiesta.
  *
- * Restituisce null quando il valore manca, non e' numerico o non e' positivo, cosi' il
+ * Restituisce null quando il valore manca, non è numerico o non è positivo, cosi' il
  * controller puo' rispondere con la pagina 404 invece di interrogare il database con un
  * valore senza senso.
  */

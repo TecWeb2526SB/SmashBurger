@@ -82,7 +82,7 @@
                                 <input type="hidden" name="ordine_id" value="<?php echo (int) $ordine['id']; ?>" />
 
                                 <label class="solo-lettori" for="stato-<?php echo (int) $ordine['id']; ?>">
-                                    Stato dell ordine <?php echo e($ordine['numero_ordine']); ?>
+                                    Stato dell'ordine <?php echo e($ordine['numero_ordine']); ?>
                                 </label>
                                 <select id="stato-<?php echo (int) $ordine['id']; ?>" name="stato">
                                     <?php foreach ($stati as $stato): ?>
@@ -96,7 +96,7 @@
                                 </select>
 
                                 <label class="solo-lettori" for="pagamento-<?php echo (int) $ordine['id']; ?>">
-                                    Pagamento dell ordine <?php echo e($ordine['numero_ordine']); ?>
+                                    Pagamento dell'ordine <?php echo e($ordine['numero_ordine']); ?>
                                 </label>
                                 <select id="pagamento-<?php echo (int) $ordine['id']; ?>" name="stato_pagamento">
                                     <?php foreach ($statiPagamento as $statoPagamento): ?>

@@ -2,7 +2,7 @@
 /**
  * Lettura delle sedi e dei loro orari di apertura.
  *
- * I giorni seguono la numerazione ISO 8601 usata nel database: 1 e' lunedi', 7 domenica.
+ * I giorni seguono la numerazione ISO 8601 usata nel database: 1 è lunedi', 7 domenica.
  */
 
 /**
@@ -40,7 +40,7 @@ function sedi_tutte(PDO $pdo): array
 }
 
 /**
- * Una sede a partire dal suo slug, oppure null se non esiste o non e' attiva.
+ * Una sede a partire dal suo slug, oppure null se non esiste o non è attiva.
  */
 function sede_per_slug(PDO $pdo, string $slug): ?array
 {

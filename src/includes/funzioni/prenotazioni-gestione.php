@@ -36,7 +36,7 @@ function prenotazioni_da_gestire(PDO $pdo, ?int $sedeId): array
  * Il vincolo di sede sta nella query: un manager non puo' toccare le prenotazioni di
  * un'altra sede nemmeno conoscendone l'identificativo.
  *
- * @param int|null $sedeId sede a cui il chiamante e' limitato, null per l'amministratore
+ * @param int|null $sedeId sede a cui il chiamante è limitato, null per l'amministratore
  */
 function prenotazione_cambia_stato(PDO $pdo, int $id, string $stato, ?int $sedeId): array
 {
@@ -56,7 +56,7 @@ function prenotazione_cambia_stato(PDO $pdo, int $id, string $stato, ?int $sedeI
     $query->execute($parametri);
 
     if ($query->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'La prenotazione non esiste o non e di questa sede.'];
+        return ['ok' => false, 'messaggio' => 'La prenotazione non esiste o non è di questa sede.'];
     }
 
     return ['ok' => true, 'messaggio' => 'Prenotazione aggiornata.'];

@@ -4,8 +4,8 @@
  *
  * Ogni pulsante porta il nome dell'azione e, come proprio valore, l'identificativo del
  * prodotto: il browser invia solo quello premuto, quindi un modulo solo basta per tutta
- * la tabella. La quantita' e' testo e non un campo, perche' si cambia con i pulsanti e
- * non c'e' niente da riscrivere a mano.
+ * la tabella. La quantita' è testo e non un campo, perchè si cambia con i pulsanti e
+ * non c'è niente da riscrivere a mano.
  */
 ?>
 <form method="post" action="<?php echo e(url('carrello')); ?>" data-modulo="carrello">

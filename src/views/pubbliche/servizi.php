@@ -45,7 +45,7 @@
             presa in carico da una societa' esterna.
         </p>
         <p class="nota-servizio">
-            Se l'indirizzo non e' raggiungibile, annulliamo e rimborsiamo l'ordine.
+            Se l'indirizzo non è raggiungibile, annulliamo e rimborsiamo l'ordine.
         </p>
     </section>
 
@@ -73,7 +73,7 @@
         <p class="indice-pannello">05 / Pagamento</p>
         <h2>Carta o contanti. Senza sorprese.</h2>
         <p>
-            Scegli il metodo al termine dell'ordine. Il pagamento con carta e' simulato:
+            Scegli il metodo al termine dell'ordine. Il pagamento con carta è simulato:
             il sito non chiede e non conserva nessun dato della tua carta.
         </p>
     </section>

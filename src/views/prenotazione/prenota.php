@@ -4,7 +4,7 @@
  *
  * Riceve $sedi, $sede, $data, $fasce, $occupazione, $durate, $valori, $errori, $minimo
  * e $massimo.
- * Il primo modulo viaggia in GET perche' non modifica nulla: serve solo a mostrare le
+ * Il primo modulo viaggià in GET perchè non modifica nulla: serve solo a mostrare le
  * orari liberi del giorno scelto.
  */
 ?>
@@ -67,7 +67,7 @@
         <h2>Orari del <?php echo e(data_breve($data)); ?> a <?php echo e($sede['citta']); ?></h2>
 
         <?php if ($fasce === []): ?>
-            <p>Quel giorno la sede e' chiusa: scegli un altro giorno.</p>
+            <p>Quel giorno la sede è chiusa: scegli un altro giorno.</p>
         <?php else: ?>
             <?php require __DIR__ . '/occupazione.php'; ?>
 

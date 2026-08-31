@@ -17,7 +17,7 @@ if (isset($_GET['categoria'])) {
     $slug = slug_richiesto('categoria');
     $categoriaScelta = $slug === null ? null : categoria_per_slug($pdo, $slug);
 
-    // Una categoria che non esiste non e' un elenco vuoto: e' un indirizzo sbagliato.
+    // Una categoria che non esiste non è un elenco vuoto: è un indirizzo sbagliato.
     if ($categoriaScelta === null) {
         errore(404);
     }

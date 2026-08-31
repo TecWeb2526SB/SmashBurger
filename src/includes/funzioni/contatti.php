@@ -2,9 +2,9 @@
 /**
  * Messaggi inviati dal modulo di contatto.
  *
- * La validazione sta qui e non nel controller, cosi' e' la stessa per il modulo
+ * La validazione sta qui e non nel controller, cosi' è la stessa per il modulo
  * pubblico e per qualsiasi altro punto che dovesse salvare un messaggio. Ogni controllo
- * ha la sua gemella lato client, ma questa e' quella che decide.
+ * ha la sua gemella lato client, ma questa è quella che decide.
  */
 
 /**
@@ -60,7 +60,7 @@ function contatto_errori(array $dati): array
 }
 
 /**
- * Salva un messaggio gia' validato.
+ * Salva un messaggio già validato.
  */
 function contatto_salva(PDO $pdo, array $dati): void
 {

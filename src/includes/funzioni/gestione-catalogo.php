@@ -34,7 +34,7 @@ function disponibilita_cambia(PDO $pdo, int $sedeId, int $prodottoId, bool $disp
 function quantita_imposta(PDO $pdo, int $sedeId, int $prodottoId, int $quantita): array
 {
     if ($quantita < 0 || $quantita > 9999) {
-        return ['ok' => false, 'messaggio' => 'La quantita deve stare fra 0 e 9999.'];
+        return ['ok' => false, 'messaggio' => 'La quantità deve stare fra 0 e 9999.'];
     }
 
     $pdo->prepare(
@@ -67,7 +67,7 @@ function prodotto_errori(PDO $pdo, array $dati, ?int $escludiId = null): array
     if (preg_match('/^[a-z0-9-]{2,120}$/', $slug) !== 1) {
         $errori['slug'] = 'Lo slug accetta lettere minuscole, cifre e trattini.';
     } elseif (slug_gia_usato($pdo, $slug, $escludiId)) {
-        $errori['slug'] = 'Questo slug e gia usato da un altro prodotto.';
+        $errori['slug'] = 'Questo slug e già usato da un altro prodotto.';
     }
 
     if (categoria_esiste($pdo, (int) ($dati['categoria_id'] ?? 0)) === false) {
@@ -91,7 +91,7 @@ function prodotto_errori(PDO $pdo, array $dati, ?int $escludiId = null): array
 }
 
 /**
- * Verifica se uno slug appartiene gia' a un altro prodotto.
+ * Verifica se uno slug appartiene già a un altro prodotto.
  */
 function slug_gia_usato(PDO $pdo, string $slug, ?int $escludiId): bool
 {
@@ -124,7 +124,7 @@ function categoria_esiste(PDO $pdo, int $categoriaId): bool
  * Salva un prodotto, creandolo o aggiornandolo.
  *
  * Alla creazione il prodotto nasce nel menu di ogni sede con quantita' zero: risulta
- * quindi non disponibile finche' un manager non lo rifornisce.
+ * quindi non disponibile finchè un manager non lo rifornisce.
  */
 function prodotto_salva(PDO $pdo, array $dati, ?int $prodottoId): array
 {
@@ -169,7 +169,7 @@ function prodotto_salva(PDO $pdo, array $dati, ?int $prodottoId): array
 /**
  * Cancella un prodotto e, per chiave esterna, le sue righe di disponibilita'.
  *
- * Le righe degli ordini restano: hanno gia' copiato nome e prezzo, quindi le ricevute
+ * Le righe degli ordini restano: hanno già copiato nome e prezzo, quindi le ricevute
  * emesse continuano a leggersi.
  */
 function prodotto_elimina(PDO $pdo, int $prodottoId): array
@@ -222,8 +222,8 @@ function categoria_salva(PDO $pdo, array $dati, ?int $categoriaId): array
 
         return ['ok' => true, 'messaggio' => 'Categoria aggiornata.'];
     } catch (PDOException $errore) {
-        // L'unico vincolo che puo' fallire qui e' l'unicita' dello slug.
-        return ['ok' => false, 'messaggio' => 'Questo slug e gia usato da un altra categoria.'];
+        // L'unico vincolo che puo' fallire qui è l'unicita' dello slug.
+        return ['ok' => false, 'messaggio' => 'Questo slug e già usato da un altra categoria.'];
     }
 }
 

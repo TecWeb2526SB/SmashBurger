@@ -59,7 +59,7 @@
 <section>
     <h2>Prodotti</h2>
     <table>
-        <caption>Righe dell ordine <?php echo e($ordine['numero_ordine']); ?></caption>
+        <caption>Righe dell'ordine <?php echo e($ordine['numero_ordine']); ?></caption>
         <thead>
             <tr>
                 <th scope="col">Prodotto</th>
@@ -80,7 +80,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <th scope="row" colspan="3">Totale dell ordine</th>
+                <th scope="row" colspan="3">Totale dell'ordine</th>
                 <td><?php echo e(prezzo((int) $ordine['totale_centesimi'])); ?></td>
             </tr>
         </tfoot>

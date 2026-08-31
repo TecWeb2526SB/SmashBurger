@@ -2,7 +2,7 @@
 /**
  * Controlli sugli indirizzi di consegna.
  *
- * Stanno in un file proprio perche' servono a due percorsi diversi: il profilo, che
+ * Stanno in un file proprio perchè servono a due percorsi diversi: il profilo, che
  * salva un indirizzo per riusarlo, e il pagamento, che ne accetta uno scritto al
  * momento senza salvarlo.
  */
@@ -22,9 +22,9 @@ function indirizzo_errori(array $dati): array
         $errori['indirizzo'] = 'Scrivi via e numero civico.';
     }
 
-    $citta = trim((string) ($dati['citta'] ?? ''));
+    $città = trim((string) ($dati['citta'] ?? ''));
     if (mb_strlen($citta) < 2 || mb_strlen($citta) > 80) {
-        $errori['citta'] = 'Scrivi la citta.';
+        $errori['citta'] = 'Scrivi la città.';
     }
 
     if (preg_match('/^[A-Za-z]{2}$/', trim((string) ($dati['provincia'] ?? ''))) !== 1) {
@@ -32,7 +32,7 @@ function indirizzo_errori(array $dati): array
     }
 
     if (preg_match('/^[0-9]{5}$/', trim((string) ($dati['cap'] ?? ''))) !== 1) {
-        $errori['cap'] = 'Il CAP e composto da cinque cifre.';
+        $errori['cap'] = 'Il CAP è composto da cinque cifre.';
     }
 
     $paese = trim((string) ($dati['paese'] ?? ''));

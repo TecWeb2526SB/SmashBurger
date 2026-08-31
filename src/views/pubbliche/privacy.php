@@ -8,7 +8,7 @@
         <p class="occhiello">Trasparenza, senza testo piccolo</p>
         <h1>Privacy policy</h1>
         <p class="introduzione">
-            Quali dati raccogliamo, perche' ci servono, per quanto tempo li teniamo e
+            Quali dati raccogliamo, perchè ci servono, per quanto tempo li teniamo e
             come puoi intervenire.
         </p>
     </header>
@@ -22,13 +22,13 @@
             <li>Modulo di contatto: nome, email e il testo del messaggio.</li>
         </ul>
         <p>
-            Non raccogliamo dati di pagamento: il pagamento e' simulato e del metodo
-            scelto conserviamo solo l'etichetta, cioe' carta oppure contanti.
+            Non raccogliamo dati di pagamento: il pagamento è simulato e del metodo
+            scelto conserviamo solo l'etichetta, cioè carta oppure contanti.
         </p>
     </section>
 
     <section>
-        <h2>Perche' li raccogliamo</h2>
+        <h2>Perchè li raccogliamo</h2>
         <p>
             Per gestire il tuo account, preparare e consegnare gli ordini, confermare le
             prenotazioni e risponderti quando ci scrivi. Non li usiamo per altro e non li
@@ -39,7 +39,7 @@
     <section>
         <h2>Per quanto tempo</h2>
         <p>
-            I dati dell'account restano finche' l'account esiste. Cancellando il tuo
+            I dati dell'account restano finchè l'account esiste. Cancellando il tuo
             account dal profilo elimini anche il carrello e lo storico degli ordini.
         </p>
     </section>
@@ -48,7 +48,7 @@
         <h2>Cookie</h2>
         <p>
             Il sito usa un solo cookie tecnico, quello che tiene aperta la sessione dopo
-            l'accesso. Non ci sono cookie di profilazione ne' servizi di terze parti.
+            l'accesso. Non ci sono cookie di profilazione nè servizi di terze parti.
         </p>
     </section>
 

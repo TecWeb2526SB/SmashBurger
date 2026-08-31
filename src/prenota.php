@@ -2,7 +2,7 @@
 /**
  * Prenotazione della sala eventi, avviata dalla pagina di una sede.
  *
- * Il percorso e' in due passi sulla stessa pagina: prima si scelgono sede e data, poi si
+ * Il percorso è in due passi sulla stessa pagina: prima si scelgono sede e data, poi si
  * sceglie fra le fasce libere di quel giorno. Senza JavaScript il secondo passo arriva
  * con un invio in GET, che non modifica nulla.
  */

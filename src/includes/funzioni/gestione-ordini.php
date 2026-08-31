@@ -2,8 +2,8 @@
 /**
  * Ordini visti dal pannello di controllo.
  *
- * Ogni funzione riceve $sedeId, cioe' la sede a cui chi guarda e' limitato: per un
- * manager e' la propria, per l'amministratore e' null e significa tutte. Il vincolo
+ * Ogni funzione riceve $sedeId, cioè la sede a cui chi guarda è limitato: per un
+ * manager è la propria, per l'amministratore è null e significa tutte. Il vincolo
  * entra nella query, quindi un manager non puo' toccare gli ordini di un'altra sede
  * nemmeno conoscendone l'identificativo.
  */
@@ -11,7 +11,7 @@
 /**
  * Ordini da gestire, con i filtri della pagina.
  *
- * @param int|null    $sedeId      sede a cui il chiamante e' limitato
+ * @param int|null    $sedeId      sede a cui il chiamante è limitato
  * @param int|null    $filtroSede  sede scelta nel filtro, valida solo per l'amministratore
  * @param string      $filtroStato stato scelto nel filtro, stringa vuota per tutti
  */
@@ -49,7 +49,7 @@ function ordini_da_gestire(PDO $pdo, ?int $sedeId, ?int $filtroSede, string $fil
 }
 
 /**
- * Un ordine per il pannello, solo se rientra nella sede a cui si e' limitati.
+ * Un ordine per il pannello, solo se rientra nella sede a cui si è limitati.
  */
 function ordine_per_pannello(PDO $pdo, int $ordineId, ?int $sedeId): ?array
 {
@@ -76,7 +76,7 @@ function ordine_per_pannello(PDO $pdo, int $ordineId, ?int $sedeId): ?array
 /**
  * Cambia lo stato di lavorazione di un ordine.
  *
- * L'annullamento non passa da qui: ha una funzione propria, perche' deve chiedere il
+ * L'annullamento non passa da qui: ha una funzione propria, perchè deve chiedere il
  * motivo e rimettere la merce a disposizione.
  */
 function ordine_cambia_stato(PDO $pdo, int $ordineId, string $stato, ?int $sedeId): array
@@ -103,7 +103,7 @@ function ordine_cambia_pagamento(PDO $pdo, int $ordineId, string $stato, ?int $s
 /**
  * Aggiorna una colonna di stato di un ordine, rispettando il limite di sede.
  *
- * Il nome della colonna non arriva mai da fuori: e' uno dei due valori scritti qui.
+ * Il nome della colonna non arriva mai da fuori: è uno dei due valori scritti qui.
  */
 function ordine_aggiorna_colonna(PDO $pdo, int $ordineId, string $colonna, string $valore, ?int $sedeId): array
 {
@@ -121,7 +121,7 @@ function ordine_aggiorna_colonna(PDO $pdo, int $ordineId, string $colonna, strin
     $query->execute($parametri);
 
     if ($query->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'L ordine non esiste, non e di questa sede oppure e gia annullato.'];
+        return ['ok' => false, 'messaggio' => 'L\'ordine non esiste, non è di questa sede oppure e già annullato.'];
     }
 
     return ['ok' => true, 'messaggio' => 'Ordine aggiornato.'];
@@ -130,9 +130,9 @@ function ordine_aggiorna_colonna(PDO $pdo, int $ordineId, string $colonna, strin
 /**
  * Incasso degli ultimi giorni, in centesimi, per giorno.
  *
- * Gli ordini annullati non contano: la merce e' tornata a disposizione e il pagamento e'
+ * Gli ordini annullati non contano: la merce è tornata a disposizione e il pagamento e'
  * stato rimborsato. Restituisce una voce per ogni giorno del periodo, anche quando non
- * c'e' stato nessun ordine, cosi' il grafico non salta le giornate vuote.
+ * c'è stato nessun ordine, cosi' il grafico non salta le giornate vuote.
  *
  * @return array coppie data/centesimi, dal giorno piu' lontano a oggi
  */

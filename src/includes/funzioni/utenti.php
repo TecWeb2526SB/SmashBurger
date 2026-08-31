@@ -56,7 +56,7 @@ function ruolo_corrente(PDO $pdo): ?string
 /**
  * Verifica le credenziali e apre la sessione.
  *
- * Il messaggio di errore e' sempre lo stesso, sia che il nome utente non esista sia che
+ * Il messaggio di errore è sempre lo stesso, sia che il nome utente non esista sia che
  * la password sia sbagliata: cosi' non rivela quali account esistono.
  *
  * @return array ['ok' => bool, 'messaggio' => string]

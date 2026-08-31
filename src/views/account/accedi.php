@@ -2,7 +2,7 @@
 /**
  * Modulo di accesso. Riceve $nomeUtente e $errore dal controller.
  *
- * Il messaggio di errore e' sempre lo stesso, sia che il nome utente non esista sia che
+ * Il messaggio di errore è sempre lo stesso, sia che il nome utente non esista sia che
  * la password sia sbagliata: non rivela quali account esistono.
  */
 ?>

@@ -2,8 +2,8 @@
 /**
  * Calcolo degli orari prenotabili della sala eventi.
  *
- * Sta in un file separato da prenotazioni.php, che valida e salva: qui c'e' solo il
- * ragionamento su apertura, durate e intervalli gia' occupati.
+ * Sta in un file separato da prenotazioni.php, che valida e salva: qui c'è solo il
+ * ragionamento su apertura, durate e intervalli già occupati.
  */
 
 /**
@@ -30,7 +30,7 @@ function durate_prenotabili(): array
  * Un orario compare quando ci sta almeno la durata minima: la durata la sceglie chi
  * prenota, quindi la combinazione esatta viene controllata al momento dell'invio.
  * L'orario risulta occupato anche se la prenotazione esistente comincia dopo, perche'
- * la durata minima gia' la invaderebbe.
+ * la durata minima già la invaderebbe.
  *
  * @return array elenco di ['inizio', 'etichetta', 'massimo', 'occupata']
  */
@@ -75,7 +75,7 @@ function durata_massima_da(array $attive, string $inizio, int $momento, int $chi
     $limite = min($momento + MINUTI_MASSIMI_PRENOTAZIONE * 60, $chiusura);
 
     foreach ($attive as $presa) {
-        // Una prenotazione gia' in corso a quell'ora non lascia nessuno spazio.
+        // Una prenotazione già in corso a quell'ora non lascia nessuno spazio.
         if ($presa['ora_inizio'] <= $inizio && $presa['ora_fine'] > $inizio) {
             return 0;
         }
@@ -106,7 +106,7 @@ function prenotazioni_attive_del_giorno(PDO $pdo, int $sedeId, string $data): ar
 }
 
 /**
- * Orario di apertura di una sede in un giorno, come momenti, oppure null se e' chiusa.
+ * Orario di apertura di una sede in un giorno, come momenti, oppure null se è chiusa.
  */
 function orario_del_giorno(PDO $pdo, int $sedeId, string $data): ?array
 {
@@ -127,7 +127,7 @@ function orario_del_giorno(PDO $pdo, int $sedeId, string $data): ?array
  * Occupazione della sala in un giorno, come sequenza di intervalli liberi e occupati.
  *
  * Serve a mostrare la disponibilita' senza rivelare nulla di chi ha prenotato: la
- * tabella dice quando la sala e' presa, non da chi ne' per che cosa.
+ * tabella dice quando la sala è presa, non da chi nè per che cosa.
  *
  * @return array elenco di ['inizio', 'fine', 'occupata']
  */
@@ -193,9 +193,9 @@ function unisci_intervalli(array $intervalli): array
 }
 
 /**
- * Intervallo corrispondente a orario e durata scelti, oppure null se non e' prenotabile.
+ * Intervallo corrispondente a orario e durata scelti, oppure null se non è prenotabile.
  *
- * Restituisce null anche quando l'orario esiste ma la durata richiesta non ci sta: e' il
+ * Restituisce null anche quando l'orario esiste ma la durata richiesta non ci sta: è il
  * caso di chi sceglie tre ore alle 20:00 con la sede che chiude alle 22:30.
  */
 function fascia_scelta(PDO $pdo, int $sedeId, string $data, string $inizio, int $durata): ?array

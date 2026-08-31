@@ -1,7 +1,7 @@
 <?php
 /**
- * Contenuto della pagina 404. Oltre a dire che cosa e' successo offre i collegamenti
- * alle pagine principali, perche' chi arriva qui deve poter ripartire senza tornare
+ * Contenuto della pagina 404. Oltre a dire che cosa è successo offre i collegamenti
+ * alle pagine principali, perchè chi arriva qui deve poter ripartire senza tornare
  * indietro con il browser.
  */
 ?>

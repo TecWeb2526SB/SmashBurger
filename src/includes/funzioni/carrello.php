@@ -2,12 +2,12 @@
 /**
  * Carrello in corso.
  *
- * Il carrello non e' persistente: si elimina quando l'ordine si conclude e scade da solo
+ * Il carrello non è persistente: si elimina quando l'ordine si conclude e scade da solo
  * dopo MINUTI_CARRELLO minuti di inattivita'. La scadenza si controlla quando il
  * carrello viene richiesto, non con un processo periodico.
  *
  * Il prezzo non viene copiato nelle righe: si legge dal prodotto, cosi' il totale
- * mostrato e' sempre quello corrente.
+ * mostrato è sempre quello corrente.
  */
 
 /**
@@ -42,7 +42,7 @@ function carrello_corrente(PDO $pdo, int $utenteId): ?array
 /**
  * Apre un carrello sulla sede indicata, o ne cambia la sede.
  *
- * Cambiando sede le righe vengono svuotate: la disponibilita' e' specifica per sede,
+ * Cambiando sede le righe vengono svuotate: la disponibilita' è specifica per sede,
  * quindi un carrello riempito altrove non avrebbe piu' significato.
  */
 function carrello_apri(PDO $pdo, int $utenteId, int $sedeId): int
@@ -139,7 +139,7 @@ function carrello_articoli(array $righe): int
 /**
  * Aggiunge una unita' di un prodotto, o ne aumenta la quantita'.
  *
- * Il controllo sulla disponibilita' e' una cortesia verso chi ordina: quello che decide
+ * Il controllo sulla disponibilita' è una cortesia verso chi ordina: quello che decide
  * davvero avviene alla conferma dell'ordine, in transazione.
  *
  * @return array ['ok' => bool, 'messaggio' => string]
@@ -149,7 +149,7 @@ function carrello_aggiungi(PDO $pdo, int $carrelloId, int $sedeId, int $prodotto
     $disponibili = quantita_disponibile($pdo, $sedeId, $prodottoId);
 
     if ($disponibili === 0) {
-        return ['ok' => false, 'messaggio' => 'Questo prodotto non e disponibile in questa sede.'];
+        return ['ok' => false, 'messaggio' => 'Questo prodotto non è disponibile in questa sede.'];
     }
 
     $query = $pdo->prepare(
@@ -161,7 +161,7 @@ function carrello_aggiungi(PDO $pdo, int $carrelloId, int $sedeId, int $prodotto
     $nuova = min($attuale + $quantita, $disponibili, QUANTITA_MASSIMA);
 
     if ($nuova === $attuale) {
-        return ['ok' => false, 'messaggio' => 'Hai gia raggiunto la quantita massima per questo prodotto.'];
+        return ['ok' => false, 'messaggio' => 'Hai già raggiunto la quantità massima per questo prodotto.'];
     }
 
     return carrello_imposta_quantita($pdo, $carrelloId, $sedeId, $prodottoId, $nuova);
@@ -179,7 +179,7 @@ function carrello_imposta_quantita(PDO $pdo, int $carrelloId, int $sedeId, int $
     $disponibili = quantita_disponibile($pdo, $sedeId, $prodottoId);
 
     if ($disponibili === 0) {
-        return ['ok' => false, 'messaggio' => 'Questo prodotto non e disponibile in questa sede.'];
+        return ['ok' => false, 'messaggio' => 'Questo prodotto non è disponibile in questa sede.'];
     }
 
     $quantita = min($quantita, $disponibili, QUANTITA_MASSIMA);
@@ -225,7 +225,7 @@ function carrello_diminuisci(PDO $pdo, int $carrelloId, int $sedeId, int $prodot
     $attuale = (int) ($query->fetchColumn() ?: 0);
 
     if ($attuale === 0) {
-        return ['ok' => false, 'messaggio' => 'Questo prodotto non e nel carrello.'];
+        return ['ok' => false, 'messaggio' => 'Questo prodotto non è nel carrello.'];
     }
 
     return carrello_imposta_quantita($pdo, $carrelloId, $sedeId, $prodottoId, $attuale - 1);

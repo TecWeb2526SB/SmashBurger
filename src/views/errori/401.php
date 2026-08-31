@@ -6,7 +6,7 @@
 <h1>Serve l'accesso</h1>
 
 <p>
-    Questa pagina e' riservata a chi ha un account. Entra con le tue credenziali oppure
+    Questa pagina è riservata a chi ha un account. Entra con le tue credenziali oppure
     registrati, poi torna qui.
 </p>
 

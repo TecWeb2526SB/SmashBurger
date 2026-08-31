@@ -4,7 +4,7 @@
  * apertura del contenuto.
  *
  * Riceve $titolo, $descrizione, $breadcrumb, $ruoloCorrente e $slugCorrente da
- * mostra_pagina(). Le voci del menu derivano da includes/pagine.php e sono gia' filtrate
+ * mostra_pagina(). Le voci del menu derivano da includes/pagine.php e sono già filtrate
  * per il ruolo di chi guarda: qui non si interroga il database.
  */
 ?>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Mappa del sito. Riceve $aree, cioe' gruppi di coppie slug/etichetta gia' filtrate
+ * Mappa del sito. Riceve $aree, cioè gruppi di coppie slug/etichetta già filtrate
  * per il ruolo di chi guarda.
  */
 ?>

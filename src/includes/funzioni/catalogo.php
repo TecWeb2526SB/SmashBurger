@@ -2,7 +2,7 @@
 /**
  * Lettura pubblica del catalogo: categorie, prodotti e loro disponibilita' nelle sedi.
  *
- * La disponibilita' effettiva di un prodotto in una sede e' disponibile = 1 AND
+ * La disponibilita' effettiva di un prodotto in una sede è disponibile = 1 AND
  * quantita > 0: l'interruttore lo toglie dal menu anche con merce a magazzino, lo zero
  * lo toglie da solo.
  */
@@ -70,7 +70,7 @@ function prodotto_per_slug(PDO $pdo, string $slug): ?array
 /**
  * Piu' prodotti a partire dai loro slug, nell'ordine in cui gli slug sono stati chiesti.
  *
- * L'ordine di uscita e' quello dell'elenco ricevuto e non quello del database, perche'
+ * L'ordine di uscita è quello dell'elenco ricevuto e non quello del database, perche'
  * chi chiama sta componendo una selezione in cui la posizione conta, come il podio della
  * home. Uno slug inesistente viene semplicemente saltato.
  *
@@ -118,7 +118,7 @@ function prodotti_per_slug(PDO $pdo, array $slug): array
 }
 
 /**
- * Sedi attive dove un prodotto e' disponibile in questo momento.
+ * Sedi attive dove un prodotto è disponibile in questo momento.
  *
  * Alimenta la pagina di dettaglio del prodotto, che dice dove trovarlo senza chiedere
  * di scegliere una sede.
@@ -167,7 +167,7 @@ function prodotti_in_sede(PDO $pdo, int $sedeId, bool $soloDisponibili = true): 
 
 /**
  * Quantita' disponibile di un prodotto in una sede, zero se la riga non esiste o se il
- * prodotto e' stato tolto dal menu.
+ * prodotto è stato tolto dal menu.
  */
 function quantita_disponibile(PDO $pdo, int $sedeId, int $prodottoId): int
 {

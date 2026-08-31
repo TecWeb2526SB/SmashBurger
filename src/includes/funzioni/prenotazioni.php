@@ -9,10 +9,10 @@
  * MINUTI_MASSIMI_PRENOTAZIONE. Un orario compare quando ci sta almeno la durata minima,
  * quindi la combinazione esatta va ricontrollata all'invio.
  *
- * Poiche' gli inizi possibili si sovrappongono fra loro, la difesa contro la doppia
- * prenotazione e' interamente nel controllo di sovrapposizione: un orario risulta libero
+ * Poichè gli inizi possibili si sovrappongono fra loro, la difesa contro la doppia
+ * prenotazione è interamente nel controllo di sovrapposizione: un orario risulta libero
  * solo se l'intervallo che genera non tocca nessuna prenotazione attiva. Il controllo sta
- * nel codice e non in un vincolo di unicita' perche' due prenotazioni rifiutate o
+ * nel codice e non in un vincolo di unicita' perchè due prenotazioni rifiutate o
  * annullate possono legittimamente avere lo stesso orario, e MariaDB 10.6 non permette un
  * indice unico limitato alle sole righe attive.
  */
@@ -52,7 +52,7 @@ function giorni_prenotabili(): int
 
 
 /**
- * Verifica se una fascia si sovrappone a una prenotazione che occupa gia' la sala.
+ * Verifica se una fascia si sovrappone a una prenotazione che occupa già la sala.
  *
  * Due intervalli si sovrappongono quando ognuno comincia prima che l'altro finisca.
  */
@@ -96,7 +96,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     if (!data_valida($data)) {
         $errori['data'] = 'Scegli una data valida.';
     } elseif ($data < date('Y-m-d')) {
-        $errori['data'] = 'La data e gia passata.';
+        $errori['data'] = 'La data e già passata.';
     } elseif ($data > date('Y-m-d', strtotime('+' . giorni_prenotabili() . ' day'))) {
         $errori['data'] = 'Si prenota fino a ' . giorni_prenotabili() . ' giorni in anticipo.';
     }
@@ -124,7 +124,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     $fascia = fascia_scelta($pdo, (int) $sede['id'], $data, (string) ($dati['fascia'] ?? ''), $durata);
 
     if ($fascia === null) {
-        $errori['fascia'] = 'Con questa durata l orario scelto non e libero: prova una durata piu breve o un altro orario.';
+        $errori['fascia'] = 'Con questa durata l orario scelto non è libero: prova una durata piu breve o un altro orario.';
     } elseif (prenotazione_sovrapposta($pdo, (int) $sede['id'], $data, $fascia['inizio'], $fascia['fine'])) {
         $errori['fascia'] = 'Questo orario e stato appena occupato: scegline un altro.';
     }
@@ -148,7 +148,7 @@ function data_valida(string $data): bool
 
 
 /**
- * Registra una prenotazione gia' validata.
+ * Registra una prenotazione già validata.
  *
  * La sovrapposizione viene controllata di nuovo dentro la transazione: fra il controllo
  * e il salvataggio qualcun altro puo' avere prenotato la stessa fascia.

@@ -15,7 +15,7 @@ $utenteId = (int) $utente['id'];
 $carrello = carrello_corrente($pdo, $utenteId);
 
 if ($carrello === null) {
-    messaggio_imposta('errore', 'Il carrello e vuoto o scaduto: ricomincia dalla sede.');
+    messaggio_imposta('errore', 'Il carrello è vuoto o scaduto: ricomincia dalla sede.');
     vai_a('carrello');
 }
 
@@ -31,7 +31,7 @@ $slot = orari_ritiro_disponibili($pdo, (int) $carrello['sede_id']);
 $errori = [];
 
 $valori = [
-    'modalita' => 'ritiro',
+    'modalita' => $slot === [] ? 'domicilio' : 'ritiro',
     'ritiro_previsto' => (string) array_key_first($slot),
     'metodo_pagamento' => (string) ($profilo['metodo_pagamento_preferito'] ?? 'carta'),
     'indirizzo' => (string) ($profilo['indirizzo'] ?? ''),

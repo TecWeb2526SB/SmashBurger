@@ -5,7 +5,7 @@
 ?>
 <article class="pagina-documento">
     <header class="header-documento">
-        <p class="occhiello">Il sito e' per tutti</p>
+        <p class="occhiello">Il sito è per tutti</p>
         <h1>Accessibilita'</h1>
         <p class="introduzione">
             Puntiamo alla conformita' WCAG 2.1 AA. Qui trovi cosa abbiamo fatto, come lo
@@ -33,7 +33,7 @@
         <p>
             A ogni modifica controlliamo markup, fogli di stile e pagine con strumenti
             automatici sullo standard WCAG 2.1 AA. Affianchiamo prove da tastiera e con
-            un lettore di schermo, perche' un punteggio non basta.
+            un lettore di schermo, perchè un punteggio non basta.
         </p>
     </section>
 

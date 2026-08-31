@@ -1,6 +1,6 @@
 <?php
 /**
- * Contenuto della pagina 403: l'accesso e' stato fatto, ma questo account non puo'
+ * Contenuto della pagina 403: l'accesso è stato fatto, ma questo account non puo'
  * aprire la risorsa richiesta.
  */
 ?>

@@ -2,11 +2,11 @@
 /**
  * Navigazione fra le sezioni del pannello.
  *
- * Le voci derivano da includes/pagine.php e sono gia' filtrate per ruolo: un manager non
+ * Le voci derivano da includes/pagine.php e sono già filtrate per ruolo: un manager non
  * vede le sezioni riservate all'amministratore.
  *
- * La scheda della propria sede non sta nell'elenco perche' l'amministratore ci arriva
- * dalla lista delle sedi, mentre il manager ne ha una sola: per lui e' una voce a se'.
+ * La scheda della propria sede non sta nell'elenco perchè l'amministratore ci arriva
+ * dalla lista delle sedi, mentre il manager ne ha una sola: per lui è una voce a se'.
  */
 ?>
 <nav class="filtri" aria-label="Sezioni del pannello">

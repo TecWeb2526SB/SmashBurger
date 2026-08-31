@@ -2,7 +2,7 @@
 /**
  * Modulo di accesso.
  *
- * Chi e' gia' collegato viene mandato in area personale: la pagina non ha senso per lui.
+ * Chi è già collegato viene mandato in area personale: la pagina non ha senso per lui.
  */
 
 require_once __DIR__ . '/includes/risorse.php';
