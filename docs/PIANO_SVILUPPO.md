@@ -156,10 +156,13 @@ per la relazione; budget di 1600 righe e 60 classi.
 
 ### Fase 10: comportamento
 
-Un solo file, massimo 500 righe. Carrello senza ricaricare, stato ordini sulla riga, orari
-al cambio sede, validazione dei moduli, tema, menu su schermo piccolo, piu' l'unico
-comportamento nuovo, la segnalazione di sovrapposizione degli slot. I moduli di riga del
-pannello riusano `inviaModulo()` e `aggiornaPagina()` senza aggiungere funzioni proprie.
+Un solo file, entro il budget di `REGOLE.md` §22. Il nucleo sono `inviaModulo()` e
+`aggiornaPagina()`: ogni modulo marcato `data-modulo` viene inviato senza ricaricare la
+pagina, e chi porta anche `data-invio="automatico"` parte al cambio di un controllo, senza
+pulsante. Da qui passano carrello, stato e pagamento degli ordini, disponibilita' e
+quantita' dei prodotti, prenotazioni, ruoli e sala eventi: nessuna area aggiunge funzioni
+proprie. Restano a se' la scelta fra ritiro e domicilio nella pagina di pagamento e il
+pulsante Torna su.
 
 ### Fase 11: qualita' e consegna
 

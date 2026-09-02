@@ -1,6 +1,6 @@
 <?php
 /**
- * Profilo. Riceve $utente, $errori, $sezione e $confermaCancellazione dal controller.
+ * Profilo. Riceve $utente, $errori e $sezione dal controller.
  *
  * Ogni riquadro è un modulo indipendente: gli errori riguardano solo quello che e'
  * stato inviato, indicato da $sezione.
@@ -11,24 +11,6 @@ $erroreDi = static function (string $sezioneAttesa, string $campo) use ($errori,
 };
 ?>
 <h1>Il tuo profilo</h1>
-
-<?php if ($confermaCancellazione): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
-        <h2>Vuoi cancellare il tuo account?</h2>
-        <p>
-            Vengono cancellati anche il carrello, lo storico degli ordini e le
-            prenotazioni. L'operazione non si puo' annullare.
-        </p>
-        <form method="post" action="<?php echo e(url('profilo')); ?>">
-            <?php echo campo_csrf(); ?>
-            <input type="hidden" name="azione" value="cancella" />
-            <p class="azioni">
-                <button type="submit" data-tipo="negativo">Cancella il mio account</button>
-                <a class="pulsante secondario" href="<?php echo e(url('profilo')); ?>">Annulla</a>
-            </p>
-        </form>
-    </section>
-<?php endif; ?>
 
 <section>
     <h2>Dati personali</h2>
@@ -104,14 +86,6 @@ $erroreDi = static function (string $sezioneAttesa, string $campo) use ($errori,
             <p><button type="submit">Cambia la password</button></p>
         </fieldset>
     </form>
-</section>
-
-<?php require __DIR__ . '/profilo-consegna.php'; ?>
-
-<section>
-    <h2>Cancella l'account</h2>
-    <p>La cancellazione elimina anche ordini e prenotazioni collegati.</p>
-    <p><a class="pulsante secondario" data-tipo="negativo" href="<?php echo e(url('profilo', ['cancella' => 1])); ?>">Cancella il mio account</a></p>
 </section>
 
 <p class="navigazione-pagina">

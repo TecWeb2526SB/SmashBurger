@@ -52,8 +52,8 @@ function contatto_errori(array $dati): array
     }
 
     $testo = trim((string) ($dati['testo'] ?? ''));
-    if (mb_strlen($testo) < 10 || mb_strlen($testo) > 2000) {
-        $errori['testo'] = 'Scrivi il messaggio, fra 10 e 2000 caratteri.';
+    if (mb_strlen($testo) < 10 || mb_strlen($testo) > CARATTERI_MESSAGGIO_CONTATTO) {
+        $errori['testo'] = 'Scrivi il messaggio, fra 10 e ' . CARATTERI_MESSAGGIO_CONTATTO . ' caratteri.';
     }
 
     return $errori;

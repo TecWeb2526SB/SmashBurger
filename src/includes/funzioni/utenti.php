@@ -76,7 +76,7 @@ function utente_accedi(PDO $pdo, string $nomeUtente, string $password): array
     }
 
     if ((int) $riga['attivo'] !== 1) {
-        return ['ok' => false, 'messaggio' => 'Questo account e stato disattivato.'];
+        return ['ok' => false, 'messaggio' => 'Questo account è stato disattivato.'];
     }
 
     // L'identificativo di sessione cambia dopo l'accesso, cosi' un identificativo noto

@@ -22,7 +22,7 @@ function indirizzo_errori(array $dati): array
         $errori['indirizzo'] = 'Scrivi via e numero civico.';
     }
 
-    $città = trim((string) ($dati['citta'] ?? ''));
+    $citta = trim((string) ($dati['citta'] ?? ''));
     if (mb_strlen($citta) < 2 || mb_strlen($citta) > 80) {
         $errori['citta'] = 'Scrivi la città.';
     }

@@ -45,7 +45,7 @@
     </table>
 </section>
 
-<form method="post" action="<?php echo e(url('pagamento')); ?>" data-modulo="sede" data-modalita="<?php echo e($valori['modalita']); ?>">
+<form method="post" action="<?php echo e(url('pagamento')); ?>" data-modalita="<?php echo e($valori['modalita']); ?>">
     <?php echo campo_csrf(); ?>
 
     <fieldset>

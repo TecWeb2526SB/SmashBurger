@@ -53,7 +53,7 @@ function testo_alternativo_sede(string $slug, string $citta): string
     ];
 
     return $descrizioni[$slug]
-        ?? 'Esterno della sede Smash Burger di ' . $città . ', visto dalla strada.';
+        ?? 'Esterno della sede Smash Burger di ' . $citta . ', visto dalla strada.';
 }
 
 /**

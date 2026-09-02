@@ -124,7 +124,7 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
 
         <?php $messaggio = messaggio_leggi(); ?>
         <?php if ($messaggio !== null): ?>
-            <p class="avviso" role="status" data-tipo="<?php echo e($messaggio['tipo']); ?>">
+            <p class="avviso" role="status" tabindex="-1" data-tipo="<?php echo e($messaggio['tipo']); ?>">
                 <strong><?php echo $messaggio['tipo'] === 'errore' ? 'Errore:' : 'Fatto:'; ?></strong>
                 <?php echo e($messaggio['testo']); ?>
             </p>

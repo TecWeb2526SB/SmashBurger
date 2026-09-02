@@ -5,6 +5,11 @@
  * Tre riquadri indipendenti: dati del locale, orari settimanali e sala eventi. Ognuno
  * salva per conto suo, cosi' un errore in uno non fa perdere quello che si stava
  * scrivendo negli altri.
+ *
+ * Il riquadro della sala eventi si legge dall'alto in basso: titolo, stato in cui si
+ * trova adesso, che cosa succede premendo il pulsante e infine il pulsante. Chiudere le
+ * prenotazioni toglie un servizio al pubblico, quindi porta il colore delle operazioni
+ * negative; riaprirle non lo e', e resta un pulsante normale.
  */
 
 $salaAperta = (int) $sede['sala_eventi_disponibile'] === 1;
@@ -37,7 +42,7 @@ $campi = [
 <section>
     <h2>Dati del locale</h2>
 
-    <form method="post" action="<?php echo e(url('controllo-sede')); ?>">
+    <form method="post" action="<?php echo e(url('controllo-sede')); ?>" data-modulo="dati-sede">
         <?php echo campo_csrf(); ?>
         <input type="hidden" name="azione" value="dati" />
         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
@@ -64,7 +69,7 @@ $campi = [
                 <input type="text" id="note_ritiro" name="note_ritiro" maxlength="255"
                     aria-describedby="aiuto-note"
                     value="<?php echo e((string) ($valori['note_ritiro'] ?? '')); ?>" />
-                <small id="aiuto-note">Dove si ritira l ordine dentro il locale.</small>
+                <small id="aiuto-note">Dove si ritira l&apos;ordine dentro il locale.</small>
             </p>
 
             <p><button type="submit">Salva i dati</button></p>
@@ -84,12 +89,27 @@ $campi = [
         </span>
     </p>
 
-    <form method="post" action="<?php echo e(url('controllo-sede')); ?>">
+    <form method="post" action="<?php echo e(url('controllo-sede')); ?>" data-modulo="sala">
         <?php echo campo_csrf(); ?>
         <input type="hidden" name="azione" value="sala" />
         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
-        <p>
-            <button type="submit" <?php echo $salaAperta ? '' : 'name="apri" value="1"'; ?>
+
+        <p id="effetto-sala">
+            <?php if ($salaAperta): ?>
+                Chiudendo le prenotazioni la sala esce dall&apos;elenco di quelle prenotabili e
+                il sito smette di accettare nuove richieste per questa sede. Le prenotazioni
+                già ricevute restano dove sono e si gestiscono dalla sezione Prenotazioni:
+                puoi riaprire quando vuoi.
+            <?php else: ?>
+                La sala non compare fra quelle prenotabili e il sito rifiuta le nuove
+                richieste per questa sede. Riaprendo torna nell&apos;elenco e i clienti possono
+                sceglierla di nuovo, senza che le prenotazioni già ricevute cambino stato.
+            <?php endif; ?>
+        </p>
+
+        <p class="azioni">
+            <button type="submit" aria-describedby="effetto-sala"
+                <?php echo $salaAperta ? 'data-tipo="negativo"' : 'name="apri" value="1"'; ?>
                 aria-pressed="<?php echo $salaAperta ? 'true' : 'false'; ?>">
                 <?php echo $salaAperta ? 'Chiudi le prenotazioni' : 'Riapri le prenotazioni'; ?>
             </button>

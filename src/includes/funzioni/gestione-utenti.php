@@ -20,7 +20,7 @@ function ruoli_assegnabili(): array
 function utenti_elenco(PDO $pdo): array
 {
     return $pdo->query(
-        'SELECT u.*, s.città AS sede_citta, s.id AS sede_id,
+        'SELECT u.*, s.citta AS sede_citta, s.id AS sede_id,
                 (SELECT COUNT(*) FROM ordini o WHERE o.utente_id = u.id) AS ordini
            FROM utenti u
            LEFT JOIN sedi s ON s.manager_id = u.id

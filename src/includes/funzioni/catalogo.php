@@ -118,18 +118,21 @@ function prodotti_per_slug(PDO $pdo, array $slug): array
 }
 
 /**
- * Sedi attive dove un prodotto è disponibile in questo momento.
+ * Sedi attive che tengono un prodotto nel proprio menu.
  *
- * Alimenta la pagina di dettaglio del prodotto, che dice dove trovarlo senza chiedere
- * di scegliere una sede.
+ * Alimenta la pagina di dettaglio del prodotto, che dice dove trovarlo senza chiedere di
+ * scegliere una sede. Il filtro si ferma a `disponibile`, cioè alla decisione della sede
+ * di tenere il prodotto in carta: la quantita' viene riportata insieme alla sede, cosi'
+ * chi legge distingue un locale che lo ha da uno che lo ha esaurito. Escluderle entrambe
+ * direbbe che il prodotto non esiste da nessuna parte, mentre nel menu si vede.
  */
 function sedi_con_prodotto(PDO $pdo, int $prodottoId): array
 {
     $query = $pdo->prepare(
-        'SELECT s.* FROM disponibilita_prodotti d
+        'SELECT s.*, d.quantita FROM disponibilita_prodotti d
            JOIN sedi s ON s.id = d.sede_id
           WHERE d.prodotto_id = :prodotto
-            AND d.disponibile = 1 AND d.quantita > 0 AND s.attiva = 1
+            AND d.disponibile = 1 AND s.attiva = 1
           ORDER BY s.ordine, s.citta'
     );
     $query->execute([':prodotto' => $prodottoId]);

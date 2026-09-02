@@ -90,20 +90,27 @@ web. I caricamenti accettano solo JPG, PNG e WebP entro 300 KB e fra 300 e 2000 
 lato; estensione, tipo MIME e dimensioni vengono verificati sul server, il nome e' generato
 casualmente e nella cartella dei caricamenti l'esecuzione di script e' disattivata.
 
-### 3.3 Comportamento senza JavaScript
+### 3.3 Aggiornamenti senza ricaricare la pagina
 
-Ogni funzione del sito è completa senza script: moduli che inviano, redirect, messaggi dal
-server. Lo script aggiunge l'aggiornamento del carrello e degli ordini senza ricaricare la
-pagina, il ricalcolo degli orari al cambio della sede, la verifica dei moduli mentre si
-scrive e il cambio di tema immediato. In caso di errore l'invio torna al browser.
+Le operazioni del pannello e del carrello passano da un unico file di script, che
+intercetta l'invio di un modulo, ripete la stessa richiesta che manderebbe il browser e
+mette al posto del contenuto presente quello arrivato dal server, avviso di esito
+compreso. Il server non espone una seconda rappresentazione dei dati: risponde con la
+stessa pagina HTML di sempre, ed e' li' che l'operazione viene autorizzata, validata ed
+eseguita.
+
+Dove il cambio di un controllo e' già l'intenzione completa il modulo parte da solo e non
+ha pulsante di conferma. Il fuoco torna sul controllo che ha avviato l'operazione, o
+sull'avviso quando quel controllo non esiste più; se la richiesta non arriva a
+destinazione il modulo viene inviato nel modo normale.
 
 ### 3.4 Dimensioni
 
 | Ambito | Righe |
 | --- | --- |
-| PHP | 4751 |
-| CSS | 930 |
-| JavaScript | 403 |
+| PHP | 8476 |
+| CSS | 5578 |
+| JavaScript | 258 |
 
 ## 4. Test
 
@@ -124,8 +131,8 @@ d'ordine riempie il carrello, così le due pagine vengono controllate nel loro s
 
 Percorsi provati durante lo sviluppo: registrazione e accesso, aggiunta al carrello,
 modifica delle quantità, conferma dell'ordine con scelta di sede e orario, ricevuta,
-modifica del profilo e cancellazione dell'account, gestione di ordini, prodotti, sedi e
-utenti dal pannello, comportamento con JavaScript disabilitato, tentativi di accesso a
+modifica del profilo, gestione di ordini, prodotti, sedi, prenotazioni e utenti dal
+pannello, aggiornamento delle righe senza ricaricare la pagina, tentativi di accesso a
 pagine riservate e a dati di altri utenti.
 
 ## 5. Ruoli dei componenti del gruppo

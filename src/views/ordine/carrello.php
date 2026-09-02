@@ -19,7 +19,8 @@ if ($carrello === null) {
     quello che è disponibile in questo locale.
 </p>
 
-<form method="post" action="<?php echo e(url('carrello')); ?>" class="scelta-sede">
+<form method="post" action="<?php echo e(url('carrello')); ?>" class="scelta-sede"
+    data-modulo="cambia-sede">
     <?php echo campo_csrf(); ?>
     <input type="hidden" name="azione" value="scegli-sede" />
     <p>

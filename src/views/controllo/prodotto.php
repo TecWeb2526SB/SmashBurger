@@ -18,7 +18,7 @@ $nuovo = $prodotto === null;
         <h2>Vuoi cancellare <?php echo e($prodotto['nome']); ?>?</h2>
         <p>
             Sparisce dal menu di tutte le sedi. Gli ordini già fatti restano leggibili,
-            perchè hanno copiato nome e prezzo al momento dell acquisto.
+            perchè hanno copiato nome e prezzo al momento dell&apos;acquisto.
         </p>
 
         <form method="post" action="<?php echo e(url('controllo-prodotto')); ?>">
@@ -94,7 +94,7 @@ $nuovo = $prodotto === null;
                 aria-describedby="aiuto-slug<?php echo isset($errori['slug']) ? ' errore-slug' : ''; ?>"
                 value="<?php echo e($valori['slug']); ?>"
                 <?php if (isset($errori['slug'])): ?>data-stato="errore"<?php endif; ?> />
-            <small id="aiuto-slug">Compare nell indirizzo della pagina pubblica del prodotto.</small>
+            <small id="aiuto-slug">Compare nell&apos;indirizzo della pagina pubblica del prodotto.</small>
             <?php if (isset($errori['slug'])): ?>
                 <small id="errore-slug"><?php echo e($errori['slug']); ?></small>
             <?php endif; ?>

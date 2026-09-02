@@ -44,20 +44,25 @@ function prenotazione_cambia_stato(PDO $pdo, int $id, string $stato, ?int $sedeI
         return ['ok' => false, 'messaggio' => 'Stato non riconosciuto.'];
     }
 
-    $sql = 'UPDATE prenotazioni SET stato = :stato WHERE id = :id';
-    $parametri = [':stato' => $stato, ':id' => $id];
+    $limite = $sedeId === null ? '' : ' AND sede_id = :sede';
+    $parametri = [':id' => $id];
 
     if ($sedeId !== null) {
-        $sql .= ' AND sede_id = :sede';
         $parametri[':sede'] = $sedeId;
     }
 
-    $query = $pdo->prepare($sql);
+    // Come per gli ordini, l'esistenza si verifica con una lettura e non contando le
+    // righe toccate: riassegnare lo stato che la prenotazione ha già non ne tocca
+    // nessuna, e sarebbe indistinguibile da una prenotazione di un'altra sede.
+    $query = $pdo->prepare('SELECT 1 FROM prenotazioni WHERE id = :id' . $limite);
     $query->execute($parametri);
 
-    if ($query->rowCount() === 0) {
+    if ($query->fetchColumn() === false) {
         return ['ok' => false, 'messaggio' => 'La prenotazione non esiste o non è di questa sede.'];
     }
+
+    $aggiorna = $pdo->prepare('UPDATE prenotazioni SET stato = :stato WHERE id = :id' . $limite);
+    $aggiorna->execute($parametri + [':stato' => $stato]);
 
     return ['ok' => true, 'messaggio' => 'Prenotazione aggiornata.'];
 }

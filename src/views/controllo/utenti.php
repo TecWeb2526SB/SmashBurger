@@ -6,6 +6,10 @@
  * form: un elemento form non puo' attraversare piu' celle.
  *
  * Sulla riga del proprio account non compaiono azioni: per quello c'è il profilo.
+ *
+ * Il ruolo e la sede si salvano insieme e non da soli: assegnare il ruolo di manager
+ * senza indicare la sede non è un'operazione valida, quindi questo modulo conserva il
+ * proprio pulsante e non parte al cambio di uno dei due elenchi.
  */
 ?>
 <h1>Utenti</h1>
@@ -14,10 +18,11 @@
 
 <?php if ($daCancellare !== null): ?>
     <section class="avviso" role="alert" data-tipo="errore">
-        <h2>Vuoi cancellare l account <?php echo e($daCancellare['nome_utente']); ?>?</h2>
+        <h2>Vuoi cancellare l&apos;account <?php echo e($daCancellare['nome_utente']); ?>?</h2>
         <p>Vengono cancellati anche il carrello, gli ordini e le prenotazioni di questo account.</p>
 
-        <form method="post" action="<?php echo e(url('controllo-utenti')); ?>">
+        <form method="post" action="<?php echo e(url('controllo-utenti')); ?>"
+            data-modulo="cancella-utente">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="azione" value="cancella" />
             <input type="hidden" name="utente_id" value="<?php echo (int) $daCancellare['id']; ?>" />
@@ -32,14 +37,14 @@
 <?php foreach ($utenti as $utente): ?>
     <?php if ((int) $utente['id'] !== $utenteCorrente): ?>
         <form method="post" action="<?php echo e(url('controllo-utenti')); ?>"
-            id="utente-<?php echo (int) $utente['id']; ?>">
+            id="utente-<?php echo (int) $utente['id']; ?>" data-modulo="ruolo">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="azione" value="ruolo" />
             <input type="hidden" name="utente_id" value="<?php echo (int) $utente['id']; ?>" />
         </form>
 
         <form method="post" action="<?php echo e(url('controllo-utenti')); ?>"
-            id="stato-<?php echo (int) $utente['id']; ?>">
+            id="stato-<?php echo (int) $utente['id']; ?>" data-modulo="stato">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="azione"
                 value="<?php echo (int) $utente['attivo'] === 1 ? 'disattiva' : 'attiva'; ?>" />

@@ -11,6 +11,6 @@ require_once __DIR__ . '/../includes/risorse.php';
 http_response_code(401);
 
 mostra_pagina('errori/401.php', [
-    'titolo' => 'Serve l accesso - Smash Burger',
-    'breadcrumb' => [['Home', url()], ['Serve l accesso', null]],
+    'titolo' => 'Serve l\'accesso - Smash Burger',
+    'breadcrumb' => [['Home', url()], ['Serve l\'accesso', null]],
 ]);

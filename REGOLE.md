@@ -80,7 +80,13 @@ Obiettivo minimo: conformità **WCAG 2.1 livello AA**.
 - contrasto minimo **4.5:1** per il testo normale e **3:1** per il testo grande;
   l'informazione non è mai veicolata dal solo colore;
 - media query per i diversi dispositivi e foglio di stile per la **stampa**, obbligatorio;
-- le funzionalità fondamentali funzionano anche senza JavaScript.
+- il comportamento risiede esclusivamente nel file di script.
+
+Il vincolo che imponeva a ogni funzionalità di funzionare anche senza JavaScript non e'
+piu' in vigore. Le operazioni del pannello e del carrello si compiono con lo script, che
+ripete la stessa richiesta del modulo e aggiorna la porzione di pagina interessata; il
+percorso lato server resta comunque completo, perche' e' quello che lo script richiama e
+perche' e' li' che stanno i controlli (sezione 17).
 
 ## 5. Regole aggiuntive comunicate a lezione
 
@@ -196,8 +202,9 @@ locale e rompersi sul server di consegna.
    senza foglio di stile; il CSS si scrive quando la struttura è definitiva.
 3. **Il markup semantico è il selettore.** Si stila l'elemento dentro il suo contesto; una
    classe si aggiunge solo quando la semantica non basta a distinguere il caso.
-4. **Funziona senza JavaScript.** Ogni azione ha un percorso completo lato server; il
-   JavaScript aggiunge comodità, mai capacità.
+4. **Il server decide.** Ogni azione ha un percorso completo lato server, ed e' quello
+   che lo script richiama: il JavaScript cambia il modo in cui si arriva all'operazione,
+   mai quello in cui viene autorizzata, validata o eseguita.
 5. **Meno superficie possibile.** Prima di aggiungere un componente, una classe, una
    tabella o una funzione si verifica se una esistente copre già il caso.
 
@@ -434,7 +441,8 @@ e validata**. Fino ad allora le pagine restano senza stile.
 - Specificità: al massimo due livelli di selettore. Nessun `!important`, nessun selettore
   per `id`.
 - Il tema scuro si ottiene con `prefers-color-scheme` e con una classe sulla radice decisa
-  lato server in base a un cookie; nessuno script scrive stili.
+  lato server in base a un cookie; lo script non scrive stili, al massimo passa una
+  misura come proprietà personalizzata (sezione 17).
 - Solo CSS2/CSS3 validi secondo il validatore W3C.
 
 ## 17. JavaScript
@@ -445,23 +453,43 @@ e validata**. Fino ad allora le pagine restano senza stile.
   `.htaccess` rendono il risparmio trascurabile rispetto al costo di un passo di
   compilazione.
 - Prima di scrivere una funzione nuova, si verifica se `inviaModulo()` più
-  `aggiornaPagina()`, o il validatore generico dei moduli, coprono già il caso.
+  `aggiornaPagina()` coprono già il caso: quasi ogni operazione del sito e' un modulo che
+  va inviato e una porzione di pagina da rimettere a posto.
 - Organizzazione interna: una funzione `inizializza<Area>()` per ogni comportamento, tutte
   richiamate da un unico ascoltatore di `DOMContentLoaded`.
 - Ogni funzione parte da un elemento del DOM: se il selettore non trova nulla, esce subito
   senza errori. Così lo stesso file serve tutte le pagine.
-- Il JavaScript non genera il markup della pagina e non sostituisce moduli funzionanti: al
-  massimo intercetta un invio, ripete la stessa richiesta e aggiorna una porzione già
-  presente, o mostra/nasconde elementi (es. tramite classi o attributi `data-*`) in base
-  alle scelte dell'utente.
+- Il JavaScript non genera il markup della pagina: intercetta un invio, ripete la stessa
+  richiesta e mette al posto della porzione presente quella arrivata dal server, oppure
+  mostra e nasconde elementi (tramite classi o attributi `data-*`) in base alle scelte
+  dell'utente.
 - Le richieste inviate dallo script sono le stesse dei moduli e ricevono la stessa
-  risposta HTML: il server non espone una seconda rappresentazione dei dati.
-- I punti di aggancio nel markup sono attributi `data-modulo` sui moduli aggiornabili e
-  `data-ordine` sulle righe che si aggiornano da sole.
+  risposta HTML: il server non espone una seconda rappresentazione dei dati. Quando il
+  server risponde con un redirect, la barra degli indirizzi viene allineata all'indirizzo
+  di arrivo, cosi' indirizzo e contenuto dicono la stessa cosa; quando invece rimanda
+  indietro la pagina con gli errori del modulo l'indirizzo non si tocca, altrimenti si
+  perderebbero i parametri con cui la pagina era stata aperta.
+- I punti di aggancio nel markup sono due attributi sul modulo: `data-modulo` con il nome
+  dell'operazione, che dice allo script di inviarlo senza ricaricare la pagina, e
+  `data-invio="automatico"`, che aggiunge l'invio al cambio di un controllo. Un modulo
+  automatico non ha pulsante di conferma: lo si mette solo dove il cambio di un controllo
+  e' già l'intenzione completa, quindi non sui campi di testo, che si finiscono di
+  scrivere, e non dove due controlli valgono solo insieme.
 - Quando più pulsanti agiscono su righe diverse dentro lo stesso modulo, ognuno porta
-  l'identificativo della riga come valore: il browser invia solo il pulsante premuto e il
-  modulo resta uno.
+  l'identificativo della riga come valore: il browser invia solo il pulsante premuto e lo
+  script gli aggiunge il pulsante che ha avviato l'invio, quindi il modulo resta uno.
+- Dopo un aggiornamento il fuoco torna sul controllo che lo ha avviato, riconosciuto dal
+  suo `id`; se quel controllo non esiste più va sull'avviso dell'esito, che ha
+  `tabindex="-1"` e `role="status"`.
+- Gli ascoltatori stanno sul documento e non sui singoli moduli, cosi' continuano a valere
+  sul markup arrivato con un aggiornamento e raggiungono anche i controlli che stanno
+  fuori dal proprio modulo e lo indicano con l'attributo `form`.
+- Se la richiesta non arriva a destinazione, lo script invia il modulo nel modo normale:
+  l'operazione non si perde e l'esito resta quello del server.
 - Nessuna scrittura di stili da codice: si aggiunge o si toglie una classe o un attributo.
+  Unica eccezione, le misure che solo il browser conosce (altezza dell'intestazione,
+  distanza dal piede della pagina), passate al foglio di stile come proprietà
+  personalizzate: il valore lo misura lo script, che cosa farne lo decide il CSS.
 - Nomi di funzioni e variabili in `camelCaseItaliano`.
 
 ## 18. Database
@@ -666,8 +694,8 @@ tabella, non si introduce in silenzio.
    sintatticamente XML.
 2. I fogli di stile passano il validatore W3C senza errori.
 3. Pa11y non segnala errori sulle pagine toccate.
-4. La pagina funziona con JavaScript disabilitato, e ogni validazione lato client ha la
-   gemella lato server.
+4. Ogni validazione lato client ha la gemella lato server, e le operazioni che passano
+   dallo script arrivano allo stesso codice PHP dei moduli.
 5. La navigazione da tastiera raggiunge ogni controllo con focus visibile.
 6. La pagina non produce scorrimento orizzontale su schermo stretto.
 7. I budget della sezione 22 sono rispettati.
@@ -730,7 +758,8 @@ zip -r smashburger.zip src smashburger.sql relazione.pdf -x '*.DS_Store'
 - [ ] Il sito sul server risponde e l'accesso funziona con tutte e tre le utenze di prova.
 - [ ] Un ordine completo va a buon fine sul server, dal menu alla ricevuta.
 - [ ] Il pannello permette inserimento, modifica e cancellazione in ogni sezione.
-- [ ] Le pagine funzionano con JavaScript disabilitato.
+- [ ] Le operazioni del pannello e del carrello si compiono senza ricaricare la pagina,
+      e l'avviso con l'esito compare a ogni operazione.
 - [ ] Le pagine 401, 403, 404 e 500 compaiono nei casi giusti, comprese le richieste con
       un identificativo inesistente o malformato.
 - [ ] Nessuna pagina produce scorrimento orizzontale sul telefono.

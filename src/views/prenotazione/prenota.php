@@ -4,8 +4,10 @@
  *
  * Riceve $sedi, $sede, $data, $fasce, $occupazione, $durate, $valori, $errori, $minimo
  * e $massimo.
- * Il primo modulo viaggià in GET perchè non modifica nulla: serve solo a mostrare le
- * orari liberi del giorno scelto.
+ *
+ * Il primo modulo viaggia in GET perchè non modifica nulla: serve solo a mostrare gli
+ * orari liberi del giorno scelto. Il riquadro dei dettagli sta in prenota-dettagli.php,
+ * per tenere ogni vista entro il limite di righe.
  */
 ?>
 <h1>Prenota la sala eventi</h1>
@@ -27,7 +29,7 @@
     </section>
 <?php endif; ?>
 
-<form method="get" action="<?php echo e(url('prenota')); ?>" data-modulo="fasce">
+<form method="get" action="<?php echo e(url('prenota')); ?>">
     <fieldset>
         <legend>Sede e giorno</legend>
 
@@ -103,37 +105,7 @@
                     </ul>
                 </fieldset>
 
-                <fieldset>
-                    <legend>Dettagli</legend>
-
-                    <p>
-                        <label for="durata">Per quanto tempo</label>
-                        <select id="durata" name="durata"
-                            <?php if (isset($errori['durata'])): ?>data-stato="errore"<?php endif; ?>>
-                            <?php foreach ($durate as $minuti => $etichetta): ?>
-                                <option value="<?php echo (int) $minuti; ?>"
-                                    <?php echo (int) $valori['durata'] === (int) $minuti ? 'selected="selected"' : ''; ?>>
-                                    <?php echo e($etichetta); ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </p>
-
-                    <p>
-                        <label for="numero_persone">Quante persone siete</label>
-                        <input type="number" id="numero_persone" name="numero_persone"
-                            required="required" min="1" max="80"
-                            value="<?php echo e($valori['numero_persone']); ?>"
-                            <?php if (isset($errori['numero_persone'])): ?>data-stato="errore"<?php endif; ?> />
-                    </p>
-
-                    <p>
-                        <label for="note">Note per la sede</label>
-                        <textarea id="note" name="note" rows="3" maxlength="255"><?php echo e($valori['note']); ?></textarea>
-                    </p>
-
-                    <p><button type="submit">Invia la richiesta</button></p>
-                </fieldset>
+                <?php require __DIR__ . '/prenota-dettagli.php'; ?>
             </form>
         <?php endif; ?>
     </section>

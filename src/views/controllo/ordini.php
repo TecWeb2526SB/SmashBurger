@@ -4,6 +4,9 @@
  *
  * Riceve $ordini, $sedi, $sedeCorrente, $filtroSede, $filtroStato, $stati,
  * $statiPagamento, $serie e $incasso dal controller.
+ *
+ * Il modulo di ogni riga si invia da solo quando cambia uno dei due elenchi: non ha un
+ * pulsante di conferma, e la tabella si riscrive senza ricaricare la pagina.
  */
 ?>
 <h1>Ordini<?php echo $sedeCorrente === null ? '' : ' di ' . e($sedeCorrente['citta']); ?></h1>
@@ -77,7 +80,8 @@
                             <span class="etichetta" data-tipo="negativo">annullato</span>
                             <span class="etichetta"><?php echo e($ordine['stato_pagamento']); ?></span>
                         <?php else: ?>
-                            <form method="post" action="<?php echo e(url('controllo')); ?>" data-modulo="ordine">
+                            <form method="post" action="<?php echo e(url('controllo')); ?>"
+                                data-modulo="ordine" data-invio="automatico">
                                 <?php echo campo_csrf(); ?>
                                 <input type="hidden" name="ordine_id" value="<?php echo (int) $ordine['id']; ?>" />
 
@@ -106,8 +110,6 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
-
-                                <button type="submit">Aggiorna</button>
                             </form>
                         <?php endif; ?>
                     </td>

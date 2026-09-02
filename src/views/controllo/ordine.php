@@ -18,12 +18,13 @@
             Scrivi il motivo: viene mostrato al cliente nella sua ricevuta.
         </p>
 
-        <form method="post" action="<?php echo e(url('controllo-ordine')); ?>">
+        <form method="post" action="<?php echo e(url('controllo-ordine')); ?>"
+            data-modulo="annullamento">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="ordine" value="<?php echo (int) $ordine['id']; ?>" />
 
             <p>
-                <label for="motivo">Motivo dell annullamento</label>
+                <label for="motivo">Motivo dell&apos;annullamento</label>
                 <textarea id="motivo" name="motivo" rows="3" required="required"
                     minlength="5" maxlength="255"></textarea>
             </p>
@@ -35,8 +36,8 @@
             </p>
 
             <p class="azioni">
-                <button type="submit" data-tipo="negativo">Annulla l ordine</button>
-                <a class="pulsante secondario" href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id']])); ?>">Lascia com e</a>
+                <button type="submit" data-tipo="negativo">Annulla l&apos;ordine</button>
+                <a class="pulsante secondario" href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id']])); ?>">Lascia com&apos;è</a>
             </p>
         </form>
     </section>
@@ -58,7 +59,7 @@
 
     <?php if ($ordine['motivo_annullamento'] !== null && $ordine['motivo_annullamento'] !== ''): ?>
         <p class="avviso" role="status" data-tipo="attenzione">
-            <strong>Motivo dell annullamento:</strong> <?php echo e($ordine['motivo_annullamento']); ?>
+            <strong>Motivo dell&apos;annullamento:</strong> <?php echo e($ordine['motivo_annullamento']); ?>
         </p>
     <?php endif; ?>
 </section>
@@ -119,7 +120,7 @@
     <a class="collegamento-indietro" href="<?php echo e(url('controllo')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna agli ordini</span></a>
     <?php if ($ordine['stato'] !== 'annullato'): ?>
         <a href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id'], 'annulla' => 1])); ?>">
-            Annulla l ordine
+            Annulla l&apos;ordine
         </a>
     <?php endif; ?>
 </p>

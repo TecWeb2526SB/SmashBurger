@@ -96,7 +96,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     if (!data_valida($data)) {
         $errori['data'] = 'Scegli una data valida.';
     } elseif ($data < date('Y-m-d')) {
-        $errori['data'] = 'La data e già passata.';
+        $errori['data'] = 'La data è già passata.';
     } elseif ($data > date('Y-m-d', strtotime('+' . giorni_prenotabili() . ' day'))) {
         $errori['data'] = 'Si prenota fino a ' . giorni_prenotabili() . ' giorni in anticipo.';
     }
@@ -107,8 +107,8 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
         $errori['numero_persone'] = 'Indica quante persone siete, da 1 a 80.';
     }
 
-    if (mb_strlen((string) ($dati['note'] ?? '')) > 255) {
-        $errori['note'] = 'Le note non possono superare i 255 caratteri.';
+    if (mb_strlen(trim((string) ($dati['note'] ?? ''))) > CARATTERI_NOTA_PRENOTAZIONE) {
+        $errori['note'] = 'La nota non puo superare i ' . CARATTERI_NOTA_PRENOTAZIONE . ' caratteri.';
     }
 
     $durata = filter_var($dati['durata'] ?? '', FILTER_VALIDATE_INT);
@@ -124,9 +124,9 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     $fascia = fascia_scelta($pdo, (int) $sede['id'], $data, (string) ($dati['fascia'] ?? ''), $durata);
 
     if ($fascia === null) {
-        $errori['fascia'] = 'Con questa durata l orario scelto non è libero: prova una durata piu breve o un altro orario.';
+        $errori['fascia'] = 'Con questa durata l\'orario scelto non è libero: prova una durata piu breve o un altro orario.';
     } elseif (prenotazione_sovrapposta($pdo, (int) $sede['id'], $data, $fascia['inizio'], $fascia['fine'])) {
-        $errori['fascia'] = 'Questo orario e stato appena occupato: scegline un altro.';
+        $errori['fascia'] = 'Questo orario è stato appena occupato: scegline un altro.';
     }
 
     return $errori;
@@ -163,7 +163,7 @@ function prenotazione_crea(PDO $pdo, int $sedeId, int $utenteId, array $dati, ar
         if (prenotazione_sovrapposta($pdo, $sedeId, $dati['data'], $fascia['inizio'], $fascia['fine'])) {
             $pdo->rollBack();
 
-            return ['ok' => false, 'messaggio' => 'Questa fascia e stata appena occupata: scegline un altra.'];
+            return ['ok' => false, 'messaggio' => 'Questa fascia è stata appena occupata: scegline un\'altra.'];
         }
 
         $pdo->prepare(

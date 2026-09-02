@@ -598,10 +598,9 @@ Aggiunte `errors/401.php`, `controllo-categorie.php` e `controllo-ordine.php`. T
 ### 13.19 Conferme senza finestre modali
 
 Le operazioni distruttive del pannello si confermano in pagina, non con una finestra
-modale: l'elemento `<dialog>` non si apre senza JavaScript, e un modal accessibile
-richiede trappola del focus, chiusura da tastiera e ritorno del focus all'elemento che lo
-ha aperto. La pagina `controllo-ordine` fornisce già il contesto isolato che un modal
-darebbe.
+modale: un modal accessibile richiede trappola del focus, chiusura da tastiera e ritorno
+del focus all'elemento che lo ha aperto, cioè piu' comportamento di quanto ne risparmi.
+La pagina `controllo-ordine` fornisce già il contesto isolato che un modal darebbe.
 
 ### 13.20 Budget rialzati
 
@@ -635,6 +634,63 @@ precedenti erano tarati su quella fase per impedire appigli di stile prematuri, 
 limitare un'identità grafica compiuta. Restano fuori dalla revisione i limiti che non
 riguardano la grafica: tabelle del database, peso delle immagini, righe per funzione e
 per vista.
+
+### 13.23 Le operazioni si compiono senza ricaricare la pagina
+
+Il vincolo che imponeva a ogni funzionalità di funzionare anche senza JavaScript non e'
+piu' in vigore. Le operazioni del pannello e del carrello passano dallo script, che
+ripete la stessa richiesta del modulo, riceve la stessa risposta HTML e rimette in pagina
+la porzione aggiornata. Il server resta l'unico posto in cui l'operazione viene
+autorizzata, validata ed eseguita: cambia come ci si arriva, non che cosa succede.
+`REGOLE.md` §4, §10.4, §17 e §25 sono stati riscritti di conseguenza.
+
+Dove il cambio di un controllo e' già l'intenzione completa il modulo parte da solo e
+perde il pulsante di conferma: stato e pagamento di un ordine, quantita' di un prodotto
+in una sede. Restano espliciti i moduli con campi di testo, che si finiscono di scrivere,
+e quelli in cui due controlli valgono solo insieme, come ruolo e sede di un account.
+
+### 13.24 Area personale e profilo ridotti a cio' che riguarda la persona
+
+L'area personale mostra ordini e prenotazioni solo ai clienti: manager e amministratore
+trovano quelli della propria sede nel pannello, e due elenchi sempre vuoti nel proprio
+profilo non dicevano nulla.
+
+Dal profilo spariscono l'indirizzo di consegna salvato, il metodo di pagamento preferito
+e la cancellazione del proprio account. L'indirizzo si scrive al momento dell'ordine,
+dove serve davvero ed e' l'unico punto in cui viene usato; la cancellazione di un account
+resta un'operazione del pannello, dove l'amministratore la esegue con la conferma
+prevista da `REGOLE.md` §13. Le colonne di `utenti` che li conservavano restano nello
+schema e continuano a precompilare il modulo di consegna.
+
+### 13.25 I testi liberi si leggono nella riga di tabella
+
+La nota di una prenotazione si legge per intero nella colonna che segue il cliente, senza
+pulsante per aprirla: un testo che si apre e si chiude nasconde l'unica informazione per
+cui la sede guarda quella riga. Perche' ci stia, il limite scende da 255 a
+`CARATTERI_NOTA_PRENOTAZIONE` caratteri, valore unico per il campo del modulo, per il
+controllo lato server e per la colonna del database.
+
+Lo stesso vale per il messaggio del modulo di contatto, che nel pannello stava dentro un
+elemento da aprire: ora si legge nella riga, e il limite passa da 2000 caratteri e da una
+colonna `TEXT` a `CARATTERI_MESSAGGIO_CONTATTO` su una colonna dimensionata. Il valore e'
+piu' alto di quello di una nota perche' un messaggio e' un testo scritto per essere letto,
+non un promemoria, ma resta un limite: chi ha bisogno di scrivere di piu' continua la
+conversazione via email, che e' il canale a cui il modulo serve ad arrivare.
+
+### 13.26 Il dettaglio distingue "non in carta" da "esaurito"
+
+Il menu pubblico elenca il catalogo intero e non guarda le scorte (13.14): la
+disponibilita' per sede riguarda l'ordine, non la consultazione. Il dettaglio invece
+elencava solo le sedi con quantita' maggiore di zero, quindi un prodotto appena creato dal
+pannello, che nasce in carta ovunque ma con magazzino a zero, compariva nel menu e nel
+dettaglio si leggeva che non era disponibile in nessuna sede: due pagine che dicevano il
+contrario l'una dell'altra sullo stesso prodotto.
+
+Il filtro del dettaglio si ferma ora alla decisione della sede di tenere il prodotto in
+carta. Una sede che lo ha finito resta nell'elenco con l'etichetta di esaurito, una sede
+che lo ha tolto dal proprio menu non compare, e la frase che nega ogni disponibilita'
+resta solo per il prodotto che nessuna sede tiene in carta. Il carrello non cambia: li'
+serve la merce, non la presenza in carta.
 
 ---
 

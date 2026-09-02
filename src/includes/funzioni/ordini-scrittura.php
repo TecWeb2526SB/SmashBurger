@@ -66,7 +66,7 @@ function ordine_crea(PDO $pdo, array $carrello, array $righe, array $dati): arra
         $pdo->rollBack();
         error_log('Creazione ordine non riuscita: ' . $errore->getMessage());
 
-        return ['ok' => false, 'messaggio' => 'Non siamo riusciti a registrare l ordine.', 'ordine_id' => null];
+        return ['ok' => false, 'messaggio' => 'Non siamo riusciti a registrare l\'ordine.', 'ordine_id' => null];
     }
 }
 
@@ -181,7 +181,7 @@ function ordine_annulla(PDO $pdo, int $ordineId, string $motivo, bool $rimborsa)
     $motivo = trim($motivo);
 
     if (mb_strlen($motivo) < 5 || mb_strlen($motivo) > 255) {
-        return ['ok' => false, 'messaggio' => 'Scrivi il motivo dell annullamento, fra 5 e 255 caratteri.'];
+        return ['ok' => false, 'messaggio' => 'Scrivi il motivo dell\'annullamento, fra 5 e 255 caratteri.'];
     }
 
     $pdo->beginTransaction();
@@ -232,6 +232,6 @@ function ordine_annulla(PDO $pdo, int $ordineId, string $motivo, bool $rimborsa)
         $pdo->rollBack();
         error_log('Annullamento ordine non riuscito: ' . $errore->getMessage());
 
-        return ['ok' => false, 'messaggio' => 'Non siamo riusciti ad annullare l ordine.'];
+        return ['ok' => false, 'messaggio' => 'Non siamo riusciti ad annullare l\'ordine.'];
     }
 }

@@ -104,25 +104,41 @@ function ordine_cambia_pagamento(PDO $pdo, int $ordineId, string $stato, ?int $s
  * Aggiorna una colonna di stato di un ordine, rispettando il limite di sede.
  *
  * Il nome della colonna non arriva mai da fuori: è uno dei due valori scritti qui.
+ *
+ * L'ordine viene cercato prima di scriverlo, e non si contano le righe toccate
+ * dall'aggiornamento: un UPDATE che assegna a una colonna il valore che ha già non tocca
+ * nessuna riga, quindi il conteggio scambierebbe una scelta ripetuta per un ordine
+ * inesistente. Il vincolo di sede e quello sullo stato restano comunque nella query di
+ * scrittura, perchè fra la lettura e la scrittura l'ordine puo' essere annullato da
+ * qualcun altro.
  */
 function ordine_aggiorna_colonna(PDO $pdo, int $ordineId, string $colonna, string $valore, ?int $sedeId): array
 {
     $colonna = $colonna === 'stato_pagamento' ? 'stato_pagamento' : 'stato';
 
-    $sql = "UPDATE ordini SET {$colonna} = :valore WHERE id = :ordine AND stato <> 'annullato'";
-    $parametri = [':valore' => $valore, ':ordine' => $ordineId];
+    $limite = $sedeId === null ? '' : ' AND sede_id = :sede';
+    $parametri = [':ordine' => $ordineId];
 
     if ($sedeId !== null) {
-        $sql .= ' AND sede_id = :sede';
         $parametri[':sede'] = $sedeId;
     }
 
-    $query = $pdo->prepare($sql);
+    $query = $pdo->prepare('SELECT stato FROM ordini WHERE id = :ordine' . $limite);
     $query->execute($parametri);
+    $stato = $query->fetchColumn();
 
-    if ($query->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'L\'ordine non esiste, non è di questa sede oppure e già annullato.'];
+    if ($stato === false) {
+        return ['ok' => false, 'messaggio' => 'L\'ordine non esiste o non è di questa sede.'];
     }
+
+    if ($stato === 'annullato') {
+        return ['ok' => false, 'messaggio' => 'L\'ordine è già stato annullato: non si puo\' piu\' modificare.'];
+    }
+
+    $aggiorna = $pdo->prepare(
+        "UPDATE ordini SET {$colonna} = :valore WHERE id = :ordine AND stato <> 'annullato'" . $limite
+    );
+    $aggiorna->execute($parametri + [':valore' => $valore]);
 
     return ['ok' => true, 'messaggio' => 'Ordine aggiornato.'];
 }

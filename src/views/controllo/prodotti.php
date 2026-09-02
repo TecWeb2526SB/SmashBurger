@@ -4,6 +4,7 @@
  *
  * Riceve $prodotti, $sede, $sedi, $limitato e $amministratore dal controller.
  * Ogni riga ha due moduli: uno per il comando di disponibilita', uno per la quantita'.
+ * Il secondo si invia da solo quando il numero cambia, quindi non ha pulsante.
  */
 ?>
 <h1>Prodotti a <?php echo e($sede['citta']); ?></h1>
@@ -56,7 +57,8 @@
                 <td><?php echo e($prodotto['categoria_nome']); ?></td>
                 <td><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></td>
                 <td>
-                    <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>">
+                    <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>"
+                        data-modulo="disponibilita">
                         <?php echo campo_csrf(); ?>
                         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
                         <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
@@ -68,7 +70,8 @@
                     </form>
                 </td>
                 <td>
-                    <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>">
+                    <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>"
+                        data-modulo="quantita" data-invio="automatico">
                         <?php echo campo_csrf(); ?>
                         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
                         <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
@@ -78,10 +81,6 @@
                         <input type="number" id="quantita-<?php echo (int) $prodotto['id']; ?>"
                             name="quantita" value="<?php echo (int) $prodotto['quantita']; ?>"
                             min="0" max="9999" />
-                        <button type="submit">
-                            Salva
-                            <span class="solo-lettori">la quantità di <?php echo e($prodotto['nome']); ?></span>
-                        </button>
                     </form>
                 </td>
                 <?php if ($amministratore): ?>

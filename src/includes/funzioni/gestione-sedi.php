@@ -51,7 +51,7 @@ function sede_salva(PDO $pdo, int $sedeId, array $dati, ?int $limite): array
     }
 
     $pdo->prepare(
-        'UPDATE sedi SET nome = :nome, città = :citta, provincia = :provincia,
+        'UPDATE sedi SET nome = :nome, citta = :citta, provincia = :provincia,
                 indirizzo = :indirizzo, cap = :cap, telefono = :telefono, email = :email,
                 note_ritiro = :note
           WHERE id = :id'

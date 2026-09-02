@@ -12,14 +12,18 @@ Progetto del corso di Tecnologie Web, anno 2025/2026.
 ## Che cosa fa
 
 - Pagine pubbliche con menu, prezzi, allergeni, sedi e orari.
-- Registrazione, accesso e area personale con lo storico degli ordini.
+- Registrazione, accesso e area personale: lo storico degli ordini e delle prenotazioni
+  per i clienti, i propri dati di accesso per tutti.
 - Carrello, scelta di sede e orario di ritiro, pagamento simulato con carta o contanti,
   ricevuta.
-- Pannello di controllo con quattro sezioni: ordini, prodotti, sedi, utenti, ognuna con
-  inserimento, modifica e cancellazione.
+- Pannello di controllo con sette sezioni: ordini, prodotti, categorie, sedi,
+  prenotazioni, messaggi e utenti, ognuna con inserimento, modifica e cancellazione.
 
-Tutto funziona senza JavaScript: gli script aggiungono solo aggiornamenti senza ricaricare
-la pagina e la verifica dei moduli mentre si scrive.
+Le operazioni del pannello e del carrello si compiono senza ricaricare la pagina: lo
+script ripete la stessa richiesta del modulo e rimette in pagina la risposta del server,
+che resta l'unico posto in cui i dati vengono validati e scritti. Dove il cambio di un
+controllo e' già l'intenzione completa, come lo stato di un ordine o la quantita' di un
+prodotto, il modulo parte da solo e non ha pulsante di conferma.
 
 ## Come è fatto
 
@@ -31,7 +35,7 @@ la pagina e la verifica dei moduli mentre si scrive.
 | Dipendenze | nessuna: niente framework, niente CDN, carattere e icone nel progetto |
 | Ambiente locale | Docker Compose con Apache, MariaDB e phpMyAdmin |
 
-Dimensioni: 4751 righe di PHP, 930 di CSS, 403 di JavaScript.
+Dimensioni: 8476 righe di PHP, 5578 di CSS, 258 di JavaScript.
 
 ## Avvio locale
 

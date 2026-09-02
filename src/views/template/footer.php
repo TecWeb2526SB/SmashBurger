@@ -2,6 +2,10 @@
 /**
  * Chiusura di ogni pagina: fine del contenuto, footer con i collegamenti di servizio,
  * contatti e badge di validazione.
+ *
+ * Il piede di pagina non riporta un orario di apertura: ogni sede ha il proprio e lo
+ * cambia dal pannello, quindi un orario unico qui sarebbe sbagliato per qualcuno. Al suo
+ * posto c'è il collegamento all'elenco delle sedi, dove gli orari sono quelli veri.
  */
 ?>
     </main>
@@ -32,7 +36,7 @@
                 <h2>Parliamone</h2>
                 <p><a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a></p>
                 <p><a href="tel:<?php echo e(str_replace(' ', '', TELEFONO_CONTATTO)); ?>"><?php echo e(TELEFONO_CONTATTO); ?></a></p>
-                <p>Ogni giorno<br />11:30 - 22:30</p>
+                <p><a href="<?php echo e(url('sedi')); ?>">Orari di ogni sede</a></p>
             </address>
         </div>
 

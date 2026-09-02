@@ -9,7 +9,7 @@
 <section>
     <h2>Orari settimanali</h2>
 
-    <form method="post" action="<?php echo e(url('controllo-sede')); ?>">
+    <form method="post" action="<?php echo e(url('controllo-sede')); ?>" data-modulo="orari">
         <?php echo campo_csrf(); ?>
         <input type="hidden" name="azione" value="orari" />
         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
@@ -58,6 +58,6 @@
             </tbody>
         </table>
 
-        <p><button type="submit">Salva gli orari</button></p>
+        <p class="azioni"><button type="submit">Salva gli orari</button></p>
     </form>
 </section>

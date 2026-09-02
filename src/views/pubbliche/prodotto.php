@@ -4,6 +4,10 @@
  *
  * Le sedi sono un'informazione, non un comando di acquisto: si ordina dal carrello,
  * dopo avere scelto la sede.
+ *
+ * L'elenco contiene le sedi che tengono il prodotto in carta, comprese quelle che lo
+ * hanno finito: quelle portano l'etichetta di esaurito. Cosi' la pagina dice la stessa
+ * cosa del menu, dove il prodotto compare comunque.
  */
 ?>
 <section class="dettaglio-prodotto">
@@ -48,7 +52,7 @@
 
     <?php if ($sediDisponibili === []): ?>
         <p>
-            In questo momento non è disponibile in nessuna sede. Torna a trovarci, oppure
+            Nessuna sede lo tiene in carta in questo periodo. Torna a trovarci, oppure
             guarda il resto del <a href="<?php echo e(url('menu')); ?>">menu</a>.
         </p>
     <?php else: ?>
@@ -59,6 +63,9 @@
                         <?php echo e($sede['citta']); ?>
                     </a>,
                     <?php echo e($sede['indirizzo']); ?>
+                    <?php if ((int) $sede['quantita'] <= 0): ?>
+                        <span class="etichetta" data-tipo="attenzione">esaurito</span>
+                    <?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>

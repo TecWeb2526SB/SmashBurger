@@ -67,7 +67,7 @@ function prodotto_errori(PDO $pdo, array $dati, ?int $escludiId = null): array
     if (preg_match('/^[a-z0-9-]{2,120}$/', $slug) !== 1) {
         $errori['slug'] = 'Lo slug accetta lettere minuscole, cifre e trattini.';
     } elseif (slug_gia_usato($pdo, $slug, $escludiId)) {
-        $errori['slug'] = 'Questo slug e già usato da un altro prodotto.';
+        $errori['slug'] = 'Questo slug è già usato da un altro prodotto.';
     }
 
     if (categoria_esiste($pdo, (int) ($dati['categoria_id'] ?? 0)) === false) {
@@ -84,7 +84,7 @@ function prodotto_errori(PDO $pdo, array $dati, ?int $escludiId = null): array
     }
 
     if (mb_strlen((string) ($dati['allergeni'] ?? '')) > 255) {
-        $errori['allergeni'] = 'L elenco degli allergeni non puo superare i 255 caratteri.';
+        $errori['allergeni'] = 'L\'elenco degli allergeni non puo superare i 255 caratteri.';
     }
 
     return $errori;
@@ -223,7 +223,7 @@ function categoria_salva(PDO $pdo, array $dati, ?int $categoriaId): array
         return ['ok' => true, 'messaggio' => 'Categoria aggiornata.'];
     } catch (PDOException $errore) {
         // L'unico vincolo che puo' fallire qui è l'unicita' dello slug.
-        return ['ok' => false, 'messaggio' => 'Questo slug e già usato da un altra categoria.'];
+        return ['ok' => false, 'messaggio' => 'Questo slug è già usato da un\'altra categoria.'];
     }
 }
 

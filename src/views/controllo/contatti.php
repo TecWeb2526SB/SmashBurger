@@ -2,9 +2,13 @@
 /**
  * Messaggi ricevuti dal modulo di contatto.
  *
- * Riceve $messaggi, $stati e $categorie dal controller. Il testo del messaggio sta in un
- * elemento che si apre: in una cella di tabella occuperebbe troppo spazio e allargherebbe
- * la riga oltre lo schermo.
+ * Riceve $messaggi, $stati e $categorie dal controller.
+ *
+ * Il testo si legge per intero nella riga, senza pulsante per aprirlo: il modulo che lo
+ * raccoglie lo tiene entro CARATTERI_MESSAGGIO_CONTATTO caratteri, quindi ci sta.
+ *
+ * Ogni pulsante porta lo stato come nome e l'identificativo come valore: il browser invia
+ * solo quello premuto, quindi il modulo resta uno per tutta la tabella.
  */
 ?>
 <h1>Messaggi</h1>
@@ -14,7 +18,8 @@
 <?php if ($messaggi === []): ?>
     <p>Non è arrivato nessun messaggio.</p>
 <?php else: ?>
-    <form method="post" action="<?php echo e(url('controllo-contatti')); ?>">
+    <form method="post" action="<?php echo e(url('controllo-contatti')); ?>"
+        data-modulo="messaggi">
         <?php echo campo_csrf(); ?>
 
         <table>
@@ -40,15 +45,7 @@
                             </a>
                         </td>
                         <td><?php echo e($categorie[$messaggio['categoria']] ?? $messaggio['categoria']); ?></td>
-                        <td>
-                            <details>
-                                <summary>
-                                    Leggi
-                                    <span class="solo-lettori">il messaggio di <?php echo e($messaggio['nome']); ?></span>
-                                </summary>
-                                <p><?php echo e($messaggio['testo']); ?></p>
-                            </details>
-                        </td>
+                        <td><?php echo e($messaggio['testo']); ?></td>
                         <td>
                             <span class="etichetta" data-tipo="<?php echo $messaggio['stato'] === 'nuovo' ? 'attenzione' : 'positivo'; ?>">
                                 <?php echo e($messaggio['stato']); ?>

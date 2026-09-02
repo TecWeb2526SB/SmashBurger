@@ -11,9 +11,9 @@ del corso di Tecnologie Web. Il repository sta in `C:\Users\SOS\Desktop\git_proj
 ramo **`riscrittura`**.
 
 **L'applicazione è funzionalmente completa e completamente priva di stile.** Trentuno
-pagine, dodici tabelle, tre ruoli autenticati, tutto funziona senza JavaScript. Il markup
-è stato scritto e validato prima della presentazione, esattamente perché lo stile potesse
-lavorare su una struttura definitiva.
+pagine, dodici tabelle, tre ruoli autenticati. Il markup è stato scritto e validato prima
+della presentazione, esattamente perché lo stile potesse lavorare su una struttura
+definitiva.
 
 Il tuo compito è **dare un'identità visiva al sito e realizzarla in tre fogli di stile**.
 Non tocchi PHP se non per aggiungere markup puramente presentazionale, e in quel caso lo
@@ -187,8 +187,8 @@ Vengono dai vincoli d'esame e dalle prescrizioni della docente, riportati per es
    il punto più a rischio: sono diciotto e alcune hanno sette colonne con moduli dentro.
 2. **Contrasto** minimo 4.5:1 e 3:1, misurato e riportato.
 3. **Focus sempre visibile** da tastiera, su ogni controllo.
-4. **Il sito funziona senza JavaScript**: lo stile non può presupporre script. Il
-   JavaScript arriva nella fase 10 e aggiunge solo comodità.
+4. **Lo stile non presuppone script**: il JavaScript arriva nella fase 10 e riusa il
+   markup che il server produce già, senza aggiungerne di proprio.
 5. **Nessuna risorsa da altri domini**: la CSP non ammette eccezioni.
 6. **Solo CSS2 e CSS3 validi** secondo il validatore W3C.
 7. **Nessun `style` inline, nessun blocco `<style>`.**

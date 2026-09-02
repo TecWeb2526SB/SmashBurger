@@ -10,7 +10,7 @@ const EMAIL_CONTATTO = 'informazioni@smashburger.it';
 const TELEFONO_CONTATTO = '049 1234567';
 
 // Cambia quando cambiano fogli di stile o script, per invalidare la cache del browser.
-const VERSIONE_RISORSE = '32';
+const VERSIONE_RISORSE = '34';
 
 // Vincoli delle immagini prodotto caricate dal pannello. Il limite di peso coincide
 // con il budget prestazionale richiesto anche agli asset editoriali del sito.
@@ -35,6 +35,18 @@ const MINUTI_MASSIMI_PRENOTAZIONE = 180;
 
 // Passo con cui si propongono orari di inizio e durate.
 const MINUTI_PASSO_PRENOTAZIONE = 30;
+
+// Lunghezza massima della nota di una prenotazione. Il testo compare per intero nella
+// riga della tabella del pannello, quindi resta corto: e' un promemoria per la sede, non
+// un messaggio. Il valore vale per il campo del modulo, per il controllo lato server e
+// per la colonna del database.
+const CARATTERI_NOTA_PRENOTAZIONE = 120;
+
+// Lunghezza massima di un messaggio inviato dal modulo di contatto. Nel pannello si legge
+// per intero dentro la riga della tabella, quindi sta piu' largo di una nota ma non e' un
+// tema libero: chi ha bisogno di scrivere di piu' allega la storia in una risposta via
+// email. Vale per il campo del modulo, per il controllo lato server e per la colonna.
+const CARATTERI_MESSAGGIO_CONTATTO = 400;
 
 // Finestra su cui si calcola l'incasso mostrato al manager.
 const GIORNI_INCASSO = 30;

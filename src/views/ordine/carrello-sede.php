@@ -13,7 +13,7 @@
     quello che c'è davvero.
 </p>
 
-<form method="post" action="<?php echo e(url('carrello')); ?>">
+<form method="post" action="<?php echo e(url('carrello')); ?>" data-modulo="scelta-sede">
     <?php echo campo_csrf(); ?>
     <input type="hidden" name="azione" value="scegli-sede" />
 

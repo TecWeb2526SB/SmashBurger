@@ -54,14 +54,14 @@ function utente_errori_registrazione(PDO $pdo, array $dati): array
     if (preg_match('/^[a-z0-9._-]{3,50}$/', $nomeUtente) !== 1) {
         $errori['nome_utente'] = 'Il nome utente accetta da 3 a 50 fra lettere minuscole, cifre, punto, trattino e trattino basso.';
     } elseif (utente_esiste($pdo, 'nome_utente', $nomeUtente)) {
-        $errori['nome_utente'] = 'Questo nome utente e già in uso.';
+        $errori['nome_utente'] = 'Questo nome utente è già in uso.';
     }
 
     $email = trim((string) ($dati['email'] ?? ''));
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false || mb_strlen($email) > 160) {
         $errori['email'] = 'Scrivi un indirizzo email valido.';
     } elseif (utente_esiste($pdo, 'email', $email)) {
-        $errori['email'] = 'Questo indirizzo email e già registrato.';
+        $errori['email'] = 'Questo indirizzo email è già registrato.';
     }
 
     $password = (string) ($dati['password'] ?? '');
@@ -138,7 +138,7 @@ function utente_aggiorna_dati(PDO $pdo, int $id, array $dati): array
     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false || mb_strlen($email) > 160) {
         $errori['email'] = 'Scrivi un indirizzo email valido.';
     } elseif (utente_esiste($pdo, 'email', $email, $id)) {
-        $errori['email'] = 'Questo indirizzo email e già registrato.';
+        $errori['email'] = 'Questo indirizzo email è già registrato.';
     }
 
     if ($errori !== []) {
@@ -185,71 +185,6 @@ function utente_cambia_password(PDO $pdo, int $id, string $attuale, string $nuov
     $aggiorna->execute([':hash' => password_hash($nuova, PASSWORD_DEFAULT), ':id' => $id]);
 
     return ['ok' => true, 'errori' => []];
-}
-
-/**
- * Salva l'indirizzo usato per le consegne a domicilio.
- */
-function utente_salva_consegna(PDO $pdo, int $id, array $dati): array
-{
-    $errori = indirizzo_errori($dati);
-
-    if ($errori !== []) {
-        return ['ok' => false, 'errori' => $errori];
-    }
-
-    $query = $pdo->prepare(
-        'UPDATE utenti SET indirizzo = :indirizzo, città = :citta, provincia = :provincia,
-                cap = :cap, paese = :paese, telefono = :telefono
-          WHERE id = :id'
-    );
-    $query->execute([
-        ':indirizzo' => trim($dati['indirizzo']),
-        ':citta' => trim($dati['citta']),
-        ':provincia' => strtoupper(trim($dati['provincia'])),
-        ':cap' => trim($dati['cap']),
-        ':paese' => trim($dati['paese']),
-        ':telefono' => trim($dati['telefono']),
-        ':id' => $id,
-    ]);
-
-    return ['ok' => true, 'errori' => []];
-}
-
-/**
- * Cancella l'indirizzo di consegna salvato.
- */
-function utente_rimuovi_consegna(PDO $pdo, int $id): void
-{
-    $pdo->prepare(
-        'UPDATE utenti SET indirizzo = NULL, città = NULL, provincia = NULL,
-                cap = NULL, paese = NULL, telefono = NULL
-          WHERE id = :id'
-    )->execute([':id' => $id]);
-}
-
-/**
- * Salva o rimuove il metodo di pagamento preferito.
- *
- * Del metodo si conserva soltanto l'etichetta: nessun dato di pagamento reale entra mai
- * nel database.
- */
-function utente_salva_pagamento(PDO $pdo, int $id, ?string $metodo): void
-{
-    $metodo = in_array($metodo, ['carta', 'contanti'], true) ? $metodo : null;
-
-    $pdo->prepare('UPDATE utenti SET metodo_pagamento_preferito = :metodo WHERE id = :id')
-        ->execute([':metodo' => $metodo, ':id' => $id]);
-}
-
-/**
- * Cancella un account, insieme a carrello, ordini e prenotazioni collegati.
- *
- * Le chiavi esterne dello schema si occupano delle righe dipendenti.
- */
-function utente_elimina(PDO $pdo, int $id): void
-{
-    $pdo->prepare('DELETE FROM utenti WHERE id = :id')->execute([':id' => $id]);
 }
 
 /**

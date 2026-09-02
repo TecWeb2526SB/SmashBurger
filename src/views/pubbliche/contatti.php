@@ -89,7 +89,7 @@
         <p>
             <label for="testo">Messaggio</label>
             <textarea id="testo" name="testo" rows="6" required="required"
-                minlength="10" maxlength="2000"
+                minlength="10" maxlength="<?php echo CARATTERI_MESSAGGIO_CONTATTO; ?>"
                 <?php if (isset($errori['testo'])): ?>
                     aria-describedby="errore-testo" data-stato="errore"
                 <?php endif; ?>><?php echo e($valori['testo']); ?></textarea>

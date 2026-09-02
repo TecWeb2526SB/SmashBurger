@@ -198,7 +198,7 @@ CREATE TABLE prenotazioni (
     ora_fine TIME NOT NULL,
     numero_persone SMALLINT UNSIGNED NOT NULL,
     stato ENUM('in attesa', 'approvata', 'rifiutata', 'annullata') NOT NULL DEFAULT 'in attesa',
-    note VARCHAR(255) NULL,
+    note VARCHAR(120) NULL,
     creato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     aggiornato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY sede_data (sede_id, data),
@@ -213,7 +213,7 @@ CREATE TABLE messaggi_contatto (
     nome VARCHAR(120) NOT NULL,
     email VARCHAR(160) NOT NULL,
     categoria ENUM('ordine', 'prenotazione', 'segnalazione', 'altro') NOT NULL DEFAULT 'altro',
-    testo TEXT NOT NULL,
+    testo VARCHAR(400) NOT NULL,
     stato ENUM('nuovo', 'preso in carico', 'chiuso') NOT NULL DEFAULT 'nuovo',
     creato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     aggiornato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

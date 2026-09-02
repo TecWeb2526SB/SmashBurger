@@ -160,7 +160,6 @@
             <p class="occhiello">Dal telefono al primo morso</p>
             <h2>Quattro passi. Nessuna coda.</h2>
         </div>
-        <p><a class="pulsante" data-tipo="positivo" href="<?php echo e(url('carrello')); ?>">Inizia l'ordine</a></p>
     </header>
 
     <ol class="passi">
@@ -169,4 +168,5 @@
         <li><strong>Decidi</strong> fra ritiro in sede o consegna a casa.</li>
         <li><strong>Ritira</strong> all'orario scelto e salta la coda.</li>
     </ol>
+    <p class="azioni"><a class="pulsante" data-tipo="positivo" href="<?php echo e(url('carrello')); ?>">Inizia l'ordine</a></p>
 </section>

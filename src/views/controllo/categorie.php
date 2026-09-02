@@ -4,7 +4,9 @@
  *
  * I moduli di riga stanno fuori dalla tabella e i campi li raggiungono con l'attributo
  * form: un elemento form non puo' attraversare piu' celle, mentre questo collegamento e'
- * markup valido e funziona senza JavaScript.
+ * markup valido.
+ *
+ * I campi sono di testo, quindi il salvataggio resta esplicito: si scrive, poi si salva.
  */
 ?>
 <h1>Categorie</h1>
@@ -16,7 +18,8 @@
         <h2>Vuoi cancellare <?php echo e($daCancellare['nome']); ?>?</h2>
         <p>La cancellazione riesce solo se nessun prodotto usa ancora questa categoria.</p>
 
-        <form method="post" action="<?php echo e(url('controllo-categorie')); ?>">
+        <form method="post" action="<?php echo e(url('controllo-categorie')); ?>"
+            data-modulo="cancella-categoria">
             <?php echo campo_csrf(); ?>
             <p class="azioni">
                 <button type="submit" name="elimina" value="<?php echo (int) $daCancellare['id']; ?>" data-tipo="negativo">
@@ -31,7 +34,8 @@
 <section>
     <h2>Aggiungi una categoria</h2>
 
-    <form method="post" action="<?php echo e(url('controllo-categorie')); ?>">
+    <form method="post" action="<?php echo e(url('controllo-categorie')); ?>"
+        data-modulo="nuova-categoria">
         <?php echo campo_csrf(); ?>
 
         <fieldset>
@@ -69,7 +73,7 @@
 
     <?php foreach ($categorie as $categoria): ?>
         <form method="post" action="<?php echo e(url('controllo-categorie')); ?>"
-            id="categoria-<?php echo (int) $categoria['id']; ?>">
+            id="categoria-<?php echo (int) $categoria['id']; ?>" data-modulo="categoria">
             <?php echo campo_csrf(); ?>
             <input type="hidden" name="categoria_id" value="<?php echo (int) $categoria['id']; ?>" />
             <input type="hidden" name="descrizione" value="<?php echo e($categoria['descrizione']); ?>" />

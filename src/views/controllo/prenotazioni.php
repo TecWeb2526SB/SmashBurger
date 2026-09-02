@@ -3,7 +3,11 @@
  * Prenotazioni da gestire. Riceve $prenotazioni dal controller.
  *
  * Ogni pulsante porta lo stato come nome e l'identificativo come valore: il browser
- * invia solo quello premuto, quindi il modulo resta uno per tutta la tabella.
+ * invia solo quello premuto, quindi il modulo resta uno per tutta la tabella e la
+ * tabella si riscrive senza ricaricare la pagina.
+ *
+ * La nota ha una colonna propria e si legge per intero: il modulo che la raccoglie la
+ * tiene entro CARATTERI_NOTA_PRENOTAZIONE caratteri, quindi ci sta in una riga.
  */
 ?>
 <h1>Prenotazioni della sala</h1>
@@ -13,7 +17,8 @@
 <?php if ($prenotazioni === []): ?>
     <p>Non c'è nessuna prenotazione.</p>
 <?php else: ?>
-    <form method="post" action="<?php echo e(url('controllo-prenotazioni')); ?>">
+    <form method="post" action="<?php echo e(url('controllo-prenotazioni')); ?>"
+        data-modulo="prenotazioni">
         <?php echo campo_csrf(); ?>
 
         <table>
@@ -25,6 +30,7 @@
                     <th scope="col">Orario</th>
                     <th scope="col">Persone</th>
                     <th scope="col">Cliente</th>
+                    <th scope="col">Nota</th>
                     <th scope="col">Stato</th>
                     <th scope="col">Azioni</th>
                 </tr>
@@ -35,6 +41,7 @@
                     $tipoStato = in_array($prenotazione['stato'], ['rifiutata', 'annullata'], true)
                         ? 'negativo'
                         : (in_array($prenotazione['stato'], ['in attesa', 'in_attesa'], true) ? 'attenzione' : 'positivo');
+                    $nota = trim((string) ($prenotazione['note'] ?? ''));
                     ?>
                     <tr>
                         <th scope="row"><?php echo e($prenotazione['citta']); ?></th>
@@ -46,11 +53,13 @@
                         <td><?php echo (int) $prenotazione['numero_persone']; ?></td>
                         <td>
                             <?php echo e($prenotazione['nome']); ?> <?php echo e($prenotazione['cognome']); ?>
-                            <?php if ($prenotazione['note'] !== null && $prenotazione['note'] !== ''): ?>
-                                <details>
-                                    <summary>Note</summary>
-                                    <p><?php echo e($prenotazione['note']); ?></p>
-                                </details>
+                        </td>
+                        <td>
+                            <?php if ($nota === ''): ?>
+                                <span class="solo-lettori">Nessuna nota</span>
+                                <span aria-hidden="true">-</span>
+                            <?php else: ?>
+                                <?php echo e($nota); ?>
                             <?php endif; ?>
                         </td>
                         <td>

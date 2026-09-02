@@ -31,7 +31,7 @@
 
     <?php if ($ordine['motivo_annullamento'] !== null && $ordine['motivo_annullamento'] !== ''): ?>
         <p class="avviso" role="status" data-tipo="attenzione">
-            <strong>Motivo dell annullamento:</strong> <?php echo e($ordine['motivo_annullamento']); ?>
+            <strong>Motivo dell&apos;annullamento:</strong> <?php echo e($ordine['motivo_annullamento']); ?>
         </p>
     <?php endif; ?>
 </section>
