@@ -53,7 +53,7 @@
                 La carne arriva fresca e viene macinata in giornata. Pane e salse sono
                 preparati per noi da fornitori della zona.
             </p>
-            <p>Ogni burger vienè composto quando l'ordine entra in cucina.</p>
+            <p>Ogni burger viene composto quando l'ordine entra in cucina.</p>
         </div>
     </section>
 
