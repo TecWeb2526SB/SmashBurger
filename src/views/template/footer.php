@@ -10,7 +10,7 @@
 ?>
     </main>
 
-    <a class="torna-su" href="#contenuto" title="Torna su">
+    <a class="torna-su" href="#inizio" title="Torna su">
         <?php echo icona('freccia-su'); ?>
         <span class="solo-lettori">Torna su</span>
     </a>

@@ -71,6 +71,50 @@
         if (header !== null && 'ResizeObserver' in window) {
             new ResizeObserver(aggiornaAltezzaHeader).observe(header);
         }
+
+        tornaSu.addEventListener('click', function (evento) {
+            evento.preventDefault();
+
+            if (areaScorribile !== null) {
+                areaScorribile.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            var inizio = document.getElementById('inizio');
+
+            if (inizio !== null && typeof inizio.focus === 'function') {
+                inizio.focus({ preventScroll: true });
+            }
+        });
+
+        var salta = document.querySelector('.salta');
+
+        if (salta !== null) {
+            salta.addEventListener('click', function (evento) {
+                var contenuto = document.getElementById('contenuto');
+
+                if (contenuto !== null) {
+                    evento.preventDefault();
+
+                    if (!contenuto.hasAttribute('tabindex')) {
+                        contenuto.setAttribute('tabindex', '-1');
+                    }
+
+                    if (areaScorribile !== null) {
+                        areaScorribile.scrollTop = 0;
+                    }
+
+                    contenuto.focus();
+                }
+            });
+        }
+
+        window.addEventListener('scroll', function () {
+            if (areaScorribile !== null && (window.scrollY !== 0 || window.scrollX !== 0)) {
+                window.scrollTo(0, 0);
+            }
+        }, { passive: true });
     }
 
     /**
