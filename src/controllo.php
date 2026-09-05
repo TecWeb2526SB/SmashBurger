@@ -36,7 +36,7 @@ $filtroStato = is_string($_GET['stato'] ?? null) ? $_GET['stato'] : '';
 $serie = incasso_per_giorno($pdo, $sedeId);
 
 mostra_pagina('controllo/ordini.php', [
-    'breadcrumb' => [['Home', url()], ['Ordini', null]],
+    'breadcrumb' => [['Home', url()], ['Controllo', null]],
     'ordini' => ordini_da_gestire($pdo, $sedeId, $filtroSede, $filtroStato),
     'sedi' => sedi_tutte($pdo),
     'sedeCorrente' => $sedeId === null ? null : sede_per_id($pdo, $sedeId),

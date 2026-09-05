@@ -46,7 +46,7 @@ if ($idDaCancellare !== null) {
 }
 
 mostra_pagina('controllo/utenti.php', [
-    'breadcrumb' => [['Home', url()], ['Ordini', url('controllo')], ['Utenti', null]],
+    'breadcrumb' => [['Home', url()], ['Controllo', url('controllo')], ['Utenti', null]],
     'utenti' => utenti_elenco($pdo),
     'sedi' => sedi_tutte($pdo),
     'ruoli' => ruoli_assegnabili(),

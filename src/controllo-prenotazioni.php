@@ -33,6 +33,6 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 mostra_pagina('controllo/prenotazioni.php', [
-    'breadcrumb' => [['Home', url()], ['Ordini', url('controllo')], ['Prenotazioni', null]],
+    'breadcrumb' => [['Home', url()], ['Controllo', url('controllo')], ['Prenotazioni', null]],
     'prenotazioni' => prenotazioni_da_gestire($pdo, $sedeId),
 ]);

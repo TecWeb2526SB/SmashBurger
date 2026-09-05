@@ -33,7 +33,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 mostra_pagina('controllo/contatti.php', [
-    'breadcrumb' => [['Home', url()], ['Ordini', url('controllo')], ['Messaggi', null]],
+    'breadcrumb' => [['Home', url()], ['Controllo', url('controllo')], ['Messaggi', null]],
     'messaggi' => contatti_elenco($pdo),
     'stati' => stati_messaggio(),
     'categorie' => categorie_messaggio(),

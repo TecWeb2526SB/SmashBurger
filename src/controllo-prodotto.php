@@ -76,7 +76,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 mostra_pagina('controllo/prodotto.php', [
     'breadcrumb' => [
         ['Home', url()],
-        ['Ordini', url('controllo')],
+        ['Controllo', url('controllo')],
         ['Prodotti', url('controllo-prodotti')],
         [$prodotto === null ? 'Nuovo prodotto' : $prodotto['nome'], null],
     ],

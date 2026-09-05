@@ -55,11 +55,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 mostra_pagina('controllo/sede.php', [
-    'breadcrumb' => [
-        ['Home', url()],
-        ['Ordini', url('controllo')],
-        [$sede['citta'], null],
-    ],
+    'breadcrumb' => $limite === null
+        ? [
+            ['Home', url()],
+            ['Controllo', url('controllo')],
+            ['Sedi', url('controllo-sedi')],
+            [$sede['citta'], null],
+        ]
+        : [
+            ['Home', url()],
+            ['Controllo', url('controllo')],
+            ['La tua sede', null],
+        ],
     'sede' => $sede,
     'orari' => orari_sede($pdo, $sedeId),
     'giorni' => giorni_settimana(),

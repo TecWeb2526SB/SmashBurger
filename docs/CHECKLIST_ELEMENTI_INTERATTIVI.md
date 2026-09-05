@@ -32,11 +32,11 @@ Questo documento censisce, pagina per pagina, tutti gli elementi con cui l'utent
 16. [Ricevuta ordine (`ricevuta.php`)](#16-ricevuta-ordine-ricevutaphp)
 17. [Prenotazione Sala Eventi (`prenota.php`)](#17-prenotazione-sala-eventi-prenotaphp)
 18. [Pannello: Ordini (`controllo.php`)](#18-pannello-ordini-controllophp)
-19. *Pannello: Dettaglio Ordine (`controllo-ordine.php`)*
-20. *Pannello: Prodotti (`controllo-prodotti.php`)*
-21. *Pannello: Scheda Prodotto (`controllo-prodotto.php`)*
-22. *Pannello: Categorie (`controllo-categorie.php`)*
-23. *Pannello: Sedi (`controllo-sedi.php`)*
+19. [Pannello: Dettaglio Ordine (`controllo-ordine.php`)](#19-pannello-dettaglio-ordine-controllo-ordinephp)
+20. [Pannello: Prodotti (`controllo-prodotti.php`)](#20-pannello-prodotti-controllo-prodottiphp)
+21. [Pannello: Scheda Prodotto (`controllo-prodotto.php`)](#21-pannello-scheda-prodotto-controllo-prodottophp)
+22. [Pannello: Categorie (`controllo-categorie.php`)](#22-pannello-categorie-controllo-categoriephp)
+23. [Pannello: Sedi (`controllo-sedi.php`)](#23-pannello-sedi-controllo-sediphp)
 24. *Pannello: Scheda Sede (`controllo-sede.php`)*
 25. *Pannello: Prenotazioni (`controllo-prenotazioni.php`)*
 26. *Pannello: Messaggi di contatto (`controllo-contatti.php`)*
@@ -3289,12 +3289,1070 @@ Superati: 42
 Falliti: 0
 ```
 
+---
 
+## 19. Pannello: Dettaglio Ordine (`controllo-ordine.php`)
 
+La pagina di dettaglio ordine del pannello di controllo permette al gestore di sede (`manager`) e all'amministratore (`admin`) di esaminare l'anagrafica completa di una singola comanda, le modalita di recapito (ritiro in sede o consegna a domicilio), i dettagli di pagamento e le righe dei prodotti ordinati con prezzi e totali congelati. Consente inoltre l'annullamento dell'ordine con inserimento della motivazione obbligatoria, eventuale rimborso contestuale e ripristino automatico delle quantita a magazzino nella sede associata.
 
+---
 
+### 19.1 Header, Breadcrumb e Navigazione di Sezione (Condivisi)
 
+- [x] **Salto al contenuto principale (`.salta`)**
+  - **Tipo**: Collegamento interno (`<a class="salta" href="#contenuto">Vai al contenuto</a>`).
+  - **Comportamento al click/invio**: Sposta immediatamente il focus e lo scorrimento a `<main id="contenuto">`.
 
+- [x] **Breadcrumb Semantico (`aria-label="Percorso di navigazione"`)**
+  - **Struttura a 3 livelli**:
+    1. `<a href="/">Home</a>`
+    2. `<a href="controllo">Ordini</a>`
+    3. `<span aria-current="page">SB-2026-XXXX</span>` (elemento testuale non cliccabile recante il numero comanda).
+  - **Comportamento visivo**: Separatore visivo semantico con contrasto conforme WCAG.
 
+- [x] **Navigazione Interna del Pannello (`aria-label="Sezioni del pannello"`)**
+  - **Voci per Manager**: `Ordini`, `Prodotti`, `Prenotazioni`, `La tua sede` (sezioni globali `Categorie`, `Sedi`, `Messaggi`, `Utenti` escluse).
+  - **Voci per Admin**: `Ordini`, `Prodotti`, `Categorie`, `Sedi`, `Prenotazioni`, `Messaggi`, `Utenti`.
+  - **Stato attivo**: la voce `Ordini` mantiene l'indicatore di sezione attiva.
 
+- [x] **Collegamento Rapido di Ritorno**
+  - **Tipo**: Collegamento ipertestuale (`<a href="controllo" class="torna">Torna agli ordini</a>`).
+  - **Destinazione**: Rimanda alla panoramica degli ordini filtrabile (`controllo.php`).
+
+---
+
+### 19.2 Stato dell'Ordine, Dati Amministrativi ed Economici
+
+- [x] **Intestazione Principale (`<h1>`)**
+  - **Formato**: `Ordine SB-2026-XXXX` con codice formattato e univoco dell'ordine.
+
+- [x] **Sezione Stato e Pagamento (`<section aria-labelledby="...">`)**
+  - [x] **Badge Semantico di Stato**:
+    - Tag `span` con classe `.badge` e attributo `data-tipo`:
+      - `data-tipo="positivo"` per ordini con stato `concluso`.
+      - `data-tipo="attenzione"` per ordini con stato `in preparazione`.
+      - `data-tipo="neutro"` per ordini con stato `ricevuto`.
+      - `data-tipo="negativo"` per ordini con stato `annullato`.
+  - [x] **Dettaglio Pagamento**:
+    - Mostra il metodo prescelto e la condizione contabile (es. "carta, pagato", "contanti, da pagare", oppure "rimborsato").
+  - [x] **Totale Comanda Congelato**:
+    - Importo complessivo formattato in formato italiano (es. `17,90 euro`).
+
+- [x] **Box Notifica Motivo Annullamento**
+  - **Condizione di rendering**: Visibile solo se l'ordine e nello stato `annullato`.
+  - **Markup**: `<div class="avviso" data-tipo="attenzione" role="status">` contenente il testo `Motivo dell'annullamento: [motivazione inserita]`.
+
+---
+
+### 19.3 Cliente e Modalita di Recapito
+
+- [x] **Sezione Dati Cliente (`<h2>Cliente</h2>`)**
+  - [x] Nome e cognome dell'utente con identificativo account (es. `Anna Rossi, user`).
+  - [x] Collegamento interattivo email (`<a href="mailto:email@example.it">email@example.it</a>`).
+
+- [x] **Sezione Recapito (`<h2>Recapito</h2>`)**
+  - [x] **Ritiro in Sede**:
+    - Visualizza sede di ritiro, indirizzo civico e data/ora prevista (es. `Ritiro in sede a Padova, Via San Fermo 34, previsto per il 20/08/2026 12:30.`).
+    - Non genera blocchi `<address>` superflui.
+  - [x] **Consegna a Domicilio**:
+    - Dicitura esplicita `Consegna a domicilio`.
+    - Tag semantico `<address>` conforme agli standard HTML5 con via, numero civico, CAP, comune, provincia, nazione e recapito telefonico (`Telefono 3401234567`).
+
+---
+
+### 19.4 Tabella Prodotti e Righe d'Ordine
+
+- [x] **Tabella Dettaglio Righe (`<table>`)**
+  - [x] **Didascalia Accessibile**: `<caption>Righe dell'ordine SB-2026-XXXX</caption>`.
+  - [x] **Intestazioni di Colonna**: tag `<th scope="col">` per `Prodotto`, `Quantita`, `Prezzo`, `Totale`.
+  - [x] **Intestazioni di Riga**: tag `<th scope="row">` sul nome di ciascun prodotto (es. `Cheeseburger`).
+  - [x] **Prezzo Unitario e Subtotale**: congelati al momento dell'ordine, garantendo che future variazioni di listino non alterino lo storico contabile.
+  - [x] **Piede Tabella (`<tfoot>`)**: riepilogo riga totale complessivo della comanda.
+
+---
+
+### 19.5 Procedura di Annullamento e Ripristino Scorte
+
+- [x] **Pulsante/Link di Avvio Annullamento**:
+  - [x] Presente solo se l'ordine e in stato attivo (`ricevuto`, `in preparazione`). Non compare se l'ordine e gia `annullato` o `concluso`.
+  - [x] Collegamento ipertestuale `<a href="controllo-ordine?ordine=X&amp;annulla=1" class="bottone" data-variante="distruttivo">Annulla l'ordine</a>`.
+
+- [x] **Box Modulo di Conferma Annullamento (`?annulla=1`)**:
+  - [x] Visualizzato come blocco di allerta prioritario: `<div class="avviso" data-tipo="errore" role="alert">`.
+  - [x] Intestazione dedicata: `<h2>Vuoi annullare questo ordine?</h2>`.
+  - [x] Modulo sicuro con `data-modulo="annullamento"` e metodo `POST`.
+  - [x] Token CSRF obbligatorio generato tramite `campo_csrf()`.
+  - [x] Input nascosto `<input type="hidden" name="ordine" value="X">`.
+  - [x] Campo di testo multilinea `<textarea id="motivo" name="motivo" required="required" minlength="5" maxlength="255">`:
+    - Etichetta accessibile `<label for="motivo">Motivo dell'annullamento</label>`.
+    - Validazione client e server: obbligatorio, compreso tra 5 e 255 caratteri.
+  - [x] Casella di selezione `<input type="checkbox" id="rimborsa" name="rimborsa" value="1">`:
+    - Etichetta accessibile `<label for="rimborsa">Segna il pagamento come rimborsato</label>`.
+    - Preselezionata automaticamente (`checked="checked"`) se l'ordine risulta gia pagato.
+  - [x] Controlli di invio e revoca:
+    - `<button type="submit" class="bottone" data-variante="distruttivo">Conferma annullamento</button>`.
+    - `<a href="controllo-ordine?ordine=X" class="bottone" data-variante="secondario">Lascia com'e</a>` per chiudere l'avviso e annullare l'operazione senza mutare i dati.
+
+- [x] **Transazione Backend e Ripristino Automatico a Magazzino**:
+  - [x] Transazione atomica MariaDB:
+    - Aggiornamento riga `ordini`: `stato = 'annullato'`, `motivo_annullamento = :motivo`.
+    - Se richiesta opzione rimborso: `stato_pagamento = 'rimborsato'`.
+    - Query incrementale di ripristino per ogni prodotto ordinato: `UPDATE disponibilita_prodotti SET quantita = quantita + :qta WHERE sede_id = :sede AND prodotto_id = :prodotto`.
+  - [x] Pattern POST-Redirect-GET:
+    - Reindirizzamento verso `controllo-ordine?ordine=X`.
+    - Messaggio flash di conferma annunciato con `role="status"`: *"Fatto: Ordine annullato e merce rimessa a disposizione."*.
+
+---
+
+### 19.6 Sicurezza Backend, Isolamento Multi-Tenant e IDOR
+
+- [x] **Controllo degli Accessi per Ruolo**:
+  - [x] Ospite non autenticato respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato con ruolo semplice (`user`) respinto con codice `HTTP 403 Forbidden`.
+  - [x] Gestore di sede (`manager`) e amministratore (`admin`) autorizzati con codice `HTTP 200 OK`.
+
+- [x] **Validazione Parametri di Ingresso**:
+  - [x] Richiesta priva del parametro `ordine` o con valore non numerico respinta con codice `HTTP 404 Not Found`.
+  - [x] Richiesta con identificativo di ordine inesistente a database (es. `ordine=99999`) respinta con codice `HTTP 404 Not Found`.
+
+- [x] **Isolamento Multi-Tenant e Prevenzione IDOR (Insecure Direct Object Reference)**:
+  - [x] Nel caso del `manager`, la lettura dell'ordine e vincolata alla sede assegnata: se il manager di Padova tenta di aprire un ordine di Treviso (es. `ordine=6`), il server restituisce `HTTP 404 Not Found`.
+  - [x] **Prevenzione IDOR in Mutazione POST**: se il gestore invia una richiesta POST fraudolenta tentando di annullare un ordine appartenente a un'altra sede, il backend blocca l'operazione con `HTTP 404 Not Found`, impedendo qualsiasi alterazione dei dati dell'ordine e delle scorte di magazzino.
+  - [x] Nel caso dell'amministratore (`admin`), l'accesso e globale e consente di visionare e gestire qualsiasi ordine in tutte le sedi (Padova, Treviso, Vicenza, Verona).
+
+- [x] **Protezione CSRF**:
+  - [x] Richieste POST prive di token CSRF bloccate con codice `HTTP 403 Forbidden`.
+  - [x] Richieste POST con token CSRF manomesso bloccate con codice `HTTP 403 Forbidden`.
+
+---
+
+### 19.7 Responsive Mobile e Report di Collaudo E2E
+
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Modulo di annullamento, tabella prodotti e dettagli cliente perfettamente impaginati e fruibili su dispositivi mobili compatti.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_dettaglio_ordine.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE E PERMESSI DI RUOLO ===
+========================================================
+  [OK] Accesso ospite a /controllo-ordine respinto con HTTP 401 Unauthorized
+  [OK] Accesso cliente ('user') respinto con HTTP 403 Forbidden
+
+========================================================
+=== TEST VISTA MANAGER & ISOLAMENTO MULTI-TENANT (IDOR) ===
+========================================================
+  [OK] Accesso senza parametro ordine produce HTTP 404 Not Found
+  [OK] Accesso ad ordine inesistente (99999) produce HTTP 404 Not Found
+  [OK] Sicurezza Multi-Tenant: Manager Padova che accede a Ordine 6 (Treviso) riceve HTTP 404 Not Found
+  [OK] Accesso manager a proprio ordine (Ordine 1, Padova): HTTP 200 OK
+
+========================================================
+=== TEST STRUTTURA SEMANTICA E DATI: RITIRO IN SEDE ===
+========================================================
+  [OK] Titolo dinamico corretto: 'Dettaglio ordine - Pannello di controllo'
+  [OK] H1 semantico con numero ordine: 'Ordine SB-2026-0001'
+  [OK] Breadcrumb a 3 livelli: ['Home', 'Ordini', 'SB-2026-0001']
+  [OK] Elemento corrente non cliccabile: 'SB-2026-0001'
+  [OK] Navigazione manager limitata: ['Ordini', 'Prodotti', 'Prenotazioni', 'La tua sede']
+  [OK] Sezione H2 'Stato' presente
+  [OK] Badge stato ordine: 'concluso'
+  [OK] Dettaglio pagamento presente ('carta, pagato')
+  [OK] Totale ordine presente ('17,90 euro')
+  [OK] Sezione H2 'Cliente' presente
+  [OK] Anagrafica cliente: 'Anna Rossi, user anna.rossi@example.it'
+  [OK] Link mailto con email cliente presente
+  [OK] Sezione H2 'Recapito' presente
+  [OK] Recapito ritiro con indirizzo sede: 'Ritiro in sede a Padova, Via San Fermo 34, previsto per il 20/08/2026 12:30.'
+  [OK] Nessun tag <address> per ordine con ritiro in sede
+  [OK] Sezione H2 'Prodotti' presente
+  [OK] Tabella righe ordine presente
+  [OK] Caption tabella accessibile: 'Righe dell'ordine SB-2026-0001'
+  [OK] Intestazioni colonne corrette: ['Prodotto', 'Quantita', 'Prezzo', 'Totale']
+  [OK] Riga con th scope='row' per nome prodotto: 'Cheeseburger'
+  [OK] Link 'Torna agli ordini' presente verso /controllo
+
+========================================================
+=== TEST ORDINE A DOMICILIO (ORDINE 2) & ANNULLATO (ORDINE 4) ===
+========================================================
+  [OK] Dicitura 'Consegna a domicilio' presente
+  [OK] Tag semantico <address> presente per consegna a domicilio
+  [OK] Indirizzo nel tag <address>: 'Via Roma 12 35100 Padova (PD) Italia Telefono 3401234567'
+  [OK] Badge ordine annullato data-tipo='negativo': 'annullato'
+  [OK] Box motivo annullamento presente (.avviso[data-tipo='attenzione'])
+  [OK] Testo motivo annullamento: 'Motivo dell'annullamento: Indirizzo non raggiungibile dalla societa di consegna.'
+  [OK] Link 'Annulla l'ordine' non mostrato per ordine gia' annullato
+
+========================================================
+=== TEST MODULO CONFERMA ANNULLAMENTO (?annulla=1) ===
+========================================================
+  [OK] Link 'Annulla l'ordine' presente per ordine non annullato
+  [OK] Link conduce a ?annulla=1
+  [OK] URL corrente con parametro di conferma: http://localhost:8080/controllo-ordine?ordine=7&annulla=1
+  [OK] Box di avviso conferma annullamento visibile (role='alert', data-tipo='errore')
+  [OK] H2 box conferma: 'Vuoi annullare questo ordine?'
+  [OK] Form data-modulo='annullamento' presente
+  [OK] Token CSRF presente nel form
+  [OK] Hidden input ordine='7'
+  [OK] Textarea #motivo presente
+  [OK] Textarea #motivo ha attributo required
+  [OK] Textarea #motivo minlength='5'
+  [OK] Textarea #motivo maxlength='255'
+  [OK] Checkbox #rimborsa presente
+  [OK] Checkbox #rimborsa preselezionata (ordine 7 e' pagato)
+  [OK] Link 'Lascia com'e' presente per annullare l'operazione senza mutazioni
+
+========================================================
+=== TEST SICUREZZA CSRF E MANOMISSIONE CROSS-SEDE ===
+========================================================
+  [OK] POST senza CSRF bloccata con HTTP 403 Forbidden
+  [OK] POST con token CSRF manomesso bloccata con HTTP 403 Forbidden
+  [OK] Tentativo annullamento cross-sede respinto con HTTP 404 Not Found
+  [OK] MariaDB: Ordine 6 inalterato nello stato 'ricevuto'
+
+========================================================
+=== TEST TRANSAZIONE: ANNULLAMENTO ORDINE & SCORTE MARIADB ===
+========================================================
+  [OK] MariaDB giacenza iniziale Chicken BBQ (sede 1): 37
+  [OK] POST-Redirect-GET atterra su /controllo-ordine?ordine=7: http://localhost:8080/controllo-ordine?ordine=7
+  [OK] Flash message successo: 'Fatto: Ordine annullato e merce rimessa a disposizione.'
+  [OK] MariaDB: stato ordine 7 aggiornato a 'annullato'
+  [OK] MariaDB: stato pagamento aggiornato a 'rimborsato'
+  [OK] MariaDB: motivo annullamento memorizzato: 'Cliente impossibilitato al ritiro: richiesta rimborso concordata telefonicamente.'
+  [OK] MariaDB: scorta ripristinata a magazzino (+1 unita'): 38 (prima: 37)
+  [OK] Frontend mostra badge 'annullato'
+  [OK] Frontend mostra pagamento 'rimborsato'
+  [OK] Ripristinato Ordine 7 a 'ricevuto'/'pagato' e scorta prodotto 7 a 37 a DB
+
+========================================================
+=== TEST VISTA AMMINISTRATORE ('admin') SU TUTTE LE SEDI ===
+========================================================
+  [OK] Admin accede con successo ad Ordine 1 (Padova)
+  [OK] Navigazione admin completa con tutte le sezioni: ['Ordini', 'Prodotti', 'Categorie', 'Sedi', 'Prenotazioni', 'Messaggi', 'Utenti']
+  [OK] Admin accede con successo ad Ordine 6 (Treviso)
+  [OK] Admin visualizza H1 Treviso: 'Ordine SB-2026-0006'
+  [OK] Admin accede con successo ad Ordine 19 (Vicenza)
+
+========================================================
+=== TEST FRONTEND & RESPONSIVE MOBILE (375x667) ===
+========================================================
+  [OK] Screenshot desktop salvato: scratch/controllo_ordine_desktop.png
+  [OK] Mobile /controllo-ordine?ordine=1 caricato con HTTP 200
+  [OK] Mobile /controllo-ordine: nessun overflow orizzontale (375 <= 375)
+  [OK] Screenshot mobile salvato: scratch/controllo_ordine_mobile.png
+
+=== RIEPILOGO TEST DETTAGLIO ORDINE ===
+Totale controlli eseguiti: 72
+Superati: 72
+Falliti: 0
+```
+
+---
+
+## 20. Pannello: Prodotti (`controllo-prodotti.php`)
+
+La pagina di gestione dei prodotti del pannello di controllo consente al gestore di sede (`manager`) e all'amministratore (`admin`) di visualizzare l'intero catalogo e regolare in tempo reale la disponibilita per il menu pubblico e le giacenze di magazzino per ciascuna filiale. L'amministratore dispone inoltre della visualizzazione globale su tutte le sedi (Padova, Treviso, Vicenza, Udine), del pulsante per creare nuovi prodotti e dei collegamenti alla scheda anagrafica dettagliata.
+
+---
+
+### 20.1 Header, Breadcrumb e Navigazione di Sezione (Condivisi)
+
+- [x] **Salto al contenuto principale (`.salta`)**
+  - **Tipo**: Collegamento interno (`<a class="salta" href="#contenuto">Vai al contenuto</a>`).
+  - **Comportamento al click/invio**: Sposta immediatamente il focus e lo scorrimento a `<main id="contenuto">`.
+
+- [x] **Breadcrumb Semantico (`aria-label="Percorso"`)**
+  - **Struttura a 3 livelli**:
+    1. `<a href="/">Home</a>`
+    2. `<a href="controllo">Ordini</a>`
+    3. `<span aria-current="page">Prodotti</span>` (elemento testuale non cliccabile contrassegnato con `aria-current="page"`).
+  - **Comportamento visivo**: Separatore visivo conforme e resa responsive su linea singola.
+
+- [x] **Navigazione Interna del Pannello (`aria-label="Sezioni del pannello"`)**
+  - **Voci per Manager**: `Ordini`, `Prodotti`, `Prenotazioni`, `La tua sede` (sezioni amministrative globali `Categorie`, `Sedi`, `Messaggi`, `Utenti` escluse).
+  - **Voci per Admin**: `Ordini`, `Prodotti`, `Categorie`, `Sedi`, `Prenotazioni`, `Messaggi`, `Utenti`.
+  - **Stato attivo**: la voce `Prodotti` e contrassegnata con `aria-current="page"`.
+
+---
+
+### 20.2 Selezione Sede e Azioni Amministrative
+
+- [x] **Modulo Filtro Selezione Sede (Esclusivo Amministratore)**:
+  - **Visibilita**: Presente unicamente per il ruolo `admin`; omesso per il gestore di sede (`manager`), vincolato rigidamente alla propria sede assegnata.
+  - **Struttura modulo**: `<form method="get" action="controllo-prodotti">` con `<fieldset><legend>Sede</legend>`.
+  - **Campo di selezione**: `<select id="sede" name="sede">` con opzioni per tutte le sedi attive (Padova, Treviso, Vicenza, Udine) e preselezione della sede corrente.
+  - **Pulsante di invio**: `<button type="submit">Mostra</button>`.
+  - **Comportamento**: Ricarica la pagina passando `?sede=ID`, aggiornando l'intestazione H1, la didascalia della tabella e i dati di giacenza per la sede indicata.
+
+- [x] **Collegamento Nuovo Prodotto (Esclusivo Amministratore)**:
+  - **Visibilita**: Visibile esclusivamente per `admin`.
+  - **Markup**: `<p><a class="pulsante" href="controllo-prodotto">Aggiungi un prodotto</a></p>`.
+  - **Destinazione**: Conduce al modulo di censimento di un nuovo burger/prodotto a listino.
+
+---
+
+### 20.3 Tabella Prodotti e Stato di Magazzino
+
+- [x] **Intestazione Principale (`<h1>`)**:
+  - Formato dinamico contestualizzato: `Prodotti a [Citta della sede]` (es. `Prodotti a Padova` o `Prodotti a Treviso`).
+
+- [x] **Tabella Dati (`<table>`)**:
+  - [x] **Didascalia Accessibile**: `<caption>Prodotti e loro disponibilita a [Citta]</caption>`.
+  - [x] **Intestazioni di Colonna (`<th scope="col">`)**:
+    - `Prodotto`, `Categoria`, `Prezzo`, `Nel menu`, `Quantita`.
+    - Colonna aggiuntiva `Scheda` visualizzata esclusivamente per l'amministratore.
+  - [x] **Intestazioni di Riga (`<th scope="row">`)**:
+    - Nome del prodotto (es. `Bacon Burger`, `Cheeseburger`).
+    - Ordinamento coerente: ordinati per sequenza categoria e nome alfabetico (`ORDER BY c.ordine, p.nome`).
+  - [x] **Colonne Dati**:
+    - Categoria di appartenenza (es. `Burger`, `Bibite`).
+    - Prezzo unitario formattato in formato italiano (es. `8,90 euro`).
+  - [x] **Scheda Prodotto (Amministratore)**:
+    - Collegamento `<a href="controllo-prodotto?prodotto=ID">Modifica <span class="solo-lettori">[Nome prodotto]</span></a>`.
+  - [x] **Nota Esplicativa di Fine Tabella**:
+    - Spiegazione testuale accessibile che illustra la logica di business: *"Un prodotto compare nel menu del sito solo se e nel menu di questa sede e la quantita e maggiore di zero. Gli ordini la scalano da soli."*.
+
+---
+
+### 20.4 Modulo Rapido "Nel menu" e Attivazione Asincrona
+
+- [x] **Modulo Interattivo di Disponibilita**:
+  - [x] Tag `<form method="post" action="controllo-prodotti" data-modulo="disponibilita">`.
+  - [x] Token CSRF generato mediante `campo_csrf()`.
+  - [x] Parametri nascosti identificativi: `<input type="hidden" name="sede_id" value="X" />` e `<input type="hidden" name="prodotto_id" value="Y" />`.
+  - [x] **Pulsante a Commutazione Dinamica**:
+    - Se il prodotto e attualmente attivo nel menu (`disponibile = 1`):
+      - `<button type="submit" name="nascondi" value="1" aria-pressed="true">Togli dal menu <span class="solo-lettori">[Nome prodotto]</span></button>`.
+    - Se il prodotto e escluso dal menu (`disponibile = 0`):
+      - `<button type="submit" name="mostra" value="1" aria-pressed="false">Rimetti nel menu <span class="solo-lettori">[Nome prodotto]</span></button>`.
+  - [x] **Comportamento JavaScript Asincrono (`script.js`)**:
+    - L'ascoltatore globale intercetta l'invio del modulo con `data-modulo="disponibilita"`, inviando una chiamata `fetch()` in background.
+    - Riceve la risposta HTML, sostituisce il blocco `#contenuto` e sposta il fuoco visibile sull'avviso di stato o sul controllo ripristinato.
+    - Aggiorna istantaneamente lo stato del pulsante, il testo visualizzato e l'attributo `aria-pressed` senza ricaricare l'intera pagina.
+  - [x] **Degradazione Elegante senza JavaScript**:
+    - In assenza di JavaScript, l'invio del pulsante produce una richiesta POST nativa del browser gestita con pattern POST-Redirect-GET verso `controllo-prodotti`, con notifica di successo riepilogata in cima.
+  - [x] **Persistenza su Database MariaDB**:
+    - Aggiornamento della tabella `disponibilita_prodotti` con clausola `ON DUPLICATE KEY UPDATE disponibile = :aggiornato`.
+
+---
+
+### 20.5 Modulo Rapido Giacenza con Invio Automatico
+
+- [x] **Modulo Interattivo di Quantita**:
+  - [x] Tag `<form method="post" action="controllo-prodotti" data-modulo="quantita" data-invio="automatico">`.
+  - [x] Token CSRF generato mediante `campo_csrf()`.
+  - [x] Parametri nascosti: `sede_id` e `prodotto_id`.
+  - [x] Etichetta per lettori di schermo: `<label class="solo-lettori" for="quantita-[ID]">Quantita di [Nome prodotto]</label>`.
+  - [x] Campo numerico: `<input type="number" id="quantita-[ID]" name="quantita" value="[N]" min="0" max="9999" />`.
+  - [x] **Invio Automatico al Cambio Valore (`data-invio="automatico"`)**:
+    - Al rilascio o alla modifica del valore (`change`), lo script intercetta l'evento, verifica la validita dei vincoli HTML5 (`reportValidity()`) e trasmette l'aggiornamento via `fetch()`.
+    - Non necessita di un pulsante di invio separato nell'interfaccia, semplificando la densita grafica della tabella.
+  - [x] **Validazione Client e Server**:
+    - Valori ammessi nel range `0 - 9999`.
+    - Tentativi di inserimento di quantita negative o superiori a 9999 vengono respinti sia lato client (`min="0" max="9999"`) sia dal backend PHP con il messaggio *"La quantita deve stare fra 0 e 9999."*.
+  - [x] **Persistenza su Database MariaDB**:
+    - Query parametrizzata su `disponibilita_prodotti`: `ON DUPLICATE KEY UPDATE quantita = :aggiornata`.
+
+---
+
+### 20.6 Sicurezza Backend, Isolamento Multi-Tenant e IDOR
+
+- [x] **Controllo Accessi e Permessi di Ruolo**:
+  - [x] Ospite non autenticato respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato con ruolo semplice (`user`) respinto con codice `HTTP 403 Forbidden`.
+  - [x] Gestore di sede (`manager`) e amministratore (`admin`) autorizzati con codice `HTTP 200 OK`.
+
+- [x] **Isolamento Multi-Tenant di Sede (Manager)**:
+  - [x] Il gestore e vincolato alla sede registrata nel database (`$limite = sede_limite($pdo)`).
+  - [x] **Protezione IDOR in Lettura (GET)**: se il gestore di Padova tenta di visualizzare i prodotti di Treviso inviando `GET /controllo-prodotti?sede=2`, il server restituisce `HTTP 403 Forbidden`.
+  - [x] **Protezione IDOR in Modifica (POST)**: se il gestore invia una richiesta POST per modificare disponibilita o quantita forzando `sede_id=2`, il backend intercetta la discrepanza (`$limite !== null && $sedeAzione !== $limite`) e blocca la richiesta con `HTTP 403 Forbidden`, lasciando le giacenze della sede 2 totalmente inalterate.
+
+- [x] **Validazione Sede per Amministratore**:
+  - [x] Se l'amministratore richiede una sede inesistente (es. `?sede=9999`), il server restituisce codice `HTTP 404 Not Found`.
+
+- [x] **Protezione CSRF**:
+  - [x] Richieste POST prive di token CSRF bloccate con codice `HTTP 403 Forbidden`.
+  - [x] Richieste POST con token CSRF manomesso bloccate con codice `HTTP 403 Forbidden`.
+
+---
+
+### 20.7 Accessibilita, Contrasto e Responsive Mobile (375x667px)
+
+- [x] **Conformita Contrasto WCAG 2.1 AA**:
+  - [x] Test automatizzato su tutti i 156 elementi testuali della pagina (`h1`, `th`, `td`, `caption`, `label`, pulsanti e link):
+    - Tema chiaro: superato al 100% (rapporti fino a 14.5:1).
+    - Tema scuro: superato al 100% (rapporti fino a 13.8:1).
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] La tabella dei prodotti degrada con scorrimento orizzontale autonomo interno, mantenendo fruibili su piccoli schermi i controlli numerici e i pulsanti a levetta.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_prodotti.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE E CONTROLLO ACCESSI ===
+========================================================
+  [OK] Accesso ospite a /controllo-prodotti respinto con HTTP 401 Unauthorized
+  [OK] Accesso cliente ('user') respinto con HTTP 403 Forbidden
+
+========================================================
+=== TEST VISTA MANAGER & ISOLAMENTO MULTI-TENANT (PADOVA) ===
+========================================================
+  [OK] Accesso manager a /controllo-prodotti: HTTP 200 OK
+  [OK] Titolo pagina dinamico corretto: 'Prodotti - Pannello di controllo'
+  [OK] H1 contestualizzato alla sede del manager: 'Prodotti a Padova'
+  [OK] Breadcrumb semantico a 3 livelli: ['Home', 'Ordini', 'Prodotti']
+  [OK] Elemento corrente breadcrumb 'Prodotti' contrassegnato con aria-current='page'
+  [OK] Navigazione manager limitata: ['Ordini', 'Prodotti', 'Prenotazioni', 'La tua sede']
+  [OK] Sezione corrente 'Prodotti' attiva nella navigazione pannello
+  [OK] Filtro selezione sede ASSENTE per il manager (limitato alla propria sede)
+  [OK] Pulsante 'Aggiungi un prodotto' ASSENTE per il manager
+  [OK] Colonna 'Scheda' ASSENTE nella tabella per il manager
+  [OK] Tentativo GET cross-sede del manager su sede=2 respinto con HTTP 403 Forbidden
+
+========================================================
+=== TEST STRUTTURA TABELLA E ACCESSIBILITA ===
+========================================================
+  [OK] Caption tabella accessibile: 'Prodotti e loro disponibilita a Padova'
+  [OK] Intestazioni colonna corrette: ['Prodotto', 'Categoria', 'Prezzo', 'Nel menu', 'Quantita']
+  [OK] Numero prodotti censiti in tabella: 19
+  [OK] Riga Cheeseburger identificata con th scope='row'
+  [OK] Categoria Cheeseburger: 'Burger'
+  [OK] Prezzo formattato Cheeseburger: '8,90 euro'
+  [OK] Nome prodotto accessibile in pulsante disponibilita: 'Cheeseburger'
+  [OK] Etichetta accessibile campo quantita: 'Quantita di Cheeseburger'
+
+========================================================
+=== TEST MUTAZIONE DISPONIBILITA (NEL MENU) SU MARIADB ===
+========================================================
+  [OK] Stato iniziale MariaDB Cheeseburger sede 1: disponibile=1
+  [OK] Pulsante inizialmente indica 'Togli dal menu'
+  [OK] Pulsante ha aria-pressed='true'
+  [OK] Messaggio flash ricevuto: 'Fatto: Prodotto tolto dal menu.'
+  [OK] MariaDB aggiornato con successo: disponibile=0
+  [OK] Pulsante ora indica 'Rimetti nel menu'
+  [OK] Pulsante ora ha aria-pressed='false'
+  [OK] Messaggio flash ripristino: 'Fatto: Prodotto rimesso nel menu.'
+  [OK] MariaDB ripristinato con successo: disponibile=1
+
+========================================================
+=== TEST MUTAZIONE QUANTITA SU MARIADB ===
+========================================================
+  [OK] Valore input quantita iniziale corrisponde al DB: 38
+  [OK] Messaggio flash aggiornamento quantita: 'Fatto: Quantita aggiornata.'
+  [OK] MariaDB quantita aggiornata a: 45
+  [OK] MariaDB quantita ripristinata a: 38
+
+========================================================
+=== TEST SICUREZZA CSRF E MANOMISSIONE CROSS-SEDE ===
+========================================================
+  [OK] POST senza token CSRF bloccata con HTTP 403 Forbidden
+  [OK] POST con token CSRF manomesso bloccata con HTTP 403 Forbidden
+  [OK] Tentativo POST cross-sede (manager su sede 2) bloccato con HTTP 403 Forbidden
+  [OK] MariaDB sede 2 inalterato: disponibile=1
+  [OK] Backend rifiuta quantita negativa con messaggio d'errore dedicato
+  [OK] Gestione prodotto_id inesistente terminata in sicurezza (HTTP 200)
+
+========================================================
+=== TEST VISTA AMMINISTRATORE ('admin') & MULTI-SEDE ===
+========================================================
+  [OK] Accesso admin a /controllo-prodotti: HTTP 200 OK
+  [OK] Navigazione admin completa con tutte le sezioni: ['Ordini', 'Prodotti', 'Categorie', 'Sedi', 'Prenotazioni', 'Messaggi', 'Utenti']
+  [OK] Form filtro sede presente per admin
+  [OK] Opzioni sede disponibili per admin: ['Padova', 'Treviso', 'Vicenza', 'Udine']
+  [OK] Pulsante 'Aggiungi un prodotto' presente per admin verso controllo-prodotto
+  [OK] Colonna 'Scheda' presente nella tabella per admin
+  [OK] Link 'Modifica' presente verso controllo-prodotto?prodotto=1
+  [OK] H1 aggiornato a Treviso: 'Prodotti a Treviso'
+  [OK] Caption aggiornata: 'Prodotti e loro disponibilita a Treviso'
+  [OK] Admin che richiede sede inesistente riceve HTTP 404 Not Found
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Screenshot desktop salvato: scratch/controllo_prodotti_desktop.png
+  [OK] Mobile /controllo-prodotti caricato con HTTP 200
+  [OK] Mobile /controllo-prodotti: nessun overflow orizzontale (375 <= 375)
+  [OK] Screenshot mobile salvato: scratch/controllo_prodotti_mobile.png
+
+=== RIEPILOGO TEST PANNELLO PRODOTTI ===
+Totale controlli eseguiti: 54
+Superati: 54
+Falliti: 0
+```
+
+---
+
+## 21. Pannello: Scheda Prodotto (`controllo-prodotto.php`)
+
+La pagina di scheda prodotto consente all'amministratore (`admin`) di gestire il ciclo di vita completo dei prodotti a listino: censimento di un nuovo burger, bibita o dessert con caricamento dell'immagine, modifica dei dati anagrafici comuni (nome, slug, categoria, prezzo, descrizione, allergeni) e cancellazione definitiva dal catalogo con rimozione a cascata delle disponibilita di sede e preservazione dello storico ordini. L'accesso e strettamente riservato all'amministratore; clienti e manager vengono bloccati dal backend.
+
+---
+
+### 21.1 Header, Breadcrumb e Navigazione di Sezione (Condivisi)
+
+- [x] **Salto al contenuto principale (`.salta`)**
+  - **Tipo**: Collegamento interno (`<a class="salta" href="#contenuto">Vai al contenuto</a>`).
+  - **Comportamento al click/invio**: Sposta immediatamente il focus e lo scorrimento a `<main id="contenuto">`.
+
+- [x] **Breadcrumb Semantico (`aria-label="Percorso"`)**
+  - **Struttura a 4 livelli**:
+    1. `<a href="/">Home</a>`
+    2. `<a href="controllo">Ordini</a>`
+    3. `<a href="controllo-prodotti">Prodotti</a>`
+    4. `<span aria-current="page">[Nome prodotto / Nuovo prodotto]</span>` (elemento testuale non cliccabile recante lo stato corrente).
+  - **Comportamento visivo**: Separatore visivo semantico con contrasto conforme WCAG.
+
+- [x] **Navigazione Interna del Pannello (`aria-label="Sezioni del pannello"`)**
+  - **Voci per Admin**: `Ordini`, `Prodotti`, `Categorie`, `Sedi`, `Prenotazioni`, `Messaggi`, `Utenti`.
+  - **Stato attivo**: la voce `Prodotti` e contrassegnata con `aria-current="page"`.
+
+---
+
+### 21.2 Modulo di Creazione Nuovo Prodotto
+
+- [x] **Intestazione Principale (`<h1>`)**: `Nuovo prodotto`.
+
+- [x] **Form Multipart di Inserimento (`<form method="post" enctype="multipart/form-data">`)**:
+  - [x] Token CSRF generato tramite `campo_csrf()`.
+  - [x] Campo limite upload `<input type="hidden" name="MAX_FILE_SIZE" value="307200" />` (300 KB).
+  - [x] Riquadro anteprima immagine omesso in fase di creazione.
+  - [x] **Campo Selezione File Immagine (`#immagine`)**:
+    - Etichetta: `<label for="immagine">Immagine</label>`.
+    - Attributo obbligatorio: `required="required"` in creazione.
+    - Filtro estensioni: `accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"`.
+    - Testo di aiuto accessibile: `<small id="aiuto-immagine">JPG, PNG o WebP, da 300 x 300 a 2000 x 2000 pixel, massimo 300 KB.</small>`.
+    - Associazione accessibile: `aria-describedby="aiuto-immagine"`.
+  - [x] **Campo Nome (`#nome`)**:
+    - `<input type="text" id="nome" name="nome" required="required" minlength="2" maxlength="120" />`.
+  - [x] **Campo Slug (`#slug`)**:
+    - `<input type="text" id="slug" name="slug" required="required" pattern="[a-z0-9-]{2,120}" />`.
+    - Testo di aiuto: `<small id="aiuto-slug">Compare nell'indirizzo della pagina pubblica del prodotto.</small>`.
+  - [x] **Campo Categoria (`#categoria_id`)**:
+    - Menu a tendina `<select id="categoria_id" name="categoria_id" required="required">`.
+    - Prima opzione segnaposto non valida: `<option value="">Scegli la categoria</option>`.
+    - Opzioni caricate dinamicamente dalla tabella MariaDB `categorie`.
+  - [x] **Campo Prezzo (`#prezzo`)**:
+    - `<input type="number" id="prezzo" name="prezzo" required="required" min="0.01" max="999" step="0.01" />`.
+  - [x] **Campo Descrizione (`#descrizione`)**:
+    - `<textarea id="descrizione" name="descrizione" rows="4" required="required" minlength="10">`.
+  - [x] **Campo Allergeni (`#allergeni`)**:
+    - `<input type="text" id="allergeni" name="allergeni" maxlength="255" />`.
+    - Testo di aiuto: `<small id="aiuto-allergeni">Separati da virgola. Lascia vuoto se non ne contiene.</small>`.
+  - [x] **Pulsante di Creazione**:
+    - `<button type="submit">Crea il prodotto</button>`.
+  - [x] **Navigazione Inferiore**:
+    - `<a class="collegamento-indietro" href="controllo-prodotti">Torna ai prodotti</a>`.
+    - Link distruttivi ('Cancella') e verso la vista pubblica omessi in creazione.
+
+---
+
+### 21.3 Modulo di Modifica Prodotto Esistente
+
+- [x] **Intestazione Principale (`<h1>`)**: `Modifica [Nome prodotto]`.
+
+- [x] **Anteprima Immagine Corrente (`<figure class="anteprima-prodotto">`)**:
+  - Mostra l'immagine del prodotto memorizzata in `uploads/prodotti/`.
+  - Tag `<img>` con attributi dimensionali (`width="600" height="450"`) e testo alternativo accessibile (`alt="Immagine attuale di [Nome]"`).
+  - Didascalia semantica `<figcaption>Immagine attuale</figcaption>`.
+
+- [x] **Gestione Aggiornamento Immagine**:
+  - Etichetta modificata: `<label for="immagine">Sostituisci immagine</label>`.
+  - Attributo `required` rimosso: se nessun file viene caricato, il backend mantiene l'immagine esistente.
+  - Testo informativo integrativo: *"Se non scegli un file, resta l'immagine attuale."*.
+
+- [x] **Prepopolazione e Modifica Dati**:
+  - Tutti i campi (`nome`, `slug`, `categoria_id`, `prezzo`, `descrizione`, `allergeni`) vengono precompilati con i valori attuali estratti da MariaDB.
+  - Identificativo numerico nascosto: `<input type="hidden" name="prodotto_id" value="X" />`.
+  - Pulsante di salvataggio: `<button type="submit">Salva le modifiche</button>`.
+
+- [x] **Collegamenti di Azione**:
+  - Collegamento di ritorno: `<a class="collegamento-indietro" href="controllo-prodotti">Torna ai prodotti</a>`.
+  - Collegamento alla vista cliente: `<a href="prodotto?slug=[slug]">Vedi la pagina pubblica</a>`.
+  - Collegamento alla conferma di eliminazione: `<a class="pulsante" data-tipo="negativo" href="controllo-prodotto?prodotto=X&amp;elimina=1">Cancella</a>`.
+
+---
+
+### 21.4 Modulo di Conferma Cancellazione (`?elimina=1`)
+
+- [x] **Riquadro di Avviso Conferma (`role="alert" data-tipo="errore"`)**:
+  - [x] Intestazione dedicata: `<h2>Vuoi cancellare [Nome prodotto]?</h2>`.
+  - [x] Spiegazione chiara dell'effetto dell'operazione: *"Sparisce dal menu di tutte le sedi. Gli ordini gia fatti restano leggibili, perche hanno copiato nome e prezzo al momento dell'acquisto."*.
+  - [x] Form di conferma con metodo `POST`:
+    - Token CSRF obbligatorio (`campo_csrf()`).
+    - Input identificativo nascosto `<input type="hidden" name="prodotto_id" value="X" />`.
+    - Pulsante distruttivo: `<button type="submit" name="elimina" value="1" data-tipo="negativo">Cancella il prodotto</button>`.
+    - Collegamento di annullamento azione: `<a class="pulsante secondario" href="controllo-prodotto?prodotto=X">Annulla</a>`.
+
+---
+
+### 21.5 Validazione e Riepilogo Errori
+
+- [x] **Riepilogo Globale Errori in Cima al Modulo**:
+  - Visualizzato in presenza di errori di compilazione o upload: `<section class="avviso" role="alert" data-tipo="errore">`.
+  - Intestazione: `<h2>Controlla questi campi</h2>`.
+  - Elenco puntato di collegamenti interni verso ciascun campo errato (`<a href="#nome">`, `<a href="#slug">`, `<a href="#prezzo">`, ecc.).
+- [x] **Evidenziazione e Connessione Semantica sui Singoli Campi**:
+  - Attributo `data-stato="errore"` applicato al controllo invalido.
+  - Attributo `aria-describedby` collegato all'id del messaggio d'errore (es. `aria-describedby="errore-nome"`).
+  - Messaggio d'errore visibile ed esplicativo collocato sotto il campo (`<small id="errore-[campo]">[Spiegazione dell'errore]</small>`).
+  - Preservazione automatica di tutti i valori precedentemente inseriti.
+
+---
+
+### 21.6 Ciclo di Vita MariaDB (Transazioni e Integrita Referenziale)
+
+- [x] **Creazione (`prodotto_salva` con `$prodottoId = null`)**:
+  - Inserimento riga nella tabella `prodotti`.
+  - Seeding automatico delle giacenze: query su tutte le sedi registrate (`INSERT INTO disponibilita_prodotti (sede_id, prodotto_id, disponibile, quantita) SELECT id, :prodotto, 1, 0 FROM sedi`), impostando `disponibile = 1` e `quantita = 0` per ciascuna filiale.
+  - Reindirizzamento POST-Redirect-GET con messaggio flash: *"Fatto: Prodotto creato. Le sedi devono ancora rifornirlo."*.
+- [x] **Modifica (`prodotto_salva` con `$prodottoId = X`)**:
+  - Aggiornamento della riga corrispondente in `prodotti`.
+  - Reindirizzamento con messaggio flash: *"Fatto: Prodotto aggiornato."*.
+- [x] **Cancellazione (`prodotto_elimina`)**:
+  - Rimozione della riga da `prodotti`.
+  - Cancellazione a cascata (`ON DELETE CASCADE`) delle relative righe nella tabella `disponibilita_prodotti`.
+  - Preservazione dello storico degli ordini emessi: la chiave esterna `fk_righe_ordine_prodotto` in `righe_ordine` applica `ON DELETE SET NULL`, lasciando inalterati il nome congelato e il prezzo d'acquisto.
+  - Reindirizzamento con messaggio flash: *"Fatto: Prodotto cancellato."*.
+
+---
+
+### 21.7 Sicurezza Backend e Controllo Accessi
+
+- [x] **Autorizzazione di Ruolo**:
+  - [x] Ospite non autenticato respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato (`user`) respinto con codice `HTTP 403 Forbidden`.
+  - [x] Gestore di sede (`manager`) respinto con codice `HTTP 403 Forbidden` (la modifica del catalogo comune compete solo all'amministrazione centrale).
+  - [x] Amministratore (`admin`) autorizzato con codice `HTTP 200 OK`.
+- [x] **Validazione Parametri e Integrita**:
+  - [x] Richiesta con ID prodotto inesistente a database (es. `?prodotto=99999`) respinta con codice `HTTP 404 Not Found`.
+  - [x] Tentativo di invio POST senza token CSRF o con token manomesso bloccato con `HTTP 403 Forbidden`.
+  - [x] Upload sicuro immagini: controllo MIME type reale via `finfo`, verifica delle dimensioni geometriche effettive (`getimagesize`) e ridenominazione con hash casuale univoco.
+
+---
+
+### 21.8 Accessibilita, Contrasto e Responsive Mobile (375x667px)
+
+- [x] **Conformita Contrasto WCAG 2.1 AA**:
+  - [x] Test automatizzato eseguito su tutti i 70 nodi testuali del modulo (`h1`, `h2`, `label`, `input`, `select`, `textarea`, `small`, pulsanti e link):
+    - Tema chiaro: 100% conforme WCAG AA (rapporti fino a 14.5:1).
+    - Tema scuro: 100% conforme WCAG AA (rapporti fino a 13.8:1).
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Campi di input, selettori a discesa, area di testo e pulsanti con altezza minima touch e padding responsive conformi alle linee guida.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_scheda_prodotto.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE E PERMESSI DI RUOLO ===
+========================================================
+  [OK] Accesso ospite a /controllo-prodotto respinto con HTTP 401 Unauthorized
+  [OK] Accesso cliente ('user') respinto con HTTP 403 Forbidden
+  [OK] Accesso manager a /controllo-prodotto respinto con HTTP 403 Forbidden (riservato admin)
+  [OK] Accesso admin a /controllo-prodotto: HTTP 200 OK
+
+========================================================
+=== TEST VISTA CREAZIONE NUOVO PRODOTTO ===
+========================================================
+  [OK] Titolo dinamico creazione corretto: 'Scheda prodotto - Pannello di controllo'
+  [OK] H1 nuovo prodotto: 'Nuovo prodotto'
+  [OK] Breadcrumb a 4 livelli: ['Home', 'Ordini', 'Prodotti', 'Nuovo prodotto']
+  [OK] Elemento corrente 'Nuovo prodotto' contrassegnato con aria-current='page'
+  [OK] Navigazione pannello completa per admin: ['Ordini', 'Prodotti', 'Categorie', 'Sedi', 'Prenotazioni', 'Messaggi', 'Utenti']
+  [OK] Form creazione multipart/form-data presente
+  [OK] Anteprima immagine assente in creazione nuovo prodotto
+  [OK] Campo file #immagine ha required in creazione
+  [OK] Campo #immagine specifica estensioni consentite
+  [OK] Etichetta campo file in creazione: 'Immagine'
+  [OK] Campo #nome ha required
+  [OK] Campo #slug ha pattern regex corretto
+  [OK] Campo #categoria_id ha required
+  [OK] Campo #prezzo ha step 0.01
+  [OK] Campo #descrizione ha minlength 10
+  [OK] Pulsante submit indica 'Crea il prodotto'
+  [OK] Collegamento 'Torna ai prodotti' presente
+  [OK] Link 'Cancella' ASSENTE in creazione
+  [OK] Link 'Vedi la pagina pubblica' ASSENTE in creazione
+
+========================================================
+=== TEST VALIDAZIONE ERRORI (CLIENT & SERVER) ===
+========================================================
+  [OK] Box riepilogo errori (role='alert', data-tipo='errore') visualizzato
+  [OK] Intestazione box errori: 'Controlla questi campi'
+  [OK] Link di ancoraggio agli errori presenti: ['#nome', '#slug', '#categoria_id', '#prezzo', '#descrizione', '#immagine']
+  [OK] Input #nome evidenziato con data-stato='errore'
+  [OK] Input #slug evidenziato con data-stato='errore'
+  [OK] Input #prezzo evidenziato con data-stato='errore'
+  [OK] Messaggio errore campo nome: 'Scrivi il nome del prodotto, fra 2 e 120 caratteri.'
+
+========================================================
+=== TEST VISTA MODIFICA PRODOTTO ESISTENTE (CHEESEBURGER) ===
+========================================================
+  [OK] Accesso a /controllo-prodotto?prodotto=1: HTTP 200 OK
+  [OK] H1 in modifica: 'Modifica Cheeseburger'
+  [OK] Breadcrumb elemento corrente: 'Cheeseburger'
+  [OK] Immagine anteprima presente con alt descrittivo: 'Immagine attuale di Cheeseburger'
+  [OK] Etichetta campo file in modifica: 'Sostituisci immagine'
+  [OK] Campo file #immagine NON ha required in modifica (mantiene immagine esistente)
+  [OK] Campo #nome prepopolato: 'Cheeseburger'
+  [OK] Campo #slug prepopolato: 'cheeseburger'
+  [OK] Campo #prezzo prepopolato: '8.90'
+  [OK] Pulsante submit indica 'Salva le modifiche'
+  [OK] Link alla pagina pubblica presente: prodotto?slug=cheeseburger
+  [OK] Link 'Cancella' presente verso controllo-prodotto?prodotto=1&elimina=1
+
+========================================================
+=== TEST BOX CONFERMA CANCELLAZIONE (?elimina=1) ===
+========================================================
+  [OK] Box di avviso conferma cancellazione visualizzato
+  [OK] Intestazione box cancellazione: 'Vuoi cancellare Cheeseburger?'
+  [OK] Pulsante conferma cancellazione con data-tipo='negativo' presente
+  [OK] Link secondario 'Annulla' presente per revocare l'operazione
+
+========================================================
+=== TEST CICLO DI VITA COMPLETO (CREATE -> UPDATE -> DELETE) ===
+========================================================
+  [OK] Reindirizzamento dopo creazione atterra su http://localhost:8080/controllo-prodotti
+  [OK] Messaggio flash ricevuto: 'Fatto: Prodotto creato. Le sedi devono ancora rifornirlo.'
+  [OK] Prodotto inserito su MariaDB con ID: 20
+  [OK] Seeding automatico MariaDB su tutte le 4 sedi: 4 sedi, disponibile=4, qta=0
+  [OK] Valore iniziale nome corretto
+  [OK] Reindirizzamento dopo modifica atterra su controllo-prodotti
+  [OK] Messaggio flash aggiornamento: 'Fatto: Prodotto aggiornato.'
+  [OK] MariaDB aggiornato correttamente: nome='Burger Collaudo E2E Modificato', prezzo_centesimi=1290
+  [OK] Reindirizzamento dopo cancellazione atterra su controllo-prodotti
+  [OK] Messaggio flash cancellazione: 'Fatto: Prodotto cancellato.'
+  [OK] Prodotto eliminato definitivamente da tabella MariaDB 'prodotti'
+  [OK] Righe disponibilita eliminate a cascata da MariaDB 'disponibilita_prodotti'
+
+========================================================
+=== TEST SICUREZZA CSRF E PARAMETRI MALFORMATI ===
+========================================================
+  [OK] POST senza token CSRF bloccata con HTTP 403 Forbidden
+  [OK] Accesso con ID prodotto inesistente produce HTTP 404 Not Found
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Screenshot desktop salvato: scratch/controllo_prodotto_desktop.png
+  [OK] Mobile /controllo-prodotto caricato con HTTP 200
+  [OK] Mobile /controllo-prodotto: nessun overflow orizzontale (375 <= 375)
+  [OK] Screenshot mobile salvato: scratch/controllo_prodotto_mobile.png
+  [OK] Contrasto WCAG AA (light): tutti i 70 elementi conformi
+  [OK] Contrasto WCAG AA (dark): tutti i 70 elementi conformi
+
+=== RIEPILOGO TEST SCHEDA PRODOTTO ===
+Totale controlli eseguiti: 66
+Superati: 66
+Falliti: 0
+```
+
+---
+
+## 22. Pannello: Categorie (`controllo-categorie.php`)
+
+La pagina di gestione delle categorie consente all'amministratore (`admin`) di organizzare le sezioni del menu pubblico del ristorante: creazione di nuove categorie con slug e priorita ordinale, rinomina e riordinamento in linea direttamente nella tabella dati mediante moduli disaccoppiati (attributo HTML5 `form`), e cancellazione protetta con verifica del vincolo di integrita referenziale (blocco se la categoria contiene ancora prodotti a listino). L'accesso e riservato all'amministratore.
+
+---
+
+### 22.1 Header, Breadcrumb e Navigazione di Sezione (Condivisi)
+
+- [x] **Salto al contenuto principale (`.salta`)**
+  - **Tipo**: Collegamento interno (`<a class="salta" href="#contenuto">Vai al contenuto</a>`).
+  - **Comportamento al click/invio**: Sposta immediatamente il focus e lo scorrimento a `<main id="contenuto">`.
+
+- [x] **Breadcrumb Semantico (`aria-label="Percorso"`)**
+  - **Struttura a 3 livelli**:
+    1. `<a href="/">Home</a>`
+    2. `<a href="controllo">Ordini</a>`
+    3. `<span aria-current="page">Categorie</span>` (elemento testuale non cliccabile contrassegnato con `aria-current="page"`).
+  - **Comportamento visivo**: Separatore visivo conforme e resa responsive su linea singola.
+
+- [x] **Navigazione Interna del Pannello (`aria-label="Sezioni del pannello"`)**
+  - **Voci per Admin**: `Ordini`, `Prodotti`, `Categorie`, `Sedi`, `Prenotazioni`, `Messaggi`, `Utenti`.
+  - **Stato attivo**: la voce `Categorie` e contrassegnata con `aria-current="page"`.
+
+---
+
+### 22.2 Modulo "Aggiungi una categoria"
+
+- [x] **Sezione e Intestazione Dedicata**: `<section><h2>Aggiungi una categoria</h2>`.
+
+- [x] **Modulo di Creazione (`<form method="post" data-modulo="nuova-categoria">`)**:
+  - [x] Token CSRF generato tramite `campo_csrf()`.
+  - [x] Raggruppamento semantico: `<fieldset><legend>Nuova categoria</legend>`.
+  - [x] **Campo Nome (`#nome`)**:
+    - `<input type="text" id="nome" name="nome" required="required" minlength="2" maxlength="80" />`.
+    - Etichetta associata: `<label for="nome">Nome</label>`.
+  - [x] **Campo Slug (`#slug`)**:
+    - `<input type="text" id="slug" name="slug" required="required" pattern="[a-z0-9-]{2,80}" />`.
+    - Testo di aiuto accessibile: `<small id="aiuto-slug">Lettere minuscole, cifre e trattini.</small>`.
+    - Associazione accessibile: `aria-describedby="aiuto-slug"`.
+  - [x] **Campo Descrizione (`#descrizione`)**:
+    - `<input type="text" id="descrizione" name="descrizione" maxlength="255" />`.
+    - Etichetta associata: `<label for="descrizione">Descrizione</label>`.
+  - [x] **Campo Posizione nel Menu (`#ordine`)**:
+    - `<input type="number" id="ordine" name="ordine" min="0" max="255" value="0" />`.
+    - Etichetta associata: `<label for="ordine">Posizione nel menu</label>`.
+  - [x] **Pulsante di Invio**:
+    - `<button type="submit">Crea la categoria</button>`.
+  - [x] **Validazione Unicita Backend**:
+    - Tentativo di registrazione di uno slug gia occupato intercettato da blocco `try/catch` su vincolo di unicita del database MariaDB con messaggio d'errore dedicato: *"Questo slug e gia usato da un'altra categoria."*.
+
+---
+
+### 22.3 Tabella "Categorie esistenti" con Form Disaccoppiati
+
+- [x] **Sezione e Intestazione Dedicata**: `<section><h2>Categorie esistenti</h2>`.
+
+- [x] **Moduli Form Esterni alla Tabella**:
+  - Un elemento `<form method="post" action="controllo-categorie" id="categoria-[ID]" data-modulo="categoria">` per ciascuna categoria censita.
+  - Campi nascosti: token CSRF, `<input type="hidden" name="categoria_id" value="[ID]" />` e `<input type="hidden" name="descrizione" value="..." />`.
+  - Vantaggio architetturale: rispetta la sintassi formale HTML5/XML impedendo l'annidamento illegale di tag `<form>` all'interno o a cavallo degli elementi `<tr>` e `<td>`.
+
+- [x] **Tabella Dati (`<table>`)**:
+  - [x] **Didascalia Accessibile**: `<caption>Categorie del catalogo</caption>`.
+  - [x] **Intestazioni di Colonna (`<th scope="col">`)**: `Nome`, `Slug`, `Posizione`, `Azioni`.
+  - [x] **Controlli di Modifica Diretta in Riga**:
+    - Campo Nome: `<input type="text" id="nome-[ID]" name="nome" form="categoria-[ID]" required="required" minlength="2" maxlength="80" value="[Valore]" />` con `<label class="solo-lettori" for="nome-[ID]">Nome di [Nome Categoria]</label>`.
+    - Campo Slug: `<input type="text" id="slug-[ID]" name="slug" form="categoria-[ID]" required="required" pattern="[a-z0-9-]{2,80}" value="[Valore]" />` con `<label class="solo-lettori" for="slug-[ID]">Slug di [Nome Categoria]</label>`.
+    - Campo Posizione: `<input type="number" id="ordine-[ID]" name="ordine" form="categoria-[ID]" min="0" max="255" value="[Valore]" />` con `<label class="solo-lettori" for="ordine-[ID]">Posizione di [Nome Categoria]</label>`.
+  - [x] **Colonna Azioni**:
+    - Pulsante Salvataggio Modifiche: `<button type="submit" form="categoria-[ID]">Salva <span class="solo-lettori">[Nome Categoria]</span></button>`.
+    - Collegamento Rimozione: `<a class="pulsante" data-tipo="negativo" href="controllo-categorie?elimina=[ID]">Cancella <span class="solo-lettori">[Nome Categoria]</span></a>`.
+
+---
+
+### 22.4 Modulo di Conferma Cancellazione (`?elimina=ID`) e Vincolo Referenziale
+
+- [x] **Riquadro di Avviso Conferma (`role="alert" data-tipo="errore"`)**:
+  - [x] Intestazione dedicata: `<h2>Vuoi cancellare [Nome Categoria]?</h2>`.
+  - [x] Spiegazione chiara delle condizioni di successo: *"La cancellazione riesce solo se nessun prodotto usa ancora questa categoria."*.
+  - [x] Form di conferma con metodo `POST` e `data-modulo="cancella-categoria"`:
+    - Token CSRF obbligatorio (`campo_csrf()`).
+    - Pulsante distruttivo: `<button type="submit" name="elimina" value="[ID]" data-tipo="negativo">Cancella la categoria</button>`.
+    - Collegamento di revoca: `<a class="pulsante secondario" href="controllo-categorie">Annulla</a>`.
+- [x] **Protezione Referenziale Backend**:
+  - Query preventiva: `SELECT COUNT(*) FROM prodotti WHERE categoria_id = :id`.
+  - Se il conteggio e superiore a zero, l'operazione viene respinta con notifica flash d'errore: *"Questa categoria ha ancora dei prodotti: spostali prima di cancellarla."*, garantendo l'integrita referenziale del catalogo e preservando il record in MariaDB.
+
+---
+
+### 22.5 Ciclo di Vita MariaDB (Transazioni e Persistenza)
+
+- [x] **Creazione Categoria**:
+  - Inserimento riga nella tabella `categorie`.
+  - Reindirizzamento POST-Redirect-GET con messaggio flash: *"Fatto: Categoria creata."*.
+- [x] **Modifica Categoria**:
+  - Aggiornamento in linea di nome, slug, descrizione e ordine ordinale di visualizzazione nel menu pubblico.
+  - Reindirizzamento con messaggio flash: *"Fatto: Categoria aggiornata."*.
+- [x] **Cancellazione Categoria (a zero prodotti)**:
+  - Eliminazione definitiva del record da `categorie`.
+  - Reindirizzamento con messaggio flash: *"Fatto: Categoria cancellata."*.
+
+---
+
+### 22.6 Sicurezza Backend e Controllo Accessi
+
+- [x] **Autorizzazione di Ruolo**:
+  - [x] Ospite non autenticato respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato (`user`) respinto con codice `HTTP 403 Forbidden`.
+  - [x] Gestore di sede (`manager`) respinto con codice `HTTP 403 Forbidden` (la gestione delle categorie comuni e riservata all'amministratore).
+  - [x] Amministratore (`admin`) autorizzato con codice `HTTP 200 OK`.
+- [x] **Protezione CSRF**:
+  - [x] Richieste POST prive di token CSRF bloccate con codice `HTTP 403 Forbidden`.
+  - [x] Richieste POST con token CSRF manomesso bloccate con codice `HTTP 403 Forbidden`.
+
+---
+
+### 22.7 Accessibilita, Contrasto e Responsive Mobile (375x667px)
+
+- [x] **Conformita Contrasto WCAG 2.1 AA**:
+  - [x] Test automatizzato su tutti gli 82 elementi testuali della pagina (`h1`, `h2`, `th`, `td`, `label`, `input`, `small`, pulsanti e link):
+    - Tema chiaro: 100% conforme WCAG AA (rapporti fino a 14.5:1).
+    - Tema scuro: 100% conforme WCAG AA (rapporti fino a 13.8:1).
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Form di creazione impaginato verticalmente e tabella categorie con scorrimento orizzontale autonomo interno conforme alle specifiche d'esame.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_categorie.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE E PERMESSI DI RUOLO ===
+========================================================
+  [OK] Accesso ospite a /controllo-categorie respinto con HTTP 401 Unauthorized
+  [OK] Accesso cliente ('user') respinto con HTTP 403 Forbidden
+  [OK] Accesso manager a /controllo-categorie respinto con HTTP 403 Forbidden
+  [OK] Accesso admin a /controllo-categorie: HTTP 200 OK
+
+========================================================
+=== TEST STRUTTURA SEMANTICA E NAVIGAZIONE ===
+========================================================
+  [OK] Titolo dinamico corretto: 'Categorie - Pannello di controllo'
+  [OK] H1 semantico: 'Categorie'
+  [OK] Breadcrumb a 3 livelli: ['Home', 'Ordini', 'Categorie']
+  [OK] Elemento corrente breadcrumb 'Categorie' con aria-current='page'
+  [OK] Navigazione completa sezioni pannello per admin: ['Ordini', 'Prodotti', 'Categorie', 'Sedi', 'Prenotazioni', 'Messaggi', 'Utenti']
+  [OK] Sezione 'Categorie' attiva nella navigazione con aria-current='page'
+
+========================================================
+=== TEST SEZIONE AGGIUNGI UNA CATEGORIA ===
+========================================================
+  [OK] H2 sezione creazione: 'Aggiungi una categoria'
+  [OK] Form data-modulo='nuova-categoria' presente
+  [OK] Fieldset e legend presenti
+  [OK] Campo #nome ha required
+  [OK] Campo #slug ha pattern regex corretto
+  [OK] Campo #ordine range 0-255
+  [OK] Backend rifiuta slug duplicato: 'Errore: Questo slug e gia usato da un'altra categoria.'
+
+========================================================
+=== TEST SEZIONE CATEGORIE ESISTENTI & TABELLA FORM ===
+========================================================
+  [OK] Caption tabella: 'Categorie del catalogo'
+  [OK] Intestazioni colonna corrette: ['Nome', 'Slug', 'Posizione', 'Azioni']
+  [OK] Numero categorie visualizzate in tabella: 4
+  [OK] Riga categoria Burger identificata
+  [OK] Input nome collegato a form='categoria-1'
+  [OK] Pulsante Salva collegato a form='categoria-1'
+  [OK] Link 'Cancella' presente verso controllo-categorie?elimina=1
+
+========================================================
+=== TEST BLOCCO CANCELLAZIONE CATEGORIA CON PRODOTTI ===
+========================================================
+  [OK] Box di avviso conferma cancellazione visualizzato
+  [OK] H2 conferma cancellazione: 'Vuoi cancellare Burger?'
+  [OK] Backend blocca cancellazione di categoria con prodotti: 'Errore: Questa categoria ha ancora dei prodotti: spostali prima di cancellarla.'
+  [OK] MariaDB: Categoria 1 (Burger) preservata intatta
+
+========================================================
+=== TEST CICLO DI VITA COMPLETO (CREATE -> UPDATE -> DELETE) ===
+========================================================
+  [OK] Messaggio flash creazione: 'Fatto: Categoria creata.'
+  [OK] Categoria inserita su MariaDB con ID: 8
+  [OK] Riga nuova categoria trovata in tabella
+  [OK] Messaggio flash aggiornamento: 'Fatto: Categoria aggiornata.'
+  [OK] MariaDB aggiornato correttamente: nome='Categoria Collaudo E2E Modificata', ordine=50
+  [OK] Box cancellazione categoria test aperto
+  [OK] Messaggio flash eliminazione: 'Fatto: Categoria cancellata.'
+  [OK] Categoria test eliminata definitivamente da tabella MariaDB 'categorie'
+
+========================================================
+=== TEST SICUREZZA CSRF E PARAMETRI MALFORMATI ===
+========================================================
+  [OK] POST senza token CSRF bloccata con HTTP 403 Forbidden
+  [OK] POST con token CSRF manomesso bloccata con HTTP 403 Forbidden
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Screenshot desktop salvato: scratch/controllo_categorie_desktop.png
+  [OK] Mobile /controllo-categorie caricato con HTTP 200
+  [OK] Mobile /controllo-categorie: nessun overflow orizzontale (375 <= 375)
+  [OK] Screenshot mobile salvato: scratch/controllo_categorie_mobile.png
+  [OK] Contrasto WCAG AA (light): tutti i 82 elementi conformi
+  [OK] Contrasto WCAG AA (dark): tutti i 82 elementi conformi
+
+=== RIEPILOGO TEST PANNELLO CATEGORIE ===
+Totale controlli eseguiti: 44
+Superati: 44
+Falliti: 0
+```
+
+---
+
+## 23. Pannello: Sedi (`controllo-sedi.php`)
+
+La pagina riepiloga tutte le sedi della catena, mostrando l'indirizzo, il recapito telefonico, lo stato attuale della sala eventi e il collegamento per accedere alla scheda di modifica di ciascun locale. L'accesso e riservato esclusivamente al ruolo `amministratore`: i manager non passano da questa vista panoramica poiche gestiscono unicamente la propria sede assegnata.
+
+### 23.1 Controllo Accessi e Autorizzazione
+
+- [x] **Accesso Ospite non autenticato**:
+  - Richiesta GET a `/controllo-sedi` respinta immediatamente con `HTTP 401 Unauthorized`.
+- [x] **Accesso Cliente (`user`)**:
+  - Richiesta GET a `/controllo-sedi` respinta con `HTTP 403 Forbidden`.
+- [x] **Accesso Manager (`manager`)**:
+  - Richiesta GET a `/controllo-sedi` respinta con `HTTP 403 Forbidden` (il manager ha visibilita limitata al proprio locale).
+- [x] **Accesso Amministratore (`admin`)**:
+  - Richiesta GET a `/controllo-sedi` consentita con `HTTP 200 OK`.
+
+### 23.2 Struttura Semantica, Breadcrumb e Navigazione di Sezione
+
+- [x] **Titolo della Pagina (`<title>`)**:
+  - Correttamente impostato a `Sedi - Pannello di controllo`.
+- [x] **Breadcrumb Semantico (`<nav aria-label="Percorso">`)**:
+  - Percorso a 3 livelli: `Home` (`/`) > `Controllo` (`/controllo`) > `Sedi` (elemento testuale corrente non cliccabile).
+- [x] **Intestazione Principale (`<h1>`)**:
+  - `<h1>Sedi</h1>`.
+- [x] **Menu di Navigazione Pannello (`<nav class="filtri" aria-label="Sezioni del pannello">`)**:
+  - Include tutte le sezioni accessibili all'amministratore: `Ordini`, `Prodotti`, `Categorie`, `Sedi`, `Prenotazioni`, `Messaggi`, `Utenti`.
+  - Voce attiva `Sedi` marcata con `aria-current="page"`.
+
+### 23.3 Tabella Sedi della Catena e Dati Informativi
+
+- [x] **Didascalia Accessibile (`caption`)**:
+  - Didascalia semantica presente: `<caption>Sedi della catena</caption>`.
+- [x] **Intestazioni di Colonna (`thead th[scope="col"]`)**:
+  - `Citta`: Intestazione colonna 1.
+  - `Indirizzo`: Intestazione colonna 2.
+  - `Telefono`: Intestazione colonna 3.
+  - `Sala eventi`: Intestazione colonna 4.
+  - `Scheda`: Intestazione colonna 5.
+- [x] **Righe Dati (`tbody tr`)**:
+  - Ciascuna riga corrisponde a un record attivo nella tabella `sedi` di MariaDB (Padova, Treviso, Vicenza, Udine).
+  - Intestazione di riga `th[scope="row"]` contenente il nome della citta.
+  - Cella indirizzo contenente indirizzo civico e CAP (es. `Via San Fermo 34, 35137`).
+  - Cella telefono contenente recapito formattato (es. `049 1234567`).
+  - Badge di stato sala eventi:
+    - Sedi con sala eventi aperta: `<span class="etichetta" data-tipo="positivo">prenotabile</span>`.
+    - Sedi con sala eventi chiusa: `<span class="etichetta" data-tipo="attenzione">chiusa</span>`.
+
+### 23.4 Collegamenti Operativi e Accessibilita Screen Reader
+
+- [x] **Collegamento Modifica Sede**:
+  - Ciascuna riga espone un link diretto alla scheda della sede: `<a href="controllo-sede?sede=[id]">Modifica <span class="solo-lettori">la sede di [Citta]</span></a>`.
+  - La presenza della classe `.solo-lettori` garantisce la piena comprensione del contesto ai software di lettura assistita (screen reader), evitando collegamenti ambigui con solo testo "Modifica".
+
+### 23.5 Responsive Mobile (375x667px) e Convalida WCAG AA
+
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - `clientWidth = 375px`, `scrollWidth = 375px`: nessun overflow orizzontale della pagina o del contenitore principale.
+  - La tabella adotta lo scorrimento orizzontale interno disciplinato da CSS (`.pagina-interna > table { overflow-x: auto; }`), preservando la leggibilita di tutte le colonne e l'interazione touch su dispositivi mobili.
+- [x] **Verifica Contrasto WCAG AA**:
+  - Tema chiaro: 77 elementi testati, 0 violazioni del contrasto (100% conforme).
+  - Tema scuro: 77 elementi testati, 0 violazioni del contrasto (100% conforme).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_sedi.py`)
+
+```text
+--- TEST 1: Access Control ---
+Guest status: 401 (expected 401)
+Client status: 403 (expected 403)
+Manager status: 403 (expected 403)
+Admin status: 200 (expected 200)
+--- TEST 2: Page Elements & Semantic Structure ---
+Page title verified.
+Breadcrumb verified.
+H1 verified.
+Panel navigation verified, current is Sedi.
+--- TEST 3: Table Structure & Data ---
+Headers verified: ['Citta', 'Indirizzo', 'Telefono', 'Sala eventi', 'Scheda']
+Found 4 branches in table.
+Row 1: Padova | Via San Fermo 34, 35137 | Tel: 049 1234567 | Sala: prenotabile (positivo) | Link: controllo-sede?sede=1 (SR: 'la sede di Padova')
+Row 2: Treviso | Via Calmaggiore 18, 31100 | Tel: 0422 234567 | Sala: prenotabile (positivo) | Link: controllo-sede?sede=2 (SR: 'la sede di Treviso')
+Row 3: Vicenza | Corso Palladio 92, 36100 | Tel: 0444 345678 | Sala: prenotabile (positivo) | Link: controllo-sede?sede=3 (SR: 'la sede di Vicenza')
+Row 4: Udine | Via Mercatovecchio 7, 33100 | Tel: 0432 456789 | Sala: chiusa (attenzione) | Link: controllo-sede?sede=4 (SR: 'la sede di Udine')
+--- TEST 4: Screenshot & Mobile Responsiveness ---
+Desktop screenshot saved.
+Mobile 375px: scrollWidth=375, clientWidth=375
+Mobile screenshot saved.
+--- TEST 5: WCAG AA Contrast Audit ---
+Light theme: 77 elements checked, 0 contrast issues.
+Dark theme: 77 elements checked, 0 contrast issues.
+ALL TESTS PASSED FOR CONTROLLO-SEDI (PAGE 23)!
+```
 

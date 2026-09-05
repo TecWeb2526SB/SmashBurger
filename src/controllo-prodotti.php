@@ -57,7 +57,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 }
 
 mostra_pagina('controllo/prodotti.php', [
-    'breadcrumb' => [['Home', url()], ['Ordini', url('controllo')], ['Prodotti', null]],
+    'breadcrumb' => [['Home', url()], ['Controllo', url('controllo')], ['Prodotti', null]],
     'prodotti' => prodotti_in_sede($pdo, (int) $sede['id'], false),
     'sede' => $sede,
     'sedi' => $sedi,

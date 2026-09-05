@@ -37,7 +37,7 @@ if ($idDaCancellare !== null) {
 }
 
 mostra_pagina('controllo/categorie.php', [
-    'breadcrumb' => [['Home', url()], ['Ordini', url('controllo')], ['Categorie', null]],
+    'breadcrumb' => [['Home', url()], ['Controllo', url('controllo')], ['Categorie', null]],
     'categorie' => categorie_tutte($pdo),
     'daCancellare' => $daCancellare,
 ]);

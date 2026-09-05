@@ -36,7 +36,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 mostra_pagina('controllo/ordine.php', [
     'breadcrumb' => [
         ['Home', url()],
-        ['Ordini', url('controllo')],
+        ['Controllo', url('controllo')],
         [$ordine['numero_ordine'], null],
     ],
     'ordine' => $ordine,
