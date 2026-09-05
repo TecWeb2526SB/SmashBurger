@@ -17,7 +17,14 @@
             <h2><?php echo e($titoloArea); ?></h2>
             <ul>
                 <?php foreach ($voci as $slug => $etichetta): ?>
-                    <li><a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a></li>
+                    <li>
+                        <a href="<?php echo e(url($slug)); ?>">
+                            <?php echo e($etichetta); ?>
+                            <?php if ($slug === 'controllo-sedi'): ?>
+                                <span class="solo-lettori"> del pannello</span>
+                            <?php endif; ?>
+                        </a>
+                    </li>
                 <?php endforeach; ?>
             </ul>
         </section>

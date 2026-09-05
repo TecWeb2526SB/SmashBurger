@@ -15,9 +15,9 @@ if (($breadcrumb ?? []) === []) {
         <?php foreach ($breadcrumb as $voce): ?>
             <li>
                 <?php if ($voce[1] === null): ?>
-                    <span aria-current="page"><?php echo e($voce[0]); ?></span>
+                    <span aria-current="page"><?php echo e($voce[0]); ?><?php if (isset($voce[2])): ?><span class="solo-lettori"> <?php echo e($voce[2]); ?></span><?php endif; ?></span>
                 <?php else: ?>
-                    <a href="<?php echo e($voce[1]); ?>"><?php echo e($voce[0]); ?></a>
+                    <a href="<?php echo e($voce[1]); ?>"><?php echo e($voce[0]); ?><?php if (isset($voce[2])): ?><span class="solo-lettori"> <?php echo e($voce[2]); ?></span><?php endif; ?></a>
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>

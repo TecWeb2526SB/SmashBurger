@@ -59,7 +59,7 @@ mostra_pagina('controllo/sede.php', [
         ? [
             ['Home', url()],
             ['Controllo', url('controllo')],
-            ['Sedi', url('controllo-sedi')],
+            ['Sedi', url('controllo-sedi'), 'del pannello'],
             [$sede['citta'], null],
         ]
         : [

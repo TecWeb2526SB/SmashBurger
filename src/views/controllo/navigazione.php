@@ -14,9 +14,19 @@
         <?php foreach (pagine_del_menu('controllo', $ruoloCorrente) as $slug => $etichetta): ?>
             <li>
                 <?php if ($slug === $slugCorrente): ?>
-                    <a href="<?php echo e(url($slug)); ?>" aria-current="page"><?php echo e($etichetta); ?></a>
+                    <a href="<?php echo e(url($slug)); ?>" aria-current="page">
+                        <?php echo e($etichetta); ?>
+                        <?php if ($slug === 'controllo-sedi'): ?>
+                            <span class="solo-lettori"> del pannello</span>
+                        <?php endif; ?>
+                    </a>
                 <?php else: ?>
-                    <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
+                    <a href="<?php echo e(url($slug)); ?>">
+                        <?php echo e($etichetta); ?>
+                        <?php if ($slug === 'controllo-sedi'): ?>
+                            <span class="solo-lettori"> del pannello</span>
+                        <?php endif; ?>
+                    </a>
                 <?php endif; ?>
             </li>
         <?php endforeach; ?>
