@@ -924,7 +924,7 @@ button[data-tipo="negativo"],
 }
 
 .racconto-eventi .occhiello {
-    color: var(--senape-pieno);
+    color: var(--testo-su-pieno);
 }
 
 .racconto-metodo {
@@ -1434,7 +1434,7 @@ main .filtri a[aria-current]:visited {
 }
 
 .servizio-eventi .indice-pannello {
-    color: var(--senape-pieno);
+    color: var(--testo-su-pieno);
 }
 
 .servizio-eventi .pulsante.secondario {
@@ -2114,9 +2114,9 @@ textarea:hover {
     justify-content: space-between;
     gap: var(--spazio-5);
     padding: var(--spazio-5);
-    background: var(--identita);
-    color: var(--testo-su-identita);
-    border-bottom: var(--bordo-grafico) solid var(--identita);
+    background: var(--inchiostro);
+    color: var(--crema);
+    border-bottom: var(--bordo-grafico) solid var(--inchiostro);
 }
 
 .pagina-ordine .header-riepilogo .occhiello {
