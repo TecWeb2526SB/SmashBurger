@@ -16,14 +16,14 @@ Questo documento censisce, pagina per pagina, tutti gli elementi con cui l'utent
 
 1. [Home](#1-home-indexphp)
 2. [Menu (`menu.php`)](#2-menu-menuphp)
-3. *Dettaglio Prodotto (`prodotto.php`)*
+3. [Dettaglio Prodotto (`prodotto.php`)](#3-dettaglio-prodotto-prodottophp)
 4. [Servizi (`servizi.php`)](#4-servizi-serviziphp)
 5. [Chi siamo (`chi-siamo.php`)](#5-chi-siamo-chi-siamophp)
 6. [Sedi (`sedi.php`)](#6-sedi-sediphp)
-7. *Dettaglio Sede (`sede.php`)*
-8. *Contatti (`contatti.php`)*
-9. *Accedi (`accedi.php`)*
-10. *Registrati (`registrati.php`)*
+7. [Dettaglio Sede (`sede.php`)](#7-dettaglio-sede-sedephp)
+8. [Contatti (`contatti.php`)](#8-contatti-contattiphp)
+9. [Accedi (`accedi.php`)](#9-accedi-accediphp)
+10. [Registrati (`registrati.php`)](#10-registrati-registratiphp)
 11. *Esci (`esci.php`)*
 12. *Area personale (`area-personale.php`)*
 13. *Profilo utente (`profilo.php`)*
@@ -501,6 +501,252 @@ Falliti: 0
 
 ---
 
+## 3. Dettaglio Prodotto (`prodotto.php`)
+
+La pagina singola di dettaglio del prodotto (raggiunta tramite parametro di query `prodotto.php?slug={slug}`, ad esempio `bacon-burger`, `cheeseburger`, `patate`, `milkshake-vaniglia`) espone l'articolo a risoluzione piena con foto dedicata, prezzo esatto in Euro, descrizione approfondita degli ingredienti, riepilogo dichiarativo degli allergeni con canale di assistenza dedicato, e la lista di disponibilità reale e giacenza nelle 4 sedi attive (con indicazione immediata dell'etichetta di esaurito se la quantità a magazzino è pari a zero). In caso di slug assente o inesistente, la richiesta risponde con stato HTTP 404.
+
+### 3.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 4 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="/">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<a href="/menu">Menu</a>` (click ritorna al catalogo generale).
+  - [x] Livello 3: `<a href="/menu?categoria={categoria_slug}">{Categoria}</a>` (click filtra il menu per la categoria del prodotto: Burger, Contorni, Bevande o Dessert).
+  - [x] Livello 4: `<span aria-current="page">{Nome Prodotto}</span>` (nome del prodotto corrente, non cliccabile).
+
+- [x] **Controlli Tema e Navigazione Account**:
+  - [x] Toggle Tema Chiaro / Scuro coerente e funzionante.
+  - [x] Link Accedi / Registrati (per ospite) o Carrello / Area personale / Esci (per utenti autenticati).
+
+---
+
+### 3.2 Sezione Apertura / Hero Prodotto (`section.dettaglio-prodotto`)
+
+- [x] **Foto Dettaglio Prodotto (`.immagine-dettaglio-prodotto`)**:
+  - **Badge Edizione**: `<p class="numero-edizione">Smash / {categoria_nome}</p>`.
+  - **Immagine WebP**: caricata da `uploads/prodotti/{immagine}`, con dimensioni `width="600"`, `height="450"`.
+  - **Accessibilità visiva**: attributo `alt` valorizzato con il nome del prodotto (es. `alt="Bacon Burger"`).
+  - **Risoluzione & Peso**: ottimizzata per visualizzazione ad alta densità senza pesi eccessivi (< 300 KB).
+
+- [x] **Dati e Testi Caratterizzanti (`.testo-dettaglio-prodotto`)**:
+  - **Occhiello**: `{categoria_nome} · Preparato al momento` (es. *"Burger · Preparato al momento"*).
+  - **Titolo H1**: nome del prodotto (es. *"Bacon Burger"*).
+  - **Prezzo in Evidenza (`p.prezzo.prezzo-grande`)**: cifra formattata con valuta Euro tramite funzione `prezzo()` (es. `10,90 €`), perfettamente coincidente al centesimo con il listino a database.
+  - **Descrizione Estesa (`p.introduzione`)**: testo completo che illustra composizione, carni, pane, salse e processo di preparazione.
+
+- [x] **Pulsanti di Azione Principale (`.azioni`)**:
+  - [x] **Pulsante CTA Primario "Scegli la sede e ordina" (`a.pulsante[data-tipo="positivo"]`)**:
+    - Destinazione: `carrello.php` (avvia il processo di selezione sede e ordine).
+    - Evidenza grafica primaria, contrasto conforme e focus evidente.
+  - [x] **Pulsante CTA Secondario "Altri {categoria_nome}" (`a.pulsante.secondario`)**:
+    - Destinazione: `menu.php?categoria={categoria_slug}` (permette di esplorare gli altri piatti della stessa tipologia).
+
+---
+
+### 3.3 Griglia Dettaglio Informativo (`.griglia-dettaglio`)
+
+- [x] **Pannello 01 / Allergeni (`.pannello-informativo.pannello-allergeni`)**:
+  - **Indice visivo**: `01`.
+  - **Titolo H2**: *"Allergeni"*.
+  - **Dichiarazione ingredienti allergenici**:
+    - Se presenti: `Contiene: <strong>{allergeni}</strong>.` (es. *"Contiene: glutine, latte, uova, senape."*).
+    - Se assenti: *"Non contiene nessuno degli allergeni che dichiariamo."*.
+  - **Collegamento Assistenza Intolleranze**: link semantico `<a href="/contatti">Scrivici prima di ordinare</a>` che conduce al modulo di contatto.
+
+- [x] **Pannello 02 / Disponibilità nelle Sedi (`.pannello-informativo.pannello-disponibilita`)**:
+  - **Indice visivo**: `02`.
+  - **Titolo H2**: *"Dove lo trovi adesso"*.
+  - **Elenco Sedi Attive (`ul.elenco-sedi-disponibili`)**:
+    - Elenca tutte le sedi che hanno il prodotto in carta con link rapido alla scheda locale `<a href="/sede?slug={slug}">{citta}</a>` e relativo indirizzo civico.
+    - Se il prodotto è terminato in quella sede (`quantita <= 0`), compare il badge accessibile `<span class="etichetta" data-tipo="attenzione">esaurito</span>`.
+    - Se nessuna sede lo propone in carta, visualizza il messaggio informativo con link di ritorno al menu.
+
+---
+
+### 3.4 Barra Navigazione Inferiore (`p.navigazione-pagina`)
+
+- [x] **Pulsante "Torna a {categoria_nome}" (`a.pulsante.secondario`)**:
+  - Conduce a `menu.php?categoria={categoria_slug}`.
+- [x] **Pulsante "Scegli la sede e ordina" (`a.pulsante[data-tipo="positivo"]`)**:
+  - Conduce a `carrello.php`.
+
+---
+
+### 3.5 Gestione Errori e Prodotti Inesistenti (HTTP 404)
+
+- [x] **Slug Inesistente o Mancante**:
+  - Richieste a `/prodotto` (senza parametro) o a `/prodotto?slug=inesistente` vengono intercettate dal controller ed emettono immediatamente lo stato **HTTP 404 Not Found**, visualizzando la pagina di errore semantica.
+
+---
+
+### 3.6 Footer e Chiusura Pagina
+
+- [x] **Pulsante Galleggiante "Torna su" (`.torna-su`)**:
+  - Verificato su schede prodotto: dopo lo scorrimento, compare con transizione fluida; al click riporta fluidamente in cima a `#inizio` azzerando `scrollTop` e mantenendo `window.scrollY = 0`.
+- [x] **Collegamenti di Servizio ("Esplora") e Contatti Rapidi**:
+  - Footer navigabile e verificato.
+
+---
+
+### 3.7 Criteri Trasversali di Qualità per il Dettaglio Prodotto (WCAG 2.1 AA & Regole)
+
+- [x] **Sintassi e Validazione XML/HTML5**:
+  - Markup conforme alle specifiche HTML5 con sintassi XML valida e gerarchia logica delle intestazioni (`h1` -> `h2`).
+- [x] **Accessibilità Tastiera & Screen Reader**:
+  - Percorso `Tab` completo e coerente: breadcrumb a 4 livelli, CTA ordina, CTA categoria, link contatti intolleranze, link sedi con disponibilità, pulsanti inferiori e torna su.
+  - Immagini con testo alternativo corrispondente al nome del prodotto.
+- [x] **Responsive Mobile**:
+  - Testato con Playwright a 375x667px su articoli di tutte le 4 categorie: immagine ridimensionata proporzionalmente, bottoni e pannelli a colonna singola, nessun overflow orizzontale (`scrollWidth <= 375px`).
+- [x] **Funzionamento senza JavaScript**:
+  - La scheda e tutti i link di navigazione funzionano perfettamente senza JavaScript.
+
+---
+
+### 3.8 Esito del Collaudo Automatizzato End-to-End (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) per la pagina Dettaglio Prodotto su **tutti i 19 articoli del catalogo**:
+
+```text
+=== RACCOLTA DI TUTTI I 19 PRODOTTI DAL MENU ===
+  [OK] Trovati esattamente 19 prodotti nel menu
+
+=== INIZIO COLLAUDO DETTAGLIO PER TUTTI I 19 PRODOTTI ===
+  [OK] [#01 Bacon Burger] HTTP 200 (bacon-burger) - Title: 'Bacon Burger - Smash Burger'
+  [OK] [#01 Bacon Burger] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Bacon Burger']
+  [OK] [#01 Bacon Burger] H1 corretto: 'Bacon Burger', Prezzo: 10,90 euro, Immagine: OK
+  [OK] [#01 Bacon Burger] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#01 Bacon Burger] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#01 Bacon Burger] Trovate 4 sedi con disponibilita'
+  [OK] [#02 Cheeseburger] HTTP 200 (cheeseburger) - Title: 'Cheeseburger - Smash Burger'
+  [OK] [#02 Cheeseburger] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Cheeseburger']
+  [OK] [#02 Cheeseburger] H1 corretto: 'Cheeseburger', Prezzo: 8,90 euro, Immagine: OK
+  [OK] [#02 Cheeseburger] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#02 Cheeseburger] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#02 Cheeseburger] Trovate 4 sedi con disponibilita'
+  [OK] [#03 Chicken BBQ] HTTP 200 (chicken-bbq) - Title: 'Chicken BBQ - Smash Burger'
+  [OK] [#03 Chicken BBQ] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Chicken BBQ']
+  [OK] [#03 Chicken BBQ] H1 corretto: 'Chicken BBQ', Prezzo: 10,50 euro, Immagine: OK
+  [OK] [#03 Chicken BBQ] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#03 Chicken BBQ] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#03 Chicken BBQ] Trovate 4 sedi con disponibilita'
+  [OK] [#04 Chicken Burger] HTTP 200 (chicken-burger) - Title: 'Chicken Burger - Smash Burger'
+  [OK] [#04 Chicken Burger] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Chicken Burger']
+  [OK] [#04 Chicken Burger] H1 corretto: 'Chicken Burger', Prezzo: 9,90 euro, Immagine: OK
+  [OK] [#04 Chicken Burger] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#04 Chicken Burger] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#04 Chicken Burger] Trovate 4 sedi con disponibilita'
+  [OK] [#05 In-N-Out] HTTP 200 (in-n-out) - Title: 'In-N-Out - Smash Burger'
+  [OK] [#05 In-N-Out] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'In-N-Out']
+  [OK] [#05 In-N-Out] H1 corretto: 'In-N-Out', Prezzo: 10,50 euro, Immagine: OK
+  [OK] [#05 In-N-Out] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#05 In-N-Out] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#05 In-N-Out] Trovate 4 sedi con disponibilita'
+  [OK] [#06 Italiano] HTTP 200 (italiano) - Title: 'Italiano - Smash Burger'
+  [OK] [#06 Italiano] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Italiano']
+  [OK] [#06 Italiano] H1 corretto: 'Italiano', Prezzo: 11,50 euro, Immagine: OK
+  [OK] [#06 Italiano] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#06 Italiano] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#06 Italiano] Trovate 4 sedi con disponibilita'
+  [OK] [#07 Piccante] HTTP 200 (piccante) - Title: 'Piccante - Smash Burger'
+  [OK] [#07 Piccante] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Piccante']
+  [OK] [#07 Piccante] H1 corretto: 'Piccante', Prezzo: 10,90 euro, Immagine: OK
+  [OK] [#07 Piccante] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#07 Piccante] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#07 Piccante] Trovate 4 sedi con disponibilita'
+  [OK] [#08 Vegan Burger] HTTP 200 (vegan-burger) - Title: 'Vegan Burger - Smash Burger'
+  [OK] [#08 Vegan Burger] Breadcrumb 4 livelli: ['Home', 'Menu', 'Burger', 'Vegan Burger']
+  [OK] [#08 Vegan Burger] H1 corretto: 'Vegan Burger', Prezzo: 10,90 euro, Immagine: OK
+  [OK] [#08 Vegan Burger] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Burger' -> /menu?categoria=burger
+  [OK] [#08 Vegan Burger] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#08 Vegan Burger] Trovate 4 sedi con disponibilita'
+  [OK] [#09 Chicken Wings] HTTP 200 (chicken-wings) - Title: 'Chicken Wings - Smash Burger'
+  [OK] [#09 Chicken Wings] Breadcrumb 4 livelli: ['Home', 'Menu', 'Contorni', 'Chicken Wings']
+  [OK] [#09 Chicken Wings] H1 corretto: 'Chicken Wings', Prezzo: 7,50 euro, Immagine: OK
+  [OK] [#09 Chicken Wings] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Contorni' -> /menu?categoria=contorni
+  [OK] [#09 Chicken Wings] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#09 Chicken Wings] Trovate 4 sedi con disponibilita'
+  [OK] [#10 Panzerotti] HTTP 200 (panzerotti) - Title: 'Panzerotti - Smash Burger'
+  [OK] [#10 Panzerotti] Breadcrumb 4 livelli: ['Home', 'Menu', 'Contorni', 'Panzerotti']
+  [OK] [#10 Panzerotti] H1 corretto: 'Panzerotti', Prezzo: 6,20 euro, Immagine: OK
+  [OK] [#10 Panzerotti] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Contorni' -> /menu?categoria=contorni
+  [OK] [#10 Panzerotti] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#10 Panzerotti] Trovate 3 sedi con disponibilita'
+  [OK] [#11 Patate fritte] HTTP 200 (patate) - Title: 'Patate fritte - Smash Burger'
+  [OK] [#11 Patate fritte] Breadcrumb 4 livelli: ['Home', 'Menu', 'Contorni', 'Patate fritte']
+  [OK] [#11 Patate fritte] H1 corretto: 'Patate fritte', Prezzo: 4,50 euro, Immagine: OK
+  [OK] [#11 Patate fritte] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Contorni' -> /menu?categoria=contorni
+  [OK] [#11 Patate fritte] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#11 Patate fritte] Trovate 3 sedi con disponibilita'
+  [OK] [#12 Tenders di pollo] HTTP 200 (tenders-di-pollo) - Title: 'Tenders di pollo - Smash Burger'
+  [OK] [#12 Tenders di pollo] Breadcrumb 4 livelli: ['Home', 'Menu', 'Contorni', 'Tenders di pollo']
+  [OK] [#12 Tenders di pollo] H1 corretto: 'Tenders di pollo', Prezzo: 6,90 euro, Immagine: OK
+  [OK] [#12 Tenders di pollo] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Contorni' -> /menu?categoria=contorni
+  [OK] [#12 Tenders di pollo] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#12 Tenders di pollo] Trovate 4 sedi con disponibilita'
+  [OK] [#13 Acqua frizzante] HTTP 200 (acqua-frizzante) - Title: 'Acqua frizzante - Smash Burger'
+  [OK] [#13 Acqua frizzante] Breadcrumb 4 livelli: ['Home', 'Menu', 'Bevande', 'Acqua frizzante']
+  [OK] [#13 Acqua frizzante] H1 corretto: 'Acqua frizzante', Prezzo: 1,50 euro, Immagine: OK
+  [OK] [#13 Acqua frizzante] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Bevande' -> /menu?categoria=bevande
+  [OK] [#13 Acqua frizzante] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#13 Acqua frizzante] Trovate 4 sedi con disponibilita'
+  [OK] [#14 Acqua naturale] HTTP 200 (acqua-naturale) - Title: 'Acqua naturale - Smash Burger'
+  [OK] [#14 Acqua naturale] Breadcrumb 4 livelli: ['Home', 'Menu', 'Bevande', 'Acqua naturale']
+  [OK] [#14 Acqua naturale] H1 corretto: 'Acqua naturale', Prezzo: 1,50 euro, Immagine: OK
+  [OK] [#14 Acqua naturale] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Bevande' -> /menu?categoria=bevande
+  [OK] [#14 Acqua naturale] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#14 Acqua naturale] Trovate 4 sedi con disponibilita'
+  [OK] [#15 Bibita alla spina] HTTP 200 (bibita-alla-spina) - Title: 'Bibita alla spina - Smash Burger'
+  [OK] [#15 Bibita alla spina] Breadcrumb 4 livelli: ['Home', 'Menu', 'Bevande', 'Bibita alla spina']
+  [OK] [#15 Bibita alla spina] H1 corretto: 'Bibita alla spina', Prezzo: 3,00 euro, Immagine: OK
+  [OK] [#15 Bibita alla spina] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Bevande' -> /menu?categoria=bevande
+  [OK] [#15 Bibita alla spina] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#15 Bibita alla spina] Trovate 4 sedi con disponibilita'
+  [OK] [#16 Birra artigianale] HTTP 200 (birra-artigianale) - Title: 'Birra artigianale - Smash Burger'
+  [OK] [#16 Birra artigianale] Breadcrumb 4 livelli: ['Home', 'Menu', 'Bevande', 'Birra artigianale']
+  [OK] [#16 Birra artigianale] H1 corretto: 'Birra artigianale', Prezzo: 5,50 euro, Immagine: OK
+  [OK] [#16 Birra artigianale] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Bevande' -> /menu?categoria=bevande
+  [OK] [#16 Birra artigianale] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#16 Birra artigianale] Trovate 4 sedi con disponibilita'
+  [OK] [#17 Cono gelato] HTTP 200 (cono-gelato) - Title: 'Cono gelato - Smash Burger'
+  [OK] [#17 Cono gelato] Breadcrumb 4 livelli: ['Home', 'Menu', 'Dessert', 'Cono gelato']
+  [OK] [#17 Cono gelato] H1 corretto: 'Cono gelato', Prezzo: 3,50 euro, Immagine: OK
+  [OK] [#17 Cono gelato] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Dessert' -> /menu?categoria=dessert
+  [OK] [#17 Cono gelato] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#17 Cono gelato] Trovate 4 sedi con disponibilita'
+  [OK] [#18 Milkshake alla banana] HTTP 200 (milkshake-banana) - Title: 'Milkshake alla banana - Smash Burger'
+  [OK] [#18 Milkshake alla banana] Breadcrumb 4 livelli: ['Home', 'Menu', 'Dessert', 'Milkshake alla banana']
+  [OK] [#18 Milkshake alla banana] H1 corretto: 'Milkshake alla banana', Prezzo: 4,80 euro, Immagine: OK
+  [OK] [#18 Milkshake alla banana] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Dessert' -> /menu?categoria=dessert
+  [OK] [#18 Milkshake alla banana] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#18 Milkshake alla banana] Trovate 4 sedi con disponibilita'
+  [OK] [#19 Milkshake alla vaniglia] HTTP 200 (milkshake-vaniglia) - Title: 'Milkshake alla vaniglia - Smash Burger'
+  [OK] [#19 Milkshake alla vaniglia] Breadcrumb 4 livelli: ['Home', 'Menu', 'Dessert', 'Milkshake alla vaniglia']
+  [OK] [#19 Milkshake alla vaniglia] H1 corretto: 'Milkshake alla vaniglia', Prezzo: 4,80 euro, Immagine: OK
+  [OK] [#19 Milkshake alla vaniglia] CTA 'Scegli la sede e ordina' -> /carrello, CTA 'Altri Dessert' -> /menu?categoria=dessert
+  [OK] [#19 Milkshake alla vaniglia] Pannello Allergeni con link di contatto per intolleranze
+  [OK] [#19 Milkshake alla vaniglia] Trovate 4 sedi con disponibilita'
+
+=== COLLAUDO SCORRIMENTO TORNA SU ===
+  [OK] Pulsante Torna su visibile su scheda prodotto dopo scroll
+  [OK] Click 'Torna su': area.scrollTop=0, window.scrollY=0
+
+=== COLLAUDO GESTIONE ERRORI 404 ===
+  [OK] Prodotto inesistente (/prodotto?slug=pizza-margherita) -> HTTP 404
+  [OK] Slug omesso (/prodotto) -> HTTP 404
+
+=== COLLAUDO RESPONSIVE MOBILE (375x667) ===
+  [OK] Mobile [bacon-burger]: nessun overflow su 375px: True
+  [OK] Mobile [patate]: nessun overflow su 375px: True
+  [OK] Mobile [birra-artigianale]: nessun overflow su 375px: True
+  [OK] Mobile [milkshake-vaniglia]: nessun overflow su 375px: True
+
+=== RIEPILOGO TEST COMPLETO TUTTI I PRODOTTI ===
+Totale controlli eseguiti: 218
+Superati: 218
+Falliti: 0
+```
+
+---
+
 ## 4. Servizi (`servizi.php`)
 
 La pagina informativa dei Servizi illustra le cinque modalità operative offerte da Smash Burger: asporto/ritiro al banco, consegna a domicilio tramite partner, prenotazione della sala eventi nelle sedi attrezzate, trasparenza e gestione degli allergeni, e spiegazione della simulazione di pagamento.
@@ -915,3 +1161,687 @@ Totale controlli eseguiti: 32
 Superati: 32
 Falliti: 0
 ```
+
+---
+
+## 7. Dettaglio Sede (`sede.php`)
+
+La pagina singola di dettaglio della sede (raggiunta tramite parametro di query `sede.php?slug={slug}`, ad esempio `padova`, `treviso`, `vicenza`, `udine`) fornisce le informazioni complete sul singolo locale: indirizzo dettagliato, orari di apertura per ogni giorno della settimana, recapiti specifici, gestione degli ordini per il ritiro e prenotazione dedicata della sala eventi (ove disponibile). Se il parametro è assente o corrisponde a una sede inesistente, la pagina emette lo stato HTTP 404.
+
+### 7.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 3 livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="/">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<a href="/sedi">Sedi</a>` (click ritorna all'elenco generale delle sedi).
+  - [x] Livello 3: `<span aria-current="page">{Nome Città}</span>` (città corrente, non cliccabile).
+
+- [x] **Controlli Tema e Navigazione Account**:
+  - [x] Toggle Tema Chiaro / Scuro coerente e funzionante.
+  - [x] Link Accedi / Registrati (per ospite) o Carrello / Area personale / Esci (per utenti autenticati).
+
+---
+
+### 7.2 Sezione Apertura / Hero Sede (`section.apertura-sede`)
+
+- [x] **Occhiello e Titolo Principale (`h1`)**:
+  - Occhiello: `{provincia} · Aperto ogni giorno` (es. *"PD · Aperto ogni giorno"*).
+  - Titolo H1: `Smash Burger {citta}` (es. *"Smash Burger Padova"*).
+  - Titolo pagina `<title>` dinamico e descrittivo: `Smash Burger {citta}: indirizzo e orari`.
+
+- [x] **Indirizzo in Evidenza (`address.indirizzo-grande`)**:
+  - Mostra via, civico, CAP, città e provincia con formattazione semantica `<address>`.
+
+- [x] **Pulsanti di Azione Principale (`.azioni`)**:
+  - [x] **Pulsante CTA "Ordina da qui" (`a.pulsante[data-tipo="positivo"]`)**:
+    - Destinazione: `carrello.php?sede={slug}` (preimposta la sede scelta nel flusso di composizione ordine).
+    - Evidenza grafica primaria, contrasto elevato e focus accessibile.
+  - [x] **Pulsante CTA "Chiama la sede" (`a.pulsante.secondario`)**:
+    - Destinazione: `tel:{telefono}` (senza spazi).
+    - Avvia la chiamata telefonica diretta al locale selezionato.
+
+- [x] **Foto del Locale (`figure.istantanea.istantanea-locale`)**:
+  - **Tipo**: Immagine WebP (`images/sedi/{slug}.webp`).
+  - **Risoluzione & Ottimizzazione**: `width="1200"`, `height="800"`.
+  - **Accessibilità visiva**: `alt` descrittivo contestualizzato generato da `testo_alternativo_sede()` (es. *"Esterno della sede Smash Burger a Padova con vetrina e insegna illuminata."*).
+  - **Didascalia**: `<figcaption>` con dicitura *"Smash Burger {citta}, vista dalla strada."*.
+
+---
+
+### 7.3 Griglia Dettagli Informativi (`.griglia-sede-dettaglio`)
+
+- [x] **Pannello 01 / Contatti (`.pannello-informativo.contatti-sede`)**:
+  - **Indice visivo**: `01 / Contatti`.
+  - **Titolo H2**: *"Dove siamo"*.
+  - **Indirizzo completo**: via, CAP, città, provincia.
+  - **Link Telefonico**: `<a href="tel:...">` con numero formattato per la lettura umana.
+  - **Link Email del locale**: `<a href="mailto:{email}">` (es. `padova@smashburger.it`).
+
+- [x] **Pannello 02 / Orari Settimanali (`.pannello-informativo.orari-sede`)**:
+  - **Indice visivo**: `02 / Orari`.
+  - **Titolo H2**: *"Quando trovarci"*.
+  - **Tabella Semantica degli Orari**:
+    - `<caption>` esplicativa: *"Orari di apertura della sede di {citta}"*.
+    - Intestazioni colonna `<thead>`: `th[scope="col"] Giorno` e `th[scope="col"] Apertura`.
+    - Corpo tabella `<tbody>`: 7 righe (Lunedì-Domenica) con `th[scope="row"]` per ciascun giorno e `<td>` con fascia oraria formattata da `fascia_leggibile()` (es. `11:30 - 22:30` oppure spezzato pranzo/cena).
+
+- [x] **Pannello 03 / Ordini e Ritiro (`.pannello-informativo.ritiro-sede`)**:
+  - **Indice visivo**: `03 / Ordini`.
+  - **Titolo H2**: *"Ritiro senza coda"*.
+  - **Note sul ritiro**: visualizza le indicazioni logistiche registrate nel database per la specifica sede (es. parcheggi dedicati, banco ritiro).
+  - **Nota consegna**: *"Puoi anche farti consegnare l'ordine a casa."*.
+  - **Link Diretto**: `a.collegamento-freccia` (*"Comincia l'ordine >"*) verso `carrello.php?sede={slug}`.
+
+- [x] **Pannello 04 / Eventi e Prenotazione Sala (`.pannello-informativo.eventi-sede`)**:
+  - **Indice visivo**: `04 / Eventi`.
+  - **Titolo H2**: *"Una sala per la tua crew"*.
+  - **Stato con Sala Eventi Disponibile (Padova, Treviso, Vicenza)**:
+    - [x] Testo illustrativo: *"Scegli giorno, orario di inizio e durata. La sala è adatta a compleanni, feste di laurea e cene di gruppo."*.
+    - [x] Pulsante CTA: `a.pulsante.secondario` (*"Prenota la sala"*) che apre `prenota.php?sede={slug}` per compilare la richiesta.
+  - **Stato senza Sala Eventi (Udine)**:
+    - [x] Badge di avviso: `<span class="etichetta" data-tipo="attenzione">Non prenotabile</span>`.
+    - [x] Testo esplicativo: *"In questo periodo la sala di Udine non accetta prenotazioni."*.
+    - [x] Link di ripiego: `<a href="/sedi">Guarda le altre sedi</a>`.
+
+---
+
+### 7.4 Barra Navigazione Inferiore (`p.navigazione-pagina`)
+
+- [x] **Pulsante "< Torna alle sedi" (`a.pulsante.secondario.collegamento-indietro`)**:
+  - Conduce all'elenco generale `/sedi`.
+- [x] **Pulsante "Guarda il menu" (`a.pulsante`)**:
+  - Conduce al catalogo dei prodotti `/menu`.
+
+---
+
+### 7.5 Gestione Errori e Pagine Mancanti (HTTP 404)
+
+- [x] **Controllo Parametro Query `slug`**:
+  - Se il parametro `slug` non viene passato (`/sede`), la pagina risponde con stato **HTTP 404 Not Found**.
+  - Se il valore di `slug` non corrisponde ad alcuna sede attiva a database (es. `/sede?slug=milano`), la pagina risponde con stato **HTTP 404 Not Found** mostrando la pagina di errore semantica.
+
+---
+
+### 7.6 Footer e Chiusura Pagina
+
+- [x] **Pulsante Galleggiante "Torna su" (`.torna-su`)**:
+  - Compare dopo lo scorrimento; al click riporta fluidamente in cima a `#inizio` azzerando `scrollTop` e mantenendo `window.scrollY = 0`.
+- [x] **Collegamenti di Servizio ("Esplora") e Contatti Rapidi**:
+  - Footer navigabile e verificato.
+
+---
+
+### 7.7 Criteri Trasversali di Qualità per il Dettaglio Sede (WCAG 2.1 AA & Regole)
+
+- [x] **Sintassi e Validazione XML/HTML5**:
+  - Markup conforme a HTML5 con sintassi XML valida. Tabella orari completamente accessibile (`caption`, `th scope="col"`, `th scope="row"`).
+- [x] **Navigabilità da Tastiera**:
+  - Focus visibile e sequenziale su breadcrumbs, CTA hero ("Ordina da qui", "Chiama la sede"), link contatti, link ordini, CTA prenotazione sala, pulsanti di ritorno e "Torna su".
+- [x] **Responsive Mobile**:
+  - Testato con Playwright a 375x667px: layout a colonna singola, tabella orari fluida e leggibile, nessun overflow orizzontale (`scrollWidth <= 375px`).
+- [x] **Funzionamento senza JavaScript**:
+  - Tutte le funzionalità della pagina (consultazione orari, chiamate telefoniche, link carrello e prenotazione) funzionano nativamente tramite HTML puro.
+
+---
+
+### 7.8 Esito del Collaudo Automatizzato End-to-End (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) per la pagina Dettaglio Sede:
+
+```text
+=== INIZIO COLLAUDO DETTAGLIO PER TUTTE LE 4 SEDI ===
+
+--- Collaudo Sede #1: Padova (PD) [slug: padova] ---
+  [OK] [Padova] HTTP 200
+  [OK] [Padova] Title: 'Smash Burger Padova: indirizzo e orari'
+  [OK] [Padova] Breadcrumb: ['Home', 'Sedi', 'Padova']
+  [OK] [Padova] H1='Smash Burger Padova', Occhiello='PD · Aperto ogni giorno'
+  [OK] [Padova] Indirizzo: 'Via San Fermo 34 35137 Padova (PD)'
+  [OK] [Padova] CTA 'Ordina da qui' punta a carrello con sede=padova
+  [OK] [Padova] CTA 'Chiama la sede' punta a tel:0491234567
+  [OK] [Padova] Foto sede caricata (naturalWidth > 0)
+  [OK] [Padova] Pannello Contatti email corretta: 'padova@smashburger.it'
+  [OK] [Padova] Tabella orari completa con 7 giorni
+  [OK] [Padova] Note ritiro presenti: 'banco a destra'
+  [OK] [Padova] Sala eventi DISPONIBILE -> CTA 'Prenota la sala' presente per padova
+
+--- Collaudo Sede #2: Treviso (TV) [slug: treviso] ---
+  [OK] [Treviso] HTTP 200
+  [OK] [Treviso] Title: 'Smash Burger Treviso: indirizzo e orari'
+  [OK] [Treviso] Breadcrumb: ['Home', 'Sedi', 'Treviso']
+  [OK] [Treviso] H1='Smash Burger Treviso', Occhiello='TV · Aperto ogni giorno'
+  [OK] [Treviso] Indirizzo: 'Via Calmaggiore 18 31100 Treviso (TV)'
+  [OK] [Treviso] CTA 'Ordina da qui' punta a carrello con sede=treviso
+  [OK] [Treviso] CTA 'Chiama la sede' punta a tel:0422234567
+  [OK] [Treviso] Foto sede caricata (naturalWidth > 0)
+  [OK] [Treviso] Pannello Contatti email corretta: 'treviso@smashburger.it'
+  [OK] [Treviso] Tabella orari completa con 7 giorni
+  [OK] [Treviso] Note ritiro presenti: 'cassa centrale'
+  [OK] [Treviso] Sala eventi DISPONIBILE -> CTA 'Prenota la sala' presente per treviso
+
+--- Collaudo Sede #3: Vicenza (VI) [slug: vicenza] ---
+  [OK] [Vicenza] HTTP 200
+  [OK] [Vicenza] Title: 'Smash Burger Vicenza: indirizzo e orari'
+  [OK] [Vicenza] Breadcrumb: ['Home', 'Sedi', 'Vicenza']
+  [OK] [Vicenza] H1='Smash Burger Vicenza', Occhiello='VI · Aperto ogni giorno'
+  [OK] [Vicenza] Indirizzo: 'Corso Palladio 92 36100 Vicenza (VI)'
+  [OK] [Vicenza] CTA 'Ordina da qui' punta a carrello con sede=vicenza
+  [OK] [Vicenza] CTA 'Chiama la sede' punta a tel:0444345678
+  [OK] [Vicenza] Foto sede caricata (naturalWidth > 0)
+  [OK] [Vicenza] Pannello Contatti email corretta: 'vicenza@smashburger.it'
+  [OK] [Vicenza] Tabella orari completa con 7 giorni
+  [OK] [Vicenza] Note ritiro presenti: 'bancone accanto alle vetrine'
+  [OK] [Vicenza] Sala eventi DISPONIBILE -> CTA 'Prenota la sala' presente per vicenza
+
+--- Collaudo Sede #4: Udine (UD) [slug: udine] ---
+  [OK] [Udine] HTTP 200
+  [OK] [Udine] Title: 'Smash Burger Udine: indirizzo e orari'
+  [OK] [Udine] Breadcrumb: ['Home', 'Sedi', 'Udine']
+  [OK] [Udine] H1='Smash Burger Udine', Occhiello='UD · Aperto ogni giorno'
+  [OK] [Udine] Indirizzo: 'Via Mercatovecchio 7 33100 Udine (UD)'
+  [OK] [Udine] CTA 'Ordina da qui' punta a carrello con sede=udine
+  [OK] [Udine] CTA 'Chiama la sede' punta a tel:0432456789
+  [OK] [Udine] Foto sede caricata (naturalWidth > 0)
+  [OK] [Udine] Pannello Contatti email corretta: 'udine@smashburger.it'
+  [OK] [Udine] Tabella orari completa con 7 giorni
+  [OK] [Udine] Note ritiro presenti: 'banco vicino alla scala'
+  [OK] [Udine] Sala eventi NON DISPONIBILE -> Badge 'Non prenotabile' presente
+
+--- Collaudo Torna su e Controlli Globali ---
+  [OK] Pulsante Torna su visibile dopo scroll
+  [OK] Click 'Torna su': area.scrollTop=0, window.scrollY=0
+
+--- Collaudo Gestione Errori 404 ---
+  [OK] Slug inesistente (/sede?slug=milano) -> HTTP 404
+  [OK] Slug omesso (/sede) -> HTTP 404
+
+--- Collaudo Responsive Mobile (375x667) per tutte le sedi ---
+  [OK] [Padova] Nessun overflow orizzontale su 375px: True
+  [OK] [Treviso] Nessun overflow orizzontale su 375px: True
+  [OK] [Vicenza] Nessun overflow orizzontale su 375px: True
+  [OK] [Udine] Nessun overflow orizzontale su 375px: True
+
+=== RIEPILOGO TEST COMPLETO DETTAGLIO SEDI ===
+Totale controlli eseguiti: 56
+Superati: 56
+Falliti: 0
+```
+
+---
+
+## 8. Contatti (`contatti.php`)
+
+La pagina Contatti offre agli utenti e ai clienti i canali di assistenza diretta (posta elettronica, recapito telefonico centralizzato, orari di operatività) e il modulo accessibile per inviare richieste, segnalazioni o informazioni sul servizio con validazione e salvataggio nel database.
+
+### 8.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb (`nav[aria-label="Percorso"]`)**
+  - [x] Livello 1: `<a href="/">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<span aria-current="page">Contatti</span>` (pagina corrente, non cliccabile).
+
+- [x] **Controlli Tema e Navigazione Account**:
+  - [x] Toggle Tema Chiaro / Scuro coerente e funzionante.
+  - [x] Link Accedi / Registrati (per ospite) o Carrello / Area personale / Esci (per utenti autenticati).
+
+---
+
+### 8.2 Sezione Apertura ed Elementi Informativi (`section.apertura-contatti`)
+
+- [x] **Occhiello e Titolo Principale (`h1`)**:
+  - Occhiello: *"Parliamo chiaro"*.
+  - Titolo H1: *"Contatti"*.
+  - Testo introduttivo sulle tempistiche di evasione delle richieste (risposta via email, di solito entro un giorno lavorativo).
+
+- [x] **Riquadro Contatti Diretti (`aside.contatti-diretti`)**:
+  - **Indice visivo**: `Contatto diretto`.
+  - **Canale Email**: `<a href="mailto:informazioni@smashburger.it">informazioni@smashburger.it</a>` (apre il client di posta).
+  - **Canale Telefonico**: `<a href="tel:0491234567">049 1234567</a>` (avvia la chiamata diretta su dispositivi abilitati).
+  - **Orari di Assistenza**: `Ogni giorno, 11:30 - 22:30`.
+
+---
+
+### 8.3 Modulo di Contatto (`form.modulo-contatto`)
+
+- [x] **Configurazione e Sicurezza del Modulo**:
+  - **Metodo e Azione**: `method="post" action="contatti.php"`.
+  - **Token CSRF**: `<input type="hidden" name="token_csrf" value="..." />`, validato in tempo costante tramite `csrf_valido()` ad ogni invio.
+  - **Fieldset semantico**: `<fieldset>` con `<legend>Raccontaci di cosa hai bisogno</legend>`.
+
+- [x] **Campo Nome (`input#nome`)**:
+  - **Tipo e Vincoli**: `type="text"`, `required="required"`, `minlength="2"`, `maxlength="120"`, `autocomplete="name"`.
+  - **Etichetta accessibile**: `<label for="nome">Nome</label>`.
+  - **Gestione Errori**: se vuoto o con meno di 2 caratteri, riceve `data-stato="errore"`, `aria-describedby="errore-nome"` e visualizza `<small id="errore-nome">Scrivi il tuo nome, fra 2 e 120 caratteri.</small>`.
+  - **Persistenza**: conserva il testo inserito dall'utente in caso di errore su altri campi.
+
+- [x] **Campo Email (`input#email`)**:
+  - **Tipo e Vincoli**: `type="email"`, `required="required"`, `maxlength="160"`, `autocomplete="email"`.
+  - **Etichetta accessibile**: `<label for="email">Email</label>`.
+  - **Gestione Errori**: se non valida o vuota, riceve `data-stato="errore"`, `aria-describedby="errore-email"` e visualizza `<small id="errore-email">Scrivi un indirizzo email valido, per poterti rispondere.</small>`.
+  - **Persistenza**: conserva l'email digitata.
+
+- [x] **Campo Argomento / Categoria (`select#categoria`)**:
+  - **Tipo e Vincoli**: `<select>` a scelta singola, `required="required"`.
+  - **Etichetta accessibile**: `<label for="categoria">Di che cosa si tratta</label>`.
+  - **Opzioni fornite da `categorie_messaggio()`**:
+    - [x] `""`: *"Scegli un argomento"* (valore predefinito nullo).
+    - [x] `"ordine"`: *"Un ordine"*.
+    - [x] `"prenotazione"`: *"Una prenotazione"*.
+    - [x] `"segnalazione"`: *"Una segnalazione sul sito"*.
+    - [x] `"altro"`: *"Altro"*.
+  - **Gestione Errori**: se non selezionata o non ammessa, riceve `data-stato="errore"`, `aria-describedby="errore-categoria"` e `<small id="errore-categoria">Scegli uno degli argomenti proposti.</small>`.
+  - **Persistenza**: l'opzione selezionata mantiene l'attributo `selected="selected"`.
+
+- [x] **Campo Messaggio (`textarea#testo`)**:
+  - **Tipo e Vincoli**: `<textarea>`, `rows="6"`, `required="required"`, `minlength="10"`, `maxlength="400"`.
+  - **Etichetta accessibile**: `<label for="testo">Messaggio</label>`.
+  - **Gestione Errori**: se inferiore a 10 caratteri o superiore a 400, riceve `data-stato="errore"`, `aria-describedby="errore-testo"` e `<small id="errore-testo">Scrivi il messaggio, fra 10 e 400 caratteri.</small>`.
+  - **Persistenza**: conserva il testo digitato.
+
+- [x] **Pulsante di Invio (`button[type="submit"]`)**:
+  - Testo: *"Invia il messaggio"*.
+  - Contrasto elevato, focus visibile e attivabile con `Invio` o `Spazio`.
+
+- [x] **Nota Informativa sulla Privacy (`p.nota-privacy`)**:
+  - Dicitura di trasparenza sul trattamento dati.
+  - Collegamento ad alto contrasto verso `privacy.php` (`<a href="/privacy">privacy policy</a>`).
+
+---
+
+### 8.4 Gestione Notifiche ed Errori (WCAG 2.1 AA)
+
+- [x] **Riepilogo Generale degli Errori (`section.avviso[role="alert"][data-tipo="errore"]`)**:
+  - Compare in cima al form solo in presenza di errori di compilazione lato server.
+  - Titolo H2: *"Controlla questi campi"*.
+  - Elenco puntato di ancore interne (`#nome`, `#email`, `#categoria`, `#testo`) per consentire all'utente di saltare istantaneamente con un click o con il focus della tastiera al campo da correggere.
+- [x] **Messaggio Flash di Conferma (`p.avviso[role="status"]`)**:
+  - Adottato il pattern POST-Redirect-GET (`vai_a('contatti')`) per evitare doppi invii accidentali in caso di ricaricamento pagina (`F5`).
+  - Mostra il banner verde ad alto contrasto con dicitura *"Messaggio inviato. Ti rispondiamo via email."*.
+  - Il form viene completamente ripulito dai dati precedenti pronto per un eventuale nuovo messaggio.
+- [x] **Persistenza su Database**:
+  - Il messaggio viene memorizzato nella tabella `messaggi_contatto` con stato iniziale `nuovo`, timestamp `creato_il` e associazione di categoria.
+
+---
+
+### 8.5 Footer e Chiusura Pagina
+
+- [x] **Pulsante Galleggiante "Torna su" (`.torna-su`)**:
+  - Verificato su Contatti: dopo lo scorrimento, compare con transizione fluida; al click riporta a `#inizio` azzerando `scrollTop` e mantenendo `window.scrollY = 0`.
+- [x] **Collegamenti di Servizio ("Esplora") e Contatti Rapidi**:
+  - Tutti i link del footer (`Contatti`, `Privacy`, `Accessibilita`, `Mappa del sito`, `Orari di ogni sede`, badge W3C) verificati e funzionanti.
+
+---
+
+### 8.6 Criteri Trasversali di Qualità per i Contatti (WCAG 2.1 AA & Regole)
+
+- [x] **Sintassi e Validazione XML/HTML5**:
+  - Markup conforme alle specifiche HTML5 con sintassi XML valida, attributi quotati e corretta annidazione semantica.
+- [x] **Accessibilità Moduli & Screen Reader**:
+  - Tutte le label sono esplicitamente collegate ai relativi campi tramite attributi `for`/`id`.
+  - I messaggi di errore inline sono associati via `aria-describedby` così che i lettori vocali leggano l'errore subito dopo l'etichetta.
+  - Gli avvisi globali usano `role="alert"` (per gli errori) e `role="status"` (per il successo).
+- [x] **Responsive Mobile**:
+  - Testato con Playwright a 375x667px: layout a colonna singola nitido, campi input e pulsante a tutta larghezza facilmente azionabili via touch, nessun overflow orizzontale (`scrollWidth <= 375px`).
+- [x] **Funzionamento senza JavaScript**:
+  - Il form funziona al 100% senza JavaScript: la validazione server rileva e segnala gli errori, preserva i valori nei campi e gestisce il redirect di successo.
+
+---
+
+### 8.7 Esito del Collaudo Automatizzato End-to-End (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) per la pagina Contatti:
+
+```text
+=== INIZIO TEST UTENTE: PAGINA CONTATTI ===
+  [OK] Caricamento iniziale Contatti: HTTP 200
+  [OK] Titolo pagina corretto: 'Contatti e assistenza - Smash Burger'
+  [OK] Breadcrumb: ['Home', 'Contatti']
+  [OK] Breadcrumb link 'Home' torna alla Home (http://localhost:8080/)
+  [OK] Hero: H1='Contatti', Occhiello='Parliamo chiaro'
+  [OK] Canale diretto Email: 'informazioni@smashburger.it'
+  [OK] Canale diretto Telefono: '049 1234567'
+  [OK] Form contatti presente con method='post'
+  [OK] Token CSRF presente nel form
+  [OK] Campo Nome: attributi required e autocomplete='name'
+  [OK] Campo Email: type='email' e autocomplete='email'
+  [OK] Campo Categoria: required
+  [OK] Opzioni Categoria: ['', 'ordine', 'prenotazione', 'segnalazione', 'altro']
+  [OK] Campo Messaggio: minlength='10', maxlength='400'
+  [OK] Pulsante invio presente: 'Invia il messaggio'
+  [OK] Nota privacy con link valido a /privacy
+
+=== COLLAUDO ERRORI E VALIDAZIONE ===
+  [OK] Riepilogo errori visibile: section.avviso[data-tipo='errore']
+  [OK] Titolo riepilogo: 'Controlla questi campi'
+  [OK] Link correzione errori nei campi: ['#nome', '#email', '#categoria', '#testo']
+  [OK] Campo Nome evidenziato con data-stato='errore' e messaggio inline #errore-nome
+  [OK] Campo Email evidenziato con data-stato='errore' e messaggio inline #errore-email
+  [OK] Campo Categoria evidenziato con data-stato='errore' e messaggio inline #errore-categoria
+  [OK] Campo Testo evidenziato con data-stato='errore' e messaggio inline #errore-testo
+
+=== COLLAUDO INVIO VALIDO E CONFERMA ===
+  [OK] POST-Redirect-GET completato: http://localhost:8080/contatti
+  [OK] Banner di successo presente: 'Fatto: Messaggio inviato. Ti rispondiamo via email.'
+  [OK] Form resettato dopo l'invio riuscito: nome=''
+  [OK] Contatti: Pulsante Torna su visibile dopo scroll
+  [OK] Contatti: Click 'Torna su': area.scrollTop=0, window.scrollY=0
+
+=== TEST RESPONSIVE MOBILE (375x667): CONTATTI ===
+  [OK] Contatti Mobile: nessun overflow orizzontale (scrollWidth <= 375)
+
+=== RIEPILOGO TEST CONTATTI ===
+Totale controlli eseguiti: 29
+Superati: 29
+Falliti: 0
+```
+
+---
+
+## 9. Accedi (`accedi.php`)
+
+La pagina di accesso consente agli utenti registrati (clienti, manager di sede e amministratori) di autenticarsi nel sistema tramite le proprie credenziali (nome utente e password). Implementa misure avanzate di sicurezza sia sul frontend (accessibilita dei campi, autocomplete, semantica form) sia sul backend (protezione anti-enumerazione di utenti, prepared statement contro SQL injection, token CSRF, rigenerazione ID di sessione contro session fixation, gestione account disattivati e redirect automatico se gia collegati).
+
+### 9.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 2 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="./">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<span aria-current="page">Accedi</span>` (pagina corrente non cliccabile).
+
+- [x] **Navigazione Account per Utente Non Autenticato**:
+  - [x] Collegamenti visibili: link "Accedi" (con evidenza pagina attiva) e pulsante primario "Registrati" (`.azione-header`).
+  - [x] Toggle Tema Chiaro / Scuro funzionante e coerente.
+
+---
+
+### 9.2 Modulo di Autenticazione (`form[method="post"][action="accedi"]`)
+
+- [x] **Intestazione Principale**:
+  - `<h1>Accedi</h1>`.
+
+- [x] **Avviso di Errore Dinamico (`p.avviso[data-tipo="errore"]`)**:
+  - Compare solo in caso di fallimento autenticazione con attributi accessibili `role="alert"`.
+  - Contenuto conforme al principio di non-divulgazione degli account registrati: *"Errore: Nome utente o password non corretti."*.
+
+- [x] **Raggruppamento Semantico (`<fieldset>`)**:
+  - `<legend>Le tue credenziali</legend>` per contestualizzare la coppia di campi per gli screen reader.
+
+- [x] **Campo Nome Utente (`input#nome_utente`)**:
+  - Etichetta associata: `<label for="nome_utente">Nome utente</label>`.
+  - Attributi tecnici: `type="text"`, `name="nome_utente"`, `required="required"`, `maxlength="50"`, `autocomplete="username"`.
+  - Ripopolamento sicuro: in caso di password errata, il valore del nome utente inserito viene preservato nel campo tramite escape sicuro `e($nomeUtente)`.
+
+- [x] **Campo Password (`input#password`)**:
+  - Etichetta associata: `<label for="password">Password</label>`.
+  - Attributi tecnici: `type="password"`, `name="password"`, `required="required"`, `autocomplete="current-password"`.
+  - Sicurezza visiva e di memoria: la password viene oscurata dal browser e svuotata in caso di errore di invio.
+
+- [x] **Pulsante di Invio Credenziali**:
+  - `<button type="submit">Accedi</button>`.
+  - Azionabile sia tramite click del mouse che con pressione del tasto `Invio` dai campi input.
+
+---
+
+### 9.3 Percorso Alternativo di Registrazione
+
+- [x] **Collegamento per Nuovi Utenti**:
+  - Paragrafo informativo contestuale: `<p>Non hai un account? <a href="registrati">Registrati</a>.</p>`.
+  - Conduce direttamente al modulo di creazione nuovo profilo cliente `/registrati`.
+
+---
+
+### 9.4 Criteri di Qualita e Sicurezza Backend
+
+- [x] **Protezione Anti-Enumerazione Account**:
+  - La funzione `utente_accedi()` restituisce il medesimo messaggio d'errore (*"Nome utente o password non corretti."*) sia quando il nome utente e inesistente sia quando la password per un utente valido e errata.
+  - Verificato che i messaggi di risposta HTTP siano identici carattere per carattere, impedendo a malintenzionati di dedurre l'esistenza di specifici account nel sistema.
+
+- [x] **Neutralizzazione SQL Injection**:
+  - La query di autenticazione utilizza PDO con Prepared Statement (`SELECT id, password_hash, attivo FROM utenti WHERE nome_utente = :nome_utente`).
+  - Collaudati payload malevoli di tipo injection (`' OR '1'='1' --`): la query viene eseguita in sicurezza estraendo zero righe e respingendo l'accesso.
+
+- [x] **Protezione CSRF Obbligatoria**:
+  - Il form inietta `<input type="hidden" name="token_csrf" value="..." />`.
+  - Collaudato l'invio di richieste POST prive del token CSRF o con token contraffatto: il backend le respinge categoricamente con codice di stato HTTP 403 (Forbidden).
+
+- [x] **Gestione Account Disattivati**:
+  - Se un utente presenta nel database `attivo = 0`, il backend blocca l'accesso notificando l'utente con il messaggio mirato: *"Questo account e stato disattivato."*.
+
+- [x] **Prevenzione Session Fixation (Rigenerazione ID di Sessione)**:
+  - Non appena le credenziali vengono validate con successo da `password_verify()`, il backend esegue `session_regenerate_id(true)`.
+  - Verificato tramite Playwright che l'identificativo nel cookie di sessione (`smashburger_session`) cambia prima e dopo l'autenticazione, invalidando vecchi token di sessione.
+
+- [x] **Politiche di Sicurezza dei Cookie di Sessione**:
+  - Cookie `smashburger_session` generato con `HttpOnly = true` (inaccessibile a script JavaScript sul client per mitigare furti da XSS) e `SameSite = Lax` (protezione automatica contro richieste cross-site).
+
+- [x] **Protezione da Re-Autenticazione Ridondante**:
+  - Se un utente autenticato tenta di accedere nuovamente all'URL `/accedi`, il controller esegue un controllo immediato (`if (utente_corrente($pdo) !== null)`) e reindirizza all'istante verso `/area-personale`.
+
+- [x] **Logout Protetto e Distruzione della Sessione**:
+  - La chiusura della sessione (`/esci`) e protetta da CSRF: una richiesta GET mostra una schermata di conferma con form, mentre la revoca vera e propria avviene via POST.
+  - Al logout `utente_esci()` cancella l'array di sessione, azzera il cookie nel browser e distrugge la sessione server.
+  - I successivi tentativi di accedere alle pagine protette (es. `/area-personale`) vengono respinti con codice HTTP 401 Unauthorized.
+
+- [x] **Gestione Differenziata dei Ruoli**:
+  - **Cliente** (`user`): reindirizzato in Area Personale con riepilogo ordini e prenotazioni.
+  - **Manager** (`manager`): visualizza nell'header il collegamento rapido "Controllo" verso la gestione della propria sede.
+  - **Amministratore** (`admin`): accesso autorizzato a tutte le sezioni globali del sistema (compresa `/controllo-utenti`).
+
+- [x] **Responsive Mobile (375x667px)**:
+  - Testato con Playwright a 375px di larghezza: campi a tutta larghezza agevoli al tocco, zero barre di scorrimento orizzontale (`scrollWidth <= 375px`).
+
+---
+
+### 9.5 Esito del Collaudo Automatizzato End-to-End e Backend (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) e verifiche dirette su database e chiamate HTTP per la pagina Accedi:
+
+```text
+========================================================
+=== TEST BACKEND: SICUREZZA, SESSIONI, CSRF E DB ===
+========================================================
+  [OK] Backend Anti-Enumeration (utente inesistente): errore generico 'Errore: Nome utente o password non corretti.'
+  [OK] Backend Anti-Enumeration (utente valido, password errata): errore generico 'Errore: Nome utente o password non corretti.'
+  [OK] Backend Anti-Enumeration confermata: i due messaggi di errore sono IDENTICI
+  [OK] Backend SQL Injection: prepared statement ha neutralizzato il payload malevolo
+  [OK] Backend blocca token CSRF manomesso con HTTP 403 (Forbidden)
+  [OK] Backend blocca POST privo di token CSRF con HTTP 403 (Forbidden)
+  [OK] Backend Account Disattivato: accesso bloccato con messaggio 'Errore: Questo account e stato disattivato.'
+  [OK] Ripristinato stato attivo utente chiara.moretti a DB
+  [OK] Backend Login riuscito: reindirizzato correttamente ad /area-personale (http://localhost:8080/area-personale)
+  [OK] Backend Flash Message in sessione visualizzato: 'Fatto: Accesso effettuato.'
+  [OK] Backend Session Fixation Prevention: ID di sessione rigenerato (67858b13... -> cd256821...)
+  [OK] Backend Cookie di sessione: HttpOnly = True (inaccessibile a script JS malevoli)
+  [OK] Backend Cookie di sessione: SameSite = Lax (protezione CSRF cross-site)
+  [OK] Header utente autenticato: link ad Area personale presente
+  [OK] Header utente autenticato: link Esci presente
+  [OK] Header utente autenticato: link Accedi rimosso
+  [OK] Header utente autenticato: link Registrati rimosso
+  [OK] Area Personale: H1='Area personale'
+  [OK] Area Personale: Dati profilo caricati da DB (Ciao Anna. Da qui vedi i tuoi ordini, le tue prenotazioni e puoi cambiare i tuoi dati.)
+  [OK] Backend Redirect se gia' autenticato: richiesta a /accedi reindirizza ad /area-personale (http://localhost:8080/area-personale)
+  [OK] Pagina conferma uscita (GET /esci) protetta da CSRF visualizzata
+  [OK] Backend Logout: sessione chiusa e reindirizzato alla Home (http://localhost:8080/)
+  [OK] Backend Sessione distrutta: accesso ad /area-personale respinto con HTTP 401 Unauthorized
+  [OK] Backend Login Manager: atterrato su /area-personale
+  [OK] Backend Ruolo Manager: voce 'Controllo' visibile nell'header
+  [OK] Backend Login Amministratore: atterrato su /area-personale
+  [OK] Backend Ruolo Amministratore: voce 'Controllo' visibile nell'header
+  [OK] Backend Permessi Amministratore: accesso a /controllo-utenti autorizzato (HTTP 200)
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE: ACCEDI ===
+========================================================
+  [OK] Caricamento iniziale /accedi: HTTP 200
+  [OK] Title dinamico: 'Accedi - Smash Burger'
+  [OK] Breadcrumb semantico a 2 livelli: ['Home', 'Accedi']
+  [OK] Breadcrumb link Home corretto
+  [OK] Campo nome_utente ha required='required'
+  [OK] Campo nome_utente ha autocomplete='username'
+  [OK] Campo nome_utente ha maxlength='50'
+  [OK] Campo password ha required='required'
+  [OK] Campo password ha autocomplete='current-password'
+  [OK] Campo password ha type='password'
+  [OK] Label 'Nome utente' associata a id='nome_utente'
+  [OK] Label 'Password' associata a id='password'
+  [OK] Fieldset semantico con legend: 'Le tue credenziali'
+  [OK] Link a /registrati per chi non ha un account presente e cliccabile
+  [OK] Pulsante Torna su presente nel markup
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth <= 375)
+
+=== RIEPILOGO TEST COMPLETO ACCEDI ===
+Totale controlli eseguiti: 44
+Superati: 44
+Falliti: 0
+```
+
+---
+
+## 10. Registrati (`registrati.php`)
+
+La pagina di registrazione consente a nuovi clienti di creare un account personale, necessario per effettuare ordini con asporto/consegna e per prenotare la sala eventi nelle sedi abilitate. Include due gruppi semantici di campi ("I tuoi dati" e "Come accedi"), validazione severa sia frontend che backend contro duplicati e credenziali deboli, ripopolamento sicuro con svuotamento della password, protezione CSRF e memorizzazione crittografica tramite hash bcrypt in MariaDB.
+
+### 10.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 2 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="./">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<span aria-current="page">Registrati</span>` (pagina corrente non cliccabile).
+
+- [x] **Navigazione Account per Utente Non Autenticato**:
+  - [x] Collegamenti visibili: link "Accedi" e pulsante evidenziato "Registrati" (`.azione-header`, con aria-current se applicabile).
+  - [x] Controlli tema chiaro/scuro operativi.
+
+---
+
+### 10.2 Modulo di Creazione Account (`form[method="post"][action="registrati"]`)
+
+- [x] **Intestazione Principale e Descrizione**:
+  - `<h1>Registrati</h1>`.
+  - Paragrafo descrittivo: *"Serve un account per ordinare e per prenotare la sala eventi."*.
+
+- [x] **Riepilogo Globale degli Errori (`section.avviso[data-tipo="errore"]`)**:
+  - Compare in cima al modulo con `role="alert"` in caso di errori di compilazione o conflitti a database.
+  - Titolo: `<h2>Controlla questi campi</h2>`.
+  - Elenco di link di salto interno (`<a href="#{campo}">...</a>`) che indirizzano il focus direttamente al primo campo errato.
+
+- [x] **Fieldset 1: Dati Anagrafici (`<legend>I tuoi dati</legend>`)**:
+  - [x] **Campo Nome (`input#nome`)**:
+    - Etichetta: `<label for="nome">Nome</label>`.
+    - Attributi: `type="text"`, `name="nome"`, `required="required"`, `minlength="2"`, `maxlength="80"`, `autocomplete="given-name"`.
+    - In caso di errore: `data-stato="errore"`, `aria-describedby="errore-nome"`, `<small id="errore-nome">`.
+  - [x] **Campo Cognome (`input#cognome`)**:
+    - Etichetta: `<label for="cognome">Cognome</label>`.
+    - Attributi: `type="text"`, `name="cognome"`, `required="required"`, `minlength="2"`, `maxlength="80"`, `autocomplete="family-name"`.
+    - In caso di errore: `data-stato="errore"`, `aria-describedby="errore-cognome"`, `<small id="errore-cognome">`.
+  - [x] **Campo Email (`input#email`)**:
+    - Etichetta: `<label for="email">Email</label>`.
+    - Attributi: `type="email"`, `name="email"`, `required="required"`, `maxlength="160"`, `autocomplete="email"`.
+    - In caso di errore: `data-stato="errore"`, `aria-describedby="errore-email"`, `<small id="errore-email">`.
+
+- [x] **Fieldset 2: Credenziali di Accesso (`<legend>Come accedi</legend>`)**:
+  - [x] **Campo Nome Utente (`input#nome_utente`)**:
+    - Etichetta: `<label for="nome_utente">Nome utente</label>`.
+    - Attributi: `type="text"`, `name="nome_utente"`, `required="required"`, `pattern="[a-z0-9._-]{3,50}"`, `minlength="3"`, `maxlength="50"`, `autocomplete="username"`.
+    - Aiuto contestuale accessibile: `<small id="aiuto-nome-utente">Da 3 a 50 fra lettere minuscole, cifre, punto, trattino e trattino basso.</small>` collegato via `aria-describedby`.
+    - In caso di errore: aggiunta di `errore-nome_utente` a `aria-describedby` e messaggio inline.
+  - [x] **Campo Password (`input#password`)**:
+    - Etichetta: `<label for="password">Password</label>`.
+    - Attributi: `type="password"`, `name="password"`, `required="required"`, `minlength="8"`, `autocomplete="new-password"`.
+    - Aiuto contestuale accessibile: `<small id="aiuto-password">Almeno 8 caratteri.</small>` collegato via `aria-describedby`.
+    - In caso di errore: inline message e reset immediato del valore.
+  - [x] **Campo Ripeti Password (`input#conferma`)**:
+    - Etichetta: `<label for="conferma">Ripeti la password</label>`.
+    - Attributi: `type="password"`, `name="conferma"`, `required="required"`, `minlength="8"`, `autocomplete="new-password"`.
+    - In caso di discordanza: segnalazione inline *"Le due password non coincidono."*.
+
+- [x] **Pulsante di Invio**:
+  - `<button type="submit">Crea l'account</button>`.
+
+---
+
+### 10.3 Percorso Alternativo di Accesso
+
+- [x] **Collegamento per Utenti Gia Registrati**:
+  - `<p>Hai gia un account? <a href="accedi">Accedi</a>.</p>`.
+  - Reindirizza direttamente al modulo di login `/accedi`.
+
+---
+
+### 10.4 Criteri di Qualita e Sicurezza Backend
+
+- [x] **Validazione Server Indipendente dal Client**:
+  - Anche disabilitando i vincoli HTML5 lato browser, il backend PHP (`utente_errori_registrazione()`) convalida autonomamente lunghezze minime/massime, espressione regolare per nome utente (`/^[a-z0-9._-]{3,50}$/`), correttezza formale dell'email (`FILTER_VALIDATE_EMAIL`) e robustezza password.
+- [x] **Prevenzione Duplicati a Database**:
+  - Interrogazione preventiva MariaDB per verificare l'unicita di `nome_utente` ed `email`.
+  - Se il nome utente e gia presente, segnala: *"Questo nome utente e gia in uso."*.
+  - Se l'indirizzo email e gia associato ad un altro account, segnala: *"Questo indirizzo email e gia registrato."*.
+- [x] **Crittografia e Memorizzazione Sicura Password**:
+  - La password non viene mai salvata in chiaro: hashing eseguito con `password_hash($password, PASSWORD_DEFAULT)` (algoritmo bcrypt con costo computazionale standard).
+  - Verificato a database che il campo `password_hash` inizia con il prefisso standard `$2y$`.
+- [x] **Assegnazione Ruolo Predefinito**:
+  - Ogni registrazione tramite form pubblico assegna tassativamente il ruolo `cliente`, impedendo qualsiasi scalata di privilegi a manager o amministratore.
+- [x] **Svuotamento della Password e Conservazione Valori Sicuri**:
+  - In caso di fallimento della validazione, i campi `password` e `conferma` vengono categoricamente sbiancati per non esporre credenziali digitate; i campi anagrafici e lo username vengono invece ripopolati con escape sicuro `e()`.
+- [x] **Protezione CSRF**:
+  - Richieste prive di `token_csrf` o con token contraffatto vengono bloccate all'istante con HTTP 403 Forbidden.
+- [x] **Flusso POST-Redirect-GET**:
+  - A registrazione avvenuta, il server imposta il messaggio flash in sessione (*"Account creato. Ora puoi accedere."*) ed esegue un reindirizzamento HTTP verso `/accedi`, prevenendo doppi inserimenti accidentali con il tasto Ricarica.
+- [x] **Redirect Condizionale per Utenti Collegati**:
+  - Se un utente autenticato tenta di navigare su `/registrati`, il controller lo reindirizza direttamente a `/area-personale`.
+
+---
+
+### 10.5 Esito del Collaudo Automatizzato End-to-End e Backend (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) con verifiche dirette su database MariaDB e chiamate HTTP per la pagina Registrati:
+
+```text
+========================================================
+=== TEST BACKEND: SICUREZZA, DB E VALIDAZIONE SERVER ===
+========================================================
+  [OK] Backend blocca POST privo di token CSRF con HTTP 403 (Forbidden)
+  [OK] Backend blocca token CSRF manomesso con HTTP 403 (Forbidden)
+  [OK] Backend Validazione: visualizzato riepilogo errori 'Controlla questi campi'
+  [OK] Errore Nome: 'Scrivi il nome, fra 2 e 80 caratteri.'
+  [OK] Errore Cognome: 'Scrivi il cognome, fra 2 e 80 caratteri.'
+  [OK] Errore Email: 'Scrivi un indirizzo email valido.'
+  [OK] Errore Nome Utente: 'Il nome utente accetta da 3 a 50 fra lettere minuscole, cifre, punto, trattino e trattino basso.'
+  [OK] Errore Password: 'La password deve avere almeno 8 caratteri.'
+  [OK] Controllo Conferma Password: 'Le due password non coincidono.'
+  [OK] Sicurezza Backend: i campi password e conferma vengono svuotati dopo l'errore
+  [OK] Ripopolamento campi sicuri: nome='Mario', username='mario.rossi'
+  [OK] Conflitto Username a DB: intercettato con 'Questo nome utente e gia in uso.'
+  [OK] Conflitto Email a DB: intercettato con 'Questo indirizzo email e gia registrato.'
+  [OK] POST-Redirect-GET avvenuto con successo verso /accedi (http://localhost:8080/accedi)
+  [OK] Flash message in sessione: 'Fatto: Account creato. Ora puoi accedere.'
+  [OK] Persistenza MariaDB: riga utente inserita correttamente
+  [OK] Ruolo a DB assegnato di default a 'cliente'
+  [OK] Password memorizzata a DB tramite hash bcrypt sicuro ($2y$)
+  [OK] Nuovo account funzionante: accesso autorizzato ad http://localhost:8080/area-personale
+  [OK] Area Personale riconosce il nuovo cliente: 'Ciao Mario. Da qui vedi i tuoi ordini, le tue prenotazioni e puoi cambiare i tuoi dati.'
+  [OK] Ripristino DB: eliminato account di test 'mario.rossi.test'
+  [OK] Protezione Utente Collegato: /registrati reindirizza ad /area-personale (http://localhost:8080/area-personale)
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE: REGISTRATI ===
+========================================================
+  [OK] Caricamento iniziale /registrati: HTTP 200
+  [OK] Title dinamico: 'Registrati - Smash Burger'
+  [OK] Breadcrumb semantico a 2 livelli: ['Home', 'Registrati']
+  [OK] Fieldsets e Legends: ['I tuoi dati', 'Come accedi']
+  [OK] Campo Nome: required e autocomplete='given-name'
+  [OK] Campo Cognome: required e autocomplete='family-name'
+  [OK] Campo Email: required, type='email' e autocomplete='email'
+  [OK] Campo Nome Utente: required, pattern e autocomplete='username'
+  [OK] Campo Password: required, minlength='8', type='password' e autocomplete='new-password'
+  [OK] Campo Ripeti Password: required, type='password' e autocomplete='new-password'
+  [OK] Aiuto Nome Utente presente: 'Da 3 a 50 fra lettere minuscole, cifre, punto, trattino e trattino basso.'
+  [OK] Aiuto Password presente: 'Almeno 8 caratteri.'
+  [OK] Link alternativo per chi ha gia un account presente verso /accedi
+  [OK] Pulsante Torna su presente nel markup
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth <= 375)
+
+=== RIEPILOGO TEST COMPLETO REGISTRATI ===
+Totale controlli eseguiti: 37
+Superati: 37
+Falliti: 0
+```
+
+
