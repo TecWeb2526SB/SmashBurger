@@ -550,7 +550,8 @@ button:active,
     filter: brightness(0.94);
 }
 
-button[disabled] {
+button[disabled],
+select:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     box-shadow: none;

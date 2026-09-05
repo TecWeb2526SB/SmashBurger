@@ -7,9 +7,9 @@
  *
  * Sulla riga del proprio account non compaiono azioni: per quello c'è il profilo.
  *
- * Il ruolo e la sede si salvano insieme e non da soli: assegnare il ruolo di manager
- * senza indicare la sede non è un'operazione valida, quindi questo modulo conserva il
- * proprio pulsante e non parte al cambio di uno dei due elenchi.
+ * Il ruolo e la sede si salvano insieme e non da soli: un manager puo' avere una sede
+ * assegnata oppure nessuna sede, ma la modifica richiede conferma esplicita, quindi questo
+ * modulo conserva il proprio pulsante e non parte al cambio di uno dei due elenchi.
  */
 ?>
 <h1>Utenti</h1>
@@ -97,11 +97,12 @@
                             Sede affidata a <?php echo e($utente['nome_utente']); ?>
                         </label>
                         <select id="sede-<?php echo (int) $utente['id']; ?>" name="sede_id"
-                            form="<?php echo e($modulo); ?>">
-                            <option value="">Nessuna sede</option>
+                            form="<?php echo e($modulo); ?>"
+                            <?php echo $utente['ruolo'] === 'manager' ? '' : 'disabled="disabled"'; ?>>
+                            <option value="" <?php echo $utente['sede_id'] === null ? 'selected="selected"' : ''; ?>>Nessuna sede</option>
                             <?php foreach ($sedi as $sede): ?>
                                 <option value="<?php echo (int) $sede['id']; ?>"
-                                    <?php echo (int) $sede['id'] === (int) $utente['sede_id'] ? 'selected="selected"' : ''; ?>>
+                                    <?php echo $utente['sede_id'] !== null && (int) $sede['id'] === (int) $utente['sede_id'] ? 'selected="selected"' : ''; ?>>
                                     <?php echo e($sede['citta']); ?>
                                 </option>
                             <?php endforeach; ?>

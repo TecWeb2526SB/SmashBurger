@@ -19,7 +19,7 @@
     <fieldset>
         <legend>Filtri</legend>
 
-        <?php if ($sedeCorrente === null): ?>
+        <?php if ($ruoloCorrente === 'amministratore'): ?>
             <p>
                 <label for="sede">Sede</label>
                 <select id="sede" name="sede">

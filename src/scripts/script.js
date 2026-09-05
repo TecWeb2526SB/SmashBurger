@@ -257,7 +257,23 @@
         });
 
         document.addEventListener('change', function (evento) {
-            var modulo = evento.target.form;
+            var controllo = evento.target;
+
+            if (controllo instanceof HTMLSelectElement && controllo.name === 'ruolo') {
+                var sedeSelect = document.getElementById(controllo.id.replace(/^ruolo-/, 'sede-'));
+
+                if (sedeSelect !== null) {
+                    var eManager = controllo.value === 'manager';
+
+                    sedeSelect.disabled = !eManager;
+
+                    if (!eManager) {
+                        sedeSelect.value = '';
+                    }
+                }
+            }
+
+            var modulo = controllo.form;
 
             if (!modulo || modulo.getAttribute('data-invio') !== 'automatico') {
                 return;

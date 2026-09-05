@@ -29,10 +29,11 @@ function utenti_elenco(PDO $pdo): array
 }
 
 /**
- * Cambia il ruolo di un account.
+ * Cambia il ruolo di un account e la sede affidata.
  *
- * Diventando manager serve una sede libera; smettendo di esserlo la sede resta senza
- * manager, e il legame viene sciolto qui.
+ * Un manager puo' avere una sede assegnata oppure nessuna sede se e' in attesa di
+ * assegnazione. Se si assegna una sede, questa deve essere libera. Chi lascia la sede
+ * o il ruolo di manager la libera nel database.
  */
 function utente_cambia_ruolo(PDO $pdo, int $utenteId, string $ruolo, ?int $sedeId): array
 {
@@ -50,13 +51,7 @@ function utente_cambia_ruolo(PDO $pdo, int $utenteId, string $ruolo, ?int $sedeI
         $pdo->prepare('UPDATE utenti SET ruolo = :ruolo WHERE id = :id')
             ->execute([':ruolo' => $ruolo, ':id' => $utenteId]);
 
-        if ($ruolo === 'manager') {
-            if ($sedeId === null) {
-                $pdo->rollBack();
-
-                return ['ok' => false, 'messaggio' => 'Scegli la sede da affidare a questo manager.'];
-            }
-
+        if ($ruolo === 'manager' && $sedeId !== null) {
             $assegna = $pdo->prepare(
                 'UPDATE sedi SET manager_id = :utente WHERE id = :sede AND manager_id IS NULL'
             );

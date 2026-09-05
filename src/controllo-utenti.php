@@ -21,11 +21,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 
     if ($azione === 'ruolo') {
+        $nuovoRuolo = (string) ($_POST['ruolo'] ?? '');
+        $sedeId = $nuovoRuolo === 'manager' ? identificativo($_POST, 'sede_id') : null;
+
         $esito = utente_cambia_ruolo(
             $pdo,
             $utenteId,
-            (string) ($_POST['ruolo'] ?? ''),
-            identificativo($_POST, 'sede_id')
+            $nuovoRuolo,
+            $sedeId
         );
     } elseif ($azione === 'attiva' || $azione === 'disattiva') {
         $esito = utente_cambia_stato($pdo, $utenteId, $azione === 'attiva');
