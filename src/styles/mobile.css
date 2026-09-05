@@ -396,6 +396,7 @@ td {
 }
 
 .pagina-ordine .corpo-riepilogo {
+    position: relative;
     overflow-x: auto;
     padding: var(--spazio-3);
 }

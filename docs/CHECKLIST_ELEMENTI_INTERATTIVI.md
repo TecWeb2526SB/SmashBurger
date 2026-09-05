@@ -24,14 +24,14 @@ Questo documento censisce, pagina per pagina, tutti gli elementi con cui l'utent
 8. [Contatti (`contatti.php`)](#8-contatti-contattiphp)
 9. [Accedi (`accedi.php`)](#9-accedi-accediphp)
 10. [Registrati (`registrati.php`)](#10-registrati-registratiphp)
-11. *Esci (`esci.php`)*
-12. *Area personale (`area-personale.php`)*
-13. *Profilo utente (`profilo.php`)*
-14. *Carrello (`carrello.php`)*
-15. *Ritiro e Pagamento (`pagamento.php`)*
-16. *Ricevuta ordine (`ricevuta.php`)*
-17. *Prenotazione Sala Eventi (`prenota.php`)*
-18. *Pannello: Ordini (`controllo.php`)*
+11. [Esci (`esci.php`)](#11-esci-esciphp)
+12. [Area personale (`area-personale.php`)](#12-area-personale-area-personalephp)
+13. [Profilo utente (`profilo.php`)](#13-profilo-utente-profilophp)
+14. [Carrello (`carrello.php`)](#14-carrello-carrellophp)
+15. [Ritiro e Pagamento (`pagamento.php`)](#15-ritiro-e-pagamento-pagamentophp)
+16. [Ricevuta ordine (`ricevuta.php`)](#16-ricevuta-ordine-ricevutaphp)
+17. [Prenotazione Sala Eventi (`prenota.php`)](#17-prenotazione-sala-eventi-prenotaphp)
+18. [Pannello: Ordini (`controllo.php`)](#18-pannello-ordini-controllophp)
 19. *Pannello: Dettaglio Ordine (`controllo-ordine.php`)*
 20. *Pannello: Prodotti (`controllo-prodotti.php`)*
 21. *Pannello: Scheda Prodotto (`controllo-prodotto.php`)*
@@ -1843,5 +1843,1458 @@ Totale controlli eseguiti: 37
 Superati: 37
 Falliti: 0
 ```
+
+---
+
+## 11. Esci (`esci.php`)
+
+La pagina di disconnessione gestisce la chiusura sicura della sessione utente. Per prevenire attacchi di tipo Cross-Site Request Forgery mirati a forzare il logout involontario (es. tramite elementi `<img>` o script di terze parti), l'uscita non avviene tramite un semplice collegamento ipertestuale in GET, ma richiede una conferma esplicita veicolata da un modulo HTTP POST protetto da token CSRF.
+
+### 11.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 2 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="./">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<span aria-current="page">Esci</span>` (pagina corrente non cliccabile).
+
+- [x] **Navigazione Account per Utente Autenticato**:
+  - [x] Voci di menu pertinenti al ruolo corrente (Area personale, Carrello o Controllo, ed Esci).
+  - [x] Toggle tema chiaro/scuro coerente e funzionante.
+
+---
+
+### 11.2 Schermata di Conferma Disconnessione (`form[method="post"][action="esci"]`)
+
+- [x] **Intestazione Principale e Messaggio di Avviso**:
+  - `<h1>Esci</h1>`.
+  - Paragrafo di richiesta conferma: *"Vuoi chiudere la sessione su questo dispositivo?"*.
+
+- [x] **Modulo Protetto da CSRF**:
+  - Presenza del token crittografico segreto `<input type="hidden" name="token_csrf" value="..." />`.
+  - Attributo `method="post"` e destinazione `action="esci"`.
+
+- [x] **Comandi di Azione**:
+  - [x] **Pulsante di Conferma Uscita**:
+    - `<button type="submit">Esci</button>`.
+    - Innesca la chiusura effettiva della sessione sul server.
+  - [x] **Collegamento di Annullamento**:
+    - `<a href="area-personale">Annulla</a>`.
+    - Riporta l'utente alla propria area personale mantenendo intatta la sessione attiva.
+
+---
+
+### 11.3 Criteri di Qualita e Sicurezza Backend
+
+- [x] **Controllo di Autorizzazione Accesso (Access Control)**:
+  - La pagina `/esci` e accessibile solo agli utenti autenticati (`cliente`, `manager`, `amministratore`).
+  - Verificato che richieste da parte di utenti ospiti (non autenticati) vengano intercettate da `richiedi_permesso()` ed emettano lo stato **HTTP 401 Unauthorized**.
+- [x] **Protezione CSRF Obbligatoria sul Logout**:
+  - Tentativi di eseguire il logout tramite chiamate POST prive del token CSRF o con token manomesso vengono bloccati con stato **HTTP 403 Forbidden**, preservando la sessione attiva dell'utente.
+- [x] **Preservazione dello Stato al Click su "Annulla"**:
+  - Cliccando su *"Annulla"*, il browser naviga ad `/area-personale` senza alterare i dati di sessione o i cookie.
+- [x] **Distruzione Completa della Sessione sul Server**:
+  - Al submit del modulo con token valido, `utente_esci()` svuota l'array `$_SESSION`, distrugge la sessione con `session_destroy()` e revoca il cookie `smashburger_session` impostandone la scadenza nel passato (`time() - 3600`).
+- [x] **Flusso POST-Redirect-GET verso la Home**:
+  - Al completamento del logout, il server reindirizza con codice 302/303 alla Home page (`/`).
+- [x] **Aggiornamento Istantaneo dell'Interfaccia**:
+  - Nell'header scompaiono i link riservati ("Area personale", "Esci", "Controllo") e ricompaiono i collegamenti per ospiti ("Accedi" e "Registrati").
+- [x] **Revoca dei Permessi su Pagine Protette**:
+  - Immediatamente dopo l'uscita, qualsiasi richiesta verso pagine ad accesso riservato (come `/area-personale` o `/controllo-utenti`) fallisce con **HTTP 401 Unauthorized**.
+- [x] **Collaudo Multi-Ruolo**:
+  - Verificata la procedura di uscita completa per tutti i profili di sistema: Cliente, Manager di sede e Amministratore.
+- [x] **Responsive Mobile (375x667px)**:
+  - Layout di conferma compatto, pulsante e link annulla ben distanziati per il tocco, nessun overflow orizzontale (`scrollWidth <= 375px`).
+
+---
+
+### 11.4 Esito del Collaudo Automatizzato End-to-End e Backend (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) con verifiche su cookie, sessioni e chiamate HTTP per la pagina Esci:
+
+```text
+========================================================
+=== TEST BACKEND: PERMESSI, CSRF, SESSIONE E LOGOUT ===
+========================================================
+  [OK] Backend Permessi: richiesta a /esci da non autenticato respinta con HTTP 401 Unauthorized
+  [OK] Cliente autenticato con successo
+  [OK] Backend Permessi: cliente autorizzato visualizza /esci con HTTP 200
+  [OK] Titolo dinamico: 'Esci - Smash Burger'
+  [OK] Breadcrumb semantico a 2 livelli: ['Home', 'Esci']
+  [OK] Messaggio conferma presente: 'Vuoi chiudere la sessione su questo dispositivo?'
+  [OK] Link 'Annulla' presente nel form di uscita
+  [OK] Click 'Annulla': ritorno sicuro ad http://localhost:8080/area-personale
+  [OK] Sessione cliente preservata dopo 'Annulla'
+  [OK] Cookie di sessione utente estratto per verifica CSRF
+  [OK] Backend blocca logout CSRF privo di token con HTTP 403 (Forbidden)
+  [OK] Backend blocca logout CSRF con token manomesso con HTTP 403 (Forbidden)
+  [OK] Resistenza ad attacchi CSRF: la sessione dell'utente NON e stata chiusa da richieste non autorizzate
+  [OK] Pulsante submit di conferma 'Esci' presente
+  [OK] POST-Redirect-GET avvenuto con successo: atterrato su http://localhost:8080/
+  [OK] Header post-logout: link 'Accedi' visibile
+  [OK] Header post-logout: link 'Registrati' visibile
+  [OK] Header post-logout: link 'Area personale' rimosso
+  [OK] Header post-logout: link 'Esci' rimosso
+  [OK] Revoca permessi backend confermata: /area-personale risponde con HTTP 401 Unauthorized
+  [OK] Manager autenticato con voce Controllo attiva
+  [OK] Logout Manager: voce Controllo rimossa dall'header
+  [OK] Amministratore autenticato
+  [OK] Logout Amministratore: accesso a /controllo-utenti respinto con HTTP 401 Unauthorized
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE: ESCI ===
+========================================================
+  [OK] Intestazione principale H1: 'Esci'
+  [OK] Form di conferma ha method='post'
+  [OK] Form di conferma ha action='esci'
+  [OK] Campo token_csrf presente e popolato nel form
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth <= 375)
+
+=== RIEPILOGO TEST COMPLETO ESCI ===
+Totale controlli eseguiti: 29
+Superati: 29
+Falliti: 0
+```
+
+---
+
+## 12. Area personale (`area-personale.php`)
+
+L'Area personale funge da cruscotto centrale per gli utenti autenticati. La pagina adatta la propria struttura e le informazioni mostrate in base al ruolo ricoperto dall'utente nel sistema:
+- **Clienti**: visualizzano lo storico completo dei propri ordini (con identificativo, data, sede di ritiro, modalita, importo totale, stato di avanzamento e collegamento alla relativa ricevuta digitale), lo storico delle prenotazioni per la sala eventi (con data, orario, sede, numero invitati e badge di stato dinamico), e il riepilogo delle proprie credenziali/dati anagrafici con collegamento per la modifica del profilo. In assenza di ordini o prenotazioni, la pagina presenta stati vuoti dedicati (*empty state*) con messaggi informativi e pulsanti d'azione (CTA) per guidare l'utente verso il menu o verso le sedi.
+- **Manager di sede e Amministratori**: non effettuano ordini ne prenotazioni come clienti da questa interfaccia; le sezioni relative agli ordini e prenotazioni cliente vengono opportunamente escluse dal markup (`$cliente = false`), presentando invece un messaggio esplicativo che indirizza la gestione operativa al pannello di controllo dedicato (`/controllo`), oltre al riepilogo dei propri dati e al link diretto al profilo.
+
+---
+
+### 12.1 Header e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 2 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="./">Home</a>` (click conduce alla Home).
+  - [x] Livello 2: `<span aria-current="page">Area personale</span>` (pagina corrente non cliccabile, conforme a REGOLE.md sezione 8).
+
+- [x] **Navigazione Account per Utente Autenticato**:
+  - [x] Link `Area personale` marcato con `aria-current="page"`.
+  - [x] Link `Esci` presente nell'header.
+  - [x] Link `Carrello` presente per i clienti, link `Controllo` presente per manager e amministratori.
+
+---
+
+### 12.2 Sezioni, Elementi Informativi e Interattivi per Cliente
+
+- [x] **Intestazione Principale e Messaggio di Benvenuto Personalizzato**:
+  - [x] Tag `<h1>` semantico contenente `"Area personale"`.
+  - [x] Paragrafo di benvenuto con nome di battesimo estratto dal database (es. *"Ciao Anna. Da qui vedi i tuoi ordini, le tue prenotazioni e puoi cambiare i tuoi dati."*).
+
+- [x] **Sezione "I tuoi ordini"**:
+  - [x] Titolo di sezione `<h2>` semantico: `"I tuoi ordini"`.
+  - [x] Tabella dati con didascalia accessibile `<caption>Ordini effettuati</caption>`.
+  - [x] Intestazioni di colonna `<th>` con `scope="col"`: *Numero*, *Data*, *Sede*, *Modalita*, *Totale*, *Stato*, *Ricevuta*.
+  - [x] Righe ordinate cronologicamente in senso decrescente (`ORDER BY o.creato_il DESC`).
+  - [x] Dati di riga verificati a database: codice ordine univoco (es. `SB-2026-0011`), data formattata in italiano, sede, modalita (asporto / al tavolo), totale in euro calcolato con sommatoria delle righe ordine e badge di stato (*concluso*, *pronto*, *in preparazione*, *annullato*).
+  - [x] Collegamento interattivo per ciascun ordine: `<a href="ricevuta?ordine=ID">Apri la ricevuta</a>` con destinazione coerente (HTTP 200).
+  - [x] **Empty State Ordini**: in assenza di ordini a database, la tabella e sostituita da `<p>Non hai ancora fatto nessun ordine.</p>` e dal link CTA `<a href="menu" class="bottone">Guarda il menu</a>`.
+
+- [x] **Sezione "Le tue prenotazioni"**:
+  - [x] Titolo di sezione `<h2>` semantico: `"Le tue prenotazioni"`.
+  - [x] Tabella dati con didascalia accessibile `<caption>Prenotazioni della sala eventi</caption>`.
+  - [x] Intestazioni di colonna `<th>` con `scope="col"`: *Data*, *Orario*, *Sede*, *Invitati*, *Stato*.
+  - [x] Badge semantici con attributo `data-tipo` per gli stati della prenotazione:
+    - `data-tipo="positivo"` per lo stato *approvata*.
+    - `data-tipo="attenzione"` per lo stato *in attesa*.
+    - `data-tipo="negativo"` per lo stato *rifiutata*.
+  - [x] **Empty State Prenotazioni**: in assenza di prenotazioni a database, la tabella e sostituita da `<p>Non hai prenotazioni per la sala eventi.</p>` e dal link CTA `<a href="sedi" class="bottone">Scegli una sede e prenota</a>`.
+
+- [x] **Sezione "I tuoi dati"**:
+  - [x] Titolo di sezione `<h2>` semantico: `"I tuoi dati"`.
+  - [x] Elenco descrittivo contenente *Nome utente*, *Nome e cognome* e *Email* allineati con i record MariaDB.
+  - [x] Link d'azione primario: `<a href="profilo" class="bottone">Modifica i tuoi dati</a>` (HTTP 200).
+
+---
+
+### 12.3 Adattamento per Ruoli di Staff (Manager e Amministratore)
+
+- [x] **Differenziazione dei Contenuti in Base al Ruolo (`$cliente = false`)**:
+  - [x] Messaggio di benvenuto dedicato: *"Ciao [Nome]. Da qui controlli i tuoi dati di accesso: ordini e prenotazioni della tua sede stanno nel pannello di controllo."*
+  - [x] Esclusione delle sezioni ordini e prenotazioni cliente dal markup per evitare ridondanze o confusione di contesto.
+  - [x] Dati anagrafici e credenziali del manager/amministratore correttamente mostrati e sincronizzati con il database.
+  - [x] Navigazione integrata con il pannello operativo tramite la voce `Controllo` nell'header.
+
+---
+
+### 12.4 Verifiche di Backend, Database, Permessi e Sicurezza
+
+- [x] **Controllo di Autenticazione e Permessi**:
+  - [x] Richieste HTTP non autenticate (ospiti non loggati) a `/area-personale` vengono tassativamente respinte con stato **HTTP 401 Unauthorized** e presentazione della schermata di errore di autenticazione.
+- [x] **Isolamento dei Dati Utente a Database**:
+  - [x] Le query SQL (`ordini_dell_utente()` e `prenotazioni_dell_utente()`) filtrano rigidamente per l'`id` dell'utente salvato in sessione, impedendo l'accesso orizzontale a ordini o prenotazioni di altri clienti (prevenzione IDOR).
+- [x] **Resilienza e Sanificazione dell'Output**:
+  - [x] Tutte le stringhe anagrafiche, codici ordine e nomi di sede passano attraverso `testo()` (`htmlspecialchars`) per scongiurare falle XSS nel cruscotto.
+- [x] **Responsive Mobile (375x667px)**:
+  - [x] Tabelle adattabili e scroll orizzontale contenuto all'interno del contenitore della tabella, nessun overflow anomalo del viewport globale (`scrollWidth <= 375px`).
+
+---
+
+### 12.5 Esito del Collaudo Automatizzato End-to-End e Backend (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) con verifiche sui ruoli (cliente, manager, admin), isolamento DB, aperture ricevute ed empty states:
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE, RUOLI E QUERY A DB ===
+========================================================
+  [OK] Backend Permessi: richiesta ad /area-personale da non autenticato respinta con HTTP 401 Unauthorized
+  [OK] Login cliente riuscito: atterrato su http://localhost:8080/area-personale
+  [OK] Title dinamico: 'Area personale - Smash Burger'
+  [OK] Breadcrumb semantico a 2 livelli: ['Home', 'Area personale']
+  [OK] H1 corretto: 'Area personale'
+  [OK] Saluto cliente personalizzato da DB: 'Ciao Anna. Da qui vedi i tuoi ordini, le tue prenotazioni e puoi cambiare i tuoi dati.'
+  [OK] Sezione 'I tuoi ordini' presente per il ruolo cliente
+  [OK] Tabella ordini presente nel markup
+  [OK] Didascalia tabella: 'Ordini effettuati'
+  [OK] Intestazioni colonna ordini corrette: ['Numero', 'Data', 'Sede', 'Modalita', 'Totale', 'Stato', 'Ricevuta']
+  [OK] Trovati esattamente 9 ordini a database per l'utente 'user' (righe visualizzate: 9)
+  [OK] Primo ordine codice (piu' recente): 'SB-2026-0011'
+  [OK] Primo ordine prezzo calcolato: '12,00 euro'
+  [OK] Primo ordine stato: 'concluso'
+  [OK] Link 'Apri la ricevuta' presente nella riga ordine
+  [OK] Destinazione ricevuta coerente: 'ricevuta?ordine=11'
+  [OK] Apertura ricevuta collegata: HTTP 200 (http://localhost:8080/ricevuta?ordine=11)
+  [OK] Titolo pagina ricevuta: 'Ricevuta dell'ordine - Smash Burger'
+  [OK] Sezione 'Le tue prenotazioni' presente per il cliente
+  [OK] Tabella prenotazioni presente
+  [OK] Trovata 1 prenotazione sala eventi per 'user': 1
+  [OK] Sede prenotazione: 'Padova'
+  [OK] Stato prenotazione: 'approvata' con badge data-tipo='positivo'
+  [OK] Dati DB Nome utente corretto: Nome utente: user
+  [OK] Dati DB Nome e cognome corretti: Nome e cognome: Anna Rossi
+  [OK] Dati DB Email corretta: Email: anna.rossi@example.it
+  [OK] Link 'Modifica i tuoi dati' presente verso /profilo
+  [OK] Link 'Modifica i tuoi dati' conduce a /profilo: HTTP 200
+  [OK] Prenotazione 'in attesa': badge con data-tipo='attenzione'
+  [OK] Prenotazione 'rifiutata': badge con data-tipo='negativo'
+  [OK] Empty state ordini: messaggio informativo 'Non hai ancora fatto nessun ordine.' presente
+  [OK] Empty state ordini: link CTA 'Guarda il menu' verso /menu presente
+  [OK] Empty state prenotazioni: messaggio 'Non hai prenotazioni per la sala eventi.' presente
+  [OK] Empty state prenotazioni: link CTA 'Scegli una sede e prenota' verso /sedi presente
+  [OK] Ripristinato DB: eliminato utente temporaneo 'cliente.vuoto.test'
+  [OK] Testo dedicato per Manager: 'Ciao Marco. Da qui controlli i tuoi dati di accesso: ordini e prenotazioni della tua sede stanno nel pannello di controllo.'
+  [OK] Area Personale Manager: sezione ordini cliente esclusa dal markup
+  [OK] Area Personale Manager: sezione prenotazioni cliente esclusa dal markup
+  [OK] Dati Manager: Nome utente: manager
+  [OK] Dati Manager: Nome e cognome: Marco Bianchi
+  [OK] Dati Manager: Email: padova@smashburger.it
+  [OK] Voce 'Controllo' visibile nell'header del Manager
+  [OK] Testo dedicato per Amministratore: 'Ciao Giulia. Da qui controlli i tuoi dati di accesso: ordini e prenotazioni della tua sede stanno nel pannello di controllo.'
+  [OK] Area Personale Admin: sezione ordini cliente esclusa dal markup
+  [OK] Area Personale Admin: sezione prenotazioni cliente esclusa dal markup
+  [OK] Dati Admin: Nome utente: admin
+  [OK] Dati Admin: Nome e cognome: Giulia Ferrari
+  [OK] Dati Admin: Email: amministrazione@smashburger.it
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Accesso mobile completato ad /area-personale
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale anomalo (scrollWidth <= 375)
+
+=== RIEPILOGO TEST COMPLETO AREA PERSONALE ===
+Totale controlli eseguiti: 50
+Superati: 50
+Falliti: 0
+```
+
+---
+
+## 13. Profilo utente (`profilo.php`)
+
+La pagina del profilo utente consente a tutti gli utenti autenticati (clienti, manager e amministratori) di gestire i propri dati anagrafici essenziali (nome, cognome, indirizzo email) e di aggiornare la propria password di sicurezza.
+La pagina implementa un'architettura a **moduli indipendenti**: ciascun riquadro costituisce un form separato con il proprio token CSRF e un parametro identificativo dell'azione (`azione="dati"` oppure `azione="password"`). In questo modo, l'eventuale errore di compilazione o di validazione in una sezione non va a sporcare o azzerare quanto l'utente stava compilando nell'altra.
+Tutti gli aggiornamenti si basano sul pattern **POST-Redirect-GET (PRG)** con messaggi informativi di sessione (flash messages) per prevenire il re-inoltro involontario dei dati in caso di ricaricamento del browser.
+
+---
+
+### 13.1 Header, Breadcrumb e Navigazione di Ritorno
+
+- [x] **Percorso di Navigazione / Breadcrumb a 3 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="./">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<a href="area-personale">Area personale</a>` (click ritorna all'Area personale).
+  - [x] Livello 3: `<span aria-current="page">Profilo</span>` (voce corrente non cliccabile, conforme a REGOLE.md sezione 8).
+
+- [x] **Intestazione Principale e Titolo**:
+  - [x] Titolo documento dinamico: `"Il tuo profilo - Smash Burger"`.
+  - [x] Intestazione principale `<h1>`: `"Il tuo profilo"`.
+
+- [x] **Navigazione di Ritorno a Fondo Pagina**:
+  - [x] Elemento semantico: `<p class="navigazione-pagina"><a class="collegamento-indietro" href="area-personale"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna all'area personale</span></a></p>`.
+  - [x] Navigazione verificata: il click conduce direttamente all'Area personale (HTTP 200).
+
+---
+
+### 13.2 Modulo "Dati personali" (Nome, Cognome ed Email)
+
+- [x] **Struttura Semantica e Campi del Form**:
+  - [x] Sezione `<section>` con intestazione `<h2>Dati personali</h2>`.
+  - [x] Modulo `<form method="post" action="profilo">` con campo nascosto `token_csrf` e `name="azione" value="dati"`.
+  - [x] Gruppo campi `<fieldset>` con didascalia `<legend>Nome, cognome ed email</legend>`.
+  - [x] **Pre-popolamento automatico da MariaDB**: i campi *Nome*, *Cognome* ed *Email* vengono valorizzati con i dati reali dell'utente estratti tramite `utente_completo($pdo, $id)`.
+  - [x] **Attributi di Validazione HTML5**:
+    - Nome: `required="required"`, `minlength="2"`, `maxlength="80"`.
+    - Cognome: `required="required"`, `minlength="2"`, `maxlength="80"`.
+    - Email: `type="email"`, `required="required"`, `maxlength="160"`, `autocomplete="email"`.
+  - [x] Pulsante di invio: `<button type="submit">Salva i dati</button>`.
+
+- [x] **Controlli di Validazione Server-side e Accessibilita Errori**:
+  - [x] **Nome corto (< 2 caratteri)**: segnalazione con `<small id="errore-nome">Scrivi il nome, fra 2 e 80 caratteri.</small>`, input marcato con `data-stato="errore"` e collegato tramite `aria-describedby="errore-nome"`.
+  - [x] **Cognome corto (< 2 caratteri)**: segnalazione con `<small id="errore-cognome">Scrivi il cognome, fra 2 e 80 caratteri.</small>`, input marcato con `data-stato="errore"` e `aria-describedby="errore-cognome"`.
+  - [x] **Email non valida**: segnalazione con `<small id="errore-email">Scrivi un indirizzo email valido.</small>`, `data-stato="errore"` e `aria-describedby="errore-email"`.
+  - [x] **Conflitto Unicita Email**: inserimento di un indirizzo email gia associato ad un altro utente intercettato con `<small id="errore-email">Questo indirizzo email e gia registrato.</small>` (la funzione `utente_esiste` esclude correttamente l'id dell'utente corrente).
+
+- [x] **Protezione CSRF e Integrita dei Dati**:
+  - [x] Invio del modulo senza token CSRF respinto con **HTTP 403 Forbidden**.
+  - [x] Invio con token CSRF manomesso respinto con **HTTP 403 Forbidden**.
+  - [x] Invio con parametro `azione` inatteso/manomesso respinto con **HTTP 403 Forbidden**.
+
+- [x] **Persistenza MariaDB e Feedback Utente**:
+  - [x] Modifica valida dei dati salvata con successo nella tabella `utenti`.
+  - [x] Redirezione PRG verso `/profilo` e visualizzazione del messaggio flash di successo (*"Fatto: Dati aggiornati."*).
+  - [x] Aggiornamento verificato a database tramite query SQL diretta (`SELECT nome, cognome, email FROM utenti WHERE ...`).
+  - [x] Dati immediatamente sincronizzati e visibili in tutta l'applicazione (es. saluto personalizzato in Area personale aggiornato a *"Ciao Annamaria."*).
+  - [x] Ripristino automatico dei dati originali di test e conferma su MariaDB.
+
+---
+
+### 13.3 Modulo "Password" (Cambio Password)
+
+- [x] **Struttura Semantica e Campi del Form**:
+  - [x] Sezione `<section>` con intestazione `<h2>Password</h2>`.
+  - [x] Modulo `<form method="post" action="profilo">` con campo nascosto `token_csrf` e `name="azione" value="password"`.
+  - [x] Gruppo campi `<fieldset>` con didascalia `<legend>Cambia la password</legend>`.
+  - [x] Campo Password attuale: `type="password"`, `required="required"`, `autocomplete="current-password"`.
+  - [x] Campo Nuova password: `type="password"`, `required="required"`, `minlength="8"`, `autocomplete="new-password"`.
+  - [x] Campo Ripeti la nuova password: `type="password"`, `required="required"`, `minlength="8"`, `autocomplete="new-password"`.
+  - [x] Pulsante di invio: `<button type="submit">Cambia la password</button>`.
+
+- [x] **Controlli di Validazione Server-side e Accessibilita Errori**:
+  - [x] **Password attuale errata**: intercettata da `password_verify` sul vecchio hash salvato a database; segnalata con `<small id="errore-pwd-attuale">La password attuale non e corretta.</small>`, con `data-stato="errore"` e `aria-describedby="errore-pwd-attuale"`.
+  - [x] **Nuova password corta (< 8 caratteri)**: segnalata con `<small id="errore-pwd-nuova">La password deve avere almeno 8 caratteri.</small>`.
+  - [x] **Mancata corrispondenza password/conferma**: segnalata con `<small id="errore-pwd-conferma">Le due password non coincidono.</small>`.
+  - [x] **Protezione CSRF**: richiesta cambio password priva di token CSRF bloccata con **HTTP 403 Forbidden**.
+
+- [x] **Ciclo di Vita Password e Sicurezza Crittografica**:
+  - [x] Aggiornamento password collaudato con account dedicato: salvataggio su MariaDB tramite hash bcrypt sicuro (`$2y$10$...`, lunghezza 60 caratteri).
+  - [x] Redirezione PRG e flash message di conferma (*"Fatto: Password aggiornata."*).
+  - [x] **Revoca vecchia password**: tentativo di autenticazione con la vecchia password tassativamente respinto (*"Errore: Nome utente o password non corretti."*).
+  - [x] **Accesso con nuova password**: autenticazione immediata e corretta con le nuove credenziali.
+  - [x] Pulizia dell'account temporaneo a database al termine del collaudo.
+
+---
+
+### 13.4 Collaudo Multi-Ruolo (Manager e Amministratore)
+
+- [x] **Manager di Sede (`manager`)**:
+  - [x] Accesso autorizzato ad `/profilo`.
+  - [x] Pre-compilazione dati anagrafici corretta: *Marco Bianchi*, *padova@smashburger.it*.
+  - [x] Entrambi i moduli (dati personali e cambio password) perfettamente operativi e accessibili.
+- [x] **Amministratore (`admin`)**:
+  - [x] Accesso autorizzato ad `/profilo`.
+  - [x] Pre-compilazione dati anagrafici corretta: *Giulia Ferrari*, *amministrazione@smashburger.it*.
+  - [x] Entrambi i moduli perfettamente operativi e accessibili.
+
+---
+
+### 13.5 Responsive Mobile (375x667px)
+
+- [x] Layout fluido su viewport mobile: form e campi impilati ordinatamente in verticale.
+- [x] Pulsanti e campi facilmente toccabili su schermi touch.
+- [x] Nessun overflow orizzontale anomalo (`scrollWidth=375 <= clientWidth=375`).
+
+---
+
+### 13.6 Esito del Collaudo Automatizzato End-to-End e Backend (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) con verifiche sui ruoli, validazioni inline, sicurezza CSRF, query MariaDB e ciclo di vita password:
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE, PERMESSI E STRUTTURA ===
+========================================================
+  [OK] Backend Permessi: richiesta ad /profilo da non autenticato respinta con HTTP 401 Unauthorized
+  [OK] Login cliente riuscito: atterrato su http://localhost:8080/area-personale
+  [OK] Accesso a /profilo con utente autenticato: HTTP 200
+  [OK] Titolo dinamico: 'Il tuo profilo - Smash Burger'
+  [OK] Breadcrumb semantico a 3 livelli: ['Home', 'Area personale', 'Profilo']
+  [OK] Breadcrumb: elemento corrente non cliccabile 'Profilo'
+  [OK] H1 corretto: 'Il tuo profilo'
+  [OK] Link 'Torna all'area personale' presente a fondo pagina
+  [OK] Destinazione link indietro: 'area-personale'
+  [OK] Click su 'Torna all'area personale' atterra correttamente su /area-personale
+
+========================================================
+=== TEST BACKEND & DB: MODULO DATI PERSONALI ===
+========================================================
+  [OK] Campo Nome pre-popolato correttamente da DB: 'Anna'
+  [OK] Campo Cognome pre-popolato da DB: 'Rossi'
+  [OK] Campo Email pre-popolato da DB: 'anna.rossi@example.it'
+  [OK] Nome: attributo minlength='2'
+  [OK] Nome: attributo maxlength='80'
+  [OK] Nome: attributo required='required'
+  [OK] Email: type='email'
+  [OK] Email: autocomplete='email'
+  [OK] Errore validazione nome corto: 'Scrivi il nome, fra 2 e 80 caratteri.'
+  [OK] Input nome ha data-stato='errore'
+  [OK] Input nome ha aria-describedby='errore-nome'
+  [OK] Errore validazione cognome corto: 'Scrivi il cognome, fra 2 e 80 caratteri.'
+  [OK] Errore validazione email malformata: 'Scrivi un indirizzo email valido.'
+  [OK] Errore conflitto email esistente: 'Questo indirizzo email e gia registrato.'
+  [OK] Backend blocca modifica dati senza token CSRF con HTTP 403
+  [OK] Backend blocca modifica dati con token CSRF non valido con HTTP 403
+  [OK] Backend blocca azione POST non valida con HTTP 403
+  [OK] Flash message dopo aggiornamento dati: 'Fatto: Dati aggiornati.'
+  [OK] Persistenza MariaDB confermata per utente 'user': 'Annamaria Rossi Nuovi anna.aggiornata@example.it'
+  [OK] Area Personale riflette immediatamente i nuovi dati: 'Ciao Annamaria.'
+  [OK] Ripristinati dati originali nel database per l'utente 'user'
+
+========================================================
+=== TEST BACKEND & DB: MODULO CAMBIO PASSWORD ===
+========================================================
+  [OK] Password attuale: type='password'
+  [OK] Password attuale: autocomplete='current-password'
+  [OK] Nuova password: minlength='8'
+  [OK] Nuova password: autocomplete='new-password'
+  [OK] Conferma password: minlength='8'
+  [OK] Conferma password: autocomplete='new-password'
+  [OK] Errore password attuale errata: 'La password attuale non e corretta.'
+  [OK] Input password attuale ha data-stato='errore'
+  [OK] Errore nuova password corta: 'La password deve avere almeno 8 caratteri.'
+  [OK] Errore password e conferma non coincidenti: 'Le due password non coincidono.'
+  [OK] Backend blocca cambio password senza token CSRF con HTTP 403
+
+  --- Creazione utente temporaneo per collaudo ciclo password ---
+  [OK] Flash message cambio password: 'Fatto: Password aggiornata.'
+  [OK] MariaDB ha memorizzato il nuovo hash bcrypt: '$2y$10$IaujL5i9...'
+  [OK] Login con vecchia password respinto: 'Errore: Nome utente o password non corretti.'
+  [OK] Login con nuova password avvenuto con pieno successo!
+  [OK] Ripristinato DB: eliminato utente temporaneo 'utente.pwd.test'
+
+========================================================
+=== TEST MULTI-RUOLO: MANAGER E ADMIN SU PROFILO ===
+========================================================
+  [OK] Profilo Manager: Nome pre-compilato 'Marco'
+  [OK] Profilo Manager: Cognome pre-compilato 'Bianchi'
+  [OK] Profilo Manager: Email pre-compilata 'padova@smashburger.it'
+  [OK] Profilo Manager: Modulo dati personali attivo
+  [OK] Profilo Manager: Modulo cambio password attivo
+  [OK] Profilo Admin: Nome pre-compilato 'Giulia'
+  [OK] Profilo Admin: Cognome pre-compilato 'Ferrari'
+  [OK] Profilo Admin: Email pre-compilata 'amministrazione@smashburger.it'
+  [OK] Profilo Admin: Modulo dati personali attivo
+  [OK] Profilo Admin: Modulo cambio password attivo
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Caricamento mobile /profilo: HTTP 200
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth=375 <= clientWidth=375)
+
+=== RIEPILOGO TEST COMPLETO PROFILO ===
+Totale controlli eseguiti: 59
+Superati: 59
+Falliti: 0
+```
+
+---
+
+## 14. Carrello (`carrello.php`)
+
+La pagina del carrello gestisce la consultazione del catalogo per ciascun punto vendita e la composizione interattiva dell'ordine da parte del cliente autenticato.
+Poiché la disponibilità dei singoli ingredienti e prodotti varia in base alla sede scelta, il carrello implementa una gestione a **stati successivi**:
+- **Stato 1 (Nessuna sede scelta)**: la pagina presenta la vista di benvenuto e selezione sede (`carrello-sede.php`), chiedendo all'utente da quale punto vendita intende ordinare.
+- **Stato 2 (Sede selezionata con carrello vuoto)**: viene aperto un record nella tabella `carrelli` su MariaDB, mostrando il catalogo dei prodotti disponibili per quel locale, l'intestazione personalizzata, il selettore per cambiare sede e l'avviso di carrello vuoto (*empty state*).
+- **Stato 3 (Carrello popolato)**: non appena viene aggiunto almeno un articolo, compare il riepilogo con la tabella degli elementi ordinati, i controlli di incremento/decremento quantità, il pulsante per svuotare il carrello, il totale progressivo ricalcolato e il collegamento per procedere al pagamento.
+
+La pagina è progettata secondo il principio del **Progressive Enhancement**: con JavaScript abilitato, le interazioni di modifica carrello vengono inviate via AJAX (`fetch()`) con aggiornamento trasparente del DOM e gestione del focus; in assenza di JavaScript, i form eseguono normali invii HTTP POST con reindirizzamento PRG e flash messages in sessione.
+
+---
+
+### 14.1 Header, Breadcrumb e Navigazione Superiore
+
+- [x] **Percorso di Navigazione / Breadcrumb a 2 Livelli (`nav[aria-label="Percorso"]`)**:
+  - [x] Livello 1: `<a href="./">Home</a>` (click ritorna alla Home).
+  - [x] Livello 2: `<span aria-current="page">Carrello</span>` (voce corrente non cliccabile, conforme a REGOLE.md sezione 8).
+
+- [x] **Intestazione Principale e Titolo**:
+  - [x] Titolo dinamico del documento: `"Carrello - Smash Burger"`.
+  - [x] Voci header utente loggato presenti (Area personale, Carrello, Esci).
+
+---
+
+### 14.2 Stato 1: Scelta della Sede di Ritiro (`carrello-sede.php`)
+
+- [x] **Intestazione e Istruzioni per l'Utente**:
+  - [x] Tag semantico `<h1>`: `"Da quale sede vuoi ordinare?"`.
+  - [x] Paragrafo esplicativo sulla disponibilità specifica dei prodotti per locale.
+
+- [x] **Modulo Selezione Sede (`form[data-modulo="scelta-sede"]`)**:
+  - [x] Attributi form: `method="post"`, `action="carrello"`, campo nascosto `token_csrf` e `name="azione" value="scegli-sede"`.
+  - [x] Raggruppamento `<fieldset>` con `<legend>Scegli la sede</legend>`.
+  - [x] Elenco di opzioni `<input type="radio" name="sede">` per ciascun punto vendita attivo (Padova, Treviso, Vicenza, Udine) con indicazione di città e indirizzo.
+  - [x] Prima opzione (Padova) preselezionata con `checked="checked"`.
+  - [x] Pulsante d'invio primario: `<button type="submit">Continua</button>`.
+
+- [x] **Link Informativo di Consultazione**:
+  - [x] Collegamento di ritorno al menu: `<a href="menu">Guarda prima il menu</a>` (HTTP 200).
+
+---
+
+### 14.3 Stato 2 & 3: Catalogo Sede e Riepilogo Interattivo (`carrello.php`)
+
+- [x] **Intestazione Dinamica con Sede**:
+  - [x] Tag `<h1>` contestuale: `"Il tuo ordine da [Citta]"` (es. *"Il tuo ordine da Padova"*).
+
+- [x] **Modulo Cambio Sede (`form[data-modulo="cambia-sede"]`)**:
+  - [x] Menu a tendina `<select id="sede" name="sede">` con le 4 sedi attive e sede corrente preselezionata.
+  - [x] Pulsante `<button type="submit">Cambia sede</button>`.
+  - [x] Avviso esplicativo: *"Cambiando sede il carrello viene svuotato, perchè la disponibilità cambia da un locale all'altro."*.
+  - [x] **Verifica svuotamento automatico al cambio sede**: cambiando da Padova a Treviso, le righe del carrello precedente vengono automaticamente cancellate e la sede viene aggiornata sia a video che a database.
+
+- [x] **Sezione Riepilogo Ordine (`<section class="riepilogo">`)**:
+  - [x] Intestazione H2 semantica `"Il tuo carrello"` e occhiello `"Riepilogo ordine"`.
+  - [x] **Empty State**: quando il carrello è vuoto, viene mostrato il messaggio `<p>Il carrello è vuoto: tocca un prodotto per aggiungerlo.</p>` e il link di avanzamento all'ordine viene nascosto.
+  - [x] **Tabella Prodotti nel Carrello**:
+    - Didascalia accessibile: `<caption>Prodotti nel carrello</caption>`.
+    - Intestazioni colonna `<th>` con `scope="col"`: *Prodotto*, *Prezzo*, *Quantita*, *Totale*, *Togli*.
+    - Righe prodotto con `<th>` (`scope="row"`) per il nome del prodotto e formattazione monetaria in euro.
+    - **Pulsanti Quantità Accessibili**:
+      - Tasto `+` (`name="aggiungi"`): incrementa la quantità di un'unità, aggiorna i record in `righe_carrello` e ricalcola il totale. Testo screen reader: `<span class="solo-lettori">Una unita in piu di [Nome]</span>`.
+      - Tasto `-` (`name="diminuisci"`): riduce la quantità di un'unità. Scendendo a 0 la riga viene rimossa automaticamente. Testo screen reader: `<span class="solo-lettori">Una unita in meno di [Nome]</span>`.
+    - **Pulsante Rimozione Diretta**:
+      - Tasto `"Togli"` (`name="togli"`): rimuove immediatamente l'articolo dalla tabella e da MariaDB, producendo il messaggio flash *"Fatto: Prodotto tolto dal carrello."*.
+  - [x] **Modulo Svuota Carrello (`form[data-modulo="svuota"]`)**:
+    - Pulsante dedicato `<button class="azione-svuota" type="submit">Svuota il carrello</button>` che azzera tutte le righe del carrello a database preservando la sede attiva.
+  - [x] **Totale Ordine e Link alla Cassa**:
+    - Etichetta con importo totale formattato in euro (`<strong class="totale">`).
+    - Link CTA primario: `<a class="pulsante" data-tipo="positivo" href="pagamento">Procedi all'ordine</a>` (visibile solo a carrello non vuoto).
+
+- [x] **Griglia Prodotti Disponibili in Sede (`form[data-modulo="aggiungi"]`)**:
+  - [x] Griglia flessibile contenente le schede dei prodotti effettivamente disponibili nella sede.
+  - [x] Immagine con attributi dimensionali (`width="300" height="225"`), titolo `<h2>` del prodotto, prezzo in euro.
+  - [x] Pulsante d'invio per ciascun articolo con attributo accessibile: `<button type="submit" name="prodotto_id" value="ID">Aggiungi <span class="solo-lettori">[Nome Prodotto] al carrello</span></button>`.
+
+---
+
+### 14.4 Verifiche di Backend, Database, Permessi e Sicurezza
+
+- [x] **Controllo di Autenticazione e Permessi**:
+  - [x] Richieste a `/carrello` effettuate da utenti non autenticati (ospiti) vengono tassativamente bloccate con codice **HTTP 401 Unauthorized**.
+- [x] **Persistenza e Integrità su MariaDB**:
+  - [x] Creazione della riga carrello associata univocamente a `utente_id` nella tabella `carrelli`.
+  - [x] Gestione atomica delle righe nella tabella `righe_carrello` (inserimento, aggiornamento quantità, eliminazione singola e azzeramento totale).
+  - [x] Disaccoppiamento del prezzo del prodotto: il totale viene calcolato dinamicamente leggendo il listino corrente (`prodotti.prezzo_centesimi`), garantendo accuratezza economica.
+- [x] **Inizializzazione Diretta da URL (`?sede=slug`)**:
+  - [x] Navigazione diretta verso `/carrello?sede=vicenza` apre istantaneamente il carrello per la sede di Vicenza (HTTP 200).
+- [x] **Protezione CSRF**:
+  - [x] Invio delle operazioni di carrello senza token CSRF respinto con **HTTP 403 Forbidden**.
+  - [x] Invio con token CSRF manomesso respinto con **HTTP 403 Forbidden**.
+- [x] **Sanificazione Output e Prevenzione XSS**:
+  - [x] Tutti i valori testuali e numerici passano attraverso `e()` e cast espliciti prima della resa nel DOM.
+
+---
+
+### 14.5 Responsive Mobile (375x667px)
+
+- [x] Contenitore della tabella `.corpo-riepilogo` configurato con `position: relative; overflow-x: auto;`, che racchiude perfettamente lo scorrimento orizzontale della tabella senza intaccare il viewport generale.
+- [x] Elementi `.solo-lettori` contenuti nel perimetro dei pulsanti, prevenendo fuoriuscite invisibili.
+- [x] Nessun overflow orizzontale anomalo dell'intera pagina (`scrollWidth=375 <= clientWidth=375`).
+
+---
+
+### 14.6 Esito del Collaudo Automatizzato End-to-End e Backend (Playwright)
+
+Report di esecuzione dei test eseguiti con browser reale (Chromium / Playwright) con verifiche sui tre stati del carrello, persistenza MariaDB, operazioni AJAX/DOM e sicurezza CSRF:
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE, PERMESSI E STATO VUOTO ===
+========================================================
+  [OK] Backend Permessi: richiesta a /carrello da ospite respinta con HTTP 401 Unauthorized
+  [OK] Accesso a /carrello con cliente autenticato: HTTP 200
+  [OK] Titolo dinamico: 'Carrello - Smash Burger'
+  [OK] Breadcrumb semantico a 2 livelli: ['Home', 'Carrello']
+  [OK] Breadcrumb: elemento corrente non cliccabile 'Carrello'
+  [OK] H1 iniziale: 'Da quale sede vuoi ordinare?'
+  [OK] Form scelta sede iniziale presente
+  [OK] Campo hidden azione='scegli-sede'
+  [OK] Presenti 4 radio button per le sedi attive (trovati: 4)
+  [OK] Prima sede (Padova) preselezionata di default
+  [OK] Link 'Guarda prima il menu' presente verso /menu
+
+========================================================
+=== TEST BACKEND & DB: APERTURA CARRELLO E STATO VUOTO ===
+========================================================
+  [OK] POST-Redirect-GET atterra su /carrello
+  [OK] Carrello creato a database per Padova: '18 3 1 Padova'
+  [OK] H1 dinamico con sede: 'Il tuo ordine da Padova'
+  [OK] Form 'Cambia sede' presente nella schermata prodotti
+  [OK] Select sede ha valore selezionato 'padova': 'padova'
+  [OK] Sezione riepilogo carrello (.riepilogo) presente
+  [OK] Intestazione H2 'Il tuo carrello'
+  [OK] Empty state visualizzato: 'Il carrello e vuoto: tocca un prodotto per aggiungerlo.'
+  [OK] Link 'Procedi all'ordine' nascosto quando il carrello e vuoto
+  [OK] Form catalogo prodotti disponibile
+  [OK] Prodotti disponibili in sede mostrati a catalogo: 19
+  [OK] Testo accessibile per lettori di schermo: 'Bacon Burger al carrello'
+
+========================================================
+=== TEST INTERATTIVO & BACKEND: AGGIUNTA, QUANTITA E RIGHE ===
+========================================================
+  [OK] Flash message dopo aggiunta: 'Fatto: Carrello aggiornato.'
+  [OK] MariaDB: inserita riga carrello per prodotto 2: '2 1 Bacon Burger'
+  [OK] Tabella prodotti nel carrello presente
+  [OK] Caption tabella accessibile
+  [OK] Una riga presente nella tabella del carrello
+  [OK] Nome prodotto in tabella corrisponde: 'Bacon Burger'
+  [OK] Quantita iniziale in riga: '1'
+  [OK] Link CTA 'Procedi all'ordine' visibile verso /pagamento
+  [OK] Quantita dopo click su '+': '2'
+  [OK] MariaDB: quantita aggiornata a 2 a database: '2'
+  [OK] Due prodotti distinti presenti nella tabella del carrello: 2
+  [OK] MariaDB: esattamente 2 righe in righe_carrello
+  [OK] Quantita decrementata a 1 dopo '-': '1'
+  [OK] Flash message dopo rimozione: 'Fatto: Prodotto tolto dal carrello.'
+  [OK] Rimasta 1 sola riga dopo 'Togli'
+
+========================================================
+=== TEST BACKEND & DB: SVUOTA CARRELLO E CAMBIO SEDE ===
+========================================================
+  [OK] Pulsante 'Svuota il carrello' presente
+  [OK] Flash message svuota carrello: 'Fatto: Carrello svuotato.'
+  [OK] MariaDB: righe_carrello svuotato a 0
+  [OK] Empty state ripristinato dopo svuota carrello
+  [OK] Prodotto aggiunto prima del cambio sede
+  [OK] Nuovo H1 dopo cambio sede: 'Il tuo ordine da Treviso'
+  [OK] Cambiando sede il carrello e stato automaticamente svuotato
+  [OK] MariaDB: sede carrello aggiornata a Treviso: 'treviso'
+  [OK] Apertura diretta con parametro ?sede=vicenza: 'Il tuo ordine da Vicenza'
+
+========================================================
+=== TEST SICUREZZA: CSRF E AZIONI FORGIATE ===
+========================================================
+  [OK] Backend blocca richiesta POST senza CSRF con HTTP 403
+  [OK] Backend blocca richiesta POST con CSRF non valido con HTTP 403
+  [OK] Ripristinato DB: cancellati carrelli di test
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth=375 <= clientWidth=375)
+
+=== RIEPILOGO TEST COMPLETO CARRELLO ===
+Totale controlli eseguiti: 51
+Superati: 51
+Falliti: 0
+```
+
+---
+
+## 15. Ritiro e Pagamento (`pagamento.php`)
+
+La pagina di cassa e perfezionamento ordine raccoglie la conferma della comanda da parte del cliente autenticato: permette di scegliere tra ritiro in sede e consegna a domicilio, selezionare la fascia oraria o compilare l'indirizzo di recapito, optare per il metodo di pagamento desiderato (carta o contanti) ed eseguire la transazione con contestuale scarico di magazzino a database.
+
+### 15.1 Header, Breadcrumb e Navigazione Contestuale
+
+- [x] **Salto al contenuto e Accessibilita**:
+  - [x] Link `<a class="salta" href="#contenuto">Vai al contenuto</a>` correttamente funzionante.
+  - [x] Menu principale coerente con lo stato loggato (voci: *Menu*, *Servizi*, *Chi siamo*, *Sedi*, *Contatti*, *Area personale*, *Carrello*, *Esci*).
+
+- [x] **Percorso di Navigazione Semantico (Breadcrumb a 3 Livelli)**:
+  - [x] Elemento `<nav aria-label="Percorso">` con lista ordinata `<ol>`.
+  - [x] Livello 1: `<a href="./">Home</a>` (click atterra sulla home).
+  - [x] Livello 2: `<a href="carrello">Carrello</a>` (click atterra sul carrello).
+  - [x] Livello 3: `<span aria-current="page">Pagamento</span>` (voce corrente non cliccabile).
+
+- [x] **Intestazione e Collegamento Indietro**:
+  - [x] Titolo dinamico del documento: `"Ritiro e pagamento - Smash Burger"`.
+  - [x] Titolo principale `<h1>`: `"Conferma il tuo ordine"`.
+  - [x] Collegamento di ritorno al carrello: `<a class="collegamento-indietro" href="carrello"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna al carrello</span></a>` (testato con click effettivo).
+
+---
+
+### 15.2 Sezione Riepilogo: Che cosa hai ordinato
+
+- [x] **Intestazione e Tabella di Riepilogo (`<section>`)**:
+  - [x] Intestazione H2 semantica: `"Che cosa hai ordinato"`.
+  - [x] Didascalia accessibile esplicita: `<caption>Riepilogo dell'ordine da [Sede]</caption>` (es. *"Riepilogo dell'ordine da Padova"*).
+  - [x] Colonne della tabella con `scope="col"`: *Prodotto*, *Quantita*, *Totale*.
+  - [x] Righe prodotto con `scope="row"` sul nome del prodotto.
+  - [x] Piede tabella `<tfoot>` con riga riepilogativa: `<th scope="row" colspan="2">Totale</th>` e cella del totale formattata con importo in euro.
+
+---
+
+### 15.3 Modulo di Scelta Modalita, Dati e Pagamento
+
+- [x] **Modulo Principale (`form[action="pagamento"]`)**:
+  - [x] Attributi form: `method="post"`, `action="pagamento"`.
+  - [x] Token CSRF obbligatorio: `<input type="hidden" name="token_csrf" value="...">`.
+  - [x] Attributo dinamico `data-modalita="ritiro"` (aggiornato dinamicamente a `"domicilio"` via JavaScript al cambio opzione, preservando il pieno funzionamento anche senza JS).
+
+- [x] **Raggruppamento Modalita di Ricezione (`<fieldset>`)**:
+  - [x] `<legend>Come vuoi ricevere l'ordine?</legend>`.
+  - [x] Radio Ritiro: `<input type="radio" id="modalita-ritiro" name="modalita" value="ritiro" checked="checked">` con etichetta associata.
+  - [x] Radio Domicilio: `<input type="radio" id="modalita-domicilio" name="modalita" value="domicilio">` con etichetta associata.
+
+- [x] **Opzioni Ritiro in Sede**:
+  - [x] Menu a tendina `<select id="ritiro_previsto" name="ritiro_previsto">` popolato con gli orari di apertura e fasce a 15 minuti del giorno corrente.
+  - [x] Paragrafo informativo con indirizzo completo della sede presso cui ritirare.
+
+- [x] **Opzioni Consegna a Domicilio**:
+  - [x] Campi pre-popolati in automatico dai dati anagrafici del profilo utente autenticato:
+    - Indirizzo: `<input id="indirizzo" name="indirizzo" type="text" autocomplete="street-address">` (es. *"Via Roma 12"*).
+    - Citta: `<input id="citta" name="citta" type="text" autocomplete="address-level2">` (es. *"Padova"*).
+    - Provincia: `<input id="provincia" name="provincia" type="text" maxlength="2" autocomplete="address-level1">` (es. *"PD"*).
+    - CAP: `<input id="cap" name="cap" type="text" maxlength="5" autocomplete="postal-code">` (es. *"35100"*).
+    - Paese: `<input id="paese" name="paese" type="text" autocomplete="country-name">` (es. *"Italia"*).
+    - Telefono: `<input id="telefono" name="telefono" type="tel" autocomplete="tel">` (es. *"3401234567"*).
+
+- [x] **Raggruppamento Metodo di Pagamento (`<fieldset>`)**:
+  - [x] `<legend>Come vuoi pagare?</legend>`.
+  - [x] Radio Carta: `<input type="radio" id="pagamento-carta" name="metodo_pagamento" value="carta" checked="checked">`.
+  - [x] Radio Contanti: `<input type="radio" id="pagamento-contanti" name="metodo_pagamento" value="contanti">`.
+
+- [x] **Pulsante di Conferma Finale**:
+  - [x] `<button type="submit">Conferma l'ordine</button>` (richiesta POST al backend).
+
+---
+
+### 15.4 Validazione Backend, Segnalazione Errori Accessibile e Sicurezza
+
+- [x] **Controllo Autorizzazione Backend**:
+  - [x] Accesso da utente ospite non autenticato respinto con codice `HTTP 401 Unauthorized`.
+
+- [x] **Controllo Validita Carrello**:
+  - [x] Accesso a `/pagamento` con carrello nullo o vuoto intercettato e reindirizzato a `/carrello` con messaggio di avviso *"Errore: Il carrello e vuoto o scaduto: ricomincia dalla sede."*.
+
+- [x] **Validazione Dati di Consegna a Domicilio**:
+  - [x] Compilazione con dati mancanti o errati (es. indirizzo vuoto, CAP non di 5 cifre, provincia non di 2 lettere) bloccata dal backend.
+  - [x] **Box di Riepilogo Errori Accessibile**:
+    - Sezione `<section class="avviso" role="alert" data-tipo="errore">` generata in cima alla pagina.
+    - Intestazione semantica `<h2>Controlla questi campi</h2>`.
+    - Elenco di link di salto con ancore dirette ai singoli campi non validi (es. `<a href="#indirizzo">Inserisci via e numero civico per la consegna.</a>`).
+  - [x] **Errori Inline sui Campi**:
+    - Attributo di stato visivo e semantico: `data-stato="errore"` applicato sull'input.
+    - Associazione accessibile tramite attributo `aria-describedby="errore-[campo]"`.
+    - Messaggio contestuale `<p class="messaggio-errore" id="errore-[campo]">`.
+
+- [x] **Protezione CSRF**:
+  - [x] Invio del modulo d'ordine privo di token CSRF bloccato con `HTTP 403 Forbidden`.
+  - [x] Invio del modulo con token CSRF manomesso o non valido bloccato con `HTTP 403 Forbidden`.
+
+---
+
+### 15.5 Esecuzione Transazionale Reale degli Ordini a Database (MariaDB)
+
+- [x] **Transazione 1: Ordine con Ritiro in Sede e Pagamento con Carta**:
+  - [x] Scalamento automatico della disponibilita merce a magazzino nella tabella `disponibilita_prodotti` (da giacenza 2 a giacenza 1).
+  - [x] Inserimento nuovo record su tabella `ordini` con codice univoco `SB-YYYY-XXXX` (es. `SB-2026-0017`), modalita `ritiro`, metodo di pagamento `carta`, stato `ricevuto`.
+  - [x] Inserimento righe collegate nella tabella `righe_ordine` con prodotto, quantita e prezzo in centesimi.
+  - [x] Eliminazione automatica del record temporaneo da `carrelli` e relative righe in `righe_carrello`.
+  - [x] Esecuzione pattern POST-Redirect-GET verso `/area-personale`.
+  - [x] Messaggio flash di conferma: *"Fatto: Ordine confermato."*.
+  - [x] Presenza immediata del nuovo ordine in cima allo storico ordini del cliente in Area Personale.
+  - [x] Navigazione al link della ricevuta corrispondente (`/ricevuta?ordine=[id]`) con caricamento `HTTP 200` e titolo H1 *"Ricevuta SB-YYYY-XXXX"*.
+
+- [x] **Transazione 2: Ordine con Consegna a Domicilio e Pagamento in Contanti**:
+  - [x] Creazione record su tabella `ordini` con modalita `domicilio`, metodo di pagamento `contanti`.
+  - [x] Congelamento permanente dell'indirizzo completo di spedizione e del recapito telefonico nelle colonne `consegna_indirizzo`, `consegna_citta`, `consegna_provincia`, `consegna_cap`, `consegna_paese`, `consegna_telefono`.
+  - [x] Ripristino automatico dello stato del database al termine dei collaudi (cancellazione ordini di test e ripristino giacenze di magazzino).
+
+---
+
+### 15.6 Responsive Mobile e Report di Collaudo E2E
+
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Sezione riepilogo perfettamente contenuta nello schermo.
+  - [x] Campi form e opzioni radio ergonomici e agevolmente toccabili.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_user_pagamento.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE, PERMESSI E CARRELLO VUOTO ===
+========================================================
+  [OK] Backend Permessi: richiesta a /pagamento da ospite respinta con HTTP 401 Unauthorized
+  [OK] Carrello nullo reindirizza a /carrello: http://localhost:8080/carrello
+  [OK] Avviso carrello vuoto/scaduto: 'Errore: Il carrello e vuoto o scaduto: ricomincia dalla sede.'
+
+========================================================
+=== TEST STRUTTURA E RIEPILOGO ORDINE: PAGAMENTO ===
+========================================================
+  [OK] Accesso a /pagamento con carrello popolato: HTTP 200
+  [OK] Titolo dinamico: 'Ritiro e pagamento - Smash Burger'
+  [OK] Breadcrumb semantico a 3 livelli: ['Home', 'Carrello', 'Pagamento']
+  [OK] Breadcrumb: elemento corrente non cliccabile 'Pagamento'
+  [OK] H1 corretto: 'Conferma il tuo ordine'
+  [OK] Link 'Torna al carrello' presente
+  [OK] Click su 'Torna al carrello' atterra su /carrello
+  [OK] Sezione 'Che cosa hai ordinato' presente
+  [OK] Caption tabella riepilogo accessibile: 'Riepilogo dell'ordine da Padova'
+  [OK] Intestazioni colonne corrette: ['Prodotto', 'Quantita', 'Totale']
+  [OK] Nome prodotto marcato con scope='row'
+  [OK] Totale ordine formattato in tfoot: '10,90 euro'
+
+========================================================
+=== TEST MODULO CONFERMA: SCELTA MODALITA E DATI ===
+========================================================
+  [OK] Form conferma ordine presente
+  [OK] Token CSRF presente nel form
+  [OK] Valore iniziale data-modalita='ritiro'
+  [OK] Selezione 'domicilio' aggiorna attributo data-modalita='domicilio'
+  [OK] Ritorno a 'ritiro' aggiorna data-modalita='ritiro'
+  [OK] Select orario di ritiro presente
+  [OK] Fasce orarie di ritiro disponibili: 112
+  [OK] Indirizzo pre-popolato da profilo utente: 'Via Roma 12'
+  [OK] Citta pre-popolata da profilo: 'Padova'
+  [OK] Provincia pre-popolata da profilo: 'PD'
+  [OK] CAP pre-popolato da profilo: '35100'
+  [OK] Telefono pre-popolato da profilo: '3401234567'
+  [OK] Radio Carta presente
+  [OK] Radio Contanti presente
+
+========================================================
+=== TEST VALIDAZIONE BACKEND ED ERRORI DI COMPILAZIONE ===
+========================================================
+  [OK] Riepilogo errori accessibile (role='alert') visualizzato in cima
+  [OK] Intestazione box errori: 'Controlla questi campi'
+  [OK] Ancora di errore per #indirizzo presente nel riepilogo
+  [OK] Input indirizzo marcato con data-stato='errore'
+  [OK] Input indirizzo ha aria-describedby='errore-indirizzo'
+  [OK] Input CAP marcato con data-stato='errore'
+  [OK] Input provincia marcato con data-stato='errore'
+  [OK] Backend blocca conferma ordine senza token CSRF con HTTP 403
+  [OK] Backend blocca conferma ordine con token CSRF manomesso con HTTP 403
+
+========================================================
+=== TEST CREAZIONE ORDINE 1: RITIRO IN SEDE (CARTA) ===
+========================================================
+  [OK] POST-Redirect-GET conduce ad Area personale: http://localhost:8080/area-personale
+  [OK] Flash message di successo: 'Fatto: Ordine confermato.'
+  [OK] MariaDB: carrello utente eliminato dopo la conferma
+  [OK] MariaDB: giacenza scalata correttamente nella sede da 2 a 1
+  [OK] MariaDB: ordine inserito con successo: '17	SB-2026-0017	ritiro	carta	ricevuto	1090'
+  [OK] MariaDB: righe ordine collegate all'ordine 17: '2	1	1090'
+  [OK] Nuovo ordine SB-2026-0017 visibile in cima alla tabella ordini
+  [OK] Link ricevuta presente nella riga del nuovo ordine
+  [OK] Apertura ricevuta dell'ordine 17 riuscita: http://localhost:8080/ricevuta?ordine=17
+  [OK] H1 pagina ricevuta con codice ordine: 'Ricevuta SB-2026-0017'
+
+========================================================
+=== TEST CREAZIONE ORDINE 2: CONSEGNA A DOMICILIO (CONTANTI) ===
+========================================================
+  [OK] Ordine a domicilio confermato, redirect su /area-personale
+  [OK] MariaDB: ordine a domicilio registrato con indirizzo completo: '18	SB-2026-0018	domicilio	contanti	Via Garibaldi 45	35122'
+  [OK] Ripristinato DB: eliminati ordini di test e ripristinata disponibilita merce
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Caricamento mobile /pagamento: HTTP 200
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth=375 <= clientWidth=375)
+
+=== RIEPILOGO TEST COMPLETO PAGAMENTO ===
+Totale controlli eseguiti: 53
+Superati: 53
+Falliti: 0
+```
+
+---
+
+## 16. Ricevuta ordine (`ricevuta.php`)
+
+La pagina di ricevuta dell'ordine costituisce il documento di riepilogo fiscale e operativo visualizzabile dal cliente autenticato accedendo allo storico ordini in Area Personale. Mostra gli estremi identificativi dell'ordine (`SB-YYYY-XXXX`), le generalita del cliente intestatario estratte da database, lo stato di evasione e del pagamento, le informazioni logistiche dettagliate (sede e orario di ritiro o indirizzo di recapito a domicilio con recapito telefonico), il dettaglio delle righe acquistate e l'importo totale. La pagina e predisposta per la stampa cartacea tramite foglio di stile dedicato (`stampa.css`).
+
+### 16.1 Header, Breadcrumb e Navigazione Superiore
+
+- [x] **Salto al contenuto e Accessibilita**:
+  - [x] Link `<a class="salta" href="#contenuto">Vai al contenuto</a>` presente e focalizzabile.
+  - [x] Menu principale e menu account per utente cliente autenticato (voci: *Menu*, *Servizi*, *Chi siamo*, *Sedi*, *Contatti*, *Area personale*, *Carrello*, *Esci*).
+
+- [x] **Percorso di Navigazione Semantico (Breadcrumb a 3 Livelli)**:
+  - [x] Elemento `<nav aria-label="Percorso">` con lista `<ol>`.
+  - [x] Livello 1: `<a href="./">Home</a>` (click atterra sulla home).
+  - [x] Livello 2: `<a href="area-personale">Area personale</a>` (click atterra su `/area-personale`).
+  - [x] Livello 3: `<span aria-current="page">Ricevuta SB-YYYY-XXXX</span>` (voce corrente non cliccabile).
+
+- [x] **Intestazione e Ritorno allo Storico**:
+  - [x] Titolo dinamico del documento: `"Ricevuta dell'ordine - Smash Burger"`.
+  - [x] Intestazione principale `<h1>`: `"Ricevuta SB-YYYY-XXXX"` (es. *"Ricevuta SB-2026-0001"*).
+  - [x] Paragrafo descrittivo con data e ora di emissione e nome/cognome del cliente intestatario (es. *"Ordine del 20/08/2026 11:52, intestato a Anna Rossi."*).
+  - [x] Collegamento di ritorno in calce: `<a class="collegamento-indietro" href="area-personale"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna ai tuoi ordini</span></a>` (testato con click effettivo).
+
+---
+
+### 16.2 Sezione Stato dell'Ordine e del Pagamento
+
+- [x] **Intestazione e Indicatori di Stato (`<section>`)**:
+  - [x] Intestazione semantica `<h2>Stato</h2>`.
+  - [x] Elenco `<ul>` con indicatore per l'ordine e per il pagamento:
+    - Stato ordine: etichetta `<span class="etichetta" data-tipo="positivo">` per ordini conclusi o ricevuti, oppure `<span class="etichetta" data-tipo="negativo">` per ordini annullati.
+    - Stato pagamento: etichetta `<span class="etichetta" data-tipo="positivo">` per pagamenti effettuati (`pagato`), oppure `<span class="etichetta" data-tipo="attenzione">` per pagamenti rimborsati o in attesa.
+  - [x] **Segnalazione Motivo di Annullamento**:
+    - Nel caso di ordine annullato (es. Ordine 4), visualizzazione automatica del riquadro informativo `<p class="avviso" role="status" data-tipo="attenzione">` recante il motivo registrato a database (es. *"Motivo dell'annullamento: Indirizzo non raggiungibile dalla societa di consegna."*).
+
+---
+
+### 16.3 Sezione Consegna: Ritiro in Sede o Domicilio
+
+- [x] **Dettagli per Ordini con Ritiro in Sede (`modalita="ritiro"`)**:
+  - [x] Intestazione semantica `<h2>Consegna</h2>`.
+  - [x] Paragrafo descrittivo con indicazione di citta, indirizzo fisico della sede di ritiro estratto da DB e data/ora prevista del ritiro (es. *"Ritiro in sede a Padova, Via San Fermo 34, il 20/08/2026 12:30."*).
+
+- [x] **Dettagli per Ordini con Spedizione a Domicilio (`modalita="domicilio"`)**:
+  - [x] Paragrafo informativo: *"Consegna a domicilio, presa in carico dopo il pagamento."*.
+  - [x] Elemento semantico `<address>` contenente tutti i dati di recapito congelati al momento dell'ordine:
+    - Via e numero civico (es. *"Via Roma 12"*).
+    - CAP, Citta e Provincia (es. *"35100 Padova (PD)"*).
+    - Paese (es. *"Italia"*).
+    - Recapito telefonico di reperibilita (es. *"Telefono 3401234567"*).
+
+---
+
+### 16.4 Sezione Prodotti e Tabella di Riepilogo
+
+- [x] **Tabella Dettaglio Comanda (`<table>`)**:
+  - [x] Intestazione semantica `<h2>Prodotti</h2>`.
+  - [x] Didascalia accessibile esplicita: `<caption>Righe dell'ordine SB-YYYY-XXXX</caption>`.
+  - [x] Intestazioni di colonna `<th>` con `scope="col"`: *Prodotto*, *Quantita*, *Prezzo*, *Totale*.
+  - [x] Righe di dettaglio nel `<tbody>`:
+    - Intestazione riga `<th>` con `scope="row"` contenente il nome del prodotto.
+    - Cella quantita (numero intero).
+    - Cella prezzo unitario formattato in euro.
+    - Cella totale di riga calcolato (`quantita * prezzo_centesimi`) formattato in euro.
+  - [x] Piede tabella `<tfoot>`:
+    - Cella intestazione `<th scope="row" colspan="3">Totale dell'ordine</th>`.
+    - Cella con importo complessivo dell'ordine corrispondente a `totale_centesimi` su MariaDB (es. *"17,90 euro"*).
+
+---
+
+### 16.5 Foglio di Stile per la Stampa (`styles/stampa.css`)
+
+- [x] **Inclusione e Regole di Stampa**:
+  - [x] Foglio di stile collegato con `<link rel="stylesheet" media="print" href="styles/stampa.css">`.
+  - [x] Regole di azzeramento elementi interattivi su supporto cartaceo verificate via emulazione media:
+    - Le barre di navigazione (`body > header nav`, footer nav) vengono nascoste (`display: none`).
+    - I pulsanti e i collegamenti di salto (`.salta`, `.torna-su`, `button`, `.pulsante`) vengono nascosti.
+    - Sfondo pagina forzato a bianco, testo in nero ad alto contrasto per risparmio inchiostro.
+    - Protezione rottura schede su piu pagine (`break-inside: avoid`).
+
+---
+
+### 16.6 Sicurezza Backend, Isolamento Proprietario (IDOR) e Controllo Ruoli
+
+- [x] **Accesso Ospite Non Autenticato**:
+  - [x] Richiesta a `/ricevuta?ordine=1` da parte di utente non autenticato respinta con `HTTP 401 Unauthorized`.
+
+- [x] **Parametri Mancanti o Non Validi**:
+  - [x] Accesso a `/ricevuta` senza parametro `?ordine` intercettato con `HTTP 404 Not Found`.
+  - [x] Accesso con parametro non numerico `?ordine=invalido` produce `HTTP 404 Not Found`.
+  - [x] Accesso con ID ordine inesistente a DB (`?ordine=999999`) produce `HTTP 404 Not Found`.
+
+- [x] **Difesa IDOR (Insecure Direct Object Reference) e Isolamento Proprietario**:
+  - [x] L'utente cliente autenticato `user` (id 3) che tenta di accedere alla ricevuta di un altro cliente (es. Ordine 3 appartenente all'utente 7) viene bloccato con `HTTP 404 Not Found` (la query SQL filtra rigidamente su `o.utente_id = :utente`, non rivelando l'esistenza dell'ordine ad altri utenti).
+
+- [x] **Restrizione per Ruoli Amministrativi e Manageriali**:
+  - [x] L'accesso a `/ricevuta` e riservato esclusivamente al ruolo `cliente`: tentativi di accesso da parte di utenti con ruolo `manager` o `admin` vengono respinti con codice `HTTP 403 Forbidden` (i ruoli di gestione consultano gli ordini tramite l'apposito pannello `/controllo-ordine`).
+
+---
+
+### 16.7 Responsive Mobile e Report di Collaudo E2E
+
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Tabella prodotti leggibile e perfettamente contenuta nello schermo dello smartphone.
+  - [x] Riquadri di stato e recapito formattati in modo lineare ed ergonomico.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_user_ricevuta.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE, CONTROLLO IDOR E 404 ===
+========================================================
+  [OK] Backend Permessi: accesso ospite a /ricevuta respinto con HTTP 401 Unauthorized
+  [OK] Accesso senza parametro ?ordine produce HTTP 404 Not Found
+  [OK] Accesso con parametro ?ordine=invalido produce HTTP 404 Not Found
+  [OK] Accesso con ID ordine inesistente (999999) produce HTTP 404 Not Found
+  [OK] Difesa IDOR: utente 'user' che richiede ordine di un altro utente riceve HTTP 404 Not Found
+  [OK] Permessi di ruolo: manager che accede a /ricevuta viene bloccato con HTTP 403 Forbidden
+  [OK] Permessi di ruolo: admin che accede a /ricevuta viene bloccato con HTTP 403 Forbidden
+
+========================================================
+=== TEST RICEVUTA ORDINE CON RITIRO IN SEDE (SB-2026-0001) ===
+========================================================
+  [OK] Accesso a ricevuta del proprio ordine 1: HTTP 200 OK
+  [OK] Titolo dinamico corretto: 'Ricevuta dell'ordine - Smash Burger'
+  [OK] Breadcrumb semantico a 3 livelli: ['Home', 'Area personale', 'Ricevuta SB-2026-0001']
+  [OK] Breadcrumb: elemento corrente non cliccabile 'Ricevuta SB-2026-0001'
+  [OK] Intestazione H1 corretta: 'Ricevuta SB-2026-0001'
+  [OK] Paragrafo data e cliente intestatario da DB: 'Ordine del 20/08/2026 11:52, intestato a Anna Rossi.'
+  [OK] Sezione 'Stato' presente
+  [OK] Badge stato ordine: 'concluso'
+  [OK] Badge stato 'concluso' ha data-tipo='positivo'
+  [OK] Badge stato pagamento: 'pagato'
+  [OK] Badge stato 'pagato' ha data-tipo='positivo'
+  [OK] Sezione 'Consegna' presente
+  [OK] Dettagli sede di ritiro da DB: 'Ritiro in sede a Padova, Via San Fermo 34, il 20/08/2026 12:30.'
+  [OK] Sezione 'Prodotti' presente
+  [OK] Caption tabella accessibile: 'Righe dell'ordine SB-2026-0001'
+  [OK] Intestazioni colonne tabella: ['Prodotto', 'Quantita', 'Prezzo', 'Totale']
+  [OK] Numero righe prodotto trovate: 4
+  [OK] Riga 1: nome prodotto marcato th[scope='row'] = 'Cheeseburger'
+  [OK] Riga 2: nome prodotto marcato th[scope='row'] = 'Patate fritte'
+  [OK] Riga 3: nome prodotto marcato th[scope='row'] = 'Acqua naturale'
+  [OK] Riga 4: nome prodotto marcato th[scope='row'] = 'Cono gelato'
+  [OK] Intestazione riga totale tfoot: 'Totale dell'ordine'
+  [OK] Totale ordine coerente col DB (17,90 euro): '17,90 euro'
+  [OK] Link 'Torna ai tuoi ordini' presente verso area-personale
+  [OK] Click su link indietro torna correttamente ad area-personale: http://localhost:8080/area-personale
+
+========================================================
+=== TEST RICEVUTA ORDINE A DOMICILIO (SB-2026-0002) ===
+========================================================
+  [OK] H1 ricevuta domicilio: 'Ricevuta SB-2026-0002'
+  [OK] Avviso presa in carico domicilio presente: 'Consegna a domicilio, presa in carico dopo il pagamento.'
+  [OK] Elemento semantico <address> presente per il recapito a domicilio
+  [OK] Indirizzo presente in address: 'Via Roma 12 35100 Padova (PD) Italia Telefono 3401234567'
+  [OK] CAP, citta e provincia presenti in address
+  [OK] Paese presente in address
+  [OK] Telefono di contatto presente in address
+
+========================================================
+=== TEST RICEVUTA ORDINE ANNULLATO/RIMBORSATO (SB-2026-0004) ===
+========================================================
+  [OK] Badge stato ordine annullato: 'annullato'
+  [OK] Stato 'annullato' ha data-tipo='negativo'
+  [OK] Badge pagamento rimborsato: 'rimborsato'
+  [OK] Pagamento 'rimborsato' ha data-tipo='attenzione'
+  [OK] Box avviso per motivo annullamento presente con role='status'
+  [OK] Motivo dell'annullamento visualizzato correttamente: 'Motivo dell'annullamento: Indirizzo non raggiungibile dalla societa di consegna.'
+
+========================================================
+=== TEST FOGLIO DI STILE STAMPA (stampa.css) ===
+========================================================
+  [OK] Link a styles/stampa.css con media='print' presente in head
+  [OK] In modalita stampa le barre di navigazione dell'header sono nascoste (display: none)
+  [OK] In modalita stampa il link di salto e nascosto (display: none)
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Caricamento mobile /ricevuta: HTTP 200
+  [OK] Responsive Mobile (375x667): nessun overflow orizzontale (scrollWidth=375 <= clientWidth=375)
+
+=== RIEPILOGO TEST COMPLETO RICEVUTA ===
+Totale controlli eseguiti: 50
+Superati: 50
+Falliti: 0
+```
+
+---
+
+## 17. Prenotazione Sala Eventi (`prenota.php`)
+
+La pagina di prenotazione della sala eventi permette ai clienti registrati e autenticati di inoltrare una richiesta di riservazione della sala presso uno dei locali della catena che dispongono di tale servizio. Il processo si articola in due passi progressivi sulla medesima pagina:
+1. **Passo 1 (Selezione Sede e Data)**: l'utente seleziona il locale desiderato e il giorno previsto (filtrando le sedi in base all'effettiva disponibilita della sala a database). L'invio avviene con metodo `GET` idempotente, senza mutazioni di stato, funzionando perfettamente sia con JavaScript attivo sia senza JS.
+2. **Passo 2 (Consultazione Occupazione, Scelta Orario e Dettagli)**: visualizza la tabella degli intervalli di occupazione della sala per il giorno scelto e permette di selezionare l'orario di inizio (tra le fasce ancora libere), la durata desiderata, il numero di invitati (da 1 a 80) ed eventuali note per il locale (massimo 120 caratteri). L'invio in `POST` registra la richiesta con stato `"in attesa"` e notifica il cliente mediante messaggio flash in Area Personale.
+
+### 17.1 Header, Breadcrumb e Navigazione Superiore
+
+- [x] **Salto al contenuto e Accessibilita**:
+  - [x] Link `<a class="salta" href="#contenuto">Vai al contenuto</a>` presente e funzionante.
+  - [x] Menu principale e menu account per utente loggato con ruolo cliente.
+
+- [x] **Percorso di Navigazione Semantico (Breadcrumb a 3 Livelli)**:
+  - [x] Elemento `<nav aria-label="Percorso">` con lista ordinata `<ol>`.
+  - [x] Livello 1: `<a href="./">Home</a>` (click atterra sulla home).
+  - [x] Livello 2: `<a href="sedi">Sedi</a>` (click atterra sull'elenco delle sedi).
+  - [x] Livello 3: `<span aria-current="page">Prenota la sala</span>` (voce corrente non cliccabile).
+
+- [x] **Intestazione Principale e Informazioni Generali**:
+  - [x] Titolo dinamico del documento: `"Prenota la sala eventi - Smash Burger"`.
+  - [x] Intestazione principale `<h1>`: `"Prenota la sala eventi"`.
+  - [x] Paragrafo informativo sulle durate prenotabili (da 1 ora e 30 minuti a 3 ore) e sul flusso di conferma da parte della sede.
+  - [x] Collegamenti di navigazione in calce alla pagina:
+    - `<a class="collegamento-indietro" href="sedi"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna alle sedi</span></a>`
+    - `<a href="area-personale">Le tue prenotazioni</a>` (collegamento rapido per verificare lo stato delle richieste inviate).
+
+---
+
+### 17.2 Passo 1: Modulo Selezione Sede e Giorno (`form[method="get"]`)
+
+- [x] **Struttura del Modulo GET**:
+  - [x] Elemento `<form method="get" action="prenota">` racchiuso in `<fieldset>` con `<legend>Sede e giorno</legend>`.
+  - [x] **Filtro Sedi Attive con Sala Disponibile**:
+    - Menu a tendina `<select id="sede" name="sede" required="required">`.
+    - Opzioni caricate dinamicamente da MariaDB: sono presenti solo i locali con `sala_eventi_disponibile = 1` (Padova, Treviso, Vicenza).
+    - La sede di Udine (`sala_eventi_disponibile = 0`) e correttamente esclusa dalle opzioni selezionabili.
+  - [x] **Campo Selezione Data**:
+    - Campo `<input type="date" id="data" name="data" required="required">`.
+    - Attributo HTML5 `min` impostato alla data odierna (`date('Y-m-d')`).
+    - Attributo HTML5 `max` impostato al limite massimo consentito (+90 giorni da oggi, corrispondente a `giorni_prenotabili()`).
+  - [x] **Pulsante d'Invio GET**:
+    - `<button type="submit">Vedi gli orari liberi</button>`: carica il Passo 2 aggiornando i parametri in querystring (`?sede=...&data=...`).
+
+- [x] **Gestione Casi Particolari ed Errori di Selezione Sede**:
+  - [x] Richiesta con slug sede inesistente (es. `?sede=non-esiste`): gestito con codice `HTTP 404 Not Found`.
+  - [x] Richiesta con sede priva di sala eventi (es. `?sede=udine`): genera il messaggio di stato dedicato `<p class="avviso" role="status" data-tipo="attenzione"><strong>Attenzione:</strong> la sala di Udine non accetta prenotazioni in questo periodo.</p>`.
+
+---
+
+### 17.3 Passo 2: Visualizzazione Orari e Tabella Occupazione Sala
+
+- [x] **Intestazione di Sezione Dinamica**:
+  - [x] Titolo semantico `<h2>Orari del [data_breve] a [Citta]</h2>` (es. *"Orari del 12/09/2026 a Padova"*).
+
+- [x] **Tabella Occupazione della Sala (`views/prenotazione/occupazione.php`)**:
+  - [x] Didascalia accessibile esplicita: `<caption>Come e occupata la sala di [Citta] il [data_breve]</caption>`.
+  - [x] Colonne della tabella con `scope="col"`: *Dalle*, *Alle*, *Stato*.
+  - [x] Righe di intervallo orario con `th[scope="row"]`:
+    - Intervallo occupato da prenotazione confermata (es. 19:00 - 22:00 a Padova): contrassegnato con badge `<span class="etichetta" data-tipo="negativo">occupata</span>`.
+    - Intervalli liberi della giornata: contrassegnati con badge `<span class="etichetta" data-tipo="positivo">libera</span>`.
+
+- [x] **Selezione Fascia Oraria di Inizio (`<fieldset><legend>Scegli l'orario di inizio</legend>`)**:
+  - [x] Elenco a scelta singola `<ul class="scelte">` con controlli radio (`input[type="radio"][name="fascia"]`).
+  - [x] **Fasce Occupate**: se l'orario e occupato da un'altra prenotazione (o non consente la durata minima prima del prossimo evento), il controllo radio presenta l'attributo `disabled="disabled"` e l'etichetta visiva reca il badge `<span class="etichetta" data-tipo="negativo">non disponibile</span>`.
+  - [x] **Fasce Libere**: controllo radio abilitato, con indicazione testuale accessibile per screen reader `<span class="solo-lettori">disponibile fino a [minuti] minuti</span>`.
+
+---
+
+### 17.4 Passo 2: Dettagli della Prenotazione, Validazione e Sicurezza
+
+- [x] **Modulo di Inoltro Richiesta (`views/prenotazione/prenota-dettagli.php`)**:
+  - [x] Attributi modulo: `method="post"`, `action="prenota"`.
+  - [x] Token di protezione CSRF: `<input type="hidden" name="token_csrf" value="...">`.
+  - [x] Campi di contesto nascosti: `<input type="hidden" name="sede" value="...">` e `<input type="hidden" name="data" value="...">`.
+  - [x] **Campo Durata**:
+    - Menu a tendina `<select id="durata" name="durata">` con le opzioni calcolate da `durate_prenotabili()` (*1 ora e 30 minuti*, *2 ore*, *2 ore e 30 minuti*, *3 ore*).
+  - [x] **Campo Numero Persone**:
+    - Input numerico `<input type="number" id="numero_persone" name="numero_persone" required="required" min="1" max="80">`.
+  - [x] **Campo Note per la Sede**:
+    - Area di testo `<textarea id="note" name="note" rows="3" maxlength="120" aria-describedby="aiuto-note">`.
+    - Testo di aiuto accessibile: `<small id="aiuto-note">Al massimo 120 caratteri: la sede la legge nell'elenco delle prenotazioni.</small>`.
+  - [x] **Pulsante d'Invio Finale**:
+    - `<button type="submit">Invia la richiesta</button>`.
+
+- [x] **Validazione Backend ed Errori di Compilazione Accessibili**:
+  - [x] Invio con dati incongrui (es. persone inferiori a 1 o superiori a 80):
+    - Generazione in cima alla pagina del box riepilogo `<section class="avviso" role="alert" data-tipo="errore"><h2>Controlla questi campi</h2><ul>...</ul></section>`.
+    - Messaggio puntuale: *"Indica quante persone siete, da 1 a 80."*.
+    - Attributo semantico `data-stato="errore"` applicato al campo difforme.
+  - [x] **Sicurezza CSRF**:
+    - Richiesta POST priva di token CSRF bloccata con codice `HTTP 403 Forbidden`.
+    - Richiesta POST con token CSRF manomesso o non valido bloccata con codice `HTTP 403 Forbidden`.
+
+---
+
+### 17.5 Esecuzione Transazionale Reale a Database (MariaDB)
+
+- [x] **Creazione Effettiva di una Prenotazione a Sistema**:
+  - [x] Compilazione ed invio di una richiesta valida da parte dell'utente `user` (id 3) per Padova in data futura (es. 25/09/2026 dalle 14:00 alle 16:00 per 12 persone con nota specifica).
+  - [x] Esecuzione del pattern POST-Redirect-GET verso `/area-personale`.
+  - [x] Ricezione del messaggio flash di conferma: *"Fatto: Prenotazione inviata: la sede la confermera a breve."*.
+  - [x] **Verifica su MariaDB nella tabella `prenotazioni`**:
+    - Nuovo record inserito con `sede_id = 1`, `utente_id = 3`, `data = '2026-09-25'`, `ora_inizio = '14:00:00'`, `ora_fine = '16:00:00'`, `numero_persone = 12`, `stato = 'in attesa'`.
+  - [x] **Verifica Visibilita in Area Personale**:
+    - La prenotazione compare immediatamente al primo posto nella tabella *"Le tue prenotazioni"* dell'Area Personale con tutti i dati conformi.
+  - [x] **Ripristino Database**: cancellazione automatica del record di test inserito al termine del collaudo.
+
+---
+
+### 17.6 Controlli di Ruolo e Protezione Accessi
+
+- [x] **Controllo Permessi**:
+  - [x] Utente ospite non autenticato che richiede `/prenota`: respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Utente con ruolo `manager`: respinto con codice `HTTP 403 Forbidden` (funzionalita riservata esclusivamente ai clienti; i manager gestiscono le sale tramite il pannello di controllo).
+  - [x] Utente con ruolo `admin`: respinto con codice `HTTP 403 Forbidden` (funzionalita riservata esclusivamente ai clienti).
+
+---
+
+### 17.7 Responsive Mobile e Report di Collaudo E2E
+
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] Passo 1 (scelta sede e data): `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Passo 2 (tabella occupazione, orari e modulo dettagli): `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Tabella occupazione e controlli radio perfettamente fruibili e touch-friendly.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_user_prenota.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE E PERMESSI RUOLI ===
+========================================================
+  [OK] Backend Permessi: accesso ospite a /prenota respinto con HTTP 401 Unauthorized
+  [OK] Backend Permessi: accesso manager a /prenota respinto con HTTP 403 Forbidden
+  [OK] Backend Permessi: accesso admin a /prenota respinto con HTTP 403 Forbidden
+  [OK] Backend Permessi: accesso cliente a /prenota riuscito con HTTP 200 OK
+
+========================================================
+=== TEST STRUTTURA E PASSO 1: SEDE E DATA ===
+========================================================
+  [OK] Titolo dinamico corretto: 'Prenota la sala eventi - Smash Burger'
+  [OK] Breadcrumb semantico a 3 livelli: ['Home', 'Sedi', 'Prenota la sala']
+  [OK] Breadcrumb: elemento corrente non cliccabile 'Prenota la sala'
+  [OK] Intestazione H1 corretta: 'Prenota la sala eventi'
+  [OK] Form Passo 1 presente con method='get'
+  [OK] Select sede presente
+  [OK] Sedi con sala disponibili presenti nel select: ['Scegli la sede', 'Padova', 'Treviso', 'Vicenza']
+  [OK] Udine (sala non disponibile) correttamente esclusa dal select
+  [OK] Sede inesistente produce HTTP 404 Not Found
+  [OK] Testo avviso: 'Attenzione: la sala di Udine non accetta prenotazioni in questo periodo.'
+  [OK] Input data ha type='date'
+  [OK] Attributo min data impostato: '2026-09-05'
+  [OK] Attributo max data impostato: '2026-12-04'
+  [OK] Link 'Torna alle sedi' presente
+  [OK] Link 'Le tue prenotazioni' presente verso area-personale
+
+========================================================
+=== TEST PASSO 2: ORARI E TABELLA OCCUPAZIONE (PADOVA 2026-09-12) ===
+========================================================
+  [OK] H2 orari corretto: 'Orari del 12/09/2026 a Padova'
+  [OK] Tabella occupazione sala presente
+  [OK] Caption tabella accessibile: 'Come e occupata la sala di Padova il 12/09/2026'
+  [OK] Colonne tabella occupazione: ['Dalle', 'Alle', 'Stato']
+  [OK] Intervallo occupato (19:00 - 22:00) segnalato con etichetta 'occupata' (negativo)
+  [OK] Intervalli liberi segnalati con etichetta 'libera' (positivo)
+  [OK] Form di prenotazione POST presente al Passo 2
+  [OK] Token CSRF presente nel form
+  [OK] Campo nascosto sede='padova' presente
+  [OK] Campo nascosto data='2026-09-12' presente
+  [OK] Opzioni orario di inizio presenti: 20
+  [OK] Fascia 19:00 disabilitata poiche' occupata
+  [OK] Etichetta 'non disponibile' presente per la fascia 19:00
+  [OK] Fascia libera abilitata: value='11:30:00'
+
+========================================================
+=== TEST DETTAGLI, VALIDAZIONE ED ERRORI ACCESSIBILI ===
+========================================================
+  [OK] Select durata presente
+  [OK] Opzioni di durata proposte: ['1 ora e 30 minuti', '2 ore', '2 ore e 30 minuti', '3 ore']
+  [OK] Input numero persone presente
+  [OK] Input persone vincolato a min 1 max 80
+  [OK] Textarea note presente
+  [OK] Textarea note con maxlength='120'
+  [OK] Textarea note ha aria-describedby='aiuto-note'
+  [OK] Riepilogo errori accessibile (role='alert') mostrato in cima
+  [OK] Messaggio errore persone mostrato nel riepilogo
+  [OK] Input numero persone evidenziato con data-stato='errore'
+  [OK] Backend blocca prenotazione senza token CSRF con HTTP 403
+  [OK] Backend blocca prenotazione con token CSRF non valido con HTTP 403
+
+========================================================
+=== TEST CREAZIONE REALE PRENOTAZIONE SU MARIADB ===
+========================================================
+  [OK] POST-Redirect-GET conduce ad Area personale: http://localhost:8080/area-personale
+  [OK] Flash message di successo: 'Fatto: Prenotazione inviata: la sede la confermera a breve.'
+  [OK] MariaDB: record prenotazione trovato nella tabella prenotazioni
+  [OK] MariaDB: campi prenotazione corretti: '5	1	3	2026-09-25	14:00:00	16:00:00	12	Festa di compleanno aziendale SmashBurger	in attesa'
+  [OK] Tabella prenotazioni visibile in Area Personale
+  [OK] Nuova prenotazione presente in cima alla tabella: 'Padova 25/09/2026 14:00 - 16:00 12 in attesa'
+  [OK] MariaDB: cancellata prenotazione di collaudo id=5
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Mobile: Passo 1 caricato con HTTP 200
+  [OK] Mobile Passo 1: nessun overflow orizzontale (375 <= 375)
+  [OK] Mobile: Passo 2 caricato con HTTP 200
+  [OK] Mobile Passo 2: nessun overflow orizzontale (375 <= 375)
+
+=== RIEPILOGO TEST COMPLETO PRENOTA ===
+Totale controlli eseguiti: 56
+Superati: 56
+Falliti: 0
+```
+
+---
+
+## 18. Pannello: Ordini (`controllo.php`)
+
+La pagina di gestione degli ordini costituisce la schermata operativa principale del pannello di controllo riservata ai ruoli con privilegi amministrativi (`manager` e `amministratore`). Offre la visualizzazione sintetica dell'incasso degli ultimi 30 giorni con grafico ad istogrammi SVG accessibile, il filtraggio per sede (solo per l'amministratore) e per stato di avanzamento, e la gestione rapida inline dello stato della comanda e dello stato del pagamento mediante menu a tendina contestuali a salvataggio immediato.
+
+### 18.1 Header, Breadcrumb e Navigazione del Pannello
+
+- [x] **Salto al contenuto e Accessibilita**:
+  - [x] Link `<a class="salta" href="#contenuto">Vai al contenuto</a>` presente e focalizzabile.
+  - [x] Menu principale e menu account coerenti con lo stato di login amministrativo/gestionale.
+
+- [x] **Percorso di Navigazione Semantico (Breadcrumb a 2 Livelli)**:
+  - [x] Elemento `<nav aria-label="Percorso">` con lista ordinata `<ol>`.
+  - [x] Livello 1: `<a href="./">Home</a>` (click atterra sulla home).
+  - [x] Livello 2: `<span aria-current="page">Ordini</span>` (voce corrente non cliccabile).
+
+- [x] **Intestazione Principale Differenziata per Ruolo**:
+  - [x] Titolo dinamico del documento: `"Ordini - Pannello di controllo"`.
+  - [x] **Ruolo Manager**: `<h1>Ordini di [Citta]</h1>` (es. *"Ordini di Padova"* per il gestore di Padova).
+  - [x] **Ruolo Amministratore**: `<h1>Ordini</h1>` (visione globale e centralizzata).
+
+- [x] **Barra di Navigazione Interna del Pannello (`views/controllo/navigazione.php`)**:
+  - [x] Elemento semantico `<nav class="filtri" aria-label="Sezioni del pannello">` con lista `<ul>`.
+  - [x] **Viste Manager**: include *Ordini* (con `aria-current="page"`), *Prodotti*, *Prenotazioni* e la voce esclusiva `<a href="controllo-sede">La tua sede</a>`. Le sezioni non accessibili al manager (*Categorie*, *Sedi*, *Utenti*) risultano rigorosamente escluse dal markup.
+  - [x] **Viste Amministratore**: include tutte le sezioni di gestione aziendale (*Ordini*, *Prodotti*, *Categorie*, *Sedi*, *Prenotazioni*, *Messaggi*, *Utenti*). La voce "La tua sede" non e presente.
+
+---
+
+### 18.2 Sezione Incasso con Grafico Accessibile (`views/controllo/incasso.php`)
+
+- [x] **Metriche Finanziarie e Riquadro Informativo (`<section class="incasso">`)**:
+  - [x] Intestazione H2 semantica: `"Incasso degli ultimi 30 giorni"`.
+  - [x] Totale incassato nel periodo formattato in euro (`<p class="totale">`): calcolato dinamicamente a database escludendo gli ordini annullati (la cui merce e stata ripristinata a magazzino).
+  - [x] Didascalia descrittiva: `<p class="didascalia-grafico">Incasso giornaliero, importi in euro.</p>`.
+
+- [x] **Grafico Temporale SVG Accessibile**:
+  - [x] Contenitore ad alta accessibilita: `<div class="contenitore-grafico" role="region" tabindex="0" aria-label="Grafico dell'incasso giornaliero; scorri orizzontalmente per vedere tutte le date">`.
+  - [x] Grafico vettoriale `<svg class="grafico-incasso">` generato lato server con assi coordinati, etichette temporali delle date e barre percentuali dell'incasso.
+
+---
+
+### 18.3 Modulo Filtri di Ricerca (`form[method="get"]`)
+
+- [x] **Struttura dei Filtri**:
+  - [x] Modulo `<form method="get" action="controllo">` con raggruppamento `<fieldset><legend>Filtri</legend>`.
+  - [x] **Filtro Sede (Esclusivo per Amministratore)**:
+    - Menu `<select id="sede" name="sede">`: visualizzato solo se l'utente e amministratore (il manager e vincolato per definizione alla propria sede).
+    - Opzioni: *"Tutte le sedi"*, *"Padova"*, *"Treviso"*, *"Vicenza"*, *"Udine"*.
+    - Selezione di una sede (es. Treviso, ID 2) applica il parametro querystring `?sede=2` e filtra le righe della tabella.
+  - [x] **Filtro Stato (Condiviso)**:
+    - Menu `<select id="stato" name="stato">` con opzione *"Tutti gli stati"* e gli stati ammessi (*ricevuto*, *in preparazione*, *pronto*, *in consegna*, *concluso*, *annullato*).
+  - [x] **Pulsante d'Invio**: `<button type="submit">Filtra</button>`.
+
+---
+
+### 18.4 Tabella Operativa degli Ordini e Modifica Stato Inline
+
+- [x] **Struttura della Tabella (`<table>`)**:
+  - [x] Didascalia accessibile esplicita: `<caption>Ordini registrati</caption>`.
+  - [x] Intestazioni colonna `<th>` con `scope="col"`: *Numero*, *Cliente*, *Sede*, *Modalita*, *Totale*, *Stato e pagamento*, *Dettaglio*.
+  - [x] Righe ordine `<tr>` con attributo dati `data-ordine="ID"` e codice ordine univoco in `<th scope="row">` (es. `SB-2026-0001`).
+
+- [x] **Modifica Stato e Pagamento Inline (per Ordini Non Annullati)**:
+  - [x] Modulo integrato nella cella: `<form method="post" action="controllo" data-modulo="ordine" data-invio="automatico">`.
+  - [x] Token CSRF presente nel form: `<input type="hidden" name="token_csrf" value="...">`.
+  - [x] Identificativo dell'ordine nascosto: `<input type="hidden" name="ordine_id" value="ID">`.
+  - [x] Menu selezione stato dell'ordine con etichetta per screen reader associata (`<label class="solo-lettori" for="stato-ID">`).
+  - [x] Menu selezione stato del pagamento con etichetta per screen reader associata (`<label class="solo-lettori" for="pagamento-ID">`).
+  - [x] **Aggiornamento a Database**: la modifica del menu aggiorna la colonna corrispondente su MariaDB e produce il messaggio flash *"Fatto: Ordine aggiornato."*.
+
+- [x] **Visualizzazione Ordini Annullati**:
+  - [x] I moduli di modifica vengono disabilitati: compaiono i badge statici `<span class="etichetta" data-tipo="negativo">annullato</span>` e l'etichetta dello stato pagamento.
+
+- [x] **Collegamento al Dettaglio Completo**:
+  - [x] Link `<a href="controllo-ordine?ordine=ID">Apri <span class="solo-lettori">il dettaglio di SB-YYYY-XXXX</span></a>` che consente di passare alla scheda approfondita dell'ordine.
+
+---
+
+### 18.5 Sicurezza Backend, Isolamento Multi-Tenant e Controllo Ruoli
+
+- [x] **Controllo Permessi**:
+  - [x] Accesso utente ospite non autenticato respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Accesso utente cliente (`user`) respinto con codice `HTTP 403 Forbidden`.
+  - [x] Accesso consentito unicamente a `manager` e `amministratore`.
+
+- [x] **Isolamento Multi-Tenant per Sede (Manager)**:
+  - [x] Le query SQL per il manager includono rigidamente la clausola `WHERE sede_id = :sede`. Il manager visualizza unicamente gli ordini della propria filiale.
+  - [x] **Difesa contro Tentativi di Manomissione Cross-Sede**: se un manager tenta di inoltrare un aggiornamento POST su un ordine appartenente ad un'altra sede (es. il manager di Padova tenta di modificare l'ordine 6 di Treviso alterando `ordine_id`), la query `UPDATE` viene respinta dal backend con il messaggio d'errore dedicato *"Errore: L'ordine non esiste o non e di questa sede."* e il database MariaDB preserva inalterato lo stato dell'ordine.
+
+- [x] **Protezione CSRF**:
+  - [x] Richieste POST prive di token CSRF bloccate con codice `HTTP 403 Forbidden`.
+  - [x] Richieste POST con token manomesso bloccate con codice `HTTP 403 Forbidden`.
+
+---
+
+### 18.6 Responsive Mobile e Report di Collaudo E2E
+
+- [x] **Verifica Viewport Mobile (375x667px)**:
+  - [x] `clientWidth = 375px`, `scrollWidth = 375px`: zero overflow orizzontale.
+  - [x] Risoluzione del vincolo di posizionamento delle utilita per screen reader `.solo-lettori` con azzeramento dell'ingombro su schermi stretti.
+  - [x] Tabella e grafico a barre scorrano orizzontalmente all'interno del proprio perimetro senza provocare lo scorrimento della finestra.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_ordini.py`)
+
+```text
+========================================================
+=== TEST BACKEND: AUTORIZZAZIONE E CONTROLLO ACCESSI ===
+========================================================
+  [OK] Accesso ospite non autenticato respinto con HTTP 401 Unauthorized
+  [OK] Accesso cliente ('user') respinto con HTTP 403 Forbidden
+
+========================================================
+=== TEST VISTA MANAGER (SEDE PADOVA) ===
+========================================================
+  [OK] Accesso manager a /controllo: HTTP 200 OK
+  [OK] Titolo dinamico corretto: 'Ordini - Pannello di controllo'
+  [OK] Breadcrumb semantico a 2 livelli: ['Home', 'Ordini']
+  [OK] Breadcrumb: elemento corrente non cliccabile 'Ordini'
+  [OK] H1 contestualizzato con sede del manager: 'Ordini di Padova'
+  [OK] Navigazione 'Sezioni del pannello' presente
+  [OK] Link 'La tua sede' presente per il manager: ['Ordini', 'Prodotti', 'Prenotazioni', 'La tua sede']
+  [OK] Sezioni amministrative (Categorie, Utenti) correttamente nascoste al manager
+  [OK] Sezione incasso presente
+  [OK] H2 incasso: 'Incasso degli ultimi 30 giorni'
+  [OK] Importo totale incasso presente: '117,50 euro'
+  [OK] Contenitore grafico accessibile (role='region', tabindex='0') presente
+  [OK] Grafico SVG generato all'interno del contenitore
+  [OK] Form filtri presente
+  [OK] Select filtro stato presente
+  [OK] Select filtro sede ASSENTE per il manager (limitato alla propria sede)
+  [OK] Tabella ordini presente
+  [OK] Caption tabella ordini: 'Ordini registrati'
+  [OK] Colonne tabella: ['Numero', 'Cliente', 'Sede', 'Modalita', 'Totale', 'Stato e pagamento', 'Dettaglio']
+  [OK] Numero ordini visualizzati dal manager: 10
+  [OK] Isolamento ordini: visibile esclusivamente la sede: {'Padova'}
+  [OK] Ordine SB-2026-0006 di Treviso non visibile al manager di Padova
+
+========================================================
+=== TEST SICUREZZA MULTI-TENANT: TENTATIVO MUTAZIONE CROSS-SEDE ===
+========================================================
+  [OK] Backend blocca mutazione cross-sede con errore: 'Errore: L'ordine non esiste o non e di questa sede.'
+  [OK] MariaDB: stato ordine 6 inalterato ('ricevuto')
+
+========================================================
+=== TEST MUTAZIONE STATO ORDINE PROPRIA SEDE (MARIADB) ===
+========================================================
+  [OK] Flash message aggiornamento: 'Fatto: Ordine aggiornato.'
+  [OK] MariaDB: stato ordine 7 aggiornato a 'in preparazione': 'in preparazione pagato'
+  [OK] Ripristinato DB: stato ordine 7 reimpostato a 'ricevuto'
+  [OK] Backend blocca POST senza token CSRF con HTTP 403
+
+========================================================
+=== TEST VISTA AMMINISTRATORE ('admin') ===
+========================================================
+  [OK] Accesso admin a /controllo: HTTP 200 OK
+  [OK] H1 amministratore generale: 'Ordini'
+  [OK] Tutte le sezioni visibili ad admin: ['Ordini', 'Prodotti', 'Categorie', 'Sedi', 'Prenotazioni', 'Messaggi', 'Utenti']
+  [OK] Voce 'La tua sede' non presente per admin
+  [OK] Select filtro sede presente per admin
+  [OK] Select filtro stato presente per admin
+  [OK] Filtro sede Treviso applicato nell'URL: http://localhost:8080/controllo?sede=2&stato=
+  [OK] Ordini trovati per Treviso: 2
+  [OK] Ordine SB-2026-0006 di Treviso visibile dopo il filtro
+  [OK] Link 'Apri dettaglio' presente: controllo-ordine?ordine=6
+
+========================================================
+=== TEST FRONTEND, ACCESSIBILITA E MOBILE (375x667) ===
+========================================================
+  [OK] Mobile /controllo caricato con HTTP 200
+  [OK] Mobile /controllo: nessun overflow orizzontale (375 <= 375)
+
+=== RIEPILOGO TEST COMPLETO PANNELLO ORDINI ===
+Totale controlli eseguiti: 42
+Superati: 42
+Falliti: 0
+```
+
+
+
+
+
+
+
+
 
 
