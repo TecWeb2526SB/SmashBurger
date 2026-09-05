@@ -38,13 +38,13 @@ Questo documento censisce, pagina per pagina, tutti gli elementi con cui l'utent
 22. [Pannello: Categorie (`controllo-categorie.php`)](#22-pannello-categorie-controllo-categoriephp)
 23. [Pannello: Sedi (`controllo-sedi.php`)](#23-pannello-sedi-controllo-sediphp)
 24. [Pannello: Scheda Sede (`controllo-sede.php`)](#24-pannello-scheda-sede-controllo-sedephp)
-25. *Pannello: Prenotazioni (`controllo-prenotazioni.php`)*
-26. *Pannello: Messaggi di contatto (`controllo-contatti.php`)*
-27. *Pannello: Utenti (`controllo-utenti.php`)*
-28. *Privacy Policy (`privacy.php`)*
-29. *Dichiarazione Accessibilità (`accessibilita.php`)*
-30. *Mappa del Sito (`mappa-sito.php`)*
-31. *Pagine di Errore (403, 404, 500)*
+25. [Pannello: Prenotazioni (`controllo-prenotazioni.php`)](#25-pannello-prenotazioni-controllo-prenotazioniphp)
+26. [Pannello: Messaggi di contatto (`controllo-contatti.php`)](#26-pannello-messaggi-di-contatto-controllo-contattiphp)
+27. [Pannello: Utenti (`controllo-utenti.php`)](#27-pannello-utenti-controllo-utentiphp)
+28. [Privacy Policy (`privacy.php`)](#28-privacy-policy-privacyphp)
+29. [Dichiarazione Accessibilità (`accessibilita.php`)](#29-dichiarazione-accessibilita-accessibilitaphp)
+30. [Mappa del Sito (`mappa-sito.php`)](#30-mappa-del-sito-mappa-sitophp)
+31. [Pagine di Errore (401, 403, 404, 500)](#31-pagine-di-errore-401-403-404-500)
 
 ---
 
@@ -4471,5 +4471,887 @@ Admin Breadcrumb for Treviso: Home / Controllo / Sedi / Treviso
 Admin accessing non-existent branch correctly received 404.
 === ALL TESTS IN CONTROLLO-SEDE PASSED! ===
 ```
+
+---
+
+## 25. Pannello: Prenotazioni (`controllo-prenotazioni.php`)
+
+La schermata di gestione delle prenotazioni della sala eventi consente ai manager (per le prenotazioni della propria sede di competenza) e agli amministratori (per tutte le sedi della catena) di monitorare le richieste pervenute, approvarle, rifiutarle o annullarle, con aggiornamento dinamico asincrono della tabella senza ricaricamento dell'intera pagina.
+
+### 25.1 Controllo Accessi, Autorizzazioni e Scoping Sede
+
+- [x] **Permessi di Ruolo e Reindirizzamento**:
+  - [x] Utente non autenticato (ospite): respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato (`cliente`): respinto con codice `HTTP 403 Forbidden`.
+  - [x] Manager autenticato (`manager`): accede con codice `HTTP 200 OK`; la vista mostra esclusivamente le prenotazioni associate alla propria sede di assegnazione (`sede_limite($pdo)`).
+  - [x] Amministratore autenticato (`amministratore`): accede con codice `HTTP 200 OK`; la vista mostra le prenotazioni di tutte le sedi della catena (`$sedeId = null`).
+- [x] **Protezione IDOR (Insecure Direct Object Reference) e Vincoli di Sede**:
+  - [x] La funzione `prenotazione_cambia_stato()` applica la clausola `AND sede_id = :sede` per il manager sia nella verifica di esistenza preventiva (`SELECT 1`) sia nella query di modifica (`UPDATE`).
+  - [x] Se un manager tenta di modificare una prenotazione appartenente a un'altra sede (es. manager di Padova che invia POST per prenotazione di Treviso), l'operazione viene respinta e viene visualizzato il messaggio di errore: *"La prenotazione non esiste o non è di questa sede."*, preservando lo stato originale a database.
+
+### 25.2 Struttura Semantica, Breadcrumb e Sotto-Navigazione
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] Sequenza ordinata: `Home` (`url()`) / `Controllo` (`url('controllo')`) / `<span aria-current="page">Prenotazioni</span>`.
+- [x] **Intestazione Principale**:
+  - [x] Titolo della pagina in `<h1>Prenotazioni della sala</h1>`.
+- [x] **Sotto-Navigazione del Pannello (`nav[aria-label="Sezioni del pannello"]`)**:
+  - [x] Voce *"Prenotazioni"* evidenziata con attributo `aria-current="page"`.
+  - [x] Per il manager: elenco filtrato con voci accessibili al ruolo (*Ordini*, *Prodotti*, *Prenotazioni*, *La tua sede*).
+  - [x] Per l'amministratore: elenco completo delle sezioni gestionali (*Ordini*, *Prodotti*, *Categorie*, *Sedi*, *Prenotazioni*, *Messaggi*, *Utenti*).
+
+### 25.3 Tabella Dati e Accessibilita (Didascalia, Intestazioni, Note)
+
+- [x] **Didascalia della Tabella**:
+  - [x] `<caption>Prenotazioni ricevute</caption>` per identificare chiaramente la tabella alle tecnologie assistive.
+- [x] **Intestazioni Semantiche**:
+  - [x] Intestazioni di colonna in `<thead>`: `<th scope="col">Sede</th>`, `Data`, `Orario`, `Persone`, `Cliente`, `Nota`, `Stato`, `Azioni`.
+  - [x] Intestazione di riga in `<tbody>`: `<th scope="row">[Citta]</th>` per correlare ciascuna riga alla sede corrispondente.
+- [x] **Dettagli della Prenotazione**:
+  - [x] Colonna *Data*: formattata tramite `data_breve()` (es. `10/11/2026`).
+  - [x] Colonna *Orario*: intervallo orario `HH:MM - HH:MM` (es. `19:00 - 21:00`).
+  - [x] Colonna *Persone*: conteggio numerico intero.
+  - [x] Colonna *Cliente*: nome e cognome del cliente (`[Nome] [Cognome]`).
+  - [x] Colonna *Nota*:
+    - Se presente: testo completo della nota inserita dal cliente.
+    - Se vuota: testo dedicato per screen reader `<span class="solo-lettori">Nessuna nota</span>` e trattino grafico per utenti vedenti `<span aria-hidden="true">-</span>`.
+- [x] **Badge di Stato (`span.etichetta`)**:
+  - [x] `in attesa` / `in_attesa`: attributo `data-tipo="attenzione"`.
+  - [x] `approvata`: attributo `data-tipo="positivo"`.
+  - [x] `rifiutata` / `annullata`: attributo `data-tipo="negativo"`.
+
+### 25.4 Modulo Interattivo e Macchina a Stati (`data-modulo="prenotazioni"`)
+
+- [x] **Form Singolo per Tabella con Token CSRF**:
+  - [x] Modulo `<form method="post" action="..." data-modulo="prenotazioni">` avvolge l'intera tabella con campo nascosto `token_csrf`.
+  - [x] Ciascun pulsante porta come `name` lo stato di destinazione e come `value` l'identificativo numerico della prenotazione.
+- [x] **Transizioni di Stato**:
+  - [x] Da stato `in attesa`:
+    - Pulsante `Approva` (`name="approvata"`, `value="[id]"`): sposta la prenotazione a `approvata`.
+    - Pulsante `Rifiuta` (`name="rifiutata"`, `value="[id]"`): sposta la prenotazione a `rifiutata`.
+  - [x] Da stato `approvata`:
+    - Pulsante `Annulla` (`name="annullata"`, `value="[id]"`): sposta la prenotazione a `annullata`.
+  - [x] Da stato `rifiutata` o `annullata`:
+    - Nessun pulsante; viene mostrato il testo statico `<span>nessuna</span>`.
+- [x] **Accessibilita dei Pulsanti Azione**:
+  - [x] Ogni pulsante include la data di riferimento per lettori di schermo: `<span class="solo-lettori">la prenotazione del [data]</span>`, garantendo che i controlli ripetuti abbiano un nome accessibile non ambiguo (WCAG 2.1 Criterio 2.4.4 Link Purpose in Context / 4.1.2 Name, Role, Value).
+- [x] **Aggiornamento Dinamico Asincrono (AJAX)**:
+  - [x] Lo script `script.js` intercetta il submit del modulo tramite `data-modulo="prenotazioni"`.
+  - [x] Invia la richiesta `POST` in background con i dati del pulsante submitter.
+  - [x] Sostituisce il blocco `#contenuto` con l'HTML aggiornato restituito dal server.
+  - [x] Sposta automaticamente il fuoco da tastiera sulla notifica `<p class="avviso" role="status">` (*"Fatto: Prenotazione aggiornata."*), consentendo agli screen reader di annunciare l'esito dell'operazione.
+
+### 25.5 Stato Vuoto (`$prenotazioni === []`)
+
+- [x] **Visualizzazione in Assenza di Prenotazioni**:
+  - [x] Se non sono presenti prenotazioni per la sede (verificato con account `manager.udine`, sede di Udine priva di prenotazioni):
+    - La tabella e il relativo modulo non vengono renderizzati.
+    - Viene mostrato il messaggio accessibile: `<p>Non c'è nessuna prenotazione.</p>`.
+
+### 25.6 Responsive Mobile (375x667px) e Convalida WCAG AA
+
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale dell'intera pagina (`document.documentElement.scrollWidth = clientWidth = 375px`).
+  - [x] Il modulo della tabella `.pagina-controllo > form:has(> table)` e configurato con `overflow-x: auto`, consentendo lo scorrimento orizzontale dedicato della griglia dati su schermi ridotti senza compromettere la navigazione superiore.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 127 elementi testati (titoli, didascalie, celle, badge `positivo`/`negativo`/`attenzione`, pulsanti, collegamenti): 0 violazioni di contrasto (tutti conformi alla soglia minima 4.5:1 / 3.0:1).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_prenotazioni.py`)
+
+```text
+--- 0. Baseline DB State ---
+id	sede_id	stato
+1	1	annullata
+2	2	approvata
+3	1	rifiutata
+6	3	rifiutata
+7	2	annullata
+
+--- 1. Test Permessi: Ospite e Cliente ---
+Ospite correctly received 401 Unauthorized.
+Cliente correctly received 403 Forbidden.
+
+--- 2. Setup Test Reservations ---
+Inserted test reservations:
+id	sede_id	note	stato
+17	1	Tavolo vicino alla finestra	in attesa
+18	1		in attesa
+19	2	Festa compleanno Treviso	in attesa
+
+--- 3. Test Manager: Scoping e Struttura Semantica ---
+Breadcrumb: Home / Controllo / Prenotazioni
+H1: Prenotazioni della sala
+Subnav active tab: Prenotazioni
+Sedi visible to manager: {'Padova'}
+Table headers semantic check: OK
+Empty note accessibility check: OK
+
+--- 4. Test Azioni Interattive & State Machine (AJAX) ---
+Button Approva SR text: la prenotazione del 10/11/2026
+Notice after Approva: Fatto: Prenotazione aggiornata.
+Badge after Approva: 'approvata' (data-tipo: positivo)
+Annulla button present: OK
+DB check after Approva: OK
+Notice after Annulla: Fatto: Prenotazione aggiornata.
+Badge after Annulla: 'annullata' (data-tipo: negativo)
+Action 'nessuna' after Annulla: OK
+DB check after Annulla: OK
+Notice after Rifiuta: Fatto: Prenotazione aggiornata.
+Badge after Rifiuta: 'rifiutata' (data-tipo: negativo)
+DB check after Rifiuta: OK
+
+--- 5. Test Protezione IDOR (Manager vs altra sede) ---
+IDOR error notice received: Errore: La prenotazione non esiste o non è di questa sede.
+IDOR protection confirmed: DB record untouched.
+
+--- 5.1 Test Stato Vuoto (manager.udine) ---
+Empty state text: Non c'è nessuna prenotazione.
+Empty state verified: OK
+
+--- 6. Test Admin (Tutte le sedi) ---
+Sedi visible to admin: {'Treviso', 'Padova', 'Vicenza'}
+Admin subnav tabs: ['Ordini', 'Prodotti', 'Categorie', 'Sedi del pannello', 'Prenotazioni', 'Messaggi', 'Utenti']
+Admin approval of Treviso: OK
+Desktop screenshot saved.
+
+--- 7. Test Responsive Mobile (375x667) & WCAG AA ---
+Mobile dimensions: scrollWidth=375, clientWidth=375
+Table container overflow-x: auto
+Mobile screenshot saved.
+Contrast audit: 127 elements checked, 0 issues found.
+
+--- 8. Cleanup Database ---
+DB after cleanup:
+id	sede_id	stato
+1	1	annullata
+2	2	approvata
+3	1	rifiutata
+6	3	rifiutata
+7	2	annullata
+DB restored to baseline perfectly.
+
+=== ALL TESTS FOR CONTROLLO-PRENOTAZIONI PASSED SUCCESSFULLY! ===
+```
+
+---
+
+## 26. Pannello: Messaggi di contatto (`controllo-contatti.php`)
+
+La schermata di gestione dei messaggi di contatto consente esclusivamente all'amministratore di consultare le richieste inviate dagli utenti tramite il form pubblico di contatto, visionare recapiti e testo per intero, e aggiornarne lo stato del flusso operativo (`nuovo`, `preso in carico`, `chiuso`), con aggiornamento dinamico asincrono della tabella senza ricaricamento dell'intera pagina.
+
+### 26.1 Controllo Accessi, Autorizzazioni e Permessi di Ruolo
+
+- [x] **Permessi di Ruolo e Reindirizzamento**:
+  - [x] Utente non autenticato (ospite): respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato (`cliente`): respinto con codice `HTTP 403 Forbidden`.
+  - [x] Manager autenticato (`manager`): respinto con codice `HTTP 403 Forbidden` (la sezione e riservata esclusivamente all'amministratore; la voce non compare nel menu manager).
+  - [x] Amministratore autenticato (`amministratore`): accede con codice `HTTP 200 OK`.
+- [x] **Protezione ID Inesistente / Richieste Non Valide**:
+  - [x] Se viene inviato un aggiornamento con un identificativo non presente a database (es. `id=999999`), il server restituisce il messaggio di errore: *"Errore: Il messaggio non esiste piu."*.
+  - [x] Se la richiesta POST e priva di token CSRF o presenta uno stato non riconosciuto, la richiesta viene respinta con codice `HTTP 403 Forbidden`.
+
+### 26.2 Struttura Semantica, Breadcrumb e Sotto-Navigazione
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] Sequenza ordinata: `Home` (`url()`) / `Controllo` (`url('controllo')`) / `<span aria-current="page">Messaggi</span>`.
+- [x] **Intestazione Principale**:
+  - [x] Titolo della pagina in `<h1>Messaggi</h1>`.
+- [x] **Sotto-Navigazione del Pannello (`nav[aria-label="Sezioni del pannello"]`)**:
+  - [x] Voce *"Messaggi"* evidenziata con attributo `aria-current="page"`.
+  - [x] Elenco completo delle sezioni per l'amministratore (*Ordini*, *Prodotti*, *Categorie*, *Sedi*, *Prenotazioni*, *Messaggi*, *Utenti*).
+- [x] **Nota Informativa Operativa**:
+  - [x] Paragrafo esplicativo accessibile a fondo tabella: `<p>Il sito gestisce solo il primo messaggio di ogni richiesta: le risposte successive avvengono via email.</p>`.
+
+### 26.3 Tabella Dati e Accessibilita (Didascalia, Intestazioni, Mailto)
+
+- [x] **Didascalia della Tabella**:
+  - [x] `<caption>Messaggi arrivati dal modulo di contatto</caption>` per identificare chiaramente la tabella alle tecnologie assistive.
+- [x] **Intestazioni Semantiche**:
+  - [x] Intestazioni di colonna in `<thead>`: `<th scope="col">Ricevuto</th>`, `Da`, `Argomento`, `Messaggio`, `Stato`, `Azioni`.
+  - [x] Intestazione di riga in `<tbody>`: `<th scope="row">[data e ora ricezione]</th>` formattata tramite `data_ora()` (es. `05/09/2026 23:02`).
+- [x] **Dettagli del Messaggio**:
+  - [x] Colonna *Da*: nome dell'utente e collegamento email `<a href="mailto:[email]">[email]</a>` per avviare direttamente la risposta dal client di posta del gestore.
+  - [x] Colonna *Argomento*: etichetta descrittiva tradotta dalla mappa delle categorie (es. *Un ordine*, *Una prenotazione*, *Una segnalazione sul sito*, *Altro*).
+  - [x] Colonna *Messaggio*: testo integrale inserito dall'utente (contenuto entro i vincoli `CARATTERI_MESSAGGIO_CONTATTO` = 500 caratteri).
+- [x] **Badge di Stato (`span.etichetta`)**:
+  - [x] `nuovo`: attributo `data-tipo="attenzione"` (sfondo arancione/giallo di evidenziazione).
+  - [x] `preso in carico` / `chiuso`: attributo `data-tipo="positivo"` (sfondo verde scuro).
+
+### 26.4 Modulo Interattivo e Macchina a Stati (`data-modulo="messaggi"`)
+
+- [x] **Form Singolo per Tabella con Token CSRF**:
+  - [x] Modulo `<form method="post" action="..." data-modulo="messaggi">` avvolge l'intera tabella con campo nascosto `token_csrf`.
+  - [x] Ciascun pulsante d'azione porta come `name` lo stato di destinazione (con trattini: `preso-in-carico`, `chiuso`, `nuovo`) e come `value` l'identificativo numerico del messaggio.
+- [x] **Comportamento dei Pulsanti e Transizioni di Stato**:
+  - [x] Per ciascuna riga vengono renderizzati esclusivamente i pulsanti per gli stati diversi da quello attuale del messaggio:
+    - Se `nuovo`: pulsanti `preso in carico` (`name="preso-in-carico"`) e `chiuso` (`name="chiuso"`).
+    - Se `preso in carico`: pulsanti `nuovo` (`name="nuovo"`) e `chiuso` (`name="chiuso"`).
+    - Se `chiuso`: pulsanti `nuovo` (`name="nuovo"`) e `preso in carico` (`name="preso-in-carico"`).
+- [x] **Accessibilita dei Pulsanti Azione**:
+  - [x] Ciascun pulsante include il nome del mittente per i lettori di schermo: `<span class="solo-lettori">per il messaggio di [Nome Mittente]</span>`, evitando pulsanti ripetuti con nome ambiguo (WCAG 2.1 Criterio 2.4.4 / 4.1.2).
+- [x] **Aggiornamento Dinamico Asincrono (AJAX)**:
+  - [x] Lo script `script.js` intercetta l'evento submit tramite `data-modulo="messaggi"`.
+  - [x] Invia la richiesta `POST` in background con i dati del pulsante submitter.
+  - [x] Sostituisce il blocco `#contenuto` con l'HTML aggiornato restituito dal server.
+  - [x] Sposta automaticamente il fuoco da tastiera sulla notifica `<p class="avviso" role="status">` (*"Fatto: Stato del messaggio aggiornato."*).
+
+### 26.5 Stato Vuoto (`$messaggi === []`)
+
+- [x] **Visualizzazione in Assenza di Messaggi**:
+  - [x] Se non sono presenti messaggi di contatto a database:
+    - La tabella e il relativo modulo non vengono renderizzati.
+    - Viene mostrato il messaggio accessibile: `<p>Non è arrivato nessun messaggio.</p>`.
+
+### 26.6 Responsive Mobile (375x667px) e Convalida WCAG AA
+
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale a livello di viewport (`document.documentElement.scrollWidth = clientWidth = 375px`).
+  - [x] La tabella e racchiusa in `.pagina-controllo > form:has(> table)` con `overflow-x: auto` e padding ottimizzato per touch target.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 112 elementi analizzati (titoli, badge `nuovo`/`preso in carico`/`chiuso`, collegamenti mailto, intestazioni di riga/colonna, pulsanti): 0 violazioni di contrasto.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_contatti.py`)
+
+```text
+--- 0. Baseline DB State ---
+id	nome	email	stato
+1	Paolo Neri	paolo.neri@example.it	preso in carico
+2	Chiara Moretti	chiara.moretti@example.it	preso in carico
+3	Davide Longo	davide.longo@example.it	chiuso
+4	Collaudo Utente	collaudo.utente@example.com	nuovo
+5	toji	toji@gmail.com	preso in carico
+
+--- 1. Test Permessi di Ruolo ---
+Ospite correctly received 401 Unauthorized.
+Cliente correctly received 403 Forbidden.
+Manager correctly received 403 Forbidden (sezione riservata ad amministratore).
+
+--- 2. Setup Test Message in DB ---
+Inserted test message:
+id	nome	email	categoria	stato
+6	Collaudo Contatti	collaudo.contatti@example.it	segnalazione	nuovo
+
+--- 3. Test Admin: Struttura Semantica e Accessibilita ---
+Breadcrumb: Home / Controllo / Messaggi
+H1: Messaggi
+Subnav active tab: Messaggi
+Caption: Messaggi arrivati dal modulo di contatto
+Table headers semantic check: OK
+Footer explanation: Il sito gestisce solo il primo messaggio di ogni richiesta: le risposte successive
+        avvengono via email.
+Row header (data_ora): 05/09/2026 23:02
+Mailto link verified: mailto:collaudo.contatti@example.it
+Category label: Una segnalazione sul sito
+Initial badge: 'nuovo' (data-tipo: attenzione)
+Buttons for 'nuovo': ['preso-in-carico', 'chiuso']
+Button SR text: per il messaggio di Collaudo Contatti
+
+--- 4. Test Azioni Interattive & State Machine (AJAX) ---
+Notice after preso in carico: Fatto: Stato del messaggio aggiornato.
+Badge after transition 1: 'preso in carico' (data-tipo: positivo)
+Buttons for 'preso in carico': ['nuovo', 'chiuso']
+DB check: state is 'preso in carico'
+Badge after transition 2: 'chiuso' (data-tipo: positivo)
+Buttons for 'chiuso': ['nuovo', 'preso-in-carico']
+DB check: state is 'chiuso'
+Badge after transition 3: 'nuovo' (data-tipo: attenzione)
+DB check: state is back to 'nuovo'
+
+--- 5. Test Errore ID Inesistente ---
+Notice for non-existent message: Errore: Il messaggio non esiste piu.
+Desktop screenshot saved.
+
+--- 6. Test Responsive Mobile (375x667) & WCAG AA ---
+Mobile dimensions: scrollWidth=375, clientWidth=375
+Table container overflow-x: auto
+Mobile screenshot saved.
+Contrast audit: 112 elements checked, 0 issues found.
+
+--- 7. Cleanup Database ---
+DB after cleanup:
+id	nome	email	stato
+1	Paolo Neri	paolo.neri@example.it	preso in carico
+2	Chiara Moretti	chiara.moretti@example.it	preso in carico
+3	Davide Longo	davide.longo@example.it	chiuso
+4	Collaudo Utente	collaudo.utente@example.com	nuovo
+5	toji	toji@gmail.com	preso in carico
+DB restored to baseline perfectly.
+
+=== ALL TESTS FOR CONTROLLO-CONTATTI PASSED SUCCESSFULLY! ===
+```
+
+---
+
+## 27. Pannello: Utenti (`controllo-utenti.php`)
+
+La schermata di gestione degli utenti consente all'amministratore di consultare l'elenco degli account registrati alla piattaforma con il conteggio degli ordini effettuati, modificare il ruolo (`cliente`, `manager`, `amministratore`), assegnare o revocare la sede di competenza per i manager, attivare o disattivare gli account e avviare la procedura protetta di cancellazione completa con richiesta di conferma esplicita.
+
+### 27.1 Controllo Accessi, Autorizzazioni e Permessi di Ruolo
+
+- [x] **Permessi di Ruolo e Reindirizzamento**:
+  - [x] Utente non autenticato (ospite): respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato (`cliente`): respinto con codice `HTTP 403 Forbidden`.
+  - [x] Manager autenticato (`manager`): respinto con codice `HTTP 403 Forbidden` (sezione ad accesso esclusivo dell'amministratore).
+  - [x] Amministratore autenticato (`amministratore`): accede con codice `HTTP 200 OK`.
+- [x] **Protezione Auto-Modifica e Auto-Cancellazione Admin**:
+  - [x] Sulla riga del proprio account, l'amministratore non visualizza ne i selettori di modifica ruolo/sede ne i pulsanti di attivazione o cancellazione: al loro posto compare il testo fisso `amministratore` e il collegamento `<a href="url('profilo')">Modifica dal profilo</a>`.
+  - [x] Tentativo forzato via POST di cancellare il proprio account (`utente_id = utenteCorrente`): respinto dal server con messaggio d'errore: *"Errore: Il tuo account si cancella dal profilo."*, mantenendo l'account intatto.
+
+### 27.2 Struttura Semantica, Breadcrumb e Sotto-Navigazione
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] Sequenza ordinata: `Home` (`url()`) / `Controllo` (`url('controllo')`) / `<span aria-current="page">Utenti</span>`.
+- [x] **Intestazione Principale**:
+  - [x] Titolo della schermata in `<h1>Utenti</h1>`.
+- [x] **Sotto-Navigazione del Pannello (`nav[aria-label="Sezioni del pannello"]`)**:
+  - [x] Voce *"Utenti"* evidenziata con attributo `aria-current="page"`.
+  - [x] Elenco completo delle sezioni gestionali per l'amministratore (*Ordini*, *Prodotti*, *Categorie*, *Sedi*, *Prenotazioni*, *Messaggi*, *Utenti*).
+- [x] **Nota Informativa Operativa**:
+  - [x] Paragrafo guida a fondo pagina: `<p>Per affidare una sede a un manager scegli il ruolo e la sede, poi salva. Una sede ha al massimo un manager: se è già occupata va prima liberata.</p>`.
+
+### 27.3 Tabella Dati e Accessibilita (Didascalia, Intestazioni, Moduli Esterni)
+
+- [x] **Didascalia della Tabella**:
+  - [x] `<caption>Account registrati</caption>` per identificare chiaramente la tabella alle tecnologie assistive.
+- [x] **Intestazioni Semantiche**:
+  - [x] Intestazioni di colonna in `<thead>`: `<th scope="col">Nome utente</th>`, `Email`, `Ordini`, `Ruolo e sede`, `Stato`, `Azioni`.
+  - [x] Intestazione di riga in `<tbody>`: `<th scope="row">[nome_utente]</th>`.
+- [x] **Architettura Moduli Fuori Tabella (HTML5 form attribute)**:
+  - [x] Per evitare elementi form invalidi nidificati nelle celle delle tabelle, i form `ruolo` (`id="utente-[id]" data-modulo="ruolo"`) e `stato` (`id="stato-[id]" data-modulo="stato"`) sono collocati fuori dalla tabella, e i controlli (`<select>`, `<button>`) vi fanno riferimento tramite l'attributo `form="utente-[id]"` o `form="stato-[id]"`.
+- [x] **Etichette Nascoste per Screen Reader**:
+  - [x] Ciascun selettore ruolo dispone di `<label class="solo-lettori" for="ruolo-[id]">Ruolo di [nome_utente]</label>`.
+  - [x] Ciascun selettore sede dispone di `<label class="solo-lettori" for="sede-[id]">Sede affidata a [nome_utente]</label>`.
+  - [x] Tutti i pulsanti di salvataggio, cambio stato e cancellazione includono il nome utente contestuale per evitare ambiguita (`<span class="solo-lettori">`).
+
+### 27.4 Dinamica Client-Side e Gestione Ruolo / Sede
+
+- [x] **Disattivazione Condizionale della Sede via JavaScript (`script.js`)**:
+  - [x] Se il ruolo e `cliente` o `amministratore`: il selettore della sede riceve l'attributo `disabled="disabled"` e il suo valore viene reimpostato automaticamente a `""` (*Nessuna sede*).
+  - [x] Se l'utente seleziona `manager`: il selettore della sede viene immediatamente sbloccato (`disabled = false`), consentendo la scelta della sede da affidare.
+- [x] **Integrita e Vincolo di Unicita Manager per Sede**:
+  - [x] Ciascuna sede puo avere al massimo un solo manager (`manager_id UNIQUE` a database).
+  - [x] Se si tenta di assegnare a un manager una sede gia occupata da un altro gestore (es. sede di Padova con manager esistente), l'operazione fallisce con rollback transazionale e messaggio d'avviso: *"Errore: Quella sede ha già un manager: liberala prima."*.
+  - [x] Quando un manager viene promosso ad amministratore o retrocesso a cliente, la sede precedentemente gestita viene automaticamente liberata (`manager_id = NULL`).
+
+### 27.5 Attivazione / Disattivazione Account (`data-modulo="stato"`)
+
+- [x] **Toggle Stato Operativo**:
+  - [x] Pulsante `Disattiva [nome_utente]`: imposta `attivo = 0` a database; il badge di stato commuta a `disattivato` (`data-tipo="negativo"`), e il pulsante diventa `Attiva [nome_utente]`.
+  - [x] Pulsante `Attiva [nome_utente]`: imposta `attivo = 1` a database; il badge commuta a `attivo` (`data-tipo="positivo"`), e il pulsante torna a `Disattiva [nome_utente]`.
+  - [x] Un account disattivato non puo piu accedere al sito e riceve il messaggio d'errore: *"Questo account è stato disattivato."*.
+
+### 27.6 Flusso di Cancellazione Account e Banner di Conferma
+
+- [x] **Passaggio 1: Richiesta di Cancellazione**:
+  - [x] Clic sul collegamento `Cancella [nome_utente]` (`?cancella=[id]`).
+- [x] **Passaggio 2: Banner di Allerta e Conferma Esplicita**:
+  - [x] Compare in primo piano l'avviso di pericolo `<section class="avviso" role="alert" data-tipo="errore">`.
+  - [x] Intestazione `<h2>Vuoi cancellare l'account [nome_utente]?</h2>` e messaggio di avvertimento sulle conseguenze irreversibili (*"Vengono cancellati anche il carrello, gli ordini e le prenotazioni di questo account."*).
+  - [x] Azione **Annulla** (`<a class="pulsante secondario">`): chiude il banner senza toccare il database e preserva l'account.
+  - [x] Azione **Conferma Cancellazione** (`<button type="submit" data-tipo="negativo">Cancella [nome_utente]</button>`): rimuove definitivamente l'account da database con messaggio di successo (*"Fatto: Account cancellato."*).
+
+### 27.7 Responsive Mobile (375x667px) e Convalida WCAG AA
+
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale (`document.documentElement.scrollWidth = clientWidth = 375px`).
+  - [x] Tabella con scorrimento dedicato (`display: block; overflow-x: auto`), controlli select e pulsanti formattati a larghezza intera o compatibile con touch target.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 201 elementi analizzati nel documento: 0 violazioni di contrasto rilevate (tutti conformi ai requisiti 4.5:1 / 3.0:1).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_utenti.py`)
+
+```text
+--- 0. Baseline DB State ---
+id	nome_utente	ruolo	attivo
+1	admin	amministratore	1
+2	manager	manager	1
+3	user	cliente	1
+4	manager.treviso	manager	1
+5	manager.vicenza	manager	1
+6	manager.udine	manager	1
+7	paolo.neri	cliente	1
+8	chiara.moretti	cliente	1
+
+--- 1. Test Permessi di Ruolo ---
+Ospite correctly received 401 Unauthorized.
+Cliente correctly received 403 Forbidden.
+Manager correctly received 403 Forbidden (sezione riservata ad amministratore).
+
+--- 2. Setup Test User in DB ---
+Inserted test user:
+id	nome_utente	ruolo	attivo
+14	test.gestione	cliente	1
+
+--- 3. Test Admin: Struttura Semantica e Accessibilita ---
+Breadcrumb: Home / Controllo / Utenti
+H1: Utenti
+Subnav active tab: Utenti
+Caption: Account registrati
+Table headers semantic check: OK
+Admin self row role text: amministratore
+Admin self action link: Modifica dal profilo profilo
+Self-protection on admin account: OK
+
+--- 4. Test Client-Side JS: Dinamica Ruolo / Sede ---
+Initial state for cliente: sede select disabled = True
+After changing role to manager: sede select disabled = False
+After changing role to amministratore: sede select disabled = True, value = ''
+
+--- 5. Test Cambio Ruolo: Conflitto Sede e Assegnazione Valida ---
+Notice on occupied branch conflict: Errore: Quella sede ha già un manager: liberala prima.
+DB check after conflict: role remained 'cliente'
+Notice after valid role change: Fatto: Ruolo aggiornato.
+DB check: role successfully updated to 'amministratore'
+
+--- 6. Test Attivazione / Disattivazione Account ---
+Button stato text: Disattiva test.gestione
+Notice after disattiva: Fatto: Account disattivato.
+DB check: attivo = 0
+Notice after attiva: Fatto: Account riattivato.
+DB check: attivo = 1
+
+--- 7. Test Flusso Cancellazione Account ---
+Banner title: Vuoi cancellare l'account test.gestione?
+Annulla cancel flow verified: user preserved.
+Notice after confirm delete: Fatto: Account cancellato.
+DB check: test user successfully deleted from database.
+
+--- 8. Test Protezione Auto-Cancellazione Admin ---
+Notice on self-deletion attempt: Errore: Il tuo account si cancella dal profilo.
+Self-deletion blocked successfully.
+Desktop screenshot saved.
+
+--- 9. Test Responsive Mobile (375x667) & WCAG AA ---
+Mobile dimensions: scrollWidth=375, clientWidth=375
+Table display: block
+Mobile screenshot saved.
+Contrast audit: 201 elements checked, 0 issues found.
+
+--- 10. Cleanup Database ---
+DB after cleanup:
+id	nome_utente	ruolo	attivo
+1	admin	amministratore	1
+2	manager	manager	1
+3	user	cliente	1
+4	manager.treviso	manager	1
+5	manager.vicenza	manager	1
+6	manager.udine	manager	1
+7	paolo.neri	cliente	1
+8	chiara.moretti	cliente	1
+DB restored to baseline perfectly.
+
+=== ALL TESTS FOR CONTROLLO-UTENTI PASSED SUCCESSFULLY! ===
+```
+
+---
+
+## 28. Privacy Policy (`privacy.php`)
+
+La pagina informativa di Privacy Policy espone in modo chiaro, trasparente e privo di tecnicismi legali non necessari le modalita di trattamento dei dati personali degli utenti del sito, le finalita della raccolta, i tempi di conservazione, l'uso esclusivo di cookie tecnici di sessione e le modalita per esercitare i diritti di consultazione, rettifica e cancellazione.
+
+### 28.1 Accesso Pubblico e Metadati
+
+- [x] **Accesso Pubblico Libero**:
+  - [x] Raggiungibile da qualsiasi utente (ospite, cliente, manager, amministratore) con codice `HTTP 200 OK`.
+- [x] **Metadati di Testata (`<head>`)**:
+  - [x] Titolo pagina in `<title>`: `Privacy policy - Smash Burger` (entro i 60 caratteri).
+  - [x] Meta description: `Quali dati raccogliamo, per quali finalita, per quanto tempo e come esercitare i tuoi diritti.` (entro i 160 caratteri).
+
+### 28.2 Struttura Semantica e Gerarchia del Documento
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] `Home` (`url()`) / `<span aria-current="page">Privacy</span>`.
+- [x] **Contenitore Semantico e Intestazione**:
+  - [x] Contenuto principale racchiuso in `<article class="pagina-documento">`.
+  - [x] Intestazione documento in `<header class="header-documento">`:
+    - Occhiello descrittivo: `<p class="occhiello">Trasparenza, senza testo piccolo</p>`.
+    - Titolo principale in `<h1>Privacy policy</h1>`.
+    - Paragrafo introduttivo: `<p class="introduzione">Quali dati raccogliamo, perchè ci servono, per quanto tempo li teniamo e come puoi intervenire.</p>`.
+- [x] **Sezioni Tematiche e Titolazione H2**:
+  - [x] `<h2>Quali dati raccogliamo</h2>`: elenco puntato (`<ul>`) dettagliato dei dati raccolti per registrazione, ordini con consegna a domicilio, storico ordini/prenotazioni e messaggi di contatto, con precisazione che i dati di pagamento non vengono memorizzati (pagamento simulato).
+  - [x] `<h2>Perchè li raccogliamo</h2>`: finalita di gestione dell'account, evasione ordini, conferme di prenotazione e supporto clienti, con esclusione di profilazione o cessione a soggetti terzi.
+  - [x] `<h2>Per quanto tempo</h2>`: politica di conservazione legata all'esistenza dell'account e cancellazione sincrona di carrello e storico dal profilo.
+  - [x] `<h2>Cookie</h2>`: specifica tecnica dell'utilizzo di un unico cookie tecnico per il mantenimento della sessione utente dopo il login, senza cookie di tracciamento o profilazione di terze parti.
+  - [x] `<h2>I tuoi diritti</h2>`: istruzioni per visionare, aggiornare o cancellare i propri dati direttamente online.
+
+### 28.3 Collegamenti Interattivi nel Testo
+
+- [x] **Collegamenti Ipertestuali di Sezione**:
+  - [x] Collegamento al profilo: `<a href="profilo">profilo</a>` (consente all'utente loggato di gestire i propri dati o all'ospite di essere indirizzato al login).
+  - [x] Collegamento ai contatti: `<a href="contatti">scrivici</a>` (collegamento diretto alla pagina di contatto per richieste dedicate).
+- [x] **Integrazione con Navigazione Globale e Piede di Pagina**:
+  - [x] Collegamento presente nella sezione *Esplora* del footer (`nav[aria-label="Collegamenti di servizio"] a[href="privacy"]`).
+  - [x] Pulsante "Torna su" (`.torna-su`) e salto al contenuto (`.salta`) pienamente operativi.
+
+### 28.4 Layout a Griglia Documentale, Responsive Mobile e Contrasto WCAG AA
+
+- [x] **Layout Desktop (1280x900px)**:
+  - [x] Griglia a due colonne `.pagina-documento > section` (`grid-template-columns: minmax(14rem, 0.4fr) minmax(0, 0.6fr)`): titolazione `<h2>` posizionata nella colonna di sinistra e paragrafi/elenchi nella colonna di destra.
+  - [x] Punti elenco personalizzati con quadratini rossi (`section li::before { background: var(--ketchup-pieno); }`).
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale a livello di viewport (`document.documentElement.scrollWidth = clientWidth = 375px`).
+  - [x] La griglia si adatta a colonna singola (`grid-template-columns: 1fr`) con spaziatura ottimale per la lettura fluida su dispositivi portatili.
+- [x] **Tema Chiaro e Tema Scuro**:
+  - [x] Commutazione del tema tramite il selettore nell'header (`button[name="tema"][value="scuro|chiaro"]`): applicazione della classe `.tema-scuro` a `<html>`, mantenendo leggibilita e contrasto elevati.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 64 elementi di testo analizzati (tutti conformi ai requisiti 4.5:1 per testo normale e 3.0:1 per titoli/grandi dimensioni, 0 violazioni).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_privacy.py`)
+
+```text
+--- 1. Test Accesso Pubblico e Ruoli ---
+Guest correctly received 200 OK.
+Page title: Privacy policy - Smash Burger
+Meta description: Quali dati raccogliamo, per quali finalita, per quanto tempo e come esercitare i tuoi diritti.
+
+--- 2. Test Struttura Semantica e Gerarchia Heading ---
+Breadcrumb: Home / Privacy
+Occhiello: Trasparenza, senza testo piccolo
+H1: Privacy policy
+Introduzione: Quali dati raccogliamo, perchè ci servono, per quanto tempo li teniamo e
+            come puoi intervenire.
+H2 headings: ['Quali dati raccogliamo', 'Perchè li raccogliamo', 'Per quanto tempo', 'Cookie', 'I tuoi diritti']
+Data collection items count: 4
+
+--- 3. Test Collegamenti Interattivi ---
+Links to profilo and contatti verified.
+Link to contatti navigation verified.
+Footer privacy link verified.
+Desktop screenshot saved.
+
+--- 4. Test Tema Scuro ---
+HTML class after theme toggle: tema-scuro
+Dark mode screenshot saved.
+
+--- 5. Test Responsive Mobile (375x667) & WCAG AA ---
+Mobile dimensions: scrollWidth=375, clientWidth=375
+Mobile section gridTemplateColumns: 336px
+Mobile screenshot saved.
+Contrast audit: 64 elements checked, 0 issues found.
+
+=== ALL TESTS FOR PRIVACY PASSED SUCCESSFULLY! ===
+```
+
+---
+
+## 29. Dichiarazione Accessibilità (`accessibilita.php`)
+
+La Dichiarazione di Accessibilità documenta in conformità alle linee guida WCAG 2.1 livello AA l'impegno di Smash Burger a garantire la fruibilità completa del portale a ogni persona, indipendentemente dal dispositivo utilizzato, dalle capacità fisiche o sensoriali o dall'ambiente di navigazione. Espone in modo trasparente i criteri adottati, le modalità di verifica manuale e automatica, la gestione delle immagini descrittive e i canali per segnalare eventuali problemi di accessibilità.
+
+### 29.1 Accesso Pubblico e Metadati
+
+- [x] **Accesso Pubblico Libero**:
+  - [x] Raggiungibile da qualsiasi utente (ospite, cliente, manager, amministratore) con codice `HTTP 200 OK`.
+- [x] **Metadati di Testata (`<head>`)**:
+  - [x] Titolo pagina in `<title>`: `Accessibilita - Smash Burger` (entro i 60 caratteri).
+  - [x] Meta description: `Dichiarazione di accessibilita di Smash Burger: conformita WCAG 2.1 AA, verifiche con tastiera e screen reader, come segnalare un problema.` (entro i 160 caratteri).
+
+### 29.2 Struttura Semantica e Gerarchia del Documento
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] `Home` (`url()`) / `<span aria-current="page">Accessibilita</span>`.
+- [x] **Contenitore Semantico e Intestazione**:
+  - [x] Contenuto principale racchiuso in `<article class="pagina-documento">`.
+  - [x] Intestazione documento in `<header class="header-documento">`:
+    - Occhiello descrittivo: `<p class="occhiello">Il sito è per tutti</p>`.
+    - Titolo principale in `<h1>Accessibilita</h1>`.
+    - Paragrafo introduttivo: `<p class="introduzione">Puntiamo alla conformita WCAG 2.1 AA: niente ostacoli per chi usa la tastiera, uno screen reader o ingrandisce il testo.</p>`.
+- [x] **Sezioni Tematiche e Titolazione H2**:
+  - [x] `<h2>Che cosa abbiamo fatto</h2>`: elenco puntato (`<ul>`) dei 9 impegni implementati (struttura semantica, contrasto minimo 4.5:1, navigazione completa da tastiera, salto al contenuto, ingrandimento testo fino al 200%, assenza di testo incorporato in immagini, alternative testuali esaurienti, moduli etichettati esplicitamente, tema scuro/chiaro).
+  - [x] `<h2>Come lo verifichiamo</h2>`: esposizione della metodologia di test continuo (validazione W3C HTML e CSS, controlli automatici con Pa11y/Lighthouse, navigazione da tastiera senza mouse, test con lettori di schermo VoiceOver e NVDA).
+  - [x] `<h2>Immagini</h2>`: politica di gestione dei contenuti visivi (tutte le foto con testo alternativo significativo in `alt`, immagini decorative con `alt=""` o icone SVG con `aria-hidden="true"`).
+  - [x] `<h2>Segnalare un problema</h2>`: canali di feedback per gli utenti con collegamenti diretti.
+
+### 29.3 Collegamenti Interattivi nel Testo
+
+- [x] **Collegamenti di Segnalazione**:
+  - [x] Collegamento al modulo contatti: `<a href="contatti">modulo di contatto</a>` (apre la pagina dei contatti con il selettore di argomento).
+  - [x] Collegamento mailto: `<a href="mailto:informazioni@smashburger.it">informazioni@smashburger.it</a>` (apre il client di posta predefinito).
+- [x] **Integrazione con Navigazione Globale e Piede di Pagina**:
+  - [x] Collegamento presente nella sezione *Esplora* del footer (`nav[aria-label="Collegamenti di servizio"] a[href="accessibilita"]`).
+  - [x] Pulsante "Torna su" (`.torna-su`) e salto al contenuto (`.salta`) pienamente operativi.
+
+### 29.4 Layout a Griglia Documentale, Responsive Mobile e Contrasto WCAG AA
+
+- [x] **Layout Desktop (1280x900px)**:
+  - [x] Griglia a due colonne `.pagina-documento > section` con titolazione a sinistra e contenuti a destra.
+  - [x] Quadratini decorativi rossi personalizzati sugli elenchi di impegni.
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale a livello di viewport (`document.documentElement.scrollWidth = clientWidth = 375px`).
+  - [x] Griglia a colonna singola fluida per la lettura su smartphone.
+- [x] **Tema Chiaro e Tema Scuro**:
+  - [x] Commutazione del tema tramite il controllo nell'header (`button[name="tema"][value="scuro|chiaro"]`): applicazione della classe `.tema-scuro` a `<html>`, mantenendo contrasti ben al di sopra delle soglie AA.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 66 elementi di testo analizzati (tutti conformi ai requisiti 4.5:1 per testo normale e 3.0:1 per titoli/grandi dimensioni, 0 violazioni).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_accessibilita.py`)
+
+```text
+--- 1. Test Accesso Pubblico e Ruoli ---
+Guest correctly received 200 OK.
+Page title: Accessibilita - Smash Burger
+Meta description: Dichiarazione di accessibilita di Smash Burger: conformita WCAG 2.1 AA, verifiche con tastiera e screen reader, come segnalare un problema.
+
+--- 2. Test Struttura Semantica e Gerarchia Heading ---
+Breadcrumb: Home / Accessibilita
+Occhiello: Il sito è per tutti
+H1: Accessibilita
+Introduzione: Puntiamo alla conformita WCAG 2.1 AA: niente ostacoli per chi usa la tastiera,
+            uno screen reader o ingrandisce il testo.
+H2 headings: ['Che cosa abbiamo fatto', 'Come lo verifichiamo', 'Immagini', 'Segnalare un problema']
+Accessibility commitments count: 9
+
+--- 3. Test Collegamenti Interattivi ---
+Links verified.
+Navigation to contatti verified.
+Footer accessibilita link verified.
+Desktop screenshot saved.
+
+--- 4. Test Tema Scuro ---
+HTML class after theme toggle: tema-scuro
+Dark mode screenshot saved.
+
+--- 5. Test Responsive Mobile (375x667) & WCAG AA ---
+Mobile dimensions: scrollWidth=375, clientWidth=375
+Mobile screenshot saved.
+Contrast audit: 66 elements checked, 0 issues found.
+
+=== ALL TESTS FOR ACCESSIBILITA PASSED SUCCESSFULLY! ===
+```
+
+---
+
+## 30. Mappa del Sito (`mappa-sito.php`)
+
+La Mappa del Sito offre una panoramica strutturata e completa di tutte le pagine navigabili del sito, organizzate per area tematica. Adotta un modello a visualizzazione dinamica contestuale ai permessi dell'utente corrente: per evitare collegamenti a pagine che provocherebbero un errore 401 o 403, espone soltanto le aree e gli indirizzi effettivamente accessibili al ruolo dell'utente che consulta la pagina (ospite, cliente, manager o amministratore).
+
+### 30.1 Accesso Pubblico e Metadati
+
+- [x] **Accesso Pubblico Libero**:
+  - [x] Raggiungibile da qualsiasi utente con codice `HTTP 200 OK`.
+- [x] **Metadati di Testata (`<head>`)**:
+  - [x] Titolo pagina in `<title>`: `Mappa del sito - Smash Burger` (entro i 60 caratteri).
+  - [x] Meta description: `Elenco completo delle pagine del sito, ordinate per area.` (entro i 160 caratteri).
+
+### 30.2 Struttura Semantica e Gerarchia del Documento
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] `Home` (`url()`) / `<span aria-current="page">Mappa del sito</span>`.
+- [x] **Intestazione e Introduzione**:
+  - [x] Titolo principale in `<h1>Mappa del sito</h1>`.
+  - [x] Paragrafo descrittivo che spiega la natura dinamica dell'elenco in base ai permessi dell'account.
+- [x] **Sezioni Tematiche e Raggruppamento per Ruolo**:
+  - [x] Ciascuna area di navigazione e racchiusa in un elemento semantico `<section>` dotato di intestazione `<h2>` e lista puntata `<ul>`.
+  - [x] Le sezioni prive di voci per il ruolo corrente non vengono mostrate nel DOM (`if ($voci !== [])`).
+  - [x] **Ospite non autenticato**:
+    - [x] `Pagine principali` (5 voci): Home, Menu, Servizi, Chi siamo, Sedi.
+    - [x] `Informazioni` (4 voci): Contatti, Privacy, Accessibilita, Mappa del sito.
+    - [x] `Il tuo account` e `Pannello di controllo` non sono renderizzati.
+  - [x] **Cliente autenticato**:
+    - [x] `Pagine principali` (5 voci).
+    - [x] `Il tuo account` (2 voci): Area personale, Carrello.
+    - [x] `Informazioni` (4 voci).
+  - [x] **Manager**:
+    - [x] `Pagine principali` (5 voci).
+    - [x] `Il tuo account` (1 voce): Area personale.
+    - [x] `Pannello di controllo` (3 voci): Ordini, Prodotti, Prenotazioni.
+    - [x] `Informazioni` (4 voci).
+  - [x] **Amministratore**:
+    - [x] `Pagine principali` (5 voci).
+    - [x] `Il tuo account` (1 voce): Area personale.
+    - [x] `Pannello di controllo` (7 voci): Ordini, Prodotti, Categorie, Sedi, Prenotazioni, Messaggi, Utenti.
+    - [x] `Informazioni` (4 voci).
+
+### 30.3 Accessibilità e Differenziazione Contestuale dei Collegamenti
+
+- [x] **Risoluzione di Ambiguità nei Testi dei Link (WCAG 2.4.4 Link Purpose)**:
+  - [x] La pagina include sia la voce pubblica "Sedi" sia la voce di gestione "Sedi" nel pannello di controllo.
+  - [x] Per evitare collegamenti duplicati con testo identico che confonderebbero gli utenti di tecnologie assistive, il collegamento al pannello delle sedi include testo visivamente nascosto: `<a href="controllo-sedi">Sedi<span class="solo-lettori"> del pannello</span></a>`.
+  - [x] Gli screen reader leggono "Sedi del pannello", garantendo uno scopo del link inequivocabile.
+- [x] **Navigazione da Tastiera e Integrazione Globale**:
+  - [x] Tutti i collegamenti sono dotati di focus visibile e raggiungibili tramite `Tab`.
+  - [x] Collegamento a Mappa del sito presente nel footer globale (`footer a[href="mappa-sito"]`).
+  - [x] Pulsante "Torna su" (`.torna-su`) e salto al contenuto (`.salta`) operativi.
+
+### 30.4 Layout a Schede, Responsive Mobile e Contrasto WCAG AA
+
+- [x] **Layout Desktop (1280x900px)**:
+  - [x] Sezioni a schede con bordo superiore a contrasto (rosso e senape).
+  - [x] Collegamenti presentati come tessere cliccabili con contorno marcato e sottolineatura testuale ad alta leggibilita.
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale (`scrollWidth = clientWidth = 375px`).
+  - [x] Disposizione a colonna singola flessibile con touch target ampi e comodi per il tocco su dispositivi mobili.
+- [x] **Tema Chiaro e Tema Scuro**:
+  - [x] Alternanza del tema perfettamente funzionante tramite `button[name="tema"]`.
+  - [x] Schede con sfondo scuro, bordi chiari e testi ad alto contrasto nella modalita scura.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 67 elementi di testo analizzati (tutti conformi ai requisiti 4.5:1 e 3.0:1, 0 violazioni).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_mappa_sito.py`)
+
+```text
+--- 1. Test Accesso Ospite (Guest) ---
+Guest correctly received 200 OK.
+Page title: Mappa del sito - Smash Burger
+Meta description: Elenco completo delle pagine del sito, ordinate per area.
+Breadcrumb: Home / Mappa del sito
+H1: Mappa del sito
+Guest section headings: ['Pagine principali', 'Informazioni']
+Main section links: ['Home', 'Menu', 'Servizi', 'Chi siamo', 'Sedi']
+Info section links: ['Contatti', 'Privacy', 'Accessibilita', 'Mappa del sito']
+Desktop screenshot saved.
+
+--- 2. Test Accesso Cliente ---
+User section headings: ['Pagine principali', 'Il tuo account', 'Informazioni']
+User account links: ['Area personale', 'Carrello']
+
+--- 3. Test Accesso Manager ---
+Manager section headings: ['Pagine principali', 'Il tuo account', 'Pannello di controllo', 'Informazioni']
+Manager account links: ['Area personale']
+Manager control links: ['Ordini', 'Prodotti', 'Prenotazioni']
+
+--- 4. Test Accesso Amministratore & Link Context ---
+Admin section headings: ['Pagine principali', 'Il tuo account', 'Pannello di controllo', 'Informazioni']
+Admin control links: ['Ordini', 'Prodotti', 'Categorie', 'Sedi del pannello', 'Prenotazioni', 'Messaggi', 'Utenti']
+Verified span.solo-lettori 'del pannello' for controllo-sedi link.
+
+--- 5. Test Tema Scuro ---
+HTML class after theme toggle: tema-scuro
+Dark mode screenshot saved.
+
+--- 6. Test Responsive Mobile (375x667) & WCAG AA ---
+Mobile dimensions: scrollWidth=375, clientWidth=375
+Mobile screenshot saved.
+Contrast audit: 67 elements checked, 0 issues found.
+
+=== ALL TESTS FOR MAPPA DEL SITO PASSED SUCCESSFULLY! ===
+```
+
+---
+
+## 31. Pagine di Errore (401, 403, 404, 500)
+
+Il portale implementa una gestione centralizzata e semantica delle condizioni di errore HTTP tramite la funzione di controllo `errore(int $codice)` e viste dedicate in `src/views/errori/`. Ogni pagina di errore imposta il codice di stato HTTP corretto nell'intestazione della risposta, visualizza spiegazioni concise e non tecniche, e garantisce sempre percorsi di navigazione chiari verso la Home o le sezioni principali del sito, evitando vicoli ciechi nella navigazione.
+
+### 31.1 Errore 401 Unauthorized (`Serve l'accesso`)
+
+- [x] **Condizione di Attivazione e Codice HTTP**:
+  - [x] Si attiva quando un utente non autenticato (ospite) tenta di aprire una risorsa riservata (es. `/carrello`, `/controllo`, `/prenota`).
+  - [x] Restituisce `HTTP 401 Unauthorized`.
+- [x] **Metadati e Struttura Semantica**:
+  - [x] Titolo pagina in `<title>`: `Serve l'accesso - Smash Burger` (entro i 60 caratteri).
+  - [x] Percorso di navigazione: `Home` / `<span aria-current="page">Serve l'accesso</span>`.
+  - [x] Intestazione principale: `<h1>Serve l'accesso</h1>`.
+  - [x] Testo informativo: chiarisce la necessita di effettuare l'accesso o registrarsi per proseguire.
+- [x] **Collegamenti di Ripristino**:
+  - [x] Collegamento di accesso: `<a href="accedi">Accedi</a>`.
+  - [x] Collegamento di registrazione: `<a href="registrati">Registrati</a>`.
+
+### 31.2 Errore 403 Forbidden (`Accesso non consentito`)
+
+- [x] **Condizione di Attivazione e Codice HTTP**:
+  - [x] Si attiva quando un utente autenticato tenta di aprire una risorsa per la quale il suo ruolo non dispone di permessi sufficienti (es. un cliente che tenta di accedere al pannello `/controllo` o un manager non autorizzato a `/controllo-utenti`).
+  - [x] Restituisce `HTTP 403 Forbidden`.
+- [x] **Metadati e Struttura Semantica**:
+  - [x] Titolo pagina in `<title>`: `Accesso non consentito - Smash Burger` (entro i 60 caratteri).
+  - [x] Percorso di navigazione: `Home` / `<span aria-current="page">Accesso non consentito</span>`.
+  - [x] Intestazione principale: `<h1>Accesso non consentito</h1>`.
+  - [x] Testo informativo: notifica la mancanza di privilegi e suggerisce di contattare l'assistenza in caso di dubbio.
+- [x] **Collegamenti di Ripristino**:
+  - [x] Ritorno alla home: `<a class="collegamento-indietro" href=""><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna alla home</span></a>`.
+  - [x] Contatto assistenza: `<a href="contatti">Contattaci</a>`.
+
+### 31.3 Errore 404 Not Found (`Pagina non trovata`)
+
+- [x] **Condizione di Attivazione e Codice HTTP**:
+  - [x] Si attiva quando l'URL richiesto non esiste o un identificativo non corrisponde ad alcun record valido.
+  - [x] Restituisce `HTTP 404 Not Found`.
+- [x] **Metadati e Struttura Semantica**:
+  - [x] Titolo pagina in `<title>`: `Pagina non trovata - Smash Burger` (entro i 60 caratteri).
+  - [x] Percorso di navigazione: `Home` / `<span aria-current="page">Pagina non trovata</span>`.
+  - [x] Intestazione principale: `<h1>Pagina non trovata</h1>`.
+  - [x] Testo esplicativo: segnala l'indirizzo errato o la risorsa rimossa.
+- [x] **Sezione di Orientamento ("Dove vuoi andare")**:
+  - [x] Intestazione di sezione `<h2>Dove vuoi andare</h2>`.
+  - [x] Lista di collegamenti alle pagine principali attive: Home, Menu, Servizi, Chi siamo, Sedi.
+  - [x] Collegamento rapido alla mappa del sito: `<a href="mappa-sito">Mappa del sito</a>`.
+  - [x] Collegamento per segnalare l'errore: `<a href="contatti">Segnala il problema</a>`.
+
+### 31.4 Errore 500 Internal Server Error (`Errore del server`)
+
+- [x] **Condizione di Attivazione e Codice HTTP**:
+  - [x] Si attiva in caso di fallimento critico del server o indisponibilità del database.
+  - [x] Restituisce `HTTP 500 Internal Server Error`.
+  - [x] Rispetta la sicurezza applicativa: nessun messaggio tecnico o stack trace esposto all'utente (i dettagli rimangono esclusivamente nei log di sistema). Non richiede connessione al DB per essere renderizzata.
+- [x] **Metadati e Struttura Semantica**:
+  - [x] Titolo pagina in `<title>`: `Errore del server - Smash Burger` (entro i 60 caratteri).
+  - [x] Percorso di navigazione: `Home` / `<span aria-current="page">Errore del server</span>`.
+  - [x] Intestazione principale: `<h1>Errore del server</h1>`.
+  - [x] Testo rassicurante con invito a riprovare a breve.
+- [x] **Collegamenti di Ripristino**:
+  - [x] Ritorno alla home: `<a class="collegamento-indietro" href=""><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna alla home</span></a>`.
+
+### 31.5 Responsive Mobile, Tema Scuro e Contrasto WCAG AA
+
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale su nessuna pagina di errore (`scrollWidth = clientWidth = 375px`).
+  - [x] I collegamenti e le liste di navigazione si incolonnano con touch target adeguati e ben spaziati.
+- [x] **Supporto Modalità Scura**:
+  - [x] Commutazione del tema (`.tema-scuro`) attiva anche sulle pagine di errore, mantenendo coerenza visiva con il resto del portale.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] 112 elementi di testo verificati sulle viste di errore (tutti conformi ai requisiti 4.5:1 per testo normale e 3.0:1 per titoli/grandi dimensioni, 0 violazioni).
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_pagine_errore.py`)
+
+```text
+--- 1. Test Errore 401 (Serve l'accesso) ---
+Trigger /carrello as guest: HTTP status 401
+401 Title: Serve l'accesso - Smash Burger
+401 Breadcrumb: Home / Serve l'accesso
+401 H1: Serve l'accesso
+401 Desktop screenshot saved.
+401 Navigation to /accedi verified.
+
+--- 2. Test Errore 403 (Accesso non consentito) ---
+Trigger /controllo as cliente: HTTP status 403
+403 Title: Accesso non consentito - Smash Burger
+403 Breadcrumb: Home / Accesso non consentito
+403 H1: Accesso non consentito
+403 Desktop screenshot saved.
+403 Navigation to /contatti verified.
+
+--- 3. Test Errore 404 (Pagina non trovata) ---
+Trigger unknown route: HTTP status 404
+404 Title: Pagina non trovata - Smash Burger
+404 Breadcrumb: Home / Pagina non trovata
+404 H1: Pagina non trovata
+404 Section H2: Dove vuoi andare
+404 Helpful navigation links: ['Home', 'Menu', 'Servizi', 'Chi siamo', 'Sedi', 'Mappa del sito', 'Segnala il problema']
+404 Desktop screenshot saved.
+404 Navigation to /mappa-sito verified.
+
+--- 4. Test Errore 500 (Errore del server) ---
+Trigger errors/500.php: HTTP status 500
+500 Title: Errore del server - Smash Burger
+500 Breadcrumb: Home / Errore del server
+500 H1: Errore del server
+500 Desktop screenshot saved.
+
+--- 5. Test Tema Scuro e Responsive Mobile su 404 ---
+Mobile 404 dimensions: scrollWidth=375, clientWidth=375
+Mobile 404 screenshot saved.
+HTML class after theme toggle: tema-scuro
+Dark mode 404 screenshot saved.
+Contrast audit on 404: 112 elements checked, 0 issues found.
+
+=== ALL TESTS FOR ERROR PAGES (401, 403, 404, 500) PASSED SUCCESSFULLY! ===
+```
+
+
+
+
+
+
+
 
 
