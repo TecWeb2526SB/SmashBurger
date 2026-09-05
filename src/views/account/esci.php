@@ -12,6 +12,6 @@
     <?php echo campo_csrf(); ?>
     <p>
         <button type="submit">Esci</button>
-        <a href="<?php echo e(url('area-personale')); ?>">Annulla</a>
+        <a href="<?php echo e($urlAnnulla); ?>">Annulla</a>
     </p>
 </form>
