@@ -37,7 +37,7 @@ Questo documento censisce, pagina per pagina, tutti gli elementi con cui l'utent
 21. [Pannello: Scheda Prodotto (`controllo-prodotto.php`)](#21-pannello-scheda-prodotto-controllo-prodottophp)
 22. [Pannello: Categorie (`controllo-categorie.php`)](#22-pannello-categorie-controllo-categoriephp)
 23. [Pannello: Sedi (`controllo-sedi.php`)](#23-pannello-sedi-controllo-sediphp)
-24. *Pannello: Scheda Sede (`controllo-sede.php`)*
+24. [Pannello: Scheda Sede (`controllo-sede.php`)](#24-pannello-scheda-sede-controllo-sedephp)
 25. *Pannello: Prenotazioni (`controllo-prenotazioni.php`)*
 26. *Pannello: Messaggi di contatto (`controllo-contatti.php`)*
 27. *Pannello: Utenti (`controllo-utenti.php`)*
@@ -3175,12 +3175,13 @@ La pagina di gestione degli ordini costituisce la schermata operativa principale
   - [x] Righe ordine `<tr>` con attributo dati `data-ordine="ID"` e codice ordine univoco in `<th scope="row">` (es. `SB-2026-0001`).
 
 - [x] **Modifica Stato e Pagamento Inline (per Ordini Non Annullati)**:
-  - [x] Modulo integrato nella cella: `<form method="post" action="controllo" data-modulo="ordine" data-invio="automatico">`.
+  - [x] Modulo integrato nella cella: `<form method="post" action="controllo" data-modulo="ordine">`.
   - [x] Token CSRF presente nel form: `<input type="hidden" name="token_csrf" value="...">`.
   - [x] Identificativo dell'ordine nascosto: `<input type="hidden" name="ordine_id" value="ID">`.
   - [x] Menu selezione stato dell'ordine con etichetta per screen reader associata (`<label class="solo-lettori" for="stato-ID">`).
   - [x] Menu selezione stato del pagamento con etichetta per screen reader associata (`<label class="solo-lettori" for="pagamento-ID">`).
-  - [x] **Aggiornamento a Database**: la modifica del menu aggiorna la colonna corrispondente su MariaDB e produce il messaggio flash *"Fatto: Ordine aggiornato."*.
+  - [x] **Pulsante di Invio Esplicito Accessibile**: ciascun modulo include `<button type="submit">Aggiorna <span class="solo-lettori">stato e pagamento di SB-YYYY-XXXX</span></button>` a garanzia della piena conformita WCAG e REGOLE.md par. 17 (evitando invii automatici prematuri quando due controlli valgono insieme).
+  - [x] **Aggiornamento via AJAX**: l'invio viene intercettato da `script.js` aggiornando il record su MariaDB senza ricaricare la pagina e restituendo il messaggio flash *"Fatto: Ordine aggiornato."*.
 
 - [x] **Visualizzazione Ordini Annullati**:
   - [x] I moduli di modifica vengono disabilitati: compaiono i badge statici `<span class="etichetta" data-tipo="negativo">annullato</span>` e l'etichetta dello stato pagamento.
@@ -3638,17 +3639,17 @@ La pagina di gestione dei prodotti del pannello di controllo consente al gestore
 
 ---
 
-### 20.5 Modulo Rapido Giacenza con Invio Automatico
+### 20.5 Modulo Rapido Giacenza con Invio Asincrono
 
 - [x] **Modulo Interattivo di Quantita**:
-  - [x] Tag `<form method="post" action="controllo-prodotti" data-modulo="quantita" data-invio="automatico">`.
+  - [x] Tag `<form method="post" action="controllo-prodotti" data-modulo="quantita">`.
   - [x] Token CSRF generato mediante `campo_csrf()`.
   - [x] Parametri nascosti: `sede_id` e `prodotto_id`.
   - [x] Etichetta per lettori di schermo: `<label class="solo-lettori" for="quantita-[ID]">Quantita di [Nome prodotto]</label>`.
   - [x] Campo numerico: `<input type="number" id="quantita-[ID]" name="quantita" value="[N]" min="0" max="9999" />`.
-  - [x] **Invio Automatico al Cambio Valore (`data-invio="automatico"`)**:
-    - Al rilascio o alla modifica del valore (`change`), lo script intercetta l'evento, verifica la validita dei vincoli HTML5 (`reportValidity()`) e trasmette l'aggiornamento via `fetch()`.
-    - Non necessita di un pulsante di invio separato nell'interfaccia, semplificando la densita grafica della tabella.
+  - [x] **Pulsante di Invio Esplicito Accessibile**:
+    - Include un pulsante `<button type="submit">Salva <span class="solo-lettori">quantita di [Nome]</span></button>` a garanzia della piena conformita WCAG e REGOLE.md par. 17 (evitando invii al cambio su campi numerici/testuali).
+    - L'invio viene gestito via AJAX da `script.js` con `data-modulo="quantita"` senza ricaricare la pagina.
   - [x] **Validazione Client e Server**:
     - Valori ammessi nel range `0 - 9999`.
     - Tentativi di inserimento di quantita negative o superiori a 9999 vengono respinti sia lato client (`min="0" max="9999"`) sia dal backend PHP con il messaggio *"La quantita deve stare fra 0 e 9999."*.
@@ -4355,4 +4356,120 @@ Light theme: 77 elements checked, 0 contrast issues.
 Dark theme: 77 elements checked, 0 contrast issues.
 ALL TESTS PASSED FOR CONTROLLO-SEDI (PAGE 23)!
 ```
+
+---
+
+## 24. Pannello: Scheda Sede (`controllo-sede.php`)
+
+La scheda di gestione della singola sede consente al manager (per la propria sede di competenza) o all'amministratore (per qualsiasi sede della catena) di aggiornare i recapiti e l'indirizzo del locale, definire gli orari settimanali di apertura giorno per giorno e attivare o disattivare la disponibilita della sala eventi per le prenotazioni del pubblico.
+
+### 24.1 Controllo Accessi, Autorizzazioni e Protezione IDOR
+
+- [x] **Permessi di Ruolo e Reindirizzamento**:
+  - [x] Utente non autenticato (ospite): respinto con codice `HTTP 401 Unauthorized`.
+  - [x] Cliente autenticato (`user`): respinto con codice `HTTP 403 Forbidden`.
+  - [x] Manager autenticato (`manager`): accede alla propria sede (Padova, `sede_id = 1`) tramite `/controllo-sede` senza parametri o specificando la propria sede.
+  - [x] Amministratore autenticato (`admin`): accede a qualunque sede specificando il parametro `?sede=ID`.
+- [x] **Protezione IDOR (Insecure Direct Object Reference)**:
+  - [x] Se un manager tenta di accedere a una sede diversa dalla propria (es. `GET /controllo-sede?sede=2` o `POST` con `sede_id=2`), la richiesta viene bloccata immediatamente con codice `HTTP 403 Forbidden` (`limite !== null && richiesta !== limite`).
+- [x] **Gestione Risorsa Inesistente**:
+  - [x] Se un amministratore richiede una sede non censita a database (es. `/controllo-sede?sede=9999`), il server restituisce `HTTP 404 Not Found`.
+
+### 24.2 Struttura Semantica, Breadcrumb e Sotto-Navigazione
+
+- [x] **Percorso di Navigazione (`nav[aria-label="Percorso"]`)**:
+  - [x] Per il manager: `Home` (`url()`) / `Controllo` (`url('controllo')`) / `La tua sede` (`aria-current="page"`).
+  - [x] Per l'amministratore: `Home` (`url()`) / `Controllo` (`url('controllo')`) / `Sedi` (`url('controllo-sedi')`) / `[Nome Citta]` (`aria-current="page"`).
+- [x] **Intestazione Principale e Sotto-Navigazione**:
+  - [x] Titolo della schermata in `<h1>Sede di [Citta]</h1>`.
+  - [x] Barra di navigazione del pannello con evidenziazione della voce corrente `aria-current="page"` su *"La tua sede"* (per il manager) o senza focus specifico di secondo livello (per l'amministratore).
+
+### 24.3 Modulo Dati del Locale (`form[data-modulo="dati-sede"]`)
+
+- [x] **Riquadro Indirizzo e Recapiti (`fieldset`)**:
+  - [x] Token CSRF presente (`campo_csrf()`) e parametro nascosto `azione="dati"`.
+  - [x] Campo `nome`: `<input type="text" id="nome" name="nome" required="required" maxlength="120" autocomplete="organization" />`.
+  - [x] Campo `citta`: `<input type="text" id="citta" name="citta" required="required" maxlength="80" autocomplete="address-level2" />`.
+  - [x] Campo `indirizzo`: `<input type="text" id="indirizzo" name="indirizzo" required="required" maxlength="160" autocomplete="street-address" />`.
+  - [x] Campo `provincia`: `<input type="text" id="provincia" name="provincia" required="required" maxlength="2" autocomplete="address-level1" />`.
+  - [x] Campo `cap`: `<input type="text" id="cap" name="cap" required="required" maxlength="5" autocomplete="postal-code" />`.
+  - [x] Campo `telefono`: `<input type="tel" id="telefono" name="telefono" required="required" maxlength="30" autocomplete="tel" />`.
+  - [x] Campo `email`: `<input type="email" id="email" name="email" required="required" maxlength="160" autocomplete="email" />`.
+  - [x] Campo `note_ritiro`: `<input type="text" id="note_ritiro" name="note_ritiro" maxlength="255" aria-describedby="aiuto-note" />` con testo esplicativo associato (`<small id="aiuto-note">`).
+- [x] **Conformita WCAG 2.1 Criterio 1.3.5 (Identify Input Purpose)**:
+  - [x] Tutti i campi di recapito presentano token `autocomplete` standard compatibili con le tecnologie assistive e la compilazione automatica sicura del browser.
+- [x] **Validazione e Notifiche di Errore**:
+  - [x] In caso di campi errati o mancanti, compare il sommario errori `<section class="avviso" role="alert" data-tipo="errore">` con collegamenti interni ad ancora (`<a href="#[campo]">`) che spostano il fuoco direttamente sul controllo.
+  - [x] I campi in errore ricevono l'attributo `data-stato="errore"` e il collegamento all'errore contestuale mediante `aria-describedby="errore-[campo]"`.
+- [x] **Salvataggio Asincrono**:
+  - [x] Il modulo supporta l'invio AJAX tramite `data-modulo="dati-sede"` con notifica flash *"Fatto: Dati della sede aggiornati."*.
+  - [x] Aggiornamento verificato a database sulla tabella `sedi`.
+
+### 24.4 Modulo Orari Settimanali (`form[data-modulo="orari"]`)
+
+- [x] **Tabella Orari Giorno per Giorno**:
+  - [x] Didascalia accessibile in `<caption>`.
+  - [x] Intestazioni di colonna (`<th scope="col">Giorno</th>`, `Apre`, `Chiude`, `Chiuso`) e di riga (`<th scope="row">[Giorno]</th>` da Lunedi a Domenica, ISO 1-7).
+  - [x] Controlli orari: `<input type="time" id="apre-[N]" name="apertura[[N]]" />` e `chiude-[N]` con etichette dedicate per lettori di schermo (`<label class="solo-lettori">`).
+  - [x] Casella di chiusura: `<input type="checkbox" id="chiuso-[N]" name="chiuso[[N]]" value="1" />` con testo contestuale (`Chiuso il [Giorno]`).
+- [x] **Salvataggio Asincrono**:
+  - [x] Pulsante submit `<button type="submit">Salva gli orari</button>`.
+  - [x] Persistenza verificata a database su `orari_sedi` con messaggio di successo *"Fatto: Orari aggiornati."*.
+
+### 24.5 Modulo Sala Eventi (`form[data-modulo="sala"]`)
+
+- [x] **Stato e Controllo Disponibilita**:
+  - [x] Badge di stato corrente: `<span class="etichetta" data-tipo="positivo">accetta prenotazioni</span>` oppure `<span class="etichetta" data-tipo="attenzione">non accetta prenotazioni</span>`.
+  - [x] Paragrafo descrittivo contestuale che spiega in anticipo l'effetto dell'azione.
+  - [x] Se la sala e aperta: pulsante di chiusura con stile di attenzione `<button type="submit" name="chiudi" value="1" data-tipo="negativo">Chiudi le prenotazioni</button>`.
+  - [x] Se la sala e chiusa: pulsante di riapertura standard `<button type="submit" name="apri" value="1">Riapri le prenotazioni</button>`.
+- [x] **Persistenza**:
+  - [x] Modifica istantanea del campo `sala_eventi_disponibile` (1 / 0) nella tabella `sedi`.
+  - [x] Aggiornamento visivo immediato senza ricaricamento totale della pagina.
+
+### 24.6 Responsive Mobile (375x667px) e Convalida WCAG AA
+
+- [x] **Visualizzazione Mobile (375x667px)**:
+  - [x] Nessun overflow orizzontale (`scrollWidth = clientWidth = 375px`).
+  - [x] Layout dei tre moduli allineato in verticale con spaziatura uniforme e leggibilita ottimale su touchscreen.
+- [x] **Verifica Contrasto WCAG AA**:
+  - [x] Tema chiaro: 122 elementi analizzati, 0 violazioni di contrasto.
+  - [x] Tema scuro: 122 elementi analizzati, 0 violazioni di contrasto.
+
+#### Log Esecuzione Script E2E Playwright (`scratch/test_controllo_sede_full.py`)
+
+```text
+--- 1. Test Permessi: Ospite e Cliente ---
+Guest correctly received 401 Unauthorized.
+User correctly received 403 Forbidden.
+--- 2. Test Manager: Breadcrumb, Autocomplete, IDOR ---
+Manager Breadcrumb: Home / Controllo / La tua sede
+All autocomplete tokens verified.
+Manager IDOR via GET blocked with 403 Forbidden.
+--- 3. Test Modulo Dati del Locale ---
+Server-side validation error displayed correctly: Scrivi citta, fra 2 e 80 caratteri.
+                            Il CAP e composto da cinque cifre.
+Success notice: Fatto: Dati della sede aggiornati.
+DB note_ritiro: note_ritiro
+Banco ritiri al piano terra
+--- 4. Test Modulo Orari Settimanali ---
+Success notice orari: Fatto: Orari aggiornati.
+DB apertura lunedi: apertura
+11:30:00
+--- 5. Test Modulo Sala Eventi (Toggle) ---
+Initial DB sala_eventi_disponibile: sala_eventi_disponibile
+1
+Initial Sala button text: Chiudi le prenotazioni
+Toggled DB sala_eventi_disponibile: sala_eventi_disponibile
+0
+After toggle button text: Riapri le prenotazioni
+Restored DB sala_eventi_disponibile: sala_eventi_disponibile
+1
+Screenshots taken.
+--- 6. Test Admin: Accesso a qualsiasi sede ---
+Admin Breadcrumb for Treviso: Home / Controllo / Sedi / Treviso
+Admin accessing non-existent branch correctly received 404.
+=== ALL TESTS IN CONTROLLO-SEDE PASSED! ===
+```
+
 

@@ -15,13 +15,13 @@
 $salaAperta = (int) $sede['sala_eventi_disponibile'] === 1;
 
 $campi = [
-    'nome' => ['Nome della sede', 120],
-    'citta' => ['Citta', 80],
-    'indirizzo' => ['Indirizzo e numero civico', 160],
-    'provincia' => ['Provincia', 2],
-    'cap' => ['CAP', 5],
-    'telefono' => ['Telefono', 30],
-    'email' => ['Email', 160],
+    'nome' => ['Nome della sede', 120, 'organization'],
+    'citta' => ['Citta', 80, 'address-level2'],
+    'indirizzo' => ['Indirizzo e numero civico', 160, 'street-address'],
+    'provincia' => ['Provincia', 2, 'address-level1'],
+    'cap' => ['CAP', 5, 'postal-code'],
+    'telefono' => ['Telefono', 30, 'tel'],
+    'email' => ['Email', 160, 'email'],
 ];
 ?>
 <h1>Sede di <?php echo e($sede['citta']); ?></h1>
@@ -53,9 +53,10 @@ $campi = [
             <?php foreach ($campi as $campo => $dettagli): ?>
                 <p>
                     <label for="<?php echo e($campo); ?>"><?php echo e($dettagli[0]); ?></label>
-                    <input type="<?php echo $campo === 'email' ? 'email' : 'text'; ?>"
+                    <input type="<?php echo $campo === 'email' ? 'email' : ($campo === 'telefono' ? 'tel' : 'text'); ?>"
                         id="<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
                         required="required" maxlength="<?php echo (int) $dettagli[1]; ?>"
+                        autocomplete="<?php echo e($dettagli[2]); ?>"
                         value="<?php echo e((string) ($valori[$campo] ?? '')); ?>"
                         <?php if (isset($errori[$campo])): ?>aria-describedby="errore-<?php echo e($campo); ?>" data-stato="errore"<?php endif; ?> />
                     <?php if (isset($errori[$campo])): ?>

@@ -81,7 +81,7 @@
                             <span class="etichetta"><?php echo e($ordine['stato_pagamento']); ?></span>
                         <?php else: ?>
                             <form method="post" action="<?php echo e(url('controllo')); ?>"
-                                data-modulo="ordine" data-invio="automatico">
+                                data-modulo="ordine">
                                 <?php echo campo_csrf(); ?>
                                 <input type="hidden" name="ordine_id" value="<?php echo (int) $ordine['id']; ?>" />
 
@@ -110,6 +110,11 @@
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+
+                                <button type="submit">
+                                    Aggiorna
+                                    <span class="solo-lettori">stato e pagamento di <?php echo e($ordine['numero_ordine']); ?></span>
+                                </button>
                             </form>
                         <?php endif; ?>
                     </td>

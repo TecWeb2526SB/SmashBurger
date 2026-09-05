@@ -71,7 +71,7 @@
                 </td>
                 <td>
                     <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>"
-                        data-modulo="quantita" data-invio="automatico">
+                        data-modulo="quantita">
                         <?php echo campo_csrf(); ?>
                         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
                         <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
@@ -81,6 +81,10 @@
                         <input type="number" id="quantita-<?php echo (int) $prodotto['id']; ?>"
                             name="quantita" value="<?php echo (int) $prodotto['quantita']; ?>"
                             min="0" max="9999" />
+                        <button type="submit">
+                            Salva
+                            <span class="solo-lettori">quantita di <?php echo e($prodotto['nome']); ?></span>
+                        </button>
                     </form>
                 </td>
                 <?php if ($amministratore): ?>
