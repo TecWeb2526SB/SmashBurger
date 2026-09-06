@@ -96,8 +96,11 @@ Il workflow `Qualità` gira a ogni push e a ogni pull request, con tre job:
   accesso reale per cliente e amministratore;
 - **prestazioni**: Lighthouse sulle pagine pubbliche, soglia 90 sulle quattro categorie.
 
-Le pagine controllate arrivano da [`src/sitemap.xml`](src/sitemap.xml) e da
-[`.github/scripts/pagine-riservate.json`](.github/scripts/pagine-riservate.json).
+Le pagine pubbliche controllate arrivano dalla sitemap, che
+[`src/sitemap.php`](src/sitemap.php) costruisce dall'elenco unico delle pagine e serve
+all'indirizzo `sitemap.xml`; quelle riservate da
+[`.github/scripts/pagine-riservate.json`](.github/scripts/pagine-riservate.json). Aggiungere
+una pagina pubblica con una descrizione la mette sotto controllo senza toccare la pipeline.
 
 ## Documenti
 

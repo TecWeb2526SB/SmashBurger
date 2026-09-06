@@ -2,7 +2,7 @@ name: Qualità
 
 on:
   push:
-    branches: [main, rebuild]
+    branches: [main, riscrittura]
   pull_request:
     branches: [main]
   workflow_dispatch:
