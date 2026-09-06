@@ -12,7 +12,7 @@
         <p class="introduzione">
             <?php if ($categoriaScelta === null): ?>
                 Burger, contorni, bevande e dessert. Prezzi e allergeni sono sempre in
-                chiaro; la disponibilita' viene confermata quando scegli la sede.
+                chiaro; la disponibilità viene confermata quando scegli la sede.
             <?php else: ?>
                 <?php echo e($categoriaScelta['descrizione']); ?>
             <?php endif; ?>
@@ -30,7 +30,7 @@
     <ul>
         <li>
             <?php if ($categoriaScelta === null): ?>
-                <a href="<?php echo e(url('menu')); ?>" aria-current="true">Tutte</a>
+                <span aria-current="page">Tutte</span>
             <?php else: ?>
                 <a href="<?php echo e(url('menu')); ?>">Tutte</a>
             <?php endif; ?>
@@ -39,9 +39,9 @@
             <li>
                 <?php $attiva = $categoriaScelta !== null && $categoria['id'] === $categoriaScelta['id']; ?>
                 <?php if ($attiva): ?>
-                    <a href="<?php echo e(url('menu', ['categoria' => $categoria['slug']])); ?>" aria-current="true">
+                    <span aria-current="page">
                         <?php echo e($categoria['nome']); ?>
-                    </a>
+                    </span>
                 <?php else: ?>
                     <a href="<?php echo e(url('menu', ['categoria' => $categoria['slug']])); ?>">
                         <?php echo e($categoria['nome']); ?>
@@ -63,7 +63,7 @@
                         <span class="etichetta-categoria"><?php echo e($prodotto['categoria_nome']); ?></span>
                         <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'], true)); ?>"
                             width="400" height="300" loading="lazy"
-                            alt="<?php echo e($prodotto['nome']); ?>" />
+                            alt="<?php echo e($prodotto['nome'] . '. ' . $prodotto['descrizione']); ?>" />
                     </div>
 
                     <div class="corpo-scheda">
@@ -93,7 +93,7 @@
 <section class="invito-finale">
     <div>
         <p class="occhiello">Hai scelto?</p>
-        <h2>Adesso trova la piastra piu' vicina.</h2>
+        <h2>Adesso trova la piastra più vicina.</h2>
     </div>
     <p><a class="pulsante" data-tipo="positivo" href="<?php echo e(url('carrello')); ?>">Scegli la sede e ordina</a></p>
 </section>

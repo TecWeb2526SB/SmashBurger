@@ -27,15 +27,6 @@ function stati_prenotazione(): array
 
 
 /**
- * Stati che occupano davvero la sala.
- */
-function stati_che_occupano(): array
-{
-    return ['in attesa', 'approvata'];
-}
-
-
-/**
  * Quanti giorni in avanti si puo' prenotare.
  */
 function giorni_prenotabili(): int
@@ -96,7 +87,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     if (!data_valida($data)) {
         $errori['data'] = 'Scegli una data valida.';
     } elseif ($data < date('Y-m-d')) {
-        $errori['data'] = 'La data è già passata.';
+        $errori['data'] = 'La data è già passata: scegli oggi o un giorno futuro.';
     } elseif ($data > date('Y-m-d', strtotime('+' . giorni_prenotabili() . ' day'))) {
         $errori['data'] = 'Si prenota fino a ' . giorni_prenotabili() . ' giorni in anticipo.';
     }
@@ -108,7 +99,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     }
 
     if (mb_strlen(trim((string) ($dati['note'] ?? ''))) > CARATTERI_NOTA_PRENOTAZIONE) {
-        $errori['note'] = 'La nota non puo superare i ' . CARATTERI_NOTA_PRENOTAZIONE . ' caratteri.';
+        $errori['note'] = 'La nota non può superare i ' . CARATTERI_NOTA_PRENOTAZIONE . ' caratteri: accorciala.';
     }
 
     $durata = filter_var($dati['durata'] ?? '', FILTER_VALIDATE_INT);
@@ -124,7 +115,7 @@ function prenotazione_errori(PDO $pdo, array $sede, array $dati): array
     $fascia = fascia_scelta($pdo, (int) $sede['id'], $data, (string) ($dati['fascia'] ?? ''), $durata);
 
     if ($fascia === null) {
-        $errori['fascia'] = 'Con questa durata l\'orario scelto non è libero: prova una durata piu breve o un altro orario.';
+        $errori['fascia'] = 'Con questa durata l\'orario scelto non è libero: prova una durata più breve o un altro orario.';
     } elseif (prenotazione_sovrapposta($pdo, (int) $sede['id'], $data, $fascia['inizio'], $fascia['fine'])) {
         $errori['fascia'] = 'Questo orario è stato appena occupato: scegline un altro.';
     }

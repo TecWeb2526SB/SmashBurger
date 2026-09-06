@@ -111,14 +111,14 @@ function contatti_elenco(PDO $pdo): array
 function contatto_cambia_stato(PDO $pdo, int $id, string $stato): array
 {
     if (!in_array($stato, stati_messaggio(), true)) {
-        return ['ok' => false, 'messaggio' => 'Stato non riconosciuto.'];
+        return ['ok' => false, 'messaggio' => 'Stato non riconosciuto: ricarica la pagina e scegli uno stato fra quelli proposti.'];
     }
 
     $query = $pdo->prepare('UPDATE messaggi_contatto SET stato = :stato WHERE id = :id');
     $query->execute([':stato' => $stato, ':id' => $id]);
 
     if ($query->rowCount() === 0) {
-        return ['ok' => false, 'messaggio' => 'Il messaggio non esiste piu.'];
+        return ['ok' => false, 'messaggio' => 'Il messaggio non esiste più: forse è stato cancellato. Aggiorna la pagina.'];
     }
 
     return ['ok' => true, 'messaggio' => 'Stato del messaggio aggiornato.'];

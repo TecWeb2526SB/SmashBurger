@@ -17,7 +17,7 @@
             <tr>
                 <th scope="col">Prodotto</th>
                 <th scope="col">Prezzo</th>
-                <th scope="col">Quantita</th>
+                <th scope="col">Quantità</th>
                 <th scope="col">Totale</th>
                 <th scope="col" data-colonna="azioni">Togli</th>
             </tr>
@@ -30,14 +30,14 @@
                     <td>
                         <button type="submit" name="diminuisci" value="<?php echo (int) $riga['prodotto_id']; ?>">
                             <span aria-hidden="true">-</span>
-                            <span class="solo-lettori">Una unita in meno di <?php echo e($riga['nome']); ?></span>
+                            <span class="solo-lettori">Una unità in meno di <?php echo e($riga['nome']); ?></span>
                         </button>
 
                         <span class="quantita"><?php echo (int) $riga['quantita']; ?></span>
 
                         <button type="submit" name="aggiungi" value="<?php echo (int) $riga['prodotto_id']; ?>">
                             <span aria-hidden="true">+</span>
-                            <span class="solo-lettori">Una unita in piu di <?php echo e($riga['nome']); ?></span>
+                            <span class="solo-lettori">Una unità in più di <?php echo e($riga['nome']); ?></span>
                         </button>
                     </td>
                     <td><?php echo e(prezzo((int) $riga['totale_riga'])); ?></td>

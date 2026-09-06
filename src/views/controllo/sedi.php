@@ -11,7 +11,7 @@
     <caption>Sedi della catena</caption>
     <thead>
         <tr>
-            <th scope="col">Citta</th>
+            <th scope="col">Città</th>
             <th scope="col">Indirizzo</th>
             <th scope="col">Telefono</th>
             <th scope="col">Sala eventi</th>

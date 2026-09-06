@@ -6,10 +6,11 @@
 <article class="pagina-documento">
     <header class="header-documento">
         <p class="occhiello">Il sito è per tutti</p>
-        <h1>Accessibilita'</h1>
+        <h1>Accessibilità</h1>
         <p class="introduzione">
-            Puntiamo alla conformita' WCAG 2.1 AA. Qui trovi cosa abbiamo fatto, come lo
-            verifichiamo e come segnalarci un problema.
+            Puntiamo alla conformità
+            <abbr lang="en" title="Web Content Accessibility Guidelines">WCAG</abbr> 2.1 AA. Qui
+            trovi cosa abbiamo fatto, come lo verifichiamo e come segnalarci un problema.
         </p>
     </header>
 
@@ -32,8 +33,10 @@
         <h2>Come lo verifichiamo</h2>
         <p>
             A ogni modifica controlliamo markup, fogli di stile e pagine con strumenti
-            automatici sullo standard WCAG 2.1 AA. Affianchiamo prove da tastiera e con
-            un lettore di schermo, perchè un punteggio non basta.
+            automatici sullo standard
+            <abbr lang="en" title="Web Content Accessibility Guidelines">WCAG</abbr> 2.1 AA.
+            Affianchiamo prove da tastiera e con un lettore di schermo, perché un
+            punteggio non basta.
         </p>
     </section>
 
@@ -49,7 +52,7 @@
     <section>
         <h2>Segnalare un problema</h2>
         <p>
-            Se incontri una difficolta', <a href="<?php echo e(url('contatti')); ?>">scrivici</a>
+            Se incontri una difficoltà, <a href="<?php echo e(url('contatti')); ?>">scrivici</a>
             scegliendo l'argomento "Una segnalazione sul sito", oppure manda una email a
             <a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a>.
             Indica la pagina e che cosa non ha funzionato.

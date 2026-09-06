@@ -161,6 +161,7 @@ body > header,
 .etichetta-categoria,
 .codice-errore,
 .pagina-mappa > section a,
+.pagina-mappa > section [aria-current],
 thead th,
 .racconto-eventi .occhiello,
 .servizio-eventi .indice-pannello,
@@ -438,7 +439,8 @@ textarea {
 /* Nella mappa del sito i collegamenti sono riquadrati per essere bersagli comodi da
    toccare: su carta non si tocca niente e il riquadro li farebbe leggere come pulsanti,
    quindi tornano righe di testo. */
-.pagina-mappa > section a {
+.pagina-mappa > section a,
+.pagina-mappa > section [aria-current] {
     display: inline;
     padding: 0;
     border: 0;

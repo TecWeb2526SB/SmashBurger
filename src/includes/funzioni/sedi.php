@@ -90,26 +90,6 @@ function orari_sede(PDO $pdo, int $sedeId): array
 }
 
 /**
- * Orari di tutte le sedi in una sola query, indicizzati per sede e poi per giorno.
- *
- * Evita di interrogare il database una volta per sede nella pagina che le elenca tutte.
- */
-function orari_di_tutte_le_sedi(PDO $pdo): array
-{
-    $righe = $pdo->query(
-        'SELECT sede_id, giorno, apertura, chiusura, chiuso FROM orari_sedi ORDER BY sede_id, giorno'
-    )->fetchAll();
-
-    $orari = [];
-
-    foreach ($righe as $riga) {
-        $orari[(int) $riga['sede_id']][(int) $riga['giorno']] = $riga;
-    }
-
-    return $orari;
-}
-
-/**
  * Descrive in una riga la fascia di apertura di un giorno.
  */
 function fascia_leggibile(array $orario): string

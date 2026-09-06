@@ -226,7 +226,8 @@ main > blockquote {
     grid-column: 1 / -1;
 }
 
-.filtri a {
+.filtri a,
+.filtri [aria-current] {
     text-align: center;
 }
 

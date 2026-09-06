@@ -14,12 +14,12 @@
         <?php foreach (pagine_del_menu('controllo', $ruoloCorrente) as $slug => $etichetta): ?>
             <li>
                 <?php if ($slug === $slugCorrente): ?>
-                    <a href="<?php echo e(url($slug)); ?>" aria-current="page">
+                    <span aria-current="page">
                         <?php echo e($etichetta); ?>
                         <?php if ($slug === 'controllo-sedi'): ?>
                             <span class="solo-lettori"> del pannello</span>
                         <?php endif; ?>
-                    </a>
+                    </span>
                 <?php else: ?>
                     <a href="<?php echo e(url($slug)); ?>">
                         <?php echo e($etichetta); ?>
@@ -34,7 +34,7 @@
         <?php if ($ruoloCorrente === 'manager'): ?>
             <li>
                 <?php if ($slugCorrente === 'controllo-sede'): ?>
-                    <a href="<?php echo e(url('controllo-sede')); ?>" aria-current="page">La tua sede</a>
+                    <span aria-current="page">La tua sede</span>
                 <?php else: ?>
                     <a href="<?php echo e(url('controllo-sede')); ?>">La tua sede</a>
                 <?php endif; ?>

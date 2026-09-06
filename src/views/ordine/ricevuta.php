@@ -63,7 +63,7 @@
         <thead>
             <tr>
                 <th scope="col">Prodotto</th>
-                <th scope="col">Quantita</th>
+                <th scope="col">Quantità</th>
                 <th scope="col">Prezzo</th>
                 <th scope="col">Totale</th>
             </tr>

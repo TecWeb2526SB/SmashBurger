@@ -8,7 +8,7 @@
         <p class="occhiello">Trasparenza, senza testo piccolo</p>
         <h1>Privacy policy</h1>
         <p class="introduzione">
-            Quali dati raccogliamo, perchè ci servono, per quanto tempo li teniamo e
+            Quali dati raccogliamo, perché ci servono, per quanto tempo li teniamo e
             come puoi intervenire.
         </p>
     </header>
@@ -17,7 +17,10 @@
         <h2>Quali dati raccogliamo</h2>
         <ul>
             <li>Registrazione: nome, cognome, nome utente, indirizzo email.</li>
-            <li>Ordine con consegna: indirizzo, citta, provincia, CAP, paese e telefono.</li>
+            <li>
+                Ordine con consegna: indirizzo, città, provincia,
+                <abbr title="Codice di Avviamento Postale">CAP</abbr>, paese e telefono.
+            </li>
             <li>Ordini e prenotazioni: che cosa hai ordinato, quando e in quale sede.</li>
             <li>Modulo di contatto: nome, email e il testo del messaggio.</li>
         </ul>
@@ -28,7 +31,7 @@
     </section>
 
     <section>
-        <h2>Perchè li raccogliamo</h2>
+        <h2>Perché li raccogliamo</h2>
         <p>
             Per gestire il tuo account, preparare e consegnare gli ordini, confermare le
             prenotazioni e risponderti quando ci scrivi. Non li usiamo per altro e non li
@@ -39,7 +42,7 @@
     <section>
         <h2>Per quanto tempo</h2>
         <p>
-            I dati dell'account restano finchè l'account esiste. Cancellando il tuo
+            I dati dell'account restano finché l'account esiste. Cancellando il tuo
             account dal profilo elimini anche il carrello e lo storico degli ordini.
         </p>
     </section>
@@ -48,7 +51,7 @@
         <h2>Cookie</h2>
         <p>
             Il sito usa un solo cookie tecnico, quello che tiene aperta la sessione dopo
-            l'accesso. Non ci sono cookie di profilazione nè servizi di terze parti.
+            l'accesso. Non ci sono cookie di profilazione né servizi di terze parti.
         </p>
     </section>
 

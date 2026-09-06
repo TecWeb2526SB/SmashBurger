@@ -39,7 +39,7 @@ function ordine_crea(PDO $pdo, array $carrello, array $righe, array $dati): arra
                 return [
                     'ok' => false,
                     'messaggio' => sprintf(
-                        'Nel frattempo %s non è piu disponibile nella quantità richiesta: ne restano %d.',
+                        'Nel frattempo %s non è più disponibile nella quantità richiesta: ne restano %d. Riduci la quantità nel carrello e riprova.',
                         $riga['nome'],
                         $rimasti
                     ),

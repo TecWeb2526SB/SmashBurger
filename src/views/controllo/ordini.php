@@ -61,7 +61,7 @@
                 <th scope="col">Numero</th>
                 <th scope="col">Cliente</th>
                 <th scope="col">Sede</th>
-                <th scope="col">Modalita</th>
+                <th scope="col">Modalità</th>
                 <th scope="col">Totale</th>
                 <th scope="col">Stato e pagamento</th>
                 <th scope="col" data-colonna="azioni">Dettaglio</th>

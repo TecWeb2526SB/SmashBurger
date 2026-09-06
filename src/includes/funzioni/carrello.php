@@ -225,7 +225,7 @@ function carrello_diminuisci(PDO $pdo, int $carrelloId, int $sedeId, int $prodot
     $attuale = (int) ($query->fetchColumn() ?: 0);
 
     if ($attuale === 0) {
-        return ['ok' => false, 'messaggio' => 'Questo prodotto non è nel carrello.'];
+        return ['ok' => false, 'messaggio' => 'Questo prodotto non è nel carrello: aggiorna la pagina e riprova.'];
     }
 
     return carrello_imposta_quantita($pdo, $carrelloId, $sedeId, $prodottoId, $attuale - 1);

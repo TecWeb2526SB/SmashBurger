@@ -22,7 +22,7 @@ function password_errore(string $password): ?string
     }
 
     if (mb_strlen($password) > 200) {
-        return 'La password non puo superare i 200 caratteri.';
+        return 'La password non può superare i 200 caratteri: scegline una più corta.';
     }
 
     // I caratteri di controllo non arrivano da una tastiera e non hanno motivo di stare

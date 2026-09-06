@@ -221,14 +221,14 @@ function pagine(): array
         'privacy' => [
             'etichetta' => 'Privacy',
             'titolo' => 'Privacy policy - Smash Burger',
-            'descrizione' => 'Quali dati raccogliamo, per quali finalita, per quanto tempo e come esercitare i tuoi diritti.',
+            'descrizione' => 'Quali dati raccogliamo, per quali finalità, per quanto tempo e come esercitare i tuoi diritti.',
             'ruoli' => [],
             'menu' => 'footer',
         ],
         'accessibilita' => [
-            'etichetta' => 'Accessibilita',
-            'titolo' => 'Accessibilita - Smash Burger',
-            'descrizione' => 'Stato di conformita del sito alle linee guida WCAG 2.1 AA e modalita per segnalare un problema.',
+            'etichetta' => 'Accessibilità',
+            'titolo' => 'Accessibilità - Smash Burger',
+            'descrizione' => 'Stato di conformità del sito alle linee guida WCAG 2.1 AA e modalità per segnalare un problema.',
             'ruoli' => [],
             'menu' => 'footer',
         ],

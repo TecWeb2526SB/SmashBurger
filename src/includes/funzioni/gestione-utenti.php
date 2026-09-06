@@ -39,7 +39,7 @@ function utenti_elenco(PDO $pdo): array
 function utente_cambia_ruolo(PDO $pdo, int $utenteId, string $ruolo, ?int $sedeId): array
 {
     if (!in_array($ruolo, ruoli_assegnabili(), true)) {
-        return ['ok' => false, 'messaggio' => 'Ruolo non riconosciuto.'];
+        return ['ok' => false, 'messaggio' => 'Ruolo non riconosciuto: ricarica la pagina e scegli un ruolo fra quelli proposti.'];
     }
 
     if ($ruolo === 'manager' && $sedeId === null) {

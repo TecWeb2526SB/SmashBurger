@@ -9,7 +9,7 @@
 <h1>Da quale sede vuoi ordinare?</h1>
 
 <p>
-    La disponibilita' cambia da un locale all'altro: scegli la sede e ti mostriamo solo
+    La disponibilità cambia da un locale all'altro: scegli la sede e ti mostriamo solo
     quello che c'è davvero.
 </p>
 

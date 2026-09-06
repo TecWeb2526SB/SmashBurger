@@ -41,7 +41,7 @@ function prenotazioni_da_gestire(PDO $pdo, ?int $sedeId): array
 function prenotazione_cambia_stato(PDO $pdo, int $id, string $stato, ?int $sedeId): array
 {
     if (!in_array($stato, stati_prenotazione(), true)) {
-        return ['ok' => false, 'messaggio' => 'Stato non riconosciuto.'];
+        return ['ok' => false, 'messaggio' => 'Stato non riconosciuto: ricarica la pagina e scegli uno stato fra quelli proposti.'];
     }
 
     $limite = $sedeId === null ? '' : ' AND sede_id = :sede';

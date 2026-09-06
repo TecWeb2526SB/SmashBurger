@@ -10,17 +10,27 @@
  * cosa del menu, dove il prodotto compare comunque.
  */
 ?>
+<?php
+// Prodotti il cui nome è interamente inglese: su questi il titolo dichiara lang="en",
+// altrimenti un lettore di schermo legge "Chicken Wings" con la pronuncia italiana. I
+// nomi misti come "Milkshake alla banana" restano senza dichiarazione, perche' l'attributo
+// vale per tutto l'elemento e qui l'elemento contiene anche parole italiane.
+$nomeInglese = in_array($prodotto['slug'], [
+    'cheeseburger', 'bacon-burger', 'chicken-burger', 'chicken-bbq', 'chicken-wings',
+    'vegan-burger', 'in-n-out',
+], true);
+?>
 <section class="dettaglio-prodotto">
     <div class="immagine-dettaglio-prodotto">
         <p class="numero-edizione">Smash / <?php echo e($prodotto['categoria_nome']); ?></p>
         <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'], true)); ?>"
             width="600" height="450"
-            alt="<?php echo e($prodotto['nome']); ?>" />
+            alt="<?php echo e($prodotto['nome'] . '. ' . $prodotto['descrizione']); ?>" />
     </div>
 
     <div class="testo-dettaglio-prodotto">
         <p class="occhiello"><?php echo e($prodotto['categoria_nome']); ?> · Preparato al momento</p>
-        <h1><?php echo e($prodotto['nome']); ?></h1>
+        <h1<?php echo $nomeInglese ? ' lang="en"' : ''; ?>><?php echo e($prodotto['nome']); ?></h1>
         <p class="prezzo prezzo-grande"><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></p>
         <p class="introduzione"><?php echo e($prodotto['descrizione']); ?></p>
         <p class="azioni">

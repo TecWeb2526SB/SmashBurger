@@ -82,7 +82,7 @@ function ordine_per_pannello(PDO $pdo, int $ordineId, ?int $sedeId): ?array
 function ordine_cambia_stato(PDO $pdo, int $ordineId, string $stato, ?int $sedeId): array
 {
     if (!in_array($stato, stati_ordine(), true) || $stato === 'annullato') {
-        return ['ok' => false, 'messaggio' => 'Stato non riconosciuto.'];
+        return ['ok' => false, 'messaggio' => 'Stato non riconosciuto: ricarica la pagina e scegli uno stato fra quelli proposti.'];
     }
 
     return ordine_aggiorna_colonna($pdo, $ordineId, 'stato', $stato, $sedeId);
@@ -94,7 +94,7 @@ function ordine_cambia_stato(PDO $pdo, int $ordineId, string $stato, ?int $sedeI
 function ordine_cambia_pagamento(PDO $pdo, int $ordineId, string $stato, ?int $sedeId): array
 {
     if (!in_array($stato, stati_pagamento(), true)) {
-        return ['ok' => false, 'messaggio' => 'Stato del pagamento non riconosciuto.'];
+        return ['ok' => false, 'messaggio' => 'Stato del pagamento non riconosciuto: ricarica la pagina e scegli una voce fra quelle proposte.'];
     }
 
     return ordine_aggiorna_colonna($pdo, $ordineId, 'stato_pagamento', $stato, $sedeId);
@@ -132,7 +132,7 @@ function ordine_aggiorna_colonna(PDO $pdo, int $ordineId, string $colonna, strin
     }
 
     if ($stato === 'annullato') {
-        return ['ok' => false, 'messaggio' => 'L\'ordine è già stato annullato: non si puo\' piu\' modificare.'];
+        return ['ok' => false, 'messaggio' => 'L\'ordine è già stato annullato: non si può più modificare.'];
     }
 
     $aggiorna = $pdo->prepare(

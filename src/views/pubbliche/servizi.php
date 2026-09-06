@@ -32,7 +32,7 @@
         <h2>Passa, prendi, mordi.</h2>
         <p>
             Scegli la sede, aggiungi i prodotti e indica l'orario. Prepariamo l'ordine
-            per quel momento, cosi' al banco non perdi tempo.
+            per quel momento, così al banco non perdi tempo.
         </p>
         <p class="nota-servizio">Disponibile negli orari di apertura della sede scelta.</p>
     </section>

@@ -33,7 +33,7 @@
                         <th scope="col">Numero</th>
                         <th scope="col">Data</th>
                         <th scope="col">Sede</th>
-                        <th scope="col">Modalita</th>
+                        <th scope="col">Modalità</th>
                         <th scope="col">Totale</th>
                         <th scope="col">Stato</th>
                         <th scope="col">Ricevuta</th>

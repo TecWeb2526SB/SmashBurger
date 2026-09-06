@@ -10,7 +10,7 @@ function sede_errori(array $dati): array
 {
     $errori = [];
 
-    foreach (['nome' => ['Nome della sede', 120], 'citta' => ['Citta', 80], 'indirizzo' => ['Indirizzo', 160]] as $campo => $regole) {
+    foreach (['nome' => ['Nome della sede', 120], 'citta' => ['Città', 80], 'indirizzo' => ['Indirizzo', 160]] as $campo => $regole) {
         $valore = trim((string) ($dati[$campo] ?? ''));
 
         if (mb_strlen($valore) < 2 || mb_strlen($valore) > $regole[1]) {
@@ -137,6 +137,6 @@ function sala_cambia(PDO $pdo, int $sedeId, bool $disponibile, ?int $limite): ar
         'ok' => true,
         'messaggio' => $disponibile
             ? 'La sala accetta di nuovo prenotazioni.'
-            : 'La sala non accetta piu prenotazioni.',
+            : 'La sala non accetta più prenotazioni.',
     ];
 }

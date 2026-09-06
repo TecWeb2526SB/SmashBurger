@@ -44,15 +44,20 @@ function data_breve(string $valore): string
  * Descrive la fotografia di una sede in base a cio' che si vede davvero.
  *
  * Le descrizioni seguono lo scatto e non l'idea che ci si fa del locale: quella di
- * Treviso e' un interno e non un esterno, quindi lo dice.
+ * Treviso e' un interno e non un esterno, quindi lo dice. Ognuna sta fra 75 e 100
+ * caratteri (parte I, sezione 5.2), quindi tiene il tratto che distingue il locale e
+ * lascia cadere l'arredo di sfondo.
+ *
+ * Per una sede senza descrizione scritta a mano resta il solo nome: sostenere che cosa
+ * si vede in una fotografia che nessuno ha guardato sarebbe peggio di non dirlo.
  */
 function testo_alternativo_sede(string $slug, string $citta): string
 {
     $descrizioni = [
-        'padova' => 'Esterno della sede Smash Burger di Padova al tramonto: edificio basso in mattoni con insegna rossa illuminata, veranda vetrata curva e ingresso affacciato sul parcheggio.',
-        'treviso' => 'Interno della sede Smash Burger di Treviso, dentro una galleria commerciale: insegna in minuscolo sopra il bancone, tavoli apparecchiati davanti e lucernario a tutta lunghezza sul soffitto.',
-        'vicenza' => 'Esterno ad angolo della sede Smash Burger di Vicenza: grande insegna rossa su fascia in legno scuro, seconda insegna bianca sul lato e vetrate a tutta altezza da cui si vede il bancone con gli sgabelli.',
-        'udine' => 'Esterno della sede Smash Burger di Udine sotto gli alberi: insegna rossa sul volume vetrato del piano superiore e, al piano terra, la scala interna, la lavagna del menu e il bancone Smash Station.',
+        'padova' => 'Esterno al tramonto della sede di Padova: edificio in mattoni, insegna rossa e veranda vetrata.',
+        'treviso' => 'Interno della sede di Treviso in una galleria: insegna sopra il bancone e lucernario lungo.',
+        'vicenza' => 'Esterno ad angolo della sede di Vicenza: insegna rossa su legno scuro e vetrate alte sul bancone.',
+        'udine' => 'Esterno della sede di Udine fra gli alberi: insegna rossa sul volume vetrato del piano alto.',
     ];
 
     return $descrizioni[$slug]

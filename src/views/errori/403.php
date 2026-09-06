@@ -25,7 +25,7 @@
         <p class="foto-editoriale">
             <img src="<?php echo e(risorsa('images/errori/403.webp', true)); ?>"
                 width="700" height="654"
-                alt="Un sacchetto Smash Burger chiuso con il sigillo, e appeso un tesserino di riconoscimento con la sagoma di una persona." />
+                alt="Sacchetto Smash Burger sigillato, con un tesserino di riconoscimento appeso a una fettuccia." />
             <span>Errore 403 / solo personale</span>
             <strong>Di qua si passa in divisa</strong>
         </p>

@@ -24,7 +24,7 @@
         <p class="foto-editoriale">
             <img src="<?php echo e(risorsa('images/errori/401.webp', true)); ?>"
                 width="700" height="656"
-                alt="Due spatole da piastra incrociate davanti a un burger nel suo incarto, come un cancello che sbarra il passo." />
+                alt="Due spatole da piastra incrociate davanti a un burger nel suo incarto, come un cancello." />
             <span>Errore 401 / area riservata</span>
             <strong>Prima il pass, poi il panino</strong>
         </p>

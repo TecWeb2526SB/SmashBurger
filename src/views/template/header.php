@@ -63,7 +63,7 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
                     <?php foreach (pagine_del_menu('principale', $ruoloCorrente) as $slug => $etichetta): ?>
                         <li>
                             <?php if ($slug === $slugCorrente): ?>
-                                <a href="<?php echo e(url($slug)); ?>" aria-current="page"><?php echo e($etichetta); ?></a>
+                                <span aria-current="page"><?php echo e($etichetta); ?></span>
                             <?php else: ?>
                                 <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
                             <?php endif; ?>
@@ -104,7 +104,7 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
                     <?php foreach (pagine_del_menu('azioni', $ruoloCorrente) as $slug => $etichetta): ?>
                         <li>
                             <?php if ($slug === $slugCorrente): ?>
-                                <a href="<?php echo e(url($slug)); ?>" aria-current="page"><?php echo e($etichetta); ?></a>
+                                <span aria-current="page"><?php echo e($etichetta); ?></span>
                             <?php else: ?>
                                 <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
                             <?php endif; ?>

@@ -26,7 +26,7 @@ function immagine_prodotto_errore(array $file, bool $obbligatoria): ?string
     }
 
     if ($errore === UPLOAD_ERR_INI_SIZE || $errore === UPLOAD_ERR_FORM_SIZE) {
-        return "L'immagine non puo' superare 300 KB.";
+        return "L'immagine non può superare 300 KB: comprimila o scegline una più leggera.";
     }
 
     if ($errore !== UPLOAD_ERR_OK) {
@@ -42,7 +42,7 @@ function immagine_prodotto_errore(array $file, bool $obbligatoria): ?string
     }
 
     if ($peso > PESO_MASSIMO_IMMAGINE) {
-        return "L'immagine non puo' superare 300 KB.";
+        return "L'immagine non può superare 300 KB: comprimila o scegline una più leggera.";
     }
 
     $estensione = strtolower(pathinfo($nome, PATHINFO_EXTENSION));

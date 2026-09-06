@@ -217,8 +217,7 @@ body > header a:visited {
     color: var(--visitato-su-scuro);
 }
 
-body > header .marchio a:visited,
-body > header a[aria-current]:visited {
+body > header .marchio a:visited {
     color: inherit;
 }
 
@@ -352,7 +351,10 @@ main > blockquote {
     justify-content: flex-end;
 }
 
-.header-interna nav a {
+/* La voce della pagina corrente non e' un collegamento, ma nella barra deve avere lo
+   stesso aspetto delle altre: la barretta sotto la distingue. */
+.header-interna nav a,
+.header-interna nav [aria-current] {
     position: relative;
     display: inline-block;
     padding: 0.45rem 0;
@@ -363,7 +365,8 @@ main > blockquote {
     text-decoration: none;
 }
 
-.header-interna nav a::after {
+.header-interna nav a::after,
+.header-interna nav [aria-current]::after {
     content: "";
     position: absolute;
     right: 0;
@@ -374,7 +377,7 @@ main > blockquote {
 }
 
 .header-interna nav a:hover::after,
-.header-interna nav a[aria-current]::after {
+.header-interna nav [aria-current]::after {
     background: var(--ketchup-pieno);
 }
 
@@ -1153,7 +1156,8 @@ button > .icona,
     gap: var(--spazio-2);
 }
 
-.filtri a {
+.filtri a,
+.filtri [aria-current] {
     display: block;
     padding: 0.55rem 0.9rem;
     background: var(--superficie);
@@ -1166,13 +1170,12 @@ button > .icona,
 }
 
 .filtri a:hover,
-.filtri a[aria-current] {
+.filtri [aria-current] {
     background: var(--identita);
     color: var(--testo-su-identita);
 }
 
-main .filtri a:hover:visited,
-main .filtri a[aria-current]:visited {
+main .filtri a:hover:visited {
     color: var(--testo-su-identita);
 }
 
@@ -2429,7 +2432,8 @@ textarea:hover {
     border: 0;
 }
 
-.pagina-mappa > section a {
+.pagina-mappa > section a,
+.pagina-mappa > section [aria-current] {
     display: block;
     padding: var(--spazio-3);
     background: var(--sfondo);
@@ -2546,7 +2550,8 @@ textarea:hover {
     margin-top: var(--spazio-3);
 }
 
-.footer-principale nav a {
+.footer-principale nav a,
+.footer-principale nav [aria-current] {
     font-weight: 700;
 }
 

@@ -23,7 +23,7 @@
         <thead>
             <tr>
                 <th scope="col">Prodotto</th>
-                <th scope="col">Quantita</th>
+                <th scope="col">Quantità</th>
                 <th scope="col">Totale</th>
             </tr>
         </thead>
@@ -100,7 +100,7 @@
         <?php
         $campi = [
             'indirizzo' => ['Indirizzo e numero civico', 'address-line1', 160],
-            'citta' => ['Citta', 'address-level2', 80],
+            'citta' => ['Città', 'address-level2', 80],
             'provincia' => ['Provincia', 'address-level1', 2],
             'cap' => ['CAP', 'postal-code', 5],
             'paese' => ['Paese', 'country-name', 60],
@@ -109,7 +109,7 @@
         ?>
         <?php foreach ($campi as $campo => $dettagli): ?>
             <p>
-                <label for="<?php echo e($campo); ?>"><?php echo e($dettagli[0]); ?></label>
+                <label for="<?php echo e($campo); ?>"><?php echo $campo === 'cap' ? '<abbr title="Codice di Avviamento Postale">CAP</abbr>' : e($dettagli[0]); ?></label>
                 <input type="text" id="<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
                     maxlength="<?php echo (int) $dettagli[2]; ?>" autocomplete="<?php echo e($dettagli[1]); ?>"
                     value="<?php echo e($valori[$campo]); ?>"

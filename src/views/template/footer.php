@@ -27,7 +27,13 @@
                 <h2>Esplora</h2>
                 <ul>
                     <?php foreach (pagine_del_menu('footer', $ruoloCorrente) as $slug => $etichetta): ?>
-                        <li><a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a></li>
+                        <li>
+                            <?php if ($slug === $slugCorrente): ?>
+                                <span aria-current="page"><?php echo e($etichetta); ?></span>
+                            <?php else: ?>
+                                <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
+                            <?php endif; ?>
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             </nav>
@@ -47,11 +53,13 @@
             <p class="validazioni">
                 <a href="https://validator.w3.org/">
                     <img src="<?php echo e(risorsa('images/w3chtml.webp')); ?>" width="88" height="31"
-                        loading="lazy" alt="Markup validato dal servizio del W3C" />
+                        loading="lazy"
+                        alt="Marchio del World Wide Web Consortium con segno di spunta: markup validato senza errori." />
                 </a>
                 <a href="https://jigsaw.w3.org/css-validator/">
                     <img src="<?php echo e(risorsa('images/w3ccss.webp')); ?>" width="88" height="31"
-                        loading="lazy" alt="Fogli di stile validati dal servizio del W3C" />
+                        loading="lazy"
+                        alt="Marchio del World Wide Web Consortium con segno di spunta: fogli di stile senza errori." />
                 </a>
             </p>
         </div>

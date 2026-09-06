@@ -35,7 +35,7 @@ if ($carrello === null) {
         </select>
         <button type="submit">Cambia sede</button>
     </p>
-    <p><small>Cambiando sede il carrello viene svuotato, perchè la disponibilita' cambia da un locale all'altro.</small></p>
+    <p><small>Cambiando sede il carrello viene svuotato, perché la disponibilità cambia da un locale all'altro.</small></p>
 </form>
 
 <section class="riepilogo">

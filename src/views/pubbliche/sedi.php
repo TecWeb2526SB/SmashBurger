@@ -5,7 +5,7 @@
 ?>
 <section class="apertura-pagina apertura-sedi">
     <div>
-        <p class="occhiello">Quattro citta'. Una sola crosta.</p>
+        <p class="occhiello">Quattro città. Una sola crosta.</p>
         <h1>Sedi e orari</h1>
         <p class="introduzione">
             Ritira il tuo ordine o ricevilo a casa. Ogni sede ha il proprio ritmo, gli

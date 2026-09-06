@@ -16,7 +16,7 @@
         <fieldset>
             <legend>Sede</legend>
             <p>
-                <label for="sede">Di quale sede vedere la disponibilita</label>
+                <label for="sede">Di quale sede vedere la disponibilità</label>
                 <select id="sede" name="sede">
                     <?php foreach ($sedi as $unaSede): ?>
                         <option value="<?php echo (int) $unaSede['id']; ?>"
@@ -41,14 +41,14 @@
 <?php endif; ?>
 
 <table>
-    <caption>Prodotti e loro disponibilita a <?php echo e($sede['citta']); ?></caption>
+    <caption>Prodotti e loro disponibilità a <?php echo e($sede['citta']); ?></caption>
     <thead>
         <tr>
             <th scope="col">Prodotto</th>
             <th scope="col">Categoria</th>
             <th scope="col">Prezzo</th>
             <th scope="col" data-colonna="azioni">Nel menu</th>
-            <th scope="col">Quantita</th>
+            <th scope="col">Quantità</th>
             <?php if ($amministratore): ?>
                 <th scope="col" data-colonna="azioni">Scheda</th>
             <?php endif; ?>
@@ -81,14 +81,14 @@
                         <input type="hidden" name="sede_id" value="<?php echo (int) $sede['id']; ?>" />
                         <input type="hidden" name="prodotto_id" value="<?php echo (int) $prodotto['id']; ?>" />
                         <label class="solo-lettori" for="quantita-<?php echo (int) $prodotto['id']; ?>">
-                            Quantita di <?php echo e($prodotto['nome']); ?>
+                            Quantità di <?php echo e($prodotto['nome']); ?>
                         </label>
                         <input type="number" id="quantita-<?php echo (int) $prodotto['id']; ?>"
                             name="quantita" value="<?php echo (int) $prodotto['quantita']; ?>"
                             min="0" max="9999" />
                         <button type="submit">
                             Salva
-                            <span class="solo-lettori">quantita di <?php echo e($prodotto['nome']); ?></span>
+                            <span class="solo-lettori">quantità di <?php echo e($prodotto['nome']); ?></span>
                         </button>
                     </form>
                 </td>
@@ -107,5 +107,5 @@
 
 <p>
     Un prodotto compare nel menu del sito solo se è nel menu di questa sede
-    <strong>e</strong> la quantita' è maggiore di zero. Gli ordini la scalano da soli.
+    <strong>e</strong> la quantità è maggiore di zero. Gli ordini la scalano da soli.
 </p>

@@ -18,7 +18,7 @@ $nuovo = $prodotto === null;
         <h2>Vuoi cancellare <?php echo e($prodotto['nome']); ?>?</h2>
         <p>
             Sparisce dal menu di tutte le sedi. Gli ordini già fatti restano leggibili,
-            perchè hanno copiato nome e prezzo al momento dell&apos;acquisto.
+            perché hanno copiato nome e prezzo al momento dell&apos;acquisto.
         </p>
 
         <form method="post" action="<?php echo e(url('controllo-prodotto')); ?>">
@@ -57,7 +57,7 @@ $nuovo = $prodotto === null;
             <figure class="anteprima-prodotto">
                 <img src="<?php echo e(risorsa('uploads/prodotti/' . basename($valori['immagine']), true)); ?>"
                     width="600" height="450"
-                    alt="Immagine attuale di <?php echo e($valori['nome']); ?>" />
+                    alt="Immagine attuale di <?php echo e($valori['nome']); ?>, come compare adesso nella scheda del prodotto." />
                 <figcaption>Immagine attuale</figcaption>
             </figure>
         <?php endif; ?>

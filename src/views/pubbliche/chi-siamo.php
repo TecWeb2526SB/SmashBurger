@@ -39,7 +39,7 @@
                 largo con il metallo crea una crosta scura e saporita.
             </p>
             <p>
-                La cottura dura pochissimo, cosi' l'interno resta succoso. E' una tecnica,
+                La cottura dura pochissimo, così l'interno resta succoso. È una tecnica,
                 non una ricetta: si fa al momento e non si prepara in anticipo.
             </p>
         </div>
@@ -63,7 +63,7 @@
         <div>
             <p>
                 I quattro locali hanno gli stessi prezzi. Ogni sede gestisce orari,
-                disponibilita' dei prodotti e prenotazioni della sala.
+                disponibilità dei prodotti e prenotazioni della sala.
             </p>
             <p>
                 Quando ordini vedi solo cio' che è davvero disponibile nel locale che
@@ -76,7 +76,7 @@
 <section class="invito-finale">
     <div>
         <p class="occhiello">Vieni a sentirla sfrigolare</p>
-        <h2>Quattro citta'. La stessa piastra.</h2>
+        <h2>Quattro città. La stessa piastra.</h2>
     </div>
     <p><a class="pulsante" href="<?php echo e(url('sedi')); ?>">Guarda sedi e orari</a></p>
 </section>

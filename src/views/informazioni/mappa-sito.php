@@ -18,12 +18,21 @@
             <ul>
                 <?php foreach ($voci as $slug => $etichetta): ?>
                     <li>
-                        <a href="<?php echo e(url($slug)); ?>">
-                            <?php echo e($etichetta); ?>
-                            <?php if ($slug === 'controllo-sedi'): ?>
-                                <span class="solo-lettori"> del pannello</span>
-                            <?php endif; ?>
-                        </a>
+                        <?php if ($slug === $slugCorrente): ?>
+                            <span aria-current="page">
+                                <?php echo e($etichetta); ?>
+                                <?php if ($slug === 'controllo-sedi'): ?>
+                                    <span class="solo-lettori"> del pannello</span>
+                                <?php endif; ?>
+                            </span>
+                        <?php else: ?>
+                            <a href="<?php echo e(url($slug)); ?>">
+                                <?php echo e($etichetta); ?>
+                                <?php if ($slug === 'controllo-sedi'): ?>
+                                    <span class="solo-lettori"> del pannello</span>
+                                <?php endif; ?>
+                            </a>
+                        <?php endif; ?>
                     </li>
                 <?php endforeach; ?>
             </ul>

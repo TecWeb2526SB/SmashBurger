@@ -48,7 +48,7 @@ function quantita_imposta(PDO $pdo, int $sedeId, int $prodottoId, int $quantita)
         ':aggiornata' => $quantita,
     ]);
 
-    return ['ok' => true, 'messaggio' => 'Quantita aggiornata.'];
+    return ['ok' => true, 'messaggio' => 'Quantità aggiornata.'];
 }
 
 /**
@@ -84,7 +84,7 @@ function prodotto_errori(PDO $pdo, array $dati, ?int $escludiId = null): array
     }
 
     if (mb_strlen((string) ($dati['allergeni'] ?? '')) > 255) {
-        $errori['allergeni'] = 'L\'elenco degli allergeni non puo superare i 255 caratteri.';
+        $errori['allergeni'] = 'L\'elenco degli allergeni non può superare i 255 caratteri: accorcialo.';
     }
 
     return $errori;
