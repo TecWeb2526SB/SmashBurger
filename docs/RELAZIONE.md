@@ -141,6 +141,10 @@ Le tabelle create sono:
 - **prenotazioni**: richieste di occupazione della sala eventi con data, ora di inizio, ora di fine e stato di approvazione;
 - **messaggi_contatto**: richieste inviate dagli utenti tramite il modulo contatti, classificate per argomento e stato di evasione.
 
+<p align="center">
+  <img src="schema_database.png" alt="Schema concettuale e logico della base di dati Smash Burger" width="100%" />
+</p>
+
 ### 3.5. Gestione della concorrenza
 
 Particolare cura è stata riservata a due scenari critici di concorrenza sui dati:
