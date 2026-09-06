@@ -1,114 +1,97 @@
 <?php
-require_once __DIR__ . '/includes/resources.php';
+/**
+ * Carrello e scelta dei prodotti.
+ *
+ * Senza una sede scelta la pagina chiede da dove si vuole ordinare. Con la sede scelta
+ * mostra la griglia dei prodotti disponibili li' e, in fondo, il riepilogo di quanto e'
+ * già stato aggiunto.
+ */
 
-if (!is_logged_in() && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $csrfTokenForm = $_POST['csrf_token'] ?? null;
-    $redirectTo = auth_normalize_redirect_target((string) ($_POST['redirect_to'] ?? 'prodotti'), 'prodotti');
+require_once __DIR__ . '/includes/risorse.php';
 
-    if (!csrf_is_valid($csrfTokenForm)) {
-        flash_set('error', 'Sessione scaduta o richiesta non valida.');
-        header('Location: ' . app_route('accedi', ['redirect' => $redirectTo]));
-        exit;
-    }
+richiedi_permesso($pdo);
 
-    flash_set('error', 'Per continuare devi effettuare l\'accesso.');
-    header('Location: ' . app_route('accedi', ['redirect' => $redirectTo]));
-    exit;
-}
+$utente = utente_corrente($pdo);
+$utenteId = (int) $utente['id'];
 
-require_customer_order_access();
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
+    richiedi_post_valido();
 
-$utente = current_user();
-$userId = (int) $utente['id'];
-$csrfToken = csrf_token();
+    $azione = is_string($_POST['azione'] ?? null) ? $_POST['azione'] : '';
+    $carrello = carrello_corrente($pdo, $utenteId);
 
-$selectedBranch = branch_get_selected($pdo);
-$selectedBranchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;
-$syncOnLoad = cart_sync_with_selected_branch($pdo, $userId, $selectedBranchId);
-if (!$syncOnLoad['ok']) {
-    flash_set('error', $syncOnLoad['message'] ?? 'Impossibile allineare sede e carrello.');
-    $selectedBranch = branch_get_selected($pdo);
-    $selectedBranchId = $selectedBranch ? (int) $selectedBranch['id'] : 0;
-}
+    if ($azione === 'scegli-sede') {
+        $slug = slug_richiesto('sede', $_POST);
+        $sede = $slug === null ? null : sede_per_slug($pdo, $slug);
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $csrfTokenForm = $_POST['csrf_token'] ?? null;
-    if (!csrf_is_valid($csrfTokenForm)) {
-        flash_set('error', 'Sessione scaduta o richiesta non valida.');
-        header('Location: ' . app_route('carrello'));
-        exit;
-    }
-
-    $action = (string) ($_POST['action'] ?? '');
-    $isAjax = isset($_POST['ajax']) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest');
-    $result = ['ok' => false, 'message' => 'Azione non valida.'];
-
-    if ($action === 'add_product') {
-        $productId = (int) ($_POST['product_id'] ?? 0);
-        $qty = max(1, (int) ($_POST['quantity'] ?? 1));
-        $result = cart_add_product($pdo, $userId, $productId, $qty, $selectedBranchId);
-    } elseif ($action === 'update_item') {
-        $itemId = (int) ($_POST['item_id'] ?? 0);
-        $qty = (int) ($_POST['quantity'] ?? 0);
-        $result = cart_update_item_qty($pdo, $userId, $itemId, $qty, $selectedBranchId);
-    } elseif ($action === 'remove_item') {
-        $itemId = (int) ($_POST['item_id'] ?? 0);
-        $result = cart_remove_item($pdo, $userId, $itemId, $selectedBranchId);
-    } elseif ($action === 'clear_cart') {
-        cart_clear($pdo, $userId, $selectedBranchId);
-        $result = ['ok' => true, 'message' => 'Carrello svuotato.'];
-    }
-
-    if ($isAjax) {
-        if ($result['ok']) {
-            $summary = cart_get_summary($pdo, $userId, $selectedBranchId);
-            $result['cart_count'] = (int) ($summary['items_count'] ?? 0);
-            $result['cart_total_formatted'] = money_eur((int) ($summary['total_cents'] ?? 0));
-            $result['cart_is_empty'] = empty($summary['items']);
-
-            if ($action === 'update_item' || $action === 'remove_item') {
-                $itemId = (int) ($_POST['item_id'] ?? 0);
-                foreach ($summary['items'] as $summaryItem) {
-                    if ((int) $summaryItem['id'] !== $itemId) {
-                        continue;
-                    }
-
-                    $result['item'] = [
-                        'id' => (int) $summaryItem['id'],
-                        'quantity' => (int) $summaryItem['quantity'],
-                        'line_total_formatted' => money_eur((int) $summaryItem['line_total_cents']),
-                    ];
-                    break;
-                }
-            }
+        if ($sede === null) {
+            messaggio_imposta('errore', 'Scegli una delle sedi disponibili.');
+            vai_a('carrello');
         }
-        header('Content-Type: application/json');
-        echo json_encode($result);
-        exit;
+
+        carrello_apri($pdo, $utenteId, (int) $sede['id']);
+        vai_a('carrello');
     }
 
-    flash_set($result['ok'] ? 'success' : 'error', $result['message']);
-    
-    $allowedRedirects = ['./', 'carrello', 'prodotti'];
-    $redirectTo = (string) ($_POST['redirect_to'] ?? 'carrello');
-    if (!in_array($redirectTo, $allowedRedirects, true)) {
-        $redirectTo = 'carrello';
+    if ($carrello === null) {
+        messaggio_imposta('errore', 'Il carrello è scaduto: scegli di nuovo la sede.');
+        vai_a('carrello');
     }
 
-    header('Location: ' . app_route($redirectTo));
-    exit;
+    $carrelloId = (int) $carrello['id'];
+    $sedeId = (int) $carrello['sede_id'];
+
+    // I pulsanti che agiscono su una riga portano il nome dell'azione e, come valore,
+    // l'identificativo del prodotto: il browser invia solo quello premuto.
+    $prodottoId = $azione === 'aggiungi' ? identificativo($_POST, 'prodotto_id') : null;
+
+    foreach (['aggiungi', 'diminuisci', 'togli'] as $nome) {
+        if (isset($_POST[$nome])) {
+            $azione = $nome;
+            $prodottoId = identificativo($_POST, $nome);
+            break;
+        }
+    }
+
+    if ($azione === 'svuota') {
+        $esito = carrello_svuota($pdo, $carrelloId);
+    } elseif ($prodottoId === null) {
+        errore(403);
+    } elseif ($azione === 'aggiungi') {
+        $esito = carrello_aggiungi($pdo, $carrelloId, $sedeId, $prodottoId);
+    } elseif ($azione === 'togli') {
+        $esito = carrello_togli($pdo, $carrelloId, $prodottoId);
+    } elseif ($azione === 'diminuisci') {
+        $esito = carrello_diminuisci($pdo, $carrelloId, $sedeId, $prodottoId);
+    } else {
+        errore(403);
+    }
+
+    messaggio_imposta($esito['ok'] ? 'successo' : 'errore', $esito['messaggio']);
+    vai_a('carrello');
 }
 
-$carrello = cart_get_summary($pdo, $userId, $selectedBranchId);
-$flash = flash_get();
+$carrello = carrello_corrente($pdo, $utenteId);
 
-render_page('checkout/carrello.php', [
-    'pageTitle' => 'Carrello - Smash Burger Original',
-    'pageDescription' => 'Visualizza e gestisci i prodotti nel tuo carrello Smash Burger.',
-    'currentPage' => 'carrello',
-    'breadcrumb' => [['Home', './'], ['Carrello', null]],
+// La sede puo' arrivare anche da un collegamento della pagina di una sede.
+if ($carrello === null && isset($_GET['sede'])) {
+    $slug = slug_richiesto('sede');
+    $sede = $slug === null ? null : sede_per_slug($pdo, $slug);
+
+    if ($sede !== null) {
+        carrello_apri($pdo, $utenteId, (int) $sede['id']);
+        vai_a('carrello');
+    }
+}
+
+$righe = $carrello === null ? [] : carrello_righe($pdo, (int) $carrello['id'], (int) $carrello['sede_id']);
+
+mostra_pagina('ordine/carrello.php', [
+    'breadcrumb' => [['Home', url()], ['Carrello', null]],
     'carrello' => $carrello,
-    'flash' => $flash,
-    'selectedBranch' => $selectedBranch,
-    'csrfToken' => $csrfToken
+    'sedi' => sedi_attive($pdo),
+    'prodotti' => $carrello === null ? [] : prodotti_in_sede($pdo, (int) $carrello['sede_id']),
+    'righe' => $righe,
+    'totale' => carrello_totale($righe),
+    'articoli' => carrello_articoli($righe),
 ]);

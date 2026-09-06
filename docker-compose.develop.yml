@@ -17,9 +17,9 @@ services:
     depends_on:
       - db
 
-  # 2. Database SQL (MariaDB 11)
+  # 2. Database SQL (MariaDB 10.6, stessa versione del server di consegna)
   db:
-    image: mariadb:11
+    image: mariadb:10.6
     container_name: webapp_mariadb
     restart: unless-stopped
     expose:

@@ -1,7 +1,12 @@
 <?php
-require_once __DIR__ . '/includes/resources.php';
+/**
+ * Pagina informativa: Accessibilita.
+ */
 
-render_basic_page('info/accessibilita.php', 'Dichiarazione di Accessibilità - Smash Burger Original', 'accessibilita', 'Accessibilità', [
-    'pageDescription' => 'Dichiarazione di accessibilità del sito Smash Burger Original.',
-    'accessibilityUpdatedAt' => '03/05/2026'
+require_once __DIR__ . '/includes/risorse.php';
+
+richiedi_permesso($pdo);
+
+mostra_pagina('pubbliche/accessibilita.php', [
+    'breadcrumb' => [['Home', url()], ['Accessibilita', null]],
 ]);

@@ -1,0 +1,489 @@
+/*
+    Scostamenti per la stampa. Il foglio principale non si ripete: qui stanno solo le
+    regole che cambiano.
+
+    Su carta valgono tre vincoli che a schermo non esistono. Il primo: la pagina non
+    scorre piu' dentro un contenitore proprio, quindi l'impalcatura a schermata fissa va
+    sciolta, altrimenti si stampa solo la prima facciata. Il secondo: gli sfondi non
+    vengono stampati, quindi ogni blocco che vive di campitura piena lascerebbe il proprio
+    testo chiaro su carta bianca, cioe' niente. Il terzo: una fotografia serve a
+    riconoscere, non a riempire, quindi ha un'altezza massima e cede la facciata al testo.
+*/
+
+@page {
+    /* Qui la misura e' fisica e non deve seguire il corpo del testo scelto da chi
+       guarda, quindi e' l'unico punto del progetto espresso in centimetri. */
+    margin: 2cm;
+}
+
+/* ---------- Proprieta' personalizzate ---------- */
+
+/* Il secondo selettore non e' un doppione: la tavolozza scura e' dichiarata su
+   :root:not(.tema-chiaro) dentro una media query di preferenza, che vale anche su carta e
+   ha specificita' maggiore di :root. Senza pareggiarla, chi ha il sistema in tema scuro
+   stamperebbe testo chiaro su carta bianca. I tre accenti tornano ai valori del tema
+   chiaro per lo stesso motivo: quelli scuri sono pensati per un fondo scuro. */
+:root,
+:root:not(.tema-chiaro) {
+    --senape: #9c6f00;
+    --ketchup: #b3181f;
+    --cetriolini: #3f6b24;
+    --sfondo: #ffffff;
+    --superficie: #ffffff;
+    --superficie-alternativa: #ffffff;
+    --crema: #000000;
+    --inchiostro: #000000;
+    --testo: #000000;
+    --identita: #000000;
+    --testo-su-identita: #000000;
+    --testo-su-pieno: #000000;
+    --testo-su-senape: #000000;
+    --visitato: #000000;
+    --bordo: #999999;
+    --ombra: none;
+    --ombra-scura: none;
+    --larghezza-massima: none;
+    --bordo-spessore: 0.0625rem;
+    --bordo-grafico: 0.0625rem;
+    --testo-piccolo: 0.6875rem;
+    --testo-normale: 0.8125rem;
+    --testo-introduttivo: 0.9375rem;
+    --titolo-1: 1.75rem;
+    --titolo-2: 1.375rem;
+    --titolo-3: 1.125rem;
+    --spazio-5: 0.75rem;
+    --spazio-6: 1rem;
+    --spazio-7: 1.25rem;
+    --spazio-8: 1.5rem;
+}
+
+/* ---------- Impalcatura ---------- */
+
+/* A schermo il contenuto scorre dentro .pagina-scorribile e l'intestazione resta fissa
+   sopra: su carta questo taglierebbe tutto quello che segue la prima facciata. */
+html,
+body {
+    height: auto;
+    overflow: visible;
+}
+
+body {
+    display: block;
+    min-width: 0;
+    padding-top: 0;
+}
+
+.pagina-scorribile {
+    overflow: visible;
+}
+
+body > header {
+    position: static;
+    border-bottom: var(--bordo-spessore) solid var(--testo);
+}
+
+.header-interna {
+    display: block;
+    padding: 0 0 var(--spazio-3);
+}
+
+body > header,
+main,
+.pagina-scorribile > footer {
+    max-width: none;
+    padding: 0;
+}
+
+main {
+    padding-top: var(--spazio-4);
+}
+
+.pagina-scorribile > footer {
+    padding-top: var(--spazio-3);
+    border-top: var(--bordo-spessore) solid var(--testo);
+}
+
+/* Navigazione, comandi e fregi non hanno senso su carta: restano il marchio, il percorso
+   e il contenuto. Spariscono anche i collegamenti che portano avanti o indietro nel sito,
+   con il paragrafo che li contiene, e i blocchi che esistono solo per mandare da
+   un'altra parte: la ripartenza dopo un 404 e l'invito finale, di cui si toglie l'intera
+   sezione e non il solo pulsante, altrimenti resterebbe un titolo senza niente sotto. */
+.salta,
+.torna-su,
+.filtri,
+.validazioni,
+.firma-footer,
+.azioni,
+.azioni-riga,
+.navigazione-pagina,
+.pagina-interna .navigazione-pagina,
+.ripartenza,
+section:has(> .ripartenza),
+.collegamento-freccia,
+.collegamento-indietro,
+.chiusura-sezione,
+p:has(> .collegamento-freccia),
+p:has(> .collegamento-indietro),
+.invito-finale,
+body > header nav,
+.pagina-scorribile > footer nav,
+button,
+.pulsante {
+    display: none;
+}
+
+/* ---------- Campiture ---------- */
+
+/* Gli sfondi non si stampano: senza questa regola ogni blocco a campitura piena
+   lascerebbe il proprio testo chiaro su carta bianca. Torna tutto nero su bianco, e il
+   riquadro, dove serviva a delimitare, resta come filo di contorno. */
+body > header,
+.pagina-scorribile > footer,
+.apertura-home,
+.foto-editoriale,
+.foto-prodotto,
+.immagine-dettaglio-prodotto,
+.anteprima-prodotto,
+.podio,
+.racconto-eventi,
+.manifesto,
+.servizio-eventi,
+.contatti-diretti,
+.cartello-menu,
+.sigla-citta,
+.ordine-semplice,
+.invito-finale,
+.apertura-editoriale,
+.apertura-sede,
+.posizione,
+.gradino-podio,
+.etichetta,
+.etichetta-categoria,
+.codice-errore,
+.pagina-mappa > section a,
+thead th,
+.racconto-eventi .occhiello,
+.servizio-eventi .indice-pannello,
+.istantanea-hero .foto-editoriale,
+.pagina-ordine .header-riepilogo,
+.podio-classifica li:nth-child(2) .gradino-podio,
+.podio-classifica li:nth-child(3) .gradino-podio,
+.griglia-citta li:nth-child(2) .sigla-citta,
+.griglia-citta li:nth-child(3) .sigla-citta,
+.griglia-citta li:nth-child(4) .sigla-citta,
+.elenco-sedi li:nth-child(2) .sigla-citta,
+.elenco-sedi li:nth-child(3) .sigla-citta,
+.elenco-sedi li:nth-child(4) .sigla-citta {
+    background: none;
+    color: var(--testo);
+}
+
+/* Le etichette perdono la campitura che le distingueva: il contorno tiene il loro posto
+   di pastiglia, e lo stato resta comunque scritto per esteso. Le varianti vanno spente
+   una per una perche' l'attributo le rende piu' specifiche della classe, e lasciarle
+   accese darebbe testo scuro su verde o su rosso, cioe' un contrasto insufficiente. */
+.etichetta[data-tipo="positivo"],
+.etichetta[data-tipo="attenzione"],
+.etichetta[data-tipo="negativo"],
+.etichetta[data-tipo="errore"] {
+    background: none;
+    color: var(--testo);
+}
+
+.etichetta,
+.etichetta-categoria {
+    border: var(--bordo-spessore) solid var(--testo);
+}
+
+.etichetta-categoria {
+    position: static;
+    margin-bottom: var(--spazio-2);
+}
+
+thead th {
+    border-bottom: 0.125rem solid var(--testo);
+}
+
+/* In testata si stampa il logo, ma non quello del sito: meta' della parola e' bianca,
+   pensata per il fondo scuro, e su carta sparirebbe. Va quindi il secondo segno, dove
+   quella parola e' ridisegnata in nero. */
+.marchio img {
+    display: none;
+}
+
+.marchio .marchio-stampa {
+    display: block;
+}
+
+/* Le diciture di servizio erano in senape pieno perche' stavano su fondo scuro: su carta
+   bianca prendono il senape scuro, che resta riconoscibile e si legge. */
+.marchio-footer,
+.contatti-diretti span,
+.pagina-ordine .dati-riepilogo strong {
+    color: var(--senape);
+}
+
+/* ---------- Immagini ---------- */
+
+/* Una fotografia su carta serve a riconoscere il prodotto o il luogo: tiene le proprie
+   proporzioni e non supera i sei rem di altezza, cosi' nella facciata ci sta anche il
+   testo che accompagna. Le altezze fisse del foglio a schermo sono piu' specifiche di una
+   regola sul solo img, quindi qui vanno nominate una per una. */
+img,
+.foto-prodotto img,
+.panino-podio img,
+.immagine-dettaglio-prodotto img,
+.istantanea img,
+.anteprima-prodotto img,
+.foto-editoriale > img,
+.pagina-controllo .anteprima-prodotto img,
+.pagina-ordine [data-modulo="aggiungi"] .scheda img,
+.pagina-ordine [data-modulo="aggiungi"] li:nth-child(3n + 2) img,
+.pagina-ordine [data-modulo="aggiungi"] li:nth-child(3n) img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 6rem;
+    padding: 0;
+    background: none;
+    filter: none;
+}
+
+/* La campitura dietro la fotografia di un prodotto cambia con la posizione nella griglia:
+   quelle regole sono piu' specifiche della generale e si spengono con la stessa forma. */
+.griglia-menu li:nth-child(3n+2) .foto-prodotto,
+.griglia-menu li:nth-child(3n+3) .foto-prodotto {
+    background: none;
+}
+
+/* I contenitori non impongono piu' un'altezza propria: la detta l'immagine ridotta. */
+.foto-prodotto,
+.immagine-dettaglio-prodotto,
+.istantanea img,
+.istantanea-hero .foto-editoriale {
+    min-height: 0;
+    aspect-ratio: auto;
+}
+
+/* A schermo la diapositiva editoriale e' una campitura con la fotografia sotto il testo
+   sovrapposto; su carta diventa una fotografia piccola con la didascalia sotto. */
+.foto-editoriale {
+    display: block;
+    aspect-ratio: auto;
+    padding: var(--spazio-3);
+    border: var(--bordo-spessore) solid var(--bordo);
+}
+
+.foto-editoriale::after {
+    display: none;
+}
+
+.foto-editoriale > img {
+    position: static;
+    margin-bottom: var(--spazio-2);
+}
+
+.foto-editoriale strong {
+    display: block;
+    max-width: none;
+    font-size: var(--titolo-3);
+}
+
+/* Le istantanee non sono inclinate su carta: la rotazione non aggiunge niente e ruba
+   spazio ai margini della facciata. */
+.istantanea,
+.istantanea:nth-child(even),
+.istantanea-hero {
+    max-width: 22rem;
+    padding: var(--spazio-2);
+    border: var(--bordo-spessore) solid var(--bordo);
+    transform: none;
+}
+
+/* ---------- Disposizione ---------- */
+
+/* Le aperture a due colonne diventano una colonna sola: con la fotografia ridotta la
+   seconda colonna resterebbe mezza vuota, e il testo guadagna larghezza di lettura. */
+.apertura-home,
+.apertura-errore,
+.apertura-pagina,
+.apertura-editoriale,
+.apertura-contatti,
+.apertura-sede,
+.dettaglio-prodotto,
+.racconto,
+.racconto-metodo,
+.header-sezione,
+.capitoli-storia > section,
+.pagina-documento > section,
+.footer-principale {
+    grid-template-columns: 1fr;
+    gap: var(--spazio-4);
+}
+
+/* Gli elenchi di schede restano affiancati, ma a due colonne: tre sono troppe per la
+   larghezza di una facciata con questo corpo del testo. */
+.griglia,
+.griglia-menu,
+.griglia-citta,
+.griglia-servizi,
+.griglia-dettaglio,
+.griglia-sede-dettaglio,
+.elenco-sedi,
+.passi,
+.pagina-interna .scelte,
+.pagina-mappa > section ul {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spazio-3);
+}
+
+/* Il podio a schermo e' un blocco scuro che mette il primo al centro, con i gradini a
+   scalare e i nomi in senape: su carta conta l'ordine di lettura, i tre tornano in fila
+   dal primo, e le altezze diverse spariscono perche' senza campitura non si leggono piu'
+   come gradini. */
+.podio-classifica li:nth-child(1),
+.podio-classifica li:nth-child(2),
+.podio-classifica li:nth-child(3) {
+    grid-column: auto;
+    grid-row: auto;
+}
+
+.podio-classifica {
+    align-items: start;
+    padding-top: 0;
+}
+
+.podio .occhiello,
+.podio .prezzo {
+    color: var(--testo);
+}
+
+.gradino-podio,
+.podio-classifica li:nth-child(2) .gradino-podio,
+.podio-classifica li:nth-child(3) .gradino-podio {
+    min-height: 0;
+    border: var(--bordo-spessore) solid var(--bordo);
+}
+
+.posizione,
+.manifesto p,
+.cartello-menu strong {
+    font-size: var(--titolo-1);
+}
+
+/* I cartelli inclinati si raddrizzano e si allineano a sinistra come il testo che
+   accompagnano: su carta l'inclinazione fa soltanto perdere margine. */
+.cartello-menu,
+.numero-sedi {
+    justify-self: start;
+    transform: none;
+}
+
+.cartello-menu {
+    width: auto;
+}
+
+/* ---------- Tabelle e moduli ---------- */
+
+/* A schermo le tabelle larghe scorrono dentro il proprio contenitore; su carta non c'e'
+   niente da scorrere, quindi si lasciano impaginare per intero. */
+.pagina-controllo > form,
+.pagina-controllo .contenitore-grafico,
+.pagina-interna > table,
+.pagina-ordine .corpo-riepilogo {
+    overflow: visible;
+}
+
+.pagina-controllo .incasso .grafico-incasso {
+    min-width: 0;
+}
+
+/* Le larghezze massime delle pagine interne sono pensate per uno schermo largo: sul
+   foglio sono piu' della carta disponibile e taglierebbero le ultime colonne. */
+.pagina-interna,
+.pagina-controllo {
+    max-width: none;
+}
+
+/* Il minimo di larghezza serviva a tenere il campo e il suo pulsante sulla stessa riga:
+   senza pulsanti non serve piu', e senza toglierlo la tabella sfora la facciata. */
+.pagina-controllo td form {
+    min-width: 0;
+}
+
+/* Un modulo esiste per essere compilato e inviato: su carta non si compila e non si
+   invia, quindi sparisce tutto il gruppo di campi e non solo il pulsante che lo chiude.
+   Il progetto racchiude ogni modulo di inserimento in un fieldset con la sua legenda,
+   quindi basta quello: i comandi che stanno nelle celle delle tabelle del pannello non
+   hanno fieldset e restano, perche' quelli portano un dato e non una richiesta. */
+fieldset {
+    display: none;
+}
+
+/* Il carrello si stampa per sapere che cosa e' stato scelto: la griglia da cui si
+   aggiungono altri prodotti e' un comando, non parte dell'ordine. */
+[data-modulo="aggiungi"] {
+    display: none;
+}
+
+/* I campi rimasti sono quelli che mostrano un valore dentro una tabella: si leggono come
+   dato e non come controllo da compilare. */
+input,
+select,
+textarea {
+    background: none;
+    border: var(--bordo-spessore) solid var(--bordo);
+}
+
+/* Nella mappa del sito i collegamenti sono riquadrati per essere bersagli comodi da
+   toccare: su carta non si tocca niente e il riquadro li farebbe leggere come pulsanti,
+   quindi tornano righe di testo. */
+.pagina-mappa > section a {
+    display: inline;
+    padding: 0;
+    border: 0;
+}
+
+/* Nei blocchi di recapito restano l'indirizzo, l'email e il telefono: il rimando
+   all'elenco delle sedi e' un collegamento a un'altra pagina e su carta non porta da
+   nessuna parte, quindi se ne va con il proprio paragrafo. */
+address p:has(a:not([href^="mailto"]):not([href^="tel"])) {
+    display: none;
+}
+
+/* Le colonne che contengono soltanto comandi spariscono con la propria intestazione: una
+   colonna vuota intitolata Azioni non e' un contenuto. Il marcatore sta sul th e su ogni
+   td della colonna, cosi' le celle restano in numero pari e la tabella non si scompone. */
+[data-colonna="azioni"] {
+    display: none;
+}
+
+/* ---------- Interruzioni di pagina ---------- */
+
+/* Un titolo non resta da solo in fondo alla facciata, e le unita' brevi non si spezzano
+   fra due pagine. */
+h1,
+h2,
+h3 {
+    break-after: avoid;
+}
+
+.scheda,
+.istantanea,
+.avviso,
+figure,
+li,
+tr {
+    break-inside: avoid;
+}
+
+/* L'intestazione di una tabella lunga si ripete su ogni facciata. */
+thead {
+    display: table-header-group;
+}
+
+/* L'indirizzo di un collegamento esterno va scritto, altrimenti su carta si perde. */
+main a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: var(--testo-piccolo);
+}

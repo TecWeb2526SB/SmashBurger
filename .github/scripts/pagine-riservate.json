@@ -1,0 +1,36 @@
+{
+  "cliente": {
+    "utente": "user",
+    "password": "user",
+    "pagine": ["area-personale", "profilo", "carrello", "pagamento", "prenota"]
+  },
+  "manager": {
+    "utente": "manager",
+    "password": "manager",
+    "pagine": [
+      "area-personale",
+      "profilo",
+      "controllo",
+      "controllo-prodotti",
+      "controllo-prodotto",
+      "controllo-sede",
+      "controllo-prenotazioni"
+    ]
+  },
+  "amministratore": {
+    "utente": "admin",
+    "password": "admin",
+    "pagine": [
+      "area-personale",
+      "profilo",
+      "controllo",
+      "controllo-prodotti",
+      "controllo-prodotto",
+      "controllo-sedi",
+      "controllo-sede",
+      "controllo-utenti",
+      "controllo-prenotazioni",
+      "controllo-contatti"
+    ]
+  }
+}

@@ -1,131 +1,93 @@
 <?php
 /**
- * account-profilo: View per modifica credenziali account.
+ * Profilo. Riceve $utente, $errori e $sezione dal controller.
  *
- * Variabili attese:
- *   $utente           array
- *   $flash            ?array
- *   $csrfToken        string
- *   $formIdentita     array
- *   $formPassword     array
- *   $erroriIdentita   array
- *   $erroriPassword   array
+ * Ogni riquadro è un modulo indipendente: gli errori riguardano solo quello che e'
+ * stato inviato, indicato da $sezione.
  */
+
+$erroreDi = static function (string $sezioneAttesa, string $campo) use ($errori, $sezione): ?string {
+    return $sezione === $sezioneAttesa ? ($errori[$campo] ?? null) : null;
+};
 ?>
+<h1>Il tuo profilo</h1>
 
-<section class="account-page" aria-labelledby="titolo-profilo">
-    <div class="contenitore">
-        <div>
-            <span class="home-eyebrow">Profilo</span>
-            <h1 id="titolo-profilo">Gestisci account</h1>
-            <p class="account-hero-text">
-                Aggiorna i dati di accesso e mantieni il tuo account ordinato, chiaro e sempre sotto controllo.
-            </p>
-            <div class="account-action-row">
-                <a class="bottone-secondario" href="<?php echo e(app_route('account')); ?>">&larr; Torna all'area personale</a>
-            </div>
-        </div>
+<section>
+    <h2>Dati personali</h2>
 
-        <?php echo ui_alert($flash); ?>
+    <form method="post" action="<?php echo e(url('profilo')); ?>">
+        <?php echo campo_csrf(); ?>
+        <input type="hidden" name="azione" value="dati" />
 
-        <div class="checkout-shell">
-            <form class="checkout-card checkout-form" method="POST" action="<?php echo e(app_route('account-profilo')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-identita-account">
-                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                <input type="hidden" name="action" value="update_identity">
+        <fieldset>
+            <legend>Nome, cognome ed email</legend>
 
-                <div class="account-panel-head">
-                    <span class="account-panel-kicker">Accesso</span>
-                    <h2 id="titolo-identita-account">Credenziali</h2>
-                    <p class="checkout-muted">Modifica username o email. Per confermare l'operazione ti chiediamo la password attuale.</p>
-                </div>
-
-                <?php echo ui_error_summary($erroriIdentita); ?>
-
-                <?php
-                echo ui_form_group('profilo-username', 'Username', 'text', [
-                    'value' => $formIdentita['username'],
-                    'error' => $erroriIdentita['username'] ?? null,
-                    'autocomplete' => 'username',
-                    'extra_attrs' => 'name="username" minlength="3" maxlength="50"'
-                ]);
-
-                echo ui_form_group('profilo-email', 'Email', 'email', [
-                    'value' => $formIdentita['email'],
-                    'error' => $erroriIdentita['email'] ?? null,
-                    'autocomplete' => 'email',
-                    'extra_attrs' => 'name="email" maxlength="160"'
-                ]);
-
-                echo ui_form_group('profilo-current-password-identita', 'Password attuale', 'password', [
-                    'error' => $erroriIdentita['current_password'] ?? null,
-                    'autocomplete' => 'current-password',
-                    'extra_attrs' => 'name="current_password"'
-                ]);
-                ?>
-
-                <div class="checkout-navigation checkout-navigation--solo-azione">
-                    <button class="bottone-primario" type="submit">Salva credenziali</button>
-                </div>
-            </form>
-
-            <aside class="checkout-card" aria-labelledby="titolo-riepilogo-account">
-                <h2 id="titolo-riepilogo-account">In breve</h2>
-                <p class="checkout-muted">
-                    Qui puoi aggiornare le credenziali di accesso in un unico passaggio. Username ed email vengono salvati subito dopo la conferma con la password attuale.
+            <?php foreach (['nome' => 'Nome', 'cognome' => 'Cognome'] as $campo => $etichetta): ?>
+                <?php $errore = $erroreDi('dati', $campo); ?>
+                <p>
+                    <label for="<?php echo e($campo); ?>"><?php echo e($etichetta); ?></label>
+                    <input type="text" id="<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
+                        required="required" minlength="2" maxlength="80"
+                        value="<?php echo e($utente[$campo]); ?>"
+                        <?php if ($errore !== null): ?>aria-describedby="errore-<?php echo e($campo); ?>" data-stato="errore"<?php endif; ?> />
+                    <?php if ($errore !== null): ?>
+                        <small id="errore-<?php echo e($campo); ?>"><?php echo e($errore); ?></small>
+                    <?php endif; ?>
                 </p>
-            </aside>
-        </div>
+            <?php endforeach; ?>
 
-        <div class="checkout-shell">
-            <form class="checkout-card checkout-form" method="POST" action="<?php echo e(app_route('account-profilo')); ?>" data-valida="true" novalidate="novalidate" aria-labelledby="titolo-password-account">
-                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>">
-                <input type="hidden" name="action" value="update_password">
+            <?php $errore = $erroreDi('dati', 'email'); ?>
+            <p>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required="required" maxlength="160"
+                    autocomplete="email" value="<?php echo e($utente['email']); ?>"
+                    <?php if ($errore !== null): ?>aria-describedby="errore-email" data-stato="errore"<?php endif; ?> />
+                <?php if ($errore !== null): ?>
+                    <small id="errore-email"><?php echo e($errore); ?></small>
+                <?php endif; ?>
+            </p>
 
-                <div class="account-panel-head">
-                    <span class="account-panel-kicker">Protezione</span>
-                    <h2 id="titolo-password-account">Aggiorna password</h2>
-                    <p class="checkout-muted">Scegli una nuova password e confermala per completare il salvataggio in modo sicuro.</p>
-                </div>
-
-                <?php echo ui_error_summary($erroriPassword); ?>
-
-                <?php
-                echo ui_form_group('profilo-current-password', 'Password attuale', 'password', [
-                    'error' => $erroriPassword['current_password'] ?? null,
-                    'autocomplete' => 'current-password',
-                    'extra_attrs' => 'name="current_password"'
-                ]);
-
-                echo ui_form_group('profilo-new-password', 'Nuova password', 'password', [
-                    'error' => $erroriPassword['new_password'] ?? null,
-                    'autocomplete' => 'new-password',
-                    'extra_attrs' => 'name="new_password" minlength="8" aria-describedby="profilo-new-password-suggerimento profilo-new-password-errore"'
-                ]);
-                ?>
-                <p id="profilo-new-password-suggerimento" class="campo-aiuto">Caratteri ammessi: lettere, numeri, underscore (_) e ! @ # $ % &amp; (minimo 8)</p>
-
-                <?php
-                echo ui_form_group('profilo-confirm-password', 'Conferma nuova password', 'password', [
-                    'error' => $erroriPassword['confirm_password'] ?? null,
-                    'autocomplete' => 'new-password',
-                    'extra_attrs' => 'name="confirm_password"'
-                ]);
-                ?>
-
-                <div class="checkout-navigation checkout-navigation--solo-azione">
-                    <button class="bottone-primario" type="submit">Aggiorna password</button>
-                </div>
-            </form>
-
-            <aside class="checkout-card" aria-labelledby="titolo-note-sicurezza">
-                <h2 id="titolo-note-sicurezza">Suggerimenti</h2>
-                <ul class="riepilogo-lista">
-                    <li><span>Password attuale</span><strong>Richiesta</strong></li>
-                    <li><span>Lunghezza minima</span><strong>8 caratteri</strong></li>
-                    <li><span>Caratteri ammessi</span><strong>Lettere, numeri, underscore (_) e ! @ # $ % &amp;</strong></li>
-                </ul>
-                <p class="checkout-muted account-note">Una password più lunga e unica rende l'accesso più solido e semplice da gestire nel tempo.</p>
-            </aside>
-        </div>
-    </div>
+            <p><button type="submit">Salva i dati</button></p>
+        </fieldset>
+    </form>
 </section>
+
+<section>
+    <h2>Password</h2>
+
+    <form method="post" action="<?php echo e(url('profilo')); ?>">
+        <?php echo campo_csrf(); ?>
+        <input type="hidden" name="azione" value="password" />
+
+        <fieldset>
+            <legend>Cambia la password</legend>
+
+            <?php
+            $campiPassword = [
+                'attuale' => ['Password attuale', 'current-password'],
+                'nuova' => ['Nuova password', 'new-password'],
+                'conferma' => ['Ripeti la nuova password', 'new-password'],
+            ];
+            ?>
+            <?php foreach ($campiPassword as $campo => $dettagli): ?>
+                <?php $errore = $erroreDi('password', $campo); ?>
+                <p>
+                    <label for="pwd-<?php echo e($campo); ?>"><?php echo e($dettagli[0]); ?></label>
+                    <input type="password" id="pwd-<?php echo e($campo); ?>" name="<?php echo e($campo); ?>"
+                        required="required" autocomplete="<?php echo e($dettagli[1]); ?>"
+                        <?php echo $campo === 'attuale' ? '' : 'minlength="8"'; ?>
+                        <?php if ($errore !== null): ?>aria-describedby="errore-pwd-<?php echo e($campo); ?>" data-stato="errore"<?php endif; ?> />
+                    <?php if ($errore !== null): ?>
+                        <small id="errore-pwd-<?php echo e($campo); ?>"><?php echo e($errore); ?></small>
+                    <?php endif; ?>
+                </p>
+            <?php endforeach; ?>
+
+            <p><button type="submit">Cambia la password</button></p>
+        </fieldset>
+    </form>
+</section>
+
+<p class="navigazione-pagina">
+    <a class="collegamento-indietro" href="<?php echo e(url('area-personale')); ?>"><span class="segno-collegamento" aria-hidden="true">&lt;</span><span>Torna all'area personale</span></a>
+</p>

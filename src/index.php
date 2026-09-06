@@ -1,19 +1,17 @@
 <?php
 /**
- * index.php: Entry point principale (Controller) per la homepage di SmashBurger.
- * Carica le risorse globali, le view e i template necessari.
+ * Home: apertura del sito e rimandi alle altre pagine pubbliche.
+ *
+ * Il podio è una scelta della casa, non una classifica calcolata sugli ordini: i tre
+ * slug stanno qui e i dati veri (nome, prezzo, immagine) arrivano dal catalogo, cosi'
+ * il collegamento e il prezzo non possono divergere da quelli del menu.
  */
 
-// 1. Includi il file delle risorse centrale
-require_once __DIR__ . '/includes/resources.php';
+require_once __DIR__ . '/includes/risorse.php';
 
-$selectedBranch = branch_get_selected($pdo);
+richiedi_permesso($pdo);
 
-// 2. Definizione variabili specifiche per la pagina
-render_page('public/homepage.php', [
-    'pageTitle' => 'Home - Smash Burger Original | Il vero gusto dello smash',
-    'pageDescription' => 'Scopri l\'autentico Smash Burger: carne croccante fuori e succosa dentro. Ordina online e ritira in sede.',
-    'isHomepage' => true,
-    'currentPage' => './',
-    'selectedBranch' => $selectedBranch
+mostra_pagina('pubbliche/home.php', [
+    'podio' => prodotti_per_slug($pdo, ['italiano', 'bacon-burger', 'vegan-burger']),
+    'sedi' => sedi_attive($pdo),
 ]);

@@ -1,0 +1,159 @@
+name: Qualità
+
+on:
+  push:
+    branches: [main, riscrittura]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  markup:
+    name: Markup HTML, XML e CSS
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/avvia-app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Scarica le pagine pubbliche
+        run: |
+          mkdir -p .tmp/pagine
+          node .github/scripts/pagine-pubbliche.mjs | while IFS= read -r pagina; do
+            nome="${pagina#/}"
+            nome="${nome:-home}"
+            curl -fsS "http://127.0.0.1:8080${pagina}" -o ".tmp/pagine/${nome}.html"
+          done
+          ls -1 .tmp/pagine
+
+      - name: Valida il markup con il validatore Nu del W3C
+        run: |
+          curl -fsSL https://github.com/validator/validator/releases/latest/download/vnu.jar -o vnu.jar
+          java -jar vnu.jar --errors-only .tmp/pagine/*.html
+
+      - name: Installa xmllint
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
+
+      - name: Verifica che il markup rispetti la sintassi XML
+        run: |
+          esito=0
+          for file in .tmp/pagine/*.html; do
+            sed '1{/<!DOCTYPE html>/d;}' "$file" > "${file}.xml"
+            if ! xmllint --noout "${file}.xml"; then
+              echo "Sintassi XML non rispettata in ${file}"
+              esito=1
+            fi
+          done
+          exit $esito
+
+      # Il servizio del W3C viene interrogato direttamente perche' serve distinguere gli
+      # errori dagli avvisi: le proprieta' personalizzate, su cui il progetto e'
+      # costruito, vengono sempre segnalate come non verificabili staticamente, e sono
+      # avvisi. La consegna chiede fogli senza errori, non senza avvisi.
+      - name: Valida i fogli di stile
+        run: |
+          esito=0
+
+          for foglio in src/styles/stile.css src/styles/mobile.css src/styles/stampa.css; do
+            risposta="$(curl -sS --retry 3 --retry-delay 2 -F "file=@${foglio};type=text/css" -F output=json -F warning=no -F profile=css3svg https://jigsaw.w3.org/css-validator/validator)"
+            errori="$(printf '%s' "$risposta" | jq '.cssvalidation.errors | length')"
+
+            echo "${foglio}: ${errori} errori"
+
+            if [ "$errori" != "0" ]; then
+              printf '%s' "$risposta" | jq -r '.cssvalidation.errors[] | "  riga \(.line): \(.message)"'
+              esito=1
+            fi
+
+            sleep 1
+          done
+
+          exit $esito
+
+      - name: Conserva le pagine scaricate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagine-renderizzate
+          path: .tmp/pagine
+
+      - name: Mostra i log in caso di errore
+        if: failure()
+        run: docker compose -f docker-compose.develop.yml logs --tail=200
+
+  accessibilita:
+    name: Accessibilità
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/avvia-app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installa Pa11y
+        run: npm install pa11y@8
+
+      - name: Controlla pagine pubbliche e riservate
+        run: node .github/scripts/controlla-accessibilita.mjs
+
+      - name: Conserva i report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-accessibilita
+          path: .tmp/accessibilita
+
+      - name: Mostra i log in caso di errore
+        if: failure()
+        run: docker compose -f docker-compose.develop.yml logs --tail=200
+
+  prestazioni:
+    name: Prestazioni e buone pratiche
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/avvia-app
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installa Lighthouse
+        run: npm install -g lighthouse@12
+
+      - name: Analizza le pagine pubbliche
+        run: |
+          mkdir -p .tmp/prestazioni
+          node .github/scripts/pagine-pubbliche.mjs | while IFS= read -r pagina; do
+            nome="${pagina#/}"
+            nome="${nome:-home}"
+            lighthouse "http://127.0.0.1:8080${pagina}" \
+              --output=json --output-path=".tmp/prestazioni/${nome}.json" \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --quiet
+          done
+
+      - name: Riepiloga i punteggi
+        run: node .github/scripts/riepilogo-lighthouse.mjs
+
+      - name: Conserva i report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-prestazioni
+          path: .tmp/prestazioni
+
+      - name: Mostra i log in caso di errore
+        if: failure()
+        run: docker compose -f docker-compose.develop.yml logs --tail=200

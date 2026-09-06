@@ -1,127 +1,64 @@
 <?php
 /**
- * footer.php: Frammento di codice per il piè di pagina comune di tutte le pagine.
+ * Chiusura di ogni pagina: fine del contenuto, footer con i collegamenti di servizio,
+ * contatti e badge di validazione.
+ *
+ * Il piede di pagina non riporta un orario di apertura: ogni sede ha il proprio e lo
+ * cambia dal pannello, quindi un orario unico qui sarebbe sbagliato per qualcuno. Al suo
+ * posto c'è il collegamento all'elenco delle sedi, dove gli orari sono quelli veri.
  */
-global $pdo;
-
-$brandContacts = isset($pdo) ? brand_contact_get($pdo) : [];
-$footerBranch = isset($pdo) ? branch_get_selected($pdo) : null;
-$footerHours = $footerBranch['hours'] ?? [];
-
-$brandEmail = (string) ($brandContacts['support_email'] ?? 'info@smashburger.it');
-$brandInfoPhone = (string) ($brandContacts['info_phone'] ?? '+39 049 000 1099');
-$brandOrderPhone = (string) ($brandContacts['order_phone'] ?? '+39 049 000 1000');
-$brandInstagram = (string) ($brandContacts['instagram_url'] ?? 'https://instagram.com/smashburgeroriginal');
 ?>
-</main>
+    </main>
 
-<footer>
-    <div class="contenitore">
+    <a class="torna-su" href="#inizio" title="Torna su">
+        <?php echo icona('freccia-su'); ?>
+        <span class="solo-lettori">Torna su</span>
+    </a>
 
-        <!-- ORARI DI APERTURA -->
-        <section aria-labelledby="titolo-orari">
-            <h2 id="titolo-orari">Orari di apertura</h2>
-            <?php $groupedHours = branch_hours_grouped($footerHours); ?>
-            <ul class="orari-lista-footer">
-                <?php if (!empty($groupedHours)): ?>
-                    <?php foreach ($groupedHours as $row): ?>
-                        <li>
-                            <span class="giorni"><?php echo e($row['days']); ?>:</span>
-                            <span class="ore"><?php echo e($row['hours']); ?></span>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li>Orari non disponibili</li>
-                <?php endif; ?>
-            </ul>
-            <?php if (!empty($footerBranch['name'])): ?>
-                <p class="sede-footer-corrente">Sede: <strong><?php echo e($footerBranch['name']); ?></strong></p>
-            <?php endif; ?>
-        </section>
+    <footer>
+        <div class="footer-principale">
+            <section class="firma-footer">
+                <p class="marchio-footer"><?php echo e(NOME_SITO); ?></p>
+                <h2>La crosta fa il rumore. Il resto lo senti al primo morso.</h2>
+                <p>Quattro sedi, una sola regola: ogni burger si schiaccia quando lo ordini.</p>
+            </section>
 
-        <!-- CONTATTI -->
-        <section aria-labelledby="titolo-contatti">
-            <h2 id="titolo-contatti">Contatti</h2>
-            <address>
-                <p>Email brand: <a href="mailto:<?php echo e($brandEmail); ?>"><?php echo e($brandEmail); ?></a></p>
-                <p>Info brand: <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $brandInfoPhone)); ?>"><?php echo e($brandInfoPhone); ?></a></p>
-                <p>Ordini brand: <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', $brandOrderPhone)); ?>"><?php echo e($brandOrderPhone); ?></a></p>
-                <?php if (!empty($footerBranch['phone'])): ?>
-                    <p>
-                        Telefono sede:
-                        <a href="tel:<?php echo e(preg_replace('/[^0-9+]/', '', (string) $footerBranch['phone'])); ?>">
-                            <?php echo e((string) $footerBranch['phone']); ?>
-                        </a>
-                    </p>
-                <?php endif; ?>
-            </address>
-        </section>
-
-        <!-- INDIRIZZO -->
-        <section aria-labelledby="titolo-indirizzo">
-            <h2 id="titolo-indirizzo">Indirizzo</h2>
-            <address>
-                <?php if (!empty($footerBranch)): ?>
-                    <p><?php echo e($footerBranch['address_line']); ?></p>
-                    <p>
-                        <?php echo e($footerBranch['postal_code']); ?>
-                        <?php echo e($footerBranch['city']); ?>
-                        (<?php echo e($footerBranch['province']); ?>)
-                    </p>
-                    <p>
-                        <a href="<?php echo e(app_route('chi-siamo', [], 'chi-sedi')); ?>">Dettagli sede attiva &rarr;</a>
-                    </p>
-                <?php else: ?>
-                    <p>Sede non disponibile.</p>
-                    <p><a href="<?php echo e(app_route('chi-siamo', [], 'chi-sedi')); ?>">Tutte le sedi &rarr;</a></p>
-                <?php endif; ?>
-            </address>
-        </section>
-
-        <!-- SEGUICI -->
-        <section aria-labelledby="titolo-social">
-            <h2 id="titolo-social">Seguici</h2>
-            <p>
-                <a href="<?php echo e($brandInstagram); ?>" rel="noopener noreferrer" target="_blank"
-                    aria-label="Instagram di Smash Burger (apre in nuova scheda)">
-                    Instagram
-                </a>
-            </p>
-        </section>
-
-        <!-- BARRA INFERIORE -->
-        <div class="footer-basso">
-            <p>&#169; <?php echo date('Y'); ?> Smash Burger Original &#8212; P.IVA 12345678901</p>
-
-            <nav aria-label="Informazioni legali">
+            <nav aria-label="Collegamenti di servizio">
+                <h2>Esplora</h2>
                 <ul>
-                    <li><a href="<?php echo e(app_route('chi-siamo')); ?>">Chi siamo</a></li>
-                    <li><a href="<?php echo e(app_route('privacy')); ?>">Privacy Policy</a></li>
-                    <li><a href="<?php echo e(app_route('mappa-sito')); ?>">Mappa del sito</a></li>
-                    <li><a href="<?php echo e(app_route('accessibilita')); ?>">Accessibilità</a></li>
+                    <?php foreach (pagine_del_menu('footer', $ruoloCorrente) as $slug => $etichetta): ?>
+                        <li><a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </nav>
 
-            <div class="w3c-badges">
-                <img src="images/w3chtml.png" alt="" aria-hidden="true" width="88" height="31" />
-                <img src="images/w3ccss.png" alt="" aria-hidden="true" width="88" height="31" />
-            </div>
+            <section class="recapiti-footer">
+                <h2>Parliamone</h2>
+                <address>
+                <p><a href="mailto:<?php echo e(EMAIL_CONTATTO); ?>"><?php echo e(EMAIL_CONTATTO); ?></a></p>
+                <p><a href="tel:<?php echo e(str_replace(' ', '', TELEFONO_CONTATTO)); ?>"><?php echo e(TELEFONO_CONTATTO); ?></a></p>
+                <p><a href="<?php echo e(url('sedi')); ?>">Orari di ogni sede</a></p>
+                </address>
+            </section>
         </div>
 
+        <div class="footer-finale">
+            <p><small>Smash Burger, progetto del corso di Tecnologie Web.</small></p>
+            <p class="validazioni">
+                <a href="https://validator.w3.org/">
+                    <img src="<?php echo e(risorsa('images/w3chtml.webp')); ?>" width="88" height="31"
+                        loading="lazy" alt="Markup validato dal servizio del W3C" />
+                </a>
+                <a href="https://jigsaw.w3.org/css-validator/">
+                    <img src="<?php echo e(risorsa('images/w3ccss.webp')); ?>" width="88" height="31"
+                        loading="lazy" alt="Fogli di stile validati dal servizio del W3C" />
+                </a>
+            </p>
+        </div>
+    </footer>
     </div>
-</footer>
 
-<script src="scripts/main.js" defer="defer"></script>
-
-<button id="torna-su" type="button" aria-label="Torna all'inizio della pagina">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-         width="18" height="18" fill="none" stroke="currentColor"
-         stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-         focusable="false">
-        <polyline points="18 15 12 9 6 15" />
-    </svg>
-</button>
-
+    <script src="<?php echo e(risorsa('scripts/script.js', true)); ?>" defer="defer"></script>
 </body>
 
 </html>

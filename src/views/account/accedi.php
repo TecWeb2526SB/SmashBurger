@@ -1,45 +1,40 @@
 <?php
 /**
- * accedi: View della pagina di accesso.
+ * Modulo di accesso. Riceve $nomeUtente e $errore dal controller.
  *
- * Variabili attese dal controller:
- *   $errori          array   Errori di validazione
- *   $valoreIdentificativo string Valore username/email da ripopolare dopo errore
- *   $flash           ?array  Messaggio flash opzionale
- *   $csrfToken   string  Token CSRF della sessione
+ * Il messaggio di errore è sempre lo stesso, sia che il nome utente non esista sia che
+ * la password sia sbagliata: non rivela quali account esistono.
  */
 ?>
+<h1>Accedi</h1>
 
-<section aria-labelledby="titolo-login" class="auth-sezione">
-    <div class="contenitore">
-        <div class="auth-box">
-            <h1 id="titolo-login">Accedi al tuo account</h1>
+<?php if ($errore !== ''): ?>
+    <p class="avviso" role="alert" data-tipo="errore">
+        <strong>Errore:</strong> <?php echo e($errore); ?>
+    </p>
+<?php endif; ?>
 
-            <?php echo ui_alert($flash); ?>
-            <?php echo ui_error_summary($errori); ?>
+<form method="post" action="<?php echo e(url('accedi')); ?>">
+    <?php echo campo_csrf(); ?>
 
-            <form method="POST" action="<?php echo e(app_route('accedi')); ?>" data-valida="true" novalidate="novalidate">
-                <input type="hidden" name="csrf_token" value="<?php echo e($csrfToken); ?>" />
-                <input type="hidden" name="redirect" value="<?php echo e($redirectTo); ?>" />
+    <fieldset>
+        <legend>Le tue credenziali</legend>
 
-                <?php
-                echo ui_form_group('identifier', 'Username o email', 'text', [
-                    'value' => $valoreIdentificativo,
-                    'error' => $errori['identifier'] ?? null,
-                    'autocomplete' => 'username',
-                    'extra_attrs' => 'minlength="3" maxlength="160"'
-                ]);
+        <p>
+            <label for="nome_utente">Nome utente</label>
+            <input type="text" id="nome_utente" name="nome_utente" required="required"
+                maxlength="50" autocomplete="username"
+                value="<?php echo e($nomeUtente); ?>" />
+        </p>
 
-                echo ui_form_group('password', 'Password', 'password', [
-                    'error' => $errori['password'] ?? null,
-                    'autocomplete' => 'current-password'
-                ]);
-                ?>
+        <p>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required="required"
+                autocomplete="current-password" />
+        </p>
 
-                <button type="submit" class="bottone-primario">Accedi</button>
+        <p><button type="submit">Accedi</button></p>
+    </fieldset>
+</form>
 
-                <p class="auth-link">Non hai un account? <a href="<?php echo e(app_route('registrati')); ?>">Registrati</a></p>
-            </form>
-        </div>
-    </div>
-</section>
+<p>Non hai un account? <a href="<?php echo e(url('registrati')); ?>">Registrati</a>.</p>

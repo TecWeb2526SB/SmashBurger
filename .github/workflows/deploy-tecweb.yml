@@ -124,19 +124,19 @@ jobs:
             printf "'%s'" "$value"
           }
 
-          cat > "$tmpdir/smashburger-config.php" <<EOF
+          cat > "$tmpdir/configurazione-locale.php" <<EOF
           <?php
           return [
               'DB_HOST' => $(php_quote "$db_host"),
-              'DB_NAME' => $(php_quote "$db_name"),
-              'DB_USER' => $(php_quote "$db_user"),
+              'DB_NOME' => $(php_quote "$db_name"),
+              'DB_UTENTE' => $(php_quote "$db_user"),
               'DB_PASSWORD' => $(php_quote "$db_password"),
           ];
           EOF
 
           echo "Rimuovo vecchie copie della config e la carico in includes..."
-          "${ssh_cmd[@]}" "$remote" "rm -f '.smashburger-config.php' '${TECWEB_REMOTE_DIR}/.smashburger-config.php' '${TECWEB_REMOTE_DIR}/includes/.smashburger-config.php'"
-          rsync -az -e "$rsync_ssh" "$tmpdir/smashburger-config.php" "$remote:${TECWEB_REMOTE_DIR}/includes/.smashburger-config.php"
+          "${ssh_cmd[@]}" "$remote" "rm -f '.smashburger-config.php' '${TECWEB_REMOTE_DIR}/.smashburger-config.php' '${TECWEB_REMOTE_DIR}/includes/.smashburger-config.php' '${TECWEB_REMOTE_DIR}/includes/.configurazione-locale.php'"
+          rsync -az -e "$rsync_ssh" "$tmpdir/configurazione-locale.php" "$remote:${TECWEB_REMOTE_DIR}/includes/.configurazione-locale.php"
 
           if [ "${TECWEB_IMPORT_DB}" = "1" ]; then
             if [ ! -f "src/database/schema.sql" ]; then
@@ -171,13 +171,13 @@ jobs:
           EOF
 
             echo "Import schema sul DB ${db_name}..."
-            rsync -az -e "$rsync_ssh" "$tmpdir/schema-existing-db.sql" "$remote:.smashburger-schema.sql"
+            rsync -az -e "$rsync_ssh" "$tmpdir/schema-existing-db.sql" "$remote:.schema-smashburger.sql"
             "${ssh_cmd[@]}" "$remote" 'set -eu
           umask 077
           defaults_file="$(mktemp)"
-          trap '\''rm -f "$defaults_file" "$HOME/.smashburger-schema.sql"'\'' EXIT
+          trap '\''rm -f "$defaults_file" "$HOME/.schema-smashburger.sql"'\'' EXIT
           cat > "$defaults_file"
-          mysql --defaults-extra-file="$defaults_file" < "$HOME/.smashburger-schema.sql"
+          mysql --defaults-extra-file="$defaults_file" < "$HOME/.schema-smashburger.sql"
           ' < "$tmpdir/mysql-defaults.cnf"
           else
             echo "Import DB saltato (TECWEB_IMPORT_DB=${TECWEB_IMPORT_DB})."
@@ -190,5 +190,11 @@ jobs:
             -e "$rsync_ssh" \
             src/ \
             "$remote:${TECWEB_REMOTE_DIR}/"
+
+          echo "Sistemo i permessi: cartelle attraversabili, file leggibili, caricamenti scrivibili..."
+          "${ssh_cmd[@]}" "$remote" "cd '${TECWEB_REMOTE_DIR}' \
+            && find . -type d -exec chmod 755 {} + \
+            && find . -type f -exec chmod 644 {} + \
+            && chmod 775 uploads uploads/prodotti"
 
           echo "Deploy completato: http://tecweb.studenti.math.unipd.it/${TECWEB_USER}"
