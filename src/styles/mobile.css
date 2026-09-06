@@ -192,6 +192,20 @@ main > blockquote {
     font-size: 4rem;
 }
 
+/* Le categorie diventano una griglia elastica e si restringerebbero pur di stare
+   accanto al campo: qui i due blocchi si impilano. */
+.barra-menu {
+    display: block;
+}
+
+.barra-menu .filtri {
+    margin-top: 0;
+}
+
+.ricerca-menu {
+    margin-top: var(--spazio-3);
+}
+
 .filtri ul {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));

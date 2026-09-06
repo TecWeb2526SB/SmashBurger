@@ -2,7 +2,7 @@
 /**
  * Elenco dei prodotti del menu, con i filtri per categoria.
  *
- * Riceve $categorie, $categoriaScelta e $prodotti dal controller.
+ * Riceve $categorie, $categoriaScelta, $ricerca e $prodotti dal controller.
  */
 ?>
 <section class="apertura-pagina apertura-menu">
@@ -20,19 +20,26 @@
     </div>
 
     <aside class="cartello-menu" aria-label="Riepilogo del menu mostrato">
-        <span><?php echo $categoriaScelta === null ? 'Menu completo' : e($categoriaScelta['nome']); ?></span>
+        <span>
+            <?php if ($ricerca !== ''): ?>
+                Risultati
+            <?php else: ?>
+                <?php echo $categoriaScelta === null ? 'Menu completo' : e($categoriaScelta['nome']); ?>
+            <?php endif; ?>
+        </span>
         <strong><?php echo count($prodotti); ?></strong>
         <p><?php echo count($prodotti) === 1 ? 'prodotto in lista' : 'prodotti in lista'; ?></p>
     </aside>
 </section>
 
+<div class="barra-menu">
 <nav class="filtri" aria-label="Categorie del menu">
     <ul>
         <li>
             <?php if ($categoriaScelta === null): ?>
                 <span aria-current="page">Tutte</span>
             <?php else: ?>
-                <a href="<?php echo e(url('menu')); ?>">Tutte</a>
+                <a href="<?php echo e(url('menu', $ricerca === '' ? [] : ['ricerca' => $ricerca])); ?>">Tutte</a>
             <?php endif; ?>
         </li>
         <?php foreach ($categorie as $categoria): ?>
@@ -43,7 +50,11 @@
                         <?php echo e($categoria['nome']); ?>
                     </span>
                 <?php else: ?>
-                    <a href="<?php echo e(url('menu', ['categoria' => $categoria['slug']])); ?>">
+                    <?php $parametri = ['categoria' => $categoria['slug']]; ?>
+                    <?php if ($ricerca !== ''): ?>
+                        <?php $parametri['ricerca'] = $ricerca; ?>
+                    <?php endif; ?>
+                    <a href="<?php echo e(url('menu', $parametri)); ?>">
                         <?php echo e($categoria['nome']); ?>
                     </a>
                 <?php endif; ?>
@@ -52,8 +63,28 @@
     </ul>
 </nav>
 
+<form class="ricerca-menu" method="get" action="<?php echo e(url('menu')); ?>">
+    <?php if ($categoriaScelta !== null): ?>
+        <input type="hidden" name="categoria" value="<?php echo e($categoriaScelta['slug']); ?>" />
+    <?php endif; ?>
+    <label class="solo-lettori" for="ricerca">Cerca nel menu</label>
+    <p>
+        <?php echo icona('lente'); ?>
+        <input type="search" id="ricerca" name="ricerca" value="<?php echo e($ricerca); ?>"
+            maxlength="60" autocomplete="off" placeholder="Cerca un prodotto o un ingrediente" />
+        <button type="submit">Cerca</button>
+    </p>
+</form>
+</div>
+
 <?php if ($prodotti === []): ?>
-    <p class="stato-vuoto">Non c'è ancora nessun prodotto in questa categoria.</p>
+    <p class="stato-vuoto">
+        <?php if ($ricerca !== ''): ?>
+            Nessun prodotto corrisponde a <strong><?php echo e($ricerca); ?></strong>.
+        <?php else: ?>
+            Non c'è ancora nessun prodotto in questa categoria.
+        <?php endif; ?>
+    </p>
 <?php else: ?>
     <ul class="griglia griglia-menu">
         <?php foreach ($prodotti as $prodotto): ?>

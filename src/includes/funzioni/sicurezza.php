@@ -93,3 +93,24 @@ function slug_richiesto(string $nome, ?array $sorgente = null): ?string
 
     return $valore;
 }
+
+/**
+ * Legge un testo libero dalla richiesta, come il termine cercato nel menu.
+ *
+ * Toglie gli spazi ai due capi, scarta i caratteri di controllo e taglia alla lunghezza
+ * massima. Un valore assente o di tipo sbagliato diventa stringa vuota.
+ *
+ * @param array|null $sorgente da dove leggere; per difetto la query string
+ */
+function testo_richiesto(string $nome, int $lunghezzaMassima = 60, ?array $sorgente = null): string
+{
+    $valore = ($sorgente ?? $_GET)[$nome] ?? '';
+
+    if (!is_string($valore)) {
+        return '';
+    }
+
+    $valore = preg_replace('/[\x00-\x1F\x7F]/u', '', $valore);
+
+    return trim(mb_substr((string) $valore, 0, $lunghezzaMassima));
+}

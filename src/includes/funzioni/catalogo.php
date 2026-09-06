@@ -30,24 +30,54 @@ function categoria_per_slug(PDO $pdo, string $slug): ?array
 /**
  * Prodotti del catalogo, con il nome della categoria.
  *
+ * I due filtri si sommano: chi cerca dentro una categoria resta dentro quella categoria.
+ * Il termine cercato viene confrontato con il nome e con la descrizione, cosi' "cipolla"
+ * trova il panino che la contiene anche se non la porta nel nome.
+ *
  * @param int|null $categoriaId restringe a una categoria; null restituisce tutto
+ * @param string   $ricerca     termine cercato; stringa vuota non restringe nulla
  */
-function prodotti_catalogo(PDO $pdo, ?int $categoriaId = null): array
+function prodotti_catalogo(PDO $pdo, ?int $categoriaId = null, string $ricerca = ''): array
 {
     $sql = 'SELECT p.*, c.nome AS categoria_nome, c.slug AS categoria_slug
               FROM prodotti p
               JOIN categorie c ON c.id = p.categoria_id';
+    $condizioni = [];
+    $parametri = [];
 
     if ($categoriaId !== null) {
-        $sql .= ' WHERE p.categoria_id = :categoria';
+        $condizioni[] = 'p.categoria_id = :categoria';
+        $parametri[':categoria'] = $categoriaId;
+    }
+
+    if ($ricerca !== '') {
+        // Due segnaposto per lo stesso valore: un nome non si puo' riusare nella query.
+        $condizioni[] = '(p.nome LIKE :nome OR p.descrizione LIKE :descrizione)';
+        $parametri[':nome'] = '%' . like_letterale($ricerca) . '%';
+        $parametri[':descrizione'] = $parametri[':nome'];
+    }
+
+    if ($condizioni !== []) {
+        $sql .= ' WHERE ' . implode(' AND ', $condizioni);
     }
 
     $sql .= ' ORDER BY c.ordine, p.nome';
 
     $query = $pdo->prepare($sql);
-    $query->execute($categoriaId === null ? [] : [':categoria' => $categoriaId]);
+    $query->execute($parametri);
 
     return $query->fetchAll();
+}
+
+/**
+ * Neutralizza i caratteri speciali di LIKE dentro un termine cercato.
+ *
+ * Senza questo passaggio una percentuale scritta nel campo varrebbe da jolly e la
+ * ricerca restituirebbe tutto.
+ */
+function like_letterale(string $termine): string
+{
+    return str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $termine);
 }
 
 /**

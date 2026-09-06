@@ -1277,10 +1277,60 @@ button > .icona,
     line-height: 1;
 }
 
+/* Categorie a sinistra e ricerca a destra sulla stessa riga; quando non ci stanno, la
+   ricerca va sotto e si prende la larghezza intera. */
+.barra-menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spazio-3) var(--spazio-5);
+    margin-top: var(--spazio-6);
+}
+
 .filtri {
     position: relative;
     z-index: 2;
     margin-top: var(--spazio-6);
+}
+
+/* Lo spazio avanzato va alle categorie: la ricerca resta appoggiata al bordo destro. */
+.barra-menu .filtri {
+    flex: 100 1 auto;
+    margin-top: 0;
+}
+
+/* Misura di partenza: il testo del segnaposto per intero piu' il pulsante. */
+.ricerca-menu {
+    flex: 1 1 28rem;
+    margin: 0;
+}
+
+.ricerca-menu p {
+    position: relative;
+    display: flex;
+    gap: var(--spazio-2);
+    margin: 0;
+}
+
+/* La lente sta dentro la cornice: il rientro a sinistra le lascia il posto. */
+.ricerca-menu .icona {
+    position: absolute;
+    top: 50%;
+    left: 0.85rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    transform: translateY(-50%);
+}
+
+.ricerca-menu input {
+    padding-left: 2.75rem;
+    background: var(--superficie);
+    border: var(--bordo-spessore) solid var(--identita);
+}
+
+.ricerca-menu button {
+    flex: 0 0 auto;
 }
 
 .filtri ul {

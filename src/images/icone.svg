@@ -57,6 +57,11 @@
         <path d="M5 15l7-7 7 7" />
     </symbol>
 
+    <symbol id="lente" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="6.5" />
+        <path d="M15.8 15.8L21 21" />
+    </symbol>
+
     <symbol id="podio" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 9a6 6 0 0 0 12 0V3H6zM6 5H3v2a3 3 0 0 0 3 3M18 5h3v2a3 3 0 0 1-3 3M9 21h6M12 15v6" />
     </symbol>

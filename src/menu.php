@@ -12,6 +12,7 @@ richiedi_permesso($pdo);
 
 $categorie = categorie_tutte($pdo);
 $categoriaScelta = null;
+$ricerca = testo_richiesto('ricerca');
 
 if (isset($_GET['categoria'])) {
     $slug = slug_richiesto('categoria');
@@ -39,5 +40,10 @@ mostra_pagina('pubbliche/menu.php', [
     'breadcrumb' => $breadcrumb,
     'categorie' => $categorie,
     'categoriaScelta' => $categoriaScelta,
-    'prodotti' => prodotti_catalogo($pdo, $categoriaScelta === null ? null : (int) $categoriaScelta['id']),
+    'ricerca' => $ricerca,
+    'prodotti' => prodotti_catalogo(
+        $pdo,
+        $categoriaScelta === null ? null : (int) $categoriaScelta['id'],
+        $ricerca
+    ),
 ]);
