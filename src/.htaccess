@@ -38,7 +38,9 @@ RewriteRule ^ errors/404.php [L]
 
 # I file di testo e i caratteri viaggiano compressi.
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/css application/javascript font/ttf image/svg+xml
+    # text/javascript e' il tipo con cui Apache serve i file .js: senza, lo script
+    # viaggiava non compresso mentre tutto il resto lo era.
+    AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript font/ttf image/svg+xml
 </IfModule>
 
 # Le risorse statiche restano valide a lungo: quando cambiano, cambia il numero di
