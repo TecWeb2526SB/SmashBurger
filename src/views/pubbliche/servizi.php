@@ -73,8 +73,8 @@
         <p class="indice-pannello">05 / Pagamento</p>
         <h2>Carta o contanti. Senza sorprese.</h2>
         <p>
-            Scegli il metodo al termine dell'ordine. Il pagamento con carta è simulato:
-            il sito non chiede e non conserva nessun dato della tua carta.
+            Scegli il metodo al termine dell'ordine. Con la carta chiudi tutto subito,
+            con i contanti paghi al ritiro in sede o quando arriva la consegna.
         </p>
     </section>
 </div>

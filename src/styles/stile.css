@@ -1103,13 +1103,11 @@ button > .icona,
 
 .testo-dettaglio-prodotto {
     min-width: 0;
-    container-type: inline-size;
 }
 
 .testo-dettaglio-prodotto h1 {
     max-width: none;
     font-size: clamp(1.875rem, 4.1vw, 4.75rem);
-    font-size: clamp(1.875rem, 12.5cqi, 4.75rem);
     overflow-wrap: break-word;
     word-break: normal;
     white-space: normal;
@@ -2399,7 +2397,6 @@ textarea:hover {
 .pagina-controllo .griglia-grafico line {
     stroke: var(--bordo);
     stroke-width: 1;
-    vector-effect: non-scaling-stroke;
 }
 
 .pagina-controllo .griglia-grafico text,
@@ -2413,14 +2410,12 @@ textarea:hover {
 .pagina-controllo .asse-grafico line {
     stroke: var(--identita);
     stroke-width: 1.5;
-    vector-effect: non-scaling-stroke;
 }
 
 .pagina-controllo .barra-grafico {
     fill: var(--senape-pieno);
     stroke: var(--identita);
     stroke-width: 1;
-    vector-effect: non-scaling-stroke;
 }
 
 .pagina-mappa > section ul {

@@ -85,7 +85,7 @@ function grafico_incasso(array $serie): string
         $etichetta = htmlspecialchars(etichetta_scala_incasso($importo), ENT_QUOTES, 'UTF-8');
 
         $griglia .= sprintf(
-            '<line x1="%d" y1="%.2f" x2="%d" y2="%.2f" />'
+            '<line x1="%d" y1="%.2f" x2="%d" y2="%.2f" vector-effect="non-scaling-stroke" />'
             . '<text x="%d" y="%.2f" text-anchor="end">%s</text>',
             $margineSinistro,
             $y,
@@ -114,7 +114,8 @@ function grafico_incasso(array $serie): string
             $altezzaBarra = ($centesimi / $massimoScala) * $altezzaArea;
             $barre .= sprintf(
                 '<g><title>%s: %s</title>'
-                . '<rect class="barra-grafico" x="%.2f" y="%.2f" width="%.2f" height="%.2f" /></g>',
+                . '<rect class="barra-grafico" vector-effect="non-scaling-stroke"'
+                . ' x="%.2f" y="%.2f" width="%.2f" height="%.2f" /></g>',
                 $dataSicura,
                 $importoSicuro,
                 $centro - $spessore / 2,
@@ -148,7 +149,7 @@ function grafico_incasso(array $serie): string
         . '<desc id="descrizione-grafico-incasso">' . $descrizioneAccessibile . '</desc>'
         . '<g class="griglia-grafico">' . $griglia . '</g>'
         . '<g class="asse-grafico"><line x1="' . $margineSinistro . '" y1="' . $margineSuperiore
-        . '" x2="' . $margineSinistro . '" y2="' . $base . '" /></g>'
+        . '" x2="' . $margineSinistro . '" y2="' . $base . '" vector-effect="non-scaling-stroke" /></g>'
         . '<g class="barre-grafico">' . $barre . '</g>'
         . '<g class="date-grafico">' . $date . '</g>'
         . '</svg>';

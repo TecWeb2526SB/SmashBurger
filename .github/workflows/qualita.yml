@@ -51,13 +51,29 @@ jobs:
           done
           exit $esito
 
-      # Gli avvisi sulle variabili, che il validatore non può controllare staticamente,
-      # non sono errori: il passo fallisce solo se un foglio ha errori veri.
+      # Il servizio del W3C viene interrogato direttamente perche' serve distinguere gli
+      # errori dagli avvisi: le proprieta' personalizzate, su cui il progetto e'
+      # costruito, vengono sempre segnalate come non verificabili staticamente, e sono
+      # avvisi. La consegna chiede fogli senza errori, non senza avvisi.
       - name: Valida i fogli di stile
         run: |
+          esito=0
+
           for foglio in src/styles/stile.css src/styles/mobile.css src/styles/stampa.css; do
-            npx --yes css-validator --warning no "$foglio"
+            risposta="$(curl -sS --retry 3 --retry-delay 2 -F "file=@${foglio};type=text/css" -F output=json -F warning=no -F profile=css3svg https://jigsaw.w3.org/css-validator/validator)"
+            errori="$(printf '%s' "$risposta" | jq '.cssvalidation.errors | length')"
+
+            echo "${foglio}: ${errori} errori"
+
+            if [ "$errori" != "0" ]; then
+              printf '%s' "$risposta" | jq -r '.cssvalidation.errors[] | "  riga \(.line): \(.message)"'
+              esito=1
+            fi
+
+            sleep 1
           done
+
+          exit $esito
 
       - name: Conserva le pagine scaricate
         if: always()

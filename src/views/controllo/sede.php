@@ -17,7 +17,7 @@ $salaAperta = (int) $sede['sala_eventi_disponibile'] === 1;
 $campi = [
     'nome' => ['Nome della sede', 120, 'organization'],
     'citta' => ['Citta', 80, 'address-level2'],
-    'indirizzo' => ['Indirizzo e numero civico', 160, 'street-address'],
+    'indirizzo' => ['Indirizzo e numero civico', 160, 'address-line1'],
     'provincia' => ['Provincia', 2, 'address-level1'],
     'cap' => ['CAP', 5, 'postal-code'],
     'telefono' => ['Telefono', 30, 'tel'],

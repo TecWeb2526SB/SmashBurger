@@ -80,7 +80,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <th scope="row" colspan="3">Totale dell'ordine</th>
+                <td colspan="3">Totale dell'ordine</td>
                 <td><?php echo e(prezzo((int) $ordine['totale_centesimi'])); ?></td>
             </tr>
         </tfoot>
