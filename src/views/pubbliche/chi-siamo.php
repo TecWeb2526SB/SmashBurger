@@ -17,7 +17,7 @@
         <div class="foto-editoriale" role="img"
             aria-label="Un cuoco in grembiule nero solleva dalla piastra fumante un burger dalla crosta scura.">
             <img src="<?php echo e(risorsa('images/chi-siamo-smash.webp', true)); ?>"
-                width="1200" height="900" alt="" />
+                width="800" height="600" alt="" />
             <span>La piastra / il nostro gesto</span>
             <strong>Il gesto che cambia tutto</strong>
         </div>

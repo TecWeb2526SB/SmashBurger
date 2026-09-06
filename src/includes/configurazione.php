@@ -10,7 +10,7 @@ const EMAIL_CONTATTO = 'informazioni@smashburger.it';
 const TELEFONO_CONTATTO = '049 1234567';
 
 // Cambia quando cambiano fogli di stile o script, per invalidare la cache del browser.
-const VERSIONE_RISORSE = '54';
+const VERSIONE_RISORSE = '55';
 
 // Vincoli delle immagini prodotto caricate dal pannello. Il limite di peso coincide
 // con il budget prestazionale richiesto anche agli asset editoriali del sito.

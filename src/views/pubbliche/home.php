@@ -26,7 +26,7 @@
         <div class="foto-editoriale" role="img"
             aria-label="Una pressa d'acciaio schiaccia una pallina di manzo sulla piastra rovente.">
             <img src="<?php echo e(risorsa('images/home-hero-smash.webp', true)); ?>"
-                width="1120" height="1400" alt="" />
+                width="640" height="800" alt="" />
             <span>Piastra / fatto al momento</span>
             <strong>Lo smash nell'istante esatto</strong>
         </div>
@@ -84,7 +84,7 @@
         <div class="foto-editoriale" role="img"
             aria-label="Un gruppo di ragazzi brinda a tavola con burger e patatine; uno skateboard è appoggiato al tavolo.">
             <img src="<?php echo e(risorsa('images/home-eventi.webp', true)); ?>"
-                width="1200" height="900" loading="lazy" alt="" />
+                width="800" height="600" loading="lazy" alt="" />
             <span>Sala eventi / la crew al completo</span>
             <strong>La vostra serata, apparecchiata</strong>
         </div>
@@ -117,7 +117,7 @@
         <div class="foto-editoriale" role="img"
             aria-label="Una mano con guanto nero preme la carne sulla piastra con una spatola dal manico senape.">
             <img src="<?php echo e(risorsa('images/home-metodo-smash.webp', true)); ?>"
-                width="1200" height="900" loading="lazy" alt="" />
+                width="800" height="600" loading="lazy" alt="" />
             <span>Metodo / pressione e calore</span>
             <strong>Press. Sizzle. Flip.</strong>
         </div>

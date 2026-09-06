@@ -1,6 +1,8 @@
 /* Scostamenti per gli schermi fino a 48em. */
 
 :root {
+    /* Su schermo piccolo il menu va su piu' righe e la testata e' molto piu' alta. */
+    --altezza-header: 13.25rem;
     --testo-introduttivo: 1.1rem;
     --titolo-3: 1.4rem;
     --titolo-2: 2.1rem;

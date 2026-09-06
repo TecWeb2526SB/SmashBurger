@@ -16,12 +16,13 @@
 </section>
 
 <ul class="elenco-sedi">
-    <?php foreach ($sedi as $sede): ?>
+    <?php foreach ($sedi as $posizione => $sede): ?>
         <li>
             <article class="scheda-sede">
                 <figure class="istantanea istantanea-sede">
                     <img src="<?php echo e(risorsa('images/sedi/' . $sede['slug'] . '.webp', true)); ?>"
-                        width="1200" height="900" loading="lazy"
+                        width="800" height="600"
+                        <?php echo $posizione === 0 ? '' : 'loading="lazy"'; ?>
                         alt="<?php echo e(testo_alternativo_sede($sede['slug'], $sede['citta'])); ?>" />
                     <figcaption>La sede Smash Burger di <?php echo e($sede['citta']); ?>.</figcaption>
                 </figure>

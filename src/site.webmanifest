@@ -6,9 +6,9 @@
     "display": "browser",
     "icons": [
         {
-            "src": "images/favicon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml"
+            "src": "images/favicon.png",
+            "sizes": "180x180",
+            "type": "image/png"
         }
     ]
 }

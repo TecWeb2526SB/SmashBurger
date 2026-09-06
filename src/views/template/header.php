@@ -39,7 +39,7 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
     <link rel="stylesheet" media="all" href="<?php echo e(risorsa('styles/stile.css', true)); ?>" />
     <link rel="stylesheet" media="screen and (max-width: 48em)" href="<?php echo e(risorsa('styles/mobile.css', true)); ?>" />
     <link rel="stylesheet" media="print" href="<?php echo e(risorsa('styles/stampa.css', true)); ?>" />
-    <link rel="icon" type="image/svg+xml" href="<?php echo e(risorsa('images/favicon.svg')); ?>" />
+    <link rel="icon" type="image/png" href="<?php echo e(risorsa('images/favicon.png', true)); ?>" />
     <link rel="manifest" href="<?php echo e(risorsa('site.webmanifest')); ?>" />
 </head>
 
@@ -51,9 +51,9 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
             <p class="marchio">
                 <a href="<?php echo e(url()); ?>">
                     <img src="<?php echo e(risorsa('images/logo.webp', true)); ?>"
-                        width="512" height="479" alt="" />
+                        width="192" height="180" alt="" />
                     <img class="marchio-stampa" src="<?php echo e(risorsa('images/logo-stampa.webp', true)); ?>"
-                        width="512" height="479" alt="" />
+                        width="192" height="180" alt="" />
                     <span class="solo-lettori"><?php echo e(NOME_SITO); ?></span>
                 </a>
             </p>

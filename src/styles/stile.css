@@ -81,7 +81,9 @@
     --ombra: 0.5rem 0.5rem 0 var(--identita);
     --ombra-scura: 0.625rem 0.625rem 0 #171615;
     --larghezza-massima: 80rem;
-    --altezza-header: 4.75rem;
+    /* Valore vicino a quello vero: lo script lo rimisura e lo corregge, ma se parte
+       molto lontano la pagina si sposta tutta dopo il primo disegno. */
+    --altezza-header: 6.0625rem;
     --transizione: 150ms ease-out;
 }
 

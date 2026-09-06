@@ -54,33 +54,56 @@ async function accedi(utente, password) {
 }
 
 /**
- * Mette un prodotto nel carrello dell'utente collegato.
- *
- * Senza questo passaggio le pagine del carrello e della conferma d'ordine verrebbero
- * controllate vuote, cioè nello stato meno interessante.
+ * Legge il carrello e restituisce il markup della pagina.
  */
-async function preparaCarrello(cookie) {
-    const pagina = await fetch(`${base}/menu`, { headers: { Cookie: cookie } });
-    const markup = await pagina.text();
-    const token = markup.match(/name="token_csrf" value="([a-f0-9]+)"/)?.[1];
-    const prodotto = markup.match(/name="prodotto_id" value="(\d+)"/)?.[1];
+async function apriCarrello(cookie) {
+    return (await fetch(`${base}/carrello`, { headers: { Cookie: cookie } })).text();
+}
 
-    if (!token || !prodotto) {
-        throw new Error('Non è stato possibile preparare il carrello.');
+/**
+ * Invia un modulo del carrello con il token preso dalla pagina appena letta.
+ */
+async function inviaAlCarrello(cookie, markup, campi) {
+    const token = markup.match(/name="token_csrf" value="([a-f0-9]+)"/)?.[1];
+
+    if (!token) {
+        throw new Error('Token CSRF non trovato nella pagina del carrello.');
     }
 
     await fetch(`${base}/carrello`, {
         method: 'POST',
         redirect: 'manual',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Cookie: cookie },
-        body: new URLSearchParams({
-            token_csrf: token,
-            azione: 'aggiungi',
-            ritorno: 'carrello',
-            prodotto_id: prodotto,
-            quantita: '2',
-        }),
+        body: new URLSearchParams({ token_csrf: token, ...campi }),
     });
+}
+
+/**
+ * Mette un prodotto nel carrello dell'utente collegato.
+ *
+ * Senza questo passaggio le pagine del carrello e della conferma d'ordine verrebbero
+ * controllate vuote, cioè nello stato meno interessante.
+ *
+ * Il carrello ha due passi: prima si sceglie la sede, perchè la disponibilità dipende da
+ * quella, e solo dopo la pagina mostra i prodotti. Ogni prodotto e' un pulsante di invio
+ * che porta il proprio identificativo come valore, non un campo nascosto.
+ */
+async function preparaCarrello(cookie) {
+    let markup = await apriCarrello(cookie);
+    const sede = markup.match(/name="sede"[^>]*value="([a-z0-9-]+)"/)?.[1];
+
+    if (sede) {
+        await inviaAlCarrello(cookie, markup, { azione: 'scegli-sede', sede });
+        markup = await apriCarrello(cookie);
+    }
+
+    const prodotto = markup.match(/name="prodotto_id" value="(\d+)"/)?.[1];
+
+    if (!prodotto) {
+        throw new Error('Il carrello non mostra prodotti da aggiungere.');
+    }
+
+    await inviaAlCarrello(cookie, markup, { azione: 'aggiungi', prodotto_id: prodotto });
 }
 
 /**

@@ -18,7 +18,7 @@
         <div class="foto-editoriale" role="img"
             aria-label="Un addetto porge al cliente un vassoio con un burger fumante e patatine.">
             <img src="<?php echo e(risorsa('images/servizi-ritiro.webp', true)); ?>"
-                width="1200" height="900" alt="" />
+                width="800" height="600" alt="" />
             <span>Ritiro / pronto al banco</span>
             <strong>Pronto quando lo sei tu</strong>
         </div>
