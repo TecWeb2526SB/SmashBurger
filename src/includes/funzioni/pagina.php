@@ -42,14 +42,6 @@ function data_breve(string $valore): string
 
 /**
  * Descrive la fotografia di una sede in base a cio' che si vede davvero.
- *
- * Le descrizioni seguono lo scatto e non l'idea che ci si fa del locale: quella di
- * Treviso e' un interno e non un esterno, quindi lo dice. Ognuna sta fra 75 e 100
- * caratteri (parte I, sezione 5.2), quindi tiene il tratto che distingue il locale e
- * lascia cadere l'arredo di sfondo.
- *
- * Per una sede senza descrizione scritta a mano resta il solo nome: sostenere che cosa
- * si vede in una fotografia che nessuno ha guardato sarebbe peggio di non dirlo.
  */
 function testo_alternativo_sede(string $slug, string $citta): string
 {
