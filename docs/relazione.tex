@@ -6,6 +6,7 @@
 \usepackage{parskip}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{xurl}
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{tabularx}
@@ -217,7 +218,7 @@ Le tabelle create sono:
 \subsection{Gestione della concorrenza}
 Particolare cura è stata riservata a due scenari critici di concorrenza sui dati:
 \begin{enumerate}
-    \item \textbf{Scarico scorte a magazzino}: all'atto del checkout l'aggiornamento delle quantità disponibili avviene all'interno di una transazione SQL atomica con clausola condizionale (\texttt{UPDATE disponibilita\_prodotti SET quantita = quantita - :q WHERE sede\_id = :s AND prodotto\_id = :p AND quantita >= :q}). Se anche una sola riga non soddisfa la condizione, la transazione fallisce e l'ordine viene respinto, evitando vendite eccedenti la reale disponibilità fisica.
+    \item \textbf{Scarico scorte a magazzino}: all'atto del checkout l'aggiornamento delle quantità disponibili avviene all'interno di una transazione SQL atomica con verifica condizionale della capienza residua (\texttt{UPDATE} condizionato da \texttt{quantita >= :q}). Se anche una sola riga non soddisfa la condizione, la transazione fallisce e l'ordine viene respinto, evitando vendite eccedenti la reale disponibilità fisica.
     \item \textbf{Sovrapposizione delle prenotazioni}: prima di registrare una prenotazione per la sala eventi, una query transazionale verifica l'assenza di intervalli orari sovrapposti nella medesima sede e data tra le prenotazioni già approvate o in attesa.
 \end{enumerate}
 
@@ -234,7 +235,9 @@ Le pagine sono scritte in HTML5 rispettando la sintassi XML:
     \item chiusura esplicita di ogni elemento, compresi gli elementi vuoti;
     \item valori degli attributi sempre racchiusi tra virgolette;
     \item attributi booleani dichiarati in forma esplicita (come \texttt{required="required"});
-    \item inclusione dei namespace e dell'attributo linguistico nella radice: \texttt{<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">}.
+    \item inclusione dei namespace XML e dell'attributo linguistico nella radice:\\
+    \mbox{}\quad\texttt{<html xmlns="http://www.w3.org/1999/xhtml"}\\
+    \mbox{}\quad\texttt{~~~~~~lang="it" xml:lang="it">}.
 \end{itemize}
 
 Tutti i documenti adottano marcatori semantici per definire chiaramente le sezioni (\texttt{<header>}, \texttt{<nav>}, \texttt{<main>}, \texttt{<section>}, \texttt{<article>}, \texttt{<footer>}), supportando la navigazione per landmark.
@@ -312,10 +315,10 @@ Il foglio \texttt{stampa.css} converte l'aspetto visivo in un formato orientato 
 \end{itemize}
 
 \subsection{Tipografia}
-Il carattere tipografico adottato è **Archivo**, un carattere sans-serif grottesco moderno di grande impatto, rilasciato con licenza Open Font License. I relativi file sorgente (\texttt{.ttf}) sono inclusi localmente nel repository in tre varianti di peso (normale, grassetto e nero) e richiamati con la direttiva \texttt{font-display: swap}. La catena di ripiego (\textit{font fallback}) include caratteri ampiamente diffusi sui principali sistemi operativi: \texttt{"Archivo", "Helvetica Neue", Arial, sans-serif}.
+Il carattere tipografico adottato è \textbf{Archivo}, un carattere sans-serif grottesco moderno di grande impatto, rilasciato con licenza Open Font License. I relativi file sorgente (\texttt{.ttf}) sono inclusi localmente nel repository in tre varianti di peso (normale, grassetto e nero) e richiamati con la direttiva \texttt{font-display: swap}. La catena di ripiego (\textit{font fallback}) include caratteri ampiamente diffusi sui principali sistemi operativi: \texttt{"Archivo", "Helvetica Neue", Arial, sans-serif}.
 
 \subsection{Comportamento e Progressive Enhancement (JavaScript)}
-Il comportamento dinamico lato client è gestito da un singolo file JavaScript (\texttt{script.js}) strutturato in modalità rigorosa (\texttt{'use strict'}) e privo di dipendenze da framework esterni. L'applicazione rispetta il principio del **Progressive Enhancement**: ogni funzionalità essenziale del sito (consultazione del catalogo, emissione ordini, gestione delle prenotazioni e pannello di controllo) risulta pienamente operativa anche con JavaScript completamente disabilitato nel browser.
+Il comportamento dinamico lato client è gestito da un singolo file JavaScript (\texttt{script.js}) strutturato in modalità rigorosa (\texttt{'use strict'}) e privo di dipendenze da framework esterni. L'applicazione rispetta il principio del \textbf{Progressive Enhancement}: ogni funzionalità essenziale del sito (consultazione del catalogo, emissione ordini, gestione delle prenotazioni e pannello di controllo) risulta pienamente operativa anche con JavaScript completamente disabilitato nel browser.
 
 Lo script interviene su tre aspetti:
 \begin{enumerate}
@@ -406,7 +409,7 @@ Per preservare la qualità del codice durante lo sviluppo è stata allestita una
 I validatori automatici non hanno evidenziato criticità o violazioni dello standard. Le uniche segnalazioni riscontrate dal validatore CSS hanno natura informativa e riguardano l'impiego delle custom properties (\texttt{--nome-variabile}), le quali costituiscono una funzionalità standard del CSS moderno, pienamente supportata e conforme.
 
 \subsection{Collaudo con screen reader}
-L'esperienza di fruizione con tecnologie assistive è stata testata manualmente tramite lo screen reader open-source **NVDA** in abbinamento ai browser Mozilla Firefox e Google Chrome. I test hanno confermato:
+L'esperienza di fruizione con tecnologie assistive è stata testata manualmente tramite lo screen reader open-source \textbf{NVDA} in abbinamento ai browser Mozilla Firefox e Google Chrome. I test hanno confermato:
 \begin{itemize}
     \item la corretta lettura del testo associato allo skip link iniziale e l'effettivo spostamento del focus all'area centrale;
     \item l'esatta enunciazione dei ruoli semantici e degli stati dei controlli interattivi;
