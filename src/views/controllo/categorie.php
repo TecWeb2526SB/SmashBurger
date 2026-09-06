@@ -14,7 +14,7 @@
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($daCancellare !== null): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Vuoi cancellare <?php echo e($daCancellare['nome']); ?>?</h2>
         <p>La cancellazione riesce solo se nessun prodotto usa ancora questa categoria.</p>
 

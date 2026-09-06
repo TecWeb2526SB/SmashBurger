@@ -14,7 +14,7 @@ $nuovo = $prodotto === null;
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($confermaCancellazione && !$nuovo): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Vuoi cancellare <?php echo e($prodotto['nome']); ?>?</h2>
         <p>
             Sparisce dal menu di tutte le sedi. Gli ordini già fatti restano leggibili,
@@ -33,7 +33,7 @@ $nuovo = $prodotto === null;
 <?php endif; ?>
 
 <?php if ($errori !== []): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Controlla questi campi</h2>
         <ul>
             <?php foreach ($errori as $campo => $testo): ?>

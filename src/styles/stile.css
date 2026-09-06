@@ -582,7 +582,7 @@ main > blockquote {
     .menu-sito nav + nav {
         margin-top: var(--spazio-5);
         padding-top: var(--spazio-5);
-        border-top: var(--bordo-grafico) solid #504c46;
+        border-top: var(--bordo-grafico) solid #6b6459;
     }
 
     /* La scelta del tema non e' una pagina: scende in fondo, sotto le voci dell'account. */

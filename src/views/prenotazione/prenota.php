@@ -19,11 +19,11 @@
 </p>
 
 <?php if ($errori !== []): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Controlla questi campi</h2>
         <ul>
             <?php foreach ($errori as $campo => $testo): ?>
-                <li><?php echo e($testo); ?></li>
+                <li><a href="#<?php echo e($campo); ?>"><?php echo e($testo); ?></a></li>
             <?php endforeach; ?>
         </ul>
     </section>
@@ -78,7 +78,7 @@
                 <input type="hidden" name="sede" value="<?php echo e($sede['slug']); ?>" />
                 <input type="hidden" name="data" value="<?php echo e($data); ?>" />
 
-                <fieldset>
+                <fieldset id="fascia">
                     <legend>Scegli l'orario di inizio</legend>
 
                     <ul class="scelte">

@@ -132,9 +132,20 @@ async function controlla(percorso, cookie, etichetta) {
 
 fs.mkdirSync(cartellaReport, { recursive: true });
 
+// La sitemap elenca le pagine da indicizzare, cioe' quelle con una descrizione.
+// Queste sono pubbliche ma ne restano fuori, e vanno controllate lo stesso.
+const fuoriSitemap = [
+    '/accedi',
+    '/registrati',
+    '/prodotto?slug=cheeseburger',
+    '/sede?slug=padova',
+    '/indirizzo-inesistente',
+];
+
 const pubbliche = execFileSync('node', ['.github/scripts/pagine-pubbliche.mjs'], { encoding: 'utf8' })
     .trim()
-    .split('\n');
+    .split('\n')
+    .concat(fuoriSitemap);
 const riservate = JSON.parse(fs.readFileSync('.github/scripts/pagine-riservate.json', 'utf8'));
 
 const righe = [];

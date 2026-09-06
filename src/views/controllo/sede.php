@@ -29,7 +29,7 @@ $campi = [
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($errori !== []): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Controlla questi campi</h2>
         <ul>
             <?php foreach ($errori as $campo => $testo): ?>

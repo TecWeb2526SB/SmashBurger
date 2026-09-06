@@ -9,7 +9,7 @@
 <h1>Accedi</h1>
 
 <?php if ($errore !== ''): ?>
-    <p class="avviso" role="alert" data-tipo="errore">
+    <p class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <strong>Errore:</strong> <?php echo e($errore); ?>
     </p>
 <?php endif; ?>

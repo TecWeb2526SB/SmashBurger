@@ -54,12 +54,12 @@
                 <a href="https://validator.w3.org/">
                     <img src="<?php echo e(risorsa('images/w3chtml.webp')); ?>" width="88" height="31"
                         loading="lazy"
-                        alt="Marchio del World Wide Web Consortium con segno di spunta: markup validato senza errori." />
+                        alt="Valida il markup di questa pagina con il validatore W3C." />
                 </a>
                 <a href="https://jigsaw.w3.org/css-validator/">
                     <img src="<?php echo e(risorsa('images/w3ccss.webp')); ?>" width="88" height="31"
                         loading="lazy"
-                        alt="Marchio del World Wide Web Consortium con segno di spunta: fogli di stile senza errori." />
+                        alt="Valida i fogli di stile del sito con il validatore CSS del W3C." />
                 </a>
             </p>
         </div>

@@ -133,18 +133,25 @@
         }
 
         var chiudi = pannello.querySelector('button');
-        var scorribile = document.querySelector('.pagina-scorribile');
         // Stessa soglia della testata a scomparsa nel foglio di stile.
         var schermoStretto = window.matchMedia('(max-width: 64em)');
+        // Tutto cio' che il pannello copre: il contenuto e i due comandi della barra.
+        var coperti = [
+            document.querySelector('.pagina-scorribile'),
+            document.querySelector('.marchio'),
+            apri
+        ];
 
         function mostra(aperto) {
             var attivo = aperto && schermoStretto.matches;
 
             apri.setAttribute('aria-expanded', attivo ? 'true' : 'false');
 
-            if (scorribile !== null) {
-                scorribile.inert = attivo;
-            }
+            coperti.forEach(function (elemento) {
+                if (elemento !== null) {
+                    elemento.inert = attivo;
+                }
+            });
         }
 
         apri.addEventListener('click', function () {
@@ -359,6 +366,20 @@
     }
 
     /**
+     * Fuoco sul riepilogo degli errori di un modulo.
+     *
+     * Il riquadro arriva gia' scritto nella pagina, quindi da solo non verrebbe
+     * annunciato: portarci il fuoco lo fa leggere e mostra subito che cosa correggere.
+     */
+    function inizializzaAvvisi() {
+        var avviso = document.querySelector('[role="alert"]');
+
+        if (avviso !== null) {
+            avviso.focus();
+        }
+    }
+
+    /**
      * Modalita' di consegna nella pagina di pagamento.
      *
      * L'attributo data-modalita' sul modulo dice al foglio di stile quale gruppo di campi
@@ -398,6 +419,7 @@
         inizializzaTornaSu();
         inizializzaMenu();
         inizializzaModuli();
+        inizializzaAvvisi();
         inizializzaPagamento();
     });
 }());

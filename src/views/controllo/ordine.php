@@ -11,7 +11,7 @@
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($confermaAnnullamento && $ordine['stato'] !== 'annullato'): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Vuoi annullare questo ordine?</h2>
         <p>
             I prodotti tornano disponibili nella sede di <?php echo e($ordine['citta']); ?>.

@@ -18,7 +18,7 @@
 <?php require __DIR__ . '/navigazione.php'; ?>
 
 <?php if ($daCancellare !== null): ?>
-    <section class="avviso" role="alert" data-tipo="errore">
+    <section class="avviso" role="alert" tabindex="-1" data-tipo="errore">
         <h2>Vuoi cancellare l&apos;account <?php echo e($daCancellare['nome_utente']); ?>?</h2>
         <p>Vengono cancellati anche il carrello, gli ordini e le prenotazioni di questo account.</p>
 
