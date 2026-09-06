@@ -340,6 +340,17 @@ main > blockquote {
     display: none;
 }
 
+/* Sugli schermi larghi il contenitore non forma una scatola: le due nav restano le
+   colonne della griglia, e i pulsanti del menu non compaiono. */
+.menu-sito {
+    display: contents;
+}
+
+.header-interna > button,
+.menu-sito > button {
+    display: none;
+}
+
 .header-interna nav ul {
     display: flex;
     flex-wrap: wrap;
@@ -461,6 +472,128 @@ main > blockquote {
 
     :root:not(.tema-chiaro):not(.tema-scuro) .header-interna .tema .tema-toggle-verso-chiaro {
         display: inline-grid;
+    }
+}
+
+/* ---------- Testata a scomparsa ---------- */
+
+/* Sotto questa larghezza la barra non tiene su una riga sola marchio, pagine pubbliche
+   e voci dell'account: al menu di un manager collegato ne servono circa 61rem. Al suo
+   posto compare il pulsante che apre il menu a schermo intero. */
+@media screen and (max-width: 64em) {
+    :root {
+        /* La testata e' la sola barra con marchio e pulsante: valore vicino a quello
+           vero, che lo script rimisura dopo il primo disegno. */
+        --altezza-header: 6.35rem;
+    }
+
+    /* Ordine rovesciato: il pulsante che apre sta a sinistra, il marchio all'altro capo. */
+    .header-interna {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        gap: var(--spazio-4);
+        padding: var(--spazio-3) var(--spazio-4);
+    }
+
+    /* Senza le voci in barra il marchio ha spazio per crescere. */
+    .marchio img {
+        height: 4.6rem;
+    }
+
+    /* Stessa misura per i due pulsanti: sono lo stesso comando, agli angoli opposti. */
+    .header-interna > button,
+    .menu-sito > button {
+        display: inline-flex;
+        width: 3rem;
+        height: 3rem;
+        flex: 0 0 auto;
+        padding: 0;
+        background: transparent;
+        color: var(--crema);
+        border-width: var(--bordo-spessore);
+        border-color: var(--crema);
+    }
+
+    /* Il segno e' l'unico contenuto: senza azzerare il margine resterebbe fuori asse. */
+    .header-interna > button .icona,
+    .menu-sito > button .icona {
+        width: 1.85rem;
+        height: 1.85rem;
+        margin: 0;
+    }
+
+    /* Chiuso non occupa spazio; aperto copre lo schermo intero. */
+    .menu-sito {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        flex-direction: column;
+        padding: var(--spazio-3) var(--spazio-4) var(--spazio-7);
+        overflow-y: auto;
+        background: var(--inchiostro);
+    }
+
+    .header-interna > button[aria-expanded="true"] + .menu-sito {
+        display: flex;
+    }
+
+    .menu-sito > button {
+        align-self: flex-end;
+    }
+
+    /* Il pannello copre lo schermo, le voci no. */
+    .menu-sito nav {
+        max-width: 26rem;
+    }
+
+    .menu-sito nav ul {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    /* Voci a riga intera: la barretta rossa passa da sotto la voce al suo fianco. */
+    .menu-sito nav a,
+    .menu-sito nav [aria-current] {
+        display: block;
+        padding: var(--spazio-3) var(--spazio-4);
+        font-size: 1.05rem;
+    }
+
+    .menu-sito nav a::after,
+    .menu-sito nav [aria-current]::after {
+        top: 0;
+        right: auto;
+        bottom: 0;
+        width: var(--bordo-grafico);
+        height: auto;
+    }
+
+    .menu-sito nav .azione-header {
+        margin-top: var(--spazio-3);
+        padding: var(--spazio-3) var(--spazio-4);
+        text-align: center;
+    }
+
+    /* La linea separa le pagine pubbliche da quelle che si aprono dopo l'accesso. */
+    .menu-sito nav + nav {
+        margin-top: var(--spazio-5);
+        padding-top: var(--spazio-5);
+        border-top: var(--bordo-grafico) solid #504c46;
+    }
+
+    /* La scelta del tema non e' una pagina: scende in fondo, sotto le voci dell'account. */
+    .menu-sito nav[aria-label="Il tuo account"] li:first-child {
+        order: 1;
+        margin-top: var(--spazio-5);
+    }
+
+    .header-interna .tema .tema-toggle {
+        height: 2.75rem;
+        padding: 0.55rem var(--spazio-4);
     }
 }
 

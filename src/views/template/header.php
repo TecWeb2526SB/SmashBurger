@@ -58,70 +58,80 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
                 </a>
             </p>
 
-            <nav aria-label="Navigazione principale">
-                <ul>
-                    <?php foreach (pagine_del_menu('principale', $ruoloCorrente) as $slug => $etichetta): ?>
+            <button type="button" aria-expanded="false" aria-controls="menu-sito" title="Apri il menu">
+                <?php echo icona('menu'); ?><span class="solo-lettori">Apri il menu</span>
+            </button>
+
+            <div class="menu-sito" id="menu-sito">
+                <button type="button" title="Chiudi il menu">
+                    <?php echo icona('croce'); ?><span class="solo-lettori">Chiudi il menu</span>
+                </button>
+
+                <nav aria-label="Navigazione principale">
+                    <ul>
+                        <?php foreach (pagine_del_menu('principale', $ruoloCorrente) as $slug => $etichetta): ?>
+                            <li>
+                                <?php if ($slug === $slugCorrente): ?>
+                                    <span aria-current="page"><?php echo e($etichetta); ?></span>
+                                <?php else: ?>
+                                    <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </nav>
+
+                <nav aria-label="Il tuo account">
+                    <ul>
                         <li>
-                            <?php if ($slug === $slugCorrente): ?>
-                                <span aria-current="page"><?php echo e($etichetta); ?></span>
-                            <?php else: ?>
-                                <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
-                            <?php endif; ?>
+                            <form method="post" action="<?php echo e(url('tema')); ?>" class="tema">
+                                <?php echo campo_csrf(); ?>
+                                <input type="hidden" name="ritorno" value="<?php echo e($slugCorrente); ?>" />
+                                <input type="hidden" name="ritorno_query"
+                                    value="<?php echo e(http_build_query($_GET, '', '&', PHP_QUERY_RFC3986)); ?>" />
+
+                                <button type="submit" name="tema" value="scuro"
+                                    class="tema-toggle tema-toggle-verso-scuro" aria-label="Passa al tema scuro"
+                                    title="Passa al tema scuro">
+                                    <span class="tema-toggle-contenuto" aria-hidden="true">
+                                        <?php echo icona('luna'); ?>
+                                        <span>Scuro</span>
+                                    </span>
+                                </button>
+
+                                <button type="submit" name="tema" value="chiaro"
+                                    class="tema-toggle tema-toggle-verso-chiaro" aria-label="Passa al tema chiaro"
+                                    title="Passa al tema chiaro">
+                                    <span class="tema-toggle-contenuto" aria-hidden="true">
+                                        <?php echo icona('sole'); ?>
+                                        <span>Chiaro</span>
+                                    </span>
+                                </button>
+                            </form>
                         </li>
-                    <?php endforeach; ?>
-                </ul>
-            </nav>
 
-            <nav aria-label="Il tuo account">
-                <ul>
-                    <li>
-                        <form method="post" action="<?php echo e(url('tema')); ?>" class="tema">
-                            <?php echo campo_csrf(); ?>
-                            <input type="hidden" name="ritorno" value="<?php echo e($slugCorrente); ?>" />
-                            <input type="hidden" name="ritorno_query"
-                                value="<?php echo e(http_build_query($_GET, '', '&', PHP_QUERY_RFC3986)); ?>" />
+                        <?php foreach (pagine_del_menu('azioni', $ruoloCorrente) as $slug => $etichetta): ?>
+                            <li>
+                                <?php if ($slug === $slugCorrente): ?>
+                                    <span aria-current="page"><?php echo e($etichetta); ?></span>
+                                <?php else: ?>
+                                    <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
 
-                            <button type="submit" name="tema" value="scuro"
-                                class="tema-toggle tema-toggle-verso-scuro" aria-label="Passa al tema scuro"
-                                title="Passa al tema scuro">
-                                <span class="tema-toggle-contenuto" aria-hidden="true">
-                                    <?php echo icona('luna'); ?>
-                                    <span>Scuro</span>
-                                </span>
-                            </button>
-
-                            <button type="submit" name="tema" value="chiaro"
-                                class="tema-toggle tema-toggle-verso-chiaro" aria-label="Passa al tema chiaro"
-                                title="Passa al tema chiaro">
-                                <span class="tema-toggle-contenuto" aria-hidden="true">
-                                    <?php echo icona('sole'); ?>
-                                    <span>Chiaro</span>
-                                </span>
-                            </button>
-                        </form>
-                    </li>
-
-                    <?php foreach (pagine_del_menu('azioni', $ruoloCorrente) as $slug => $etichetta): ?>
-                        <li>
-                            <?php if ($slug === $slugCorrente): ?>
-                                <span aria-current="page"><?php echo e($etichetta); ?></span>
-                            <?php else: ?>
-                                <a href="<?php echo e(url($slug)); ?>"><?php echo e($etichetta); ?></a>
+                        <?php if ($ruoloCorrente === null): ?>
+                            <li><a href="<?php echo e(url('accedi')); ?>">Accedi</a></li>
+                            <li><a class="azione-header" href="<?php echo e(url('registrati')); ?>">Registrati</a></li>
+                        <?php else: ?>
+                            <?php if ($ruoloCorrente !== 'cliente'): ?>
+                                <li><a href="<?php echo e(url('controllo')); ?>">Controllo</a></li>
                             <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-
-                    <?php if ($ruoloCorrente === null): ?>
-                        <li><a href="<?php echo e(url('accedi')); ?>">Accedi</a></li>
-                        <li><a class="azione-header" href="<?php echo e(url('registrati')); ?>">Registrati</a></li>
-                    <?php else: ?>
-                        <?php if ($ruoloCorrente !== 'cliente'): ?>
-                            <li><a href="<?php echo e(url('controllo')); ?>">Controllo</a></li>
+                            <li><a href="<?php echo e(url('esci')); ?>">Esci</a></li>
                         <?php endif; ?>
-                        <li><a href="<?php echo e(url('esci')); ?>">Esci</a></li>
-                    <?php endif; ?>
-                </ul>
-            </nav>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </header>
 

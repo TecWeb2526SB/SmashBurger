@@ -118,6 +118,73 @@
     }
 
     /**
+     * Menu a scomparsa degli schermi stretti.
+     *
+     * Lo stato sta in aria-expanded sul pulsante che apre: il foglio di stile decide da
+     * li' se il pannello si vede. Mentre e' aperto il resto della pagina e' inerte, cosi'
+     * il fuoco non finisce su cio' che il pannello copre.
+     */
+    function inizializzaMenu() {
+        var apri = document.querySelector('.header-interna > button');
+        var pannello = document.getElementById('menu-sito');
+
+        if (apri === null || pannello === null) {
+            return;
+        }
+
+        var chiudi = pannello.querySelector('button');
+        var scorribile = document.querySelector('.pagina-scorribile');
+        // Stessa soglia della testata a scomparsa nel foglio di stile.
+        var schermoStretto = window.matchMedia('(max-width: 64em)');
+
+        function mostra(aperto) {
+            var attivo = aperto && schermoStretto.matches;
+
+            apri.setAttribute('aria-expanded', attivo ? 'true' : 'false');
+
+            if (scorribile !== null) {
+                scorribile.inert = attivo;
+            }
+        }
+
+        apri.addEventListener('click', function () {
+            mostra(true);
+
+            if (chiudi !== null) {
+                chiudi.focus();
+            }
+        });
+
+        if (chiudi !== null) {
+            chiudi.addEventListener('click', function () {
+                mostra(false);
+                apri.focus();
+            });
+        }
+
+        document.addEventListener('keydown', function (evento) {
+            if (evento.key === 'Escape' && apri.getAttribute('aria-expanded') === 'true') {
+                mostra(false);
+                apri.focus();
+            }
+        });
+
+        // Tornando a schermo largo lo stato aperto va spento, altrimenti la pagina resta
+        // inerte sotto un pannello che non si vede piu'.
+        function verificaLarghezza() {
+            if (!schermoStretto.matches) {
+                mostra(false);
+            }
+        }
+
+        window.addEventListener('resize', verificaLarghezza);
+
+        if ('ResizeObserver' in window) {
+            new ResizeObserver(verificaLarghezza).observe(document.documentElement);
+        }
+    }
+
+    /**
      * Sostituisce il contenuto della pagina con quello arrivato dal server.
      *
      * Il markup non viene costruito qui: si prende dalla risposta la stessa porzione
@@ -329,6 +396,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         inizializzaTornaSu();
+        inizializzaMenu();
         inizializzaModuli();
         inizializzaPagamento();
     });

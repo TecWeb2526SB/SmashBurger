@@ -1,37 +1,12 @@
 /* Scostamenti per gli schermi fino a 48em. */
 
 :root {
-    /* Su schermo piccolo il menu va su piu' righe e la testata e' molto piu' alta. */
-    --altezza-header: 13.25rem;
     --testo-introduttivo: 1.1rem;
     --titolo-3: 1.4rem;
     --titolo-2: 2.1rem;
     --titolo-1: 3rem;
     --spazio-7: 2.5rem;
     --spazio-8: 3.5rem;
-}
-
-.header-interna {
-    display: block;
-    padding: var(--spazio-4);
-}
-
-.marchio {
-    margin-bottom: var(--spazio-4);
-}
-
-.header-interna nav + nav {
-    margin-top: var(--spazio-3);
-    padding-top: var(--spazio-3);
-    border-top: 0.0625rem solid #504c46;
-}
-
-.header-interna nav[aria-label="Il tuo account"] ul {
-    justify-content: flex-start;
-}
-
-.header-interna nav ul {
-    gap: var(--spazio-2) var(--spazio-3);
 }
 
 main {
