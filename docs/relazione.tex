@@ -2,7 +2,6 @@
 
 \usepackage[italian]{babel}
 \usepackage[utf8]{inputenc}
-
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{parskip}
 \usepackage{graphicx}
@@ -13,487 +12,465 @@
 \usepackage{float}
 \usepackage{setspace}
 \usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{fancyhdr}
 
-\title{Relazione di progetto Smash Burger \\ Corso di Tecnologie Web A.A. 2025-26}
-\author{}
-\date{}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue!70!black,
+    citecolor=black
+}
+
+% Intestazioni e piè di pagina
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Smash Burger -- Progetto Tecnologie Web}}
+\fancyhead[R]{\small\textit{A.A. 2025/2026}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Comando per visualizzare un quadratino colorato nella tabella della palette
+\newcommand{\campione}[1]{\textcolor[HTML]{#1}{\rule{1.3em}{1.3em}}}
 
 \begin{document}
 
-\begin{center}
+% ─────────────────────────────────────────────────────────────────────────────
+% Frontespizio
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{titlepage}
+    \centering
+    \vspace*{0.3cm}
 
-    % Se si desidera inserire il logo, decommentare la riga seguente:
-    % \includegraphics[width=10cm]{assets_relazione/logo.png}
+    {\scshape\Large Università degli Studi di Padova \par}
+    \vspace{0.2cm}
+    {\scshape\large Dipartimento di Matematica ``Tullio Levi-Civita'' \par}
+    \vspace{0.15cm}
+    {\normalsize Corso di Laurea in Informatica (L31) \par}
 
-    \vspace{1cm}
+    \vspace{0.4cm}
+    \rule{\textwidth}{1pt}
+    \vspace{0.6cm}
 
-    {\huge \textbf{Relazione di progetto ``Smash Burger''}} \\ [0.5cm]
-    {\Large Corso di Tecnologie Web A.A. 2025-26}
+    \includegraphics[width=4.2cm]{logo.png} \par
+    \vspace{0.5cm}
 
-    \vspace{1cm}
-
-    \large
-    \linespread{1.3}\selectfont
-
-    \textbf{Autori} \\
-    [DA COMPILARE: Nome Cognome], matricola [MATRICOLA], [email]@studenti.unipd.it \\
-    [DA COMPILARE: Nome Cognome], matricola [MATRICOLA], [email]@studenti.unipd.it \\
-    [DA COMPILARE: Nome Cognome], matricola [MATRICOLA], [email]@studenti.unipd.it \\
-    [DA COMPILARE: Nome Cognome], matricola [MATRICOLA], [email]@studenti.unipd.it (referente) \\
+    {\Huge\bfseries Smash Burger \par}
+    \vspace{0.3cm}
+    {\large Piattaforma web accessibile per la ristorazione veloce e la gestione ordini multi-sede \par}
 
     \vspace{0.5cm}
-    \textbf{Sito web} \\
-    https://tecweb.studenti.math.unipd.it/[DA COMPILARE] \\
+    {\normalsize Relazione di progetto per il corso di \textbf{Tecnologie Web} \par}
+    {\small Anno Accademico 2025/2026 \par}
 
-    \vspace{0.5cm}
-    \textbf{Repository GitHub} \\
-    https://github.com/TecWeb2526SB/SmashBurger \\
+    \vspace{0.7cm}
 
-    \vspace{0.5cm}
-    \textbf{Credenziali di prova} \\
-    Cliente: user / user \\
-    Manager: manager / manager \\
-    Amministratore: admin / admin
-\end{center}
+    \textbf{\large Componenti del gruppo} \par
+    \vspace{0.25cm}
+    \small
+    \begin{tabular}{llr}
+        \toprule
+        \textbf{Nominativo} & \textbf{Matricola} & \textbf{Email istituzionale} \\
+        \midrule
+        \textbf{Leonardo Soligo} (referente) & 2111042 & \texttt{leonardo.soligo@studenti.unipd.it} \\
+        \textbf{Dorde Blagojevic} & 2116424 & \texttt{dorde.blagojevic@studenti.unipd.it} \\
+        \textbf{Alessandro Ravenna} & 2111930 & \texttt{alessandro.ravenna@studenti.unipd.it} \\
+        \textbf{Alessandro Zanier} & 2101091 & \texttt{alessandro.zanier@studenti.unipd.it} \\
+        \bottomrule
+    \end{tabular}
+
+    \vspace{0.6cm}
+
+    \normalsize
+    \textbf{Indirizzo web del sito} \par
+    \vspace{0.1cm}
+    \url{https://tecweb.studenti.math.unipd.it/[DA COMPILARE]} \par
+
+    \vspace{0.6cm}
+
+    \textbf{\large Credenziali di accesso per il collaudo} \par
+    \vspace{0.2cm}
+    \small
+    \begin{tabular}{llll}
+        \toprule
+        \textbf{Ruolo utente} & \textbf{Sede di competenza} & \textbf{Nome utente} & \textbf{Password} \\
+        \midrule
+        Cliente & Qualsiasi & \texttt{user} & \texttt{user} \\
+        Manager & Sede di Padova & \texttt{manager} & \texttt{manager} \\
+        Manager & Sede di Treviso & \texttt{manager.treviso} & \texttt{manager} \\
+        Manager & Sede di Vicenza & \texttt{manager.vicenza} & \texttt{manager} \\
+        Manager & Sede di Udine & \texttt{manager.udine} & \texttt{manager} \\
+        Amministratore & Tutte le sedi & \texttt{admin} & \texttt{admin} \\
+        \bottomrule
+    \end{tabular}
+
+    \vfill
+    {\footnotesize Documento redatto per il completamento della prova di progetto del corso di Tecnologie Web \par}
+\end{titlepage}
 
 \newpage
-
 \tableofcontents
-
 \newpage
 
-\section{Introduzione}
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Introduzione e Obiettivi del Progetto}
+% ─────────────────────────────────────────────────────────────────────────────
 
-La presente relazione ha come scopo quello di descrivere le scelte progettuali, le tecnologie e le metodologie adottate per la realizzazione del progetto del corso di Tecnologie Web (corso di Laurea in Informatica, L31) per l'anno accademico 2025-2026.
+La presente relazione descrive le scelte architetturali, tecnologiche e di accessibilità adottate per lo sviluppo del progetto d'esame di Tecnologie Web (Corso di Laurea in Informatica, classe L31, Università degli Studi di Padova) per l'anno accademico 2025-2026.
 
-Il progetto consiste nella realizzazione di un sito web accessibile e usabile dedicato alla catena di hamburgerie ``Smash Burger'', un'attività commerciale simulata a scopo didattico con quattro punti vendita dislocati nel territorio del Triveneto (Padova, Treviso, Vicenza e Udine). La piattaforma consente agli utenti di esplorare l'offerta gastronomica, effettuare ordinazioni online (sia da asporto sia con consegna a domicilio), prenotare la sala eventi presente nelle sedi e gestire le attività aziendali mediante un pannello gestionale riservato.
-
-La piattaforma offre funzionalità differenziate in base al tipo di utente.
-
-Agli utenti non registrati (ospiti) il sito consente di:
-\begin{itemize}
-\item consultare il menu completo dei prodotti con descrizioni, prezzi, ingredienti e indicazione esplicita degli allergeni;
-\item visualizzare l'elenco delle sedi con i relativi indirizzi, orari di apertura settimanali e contatti;
-\item consultare informazioni descrittive sulla tecnica di cottura ``smash'' e sulla filosofia aziendale;
-\item inviare richieste o comunicazioni attraverso il modulo di contatto;
-\item selezionare il tema visivo preferito (chiaro o scuro).
-\end{itemize}
-
-Agli utenti clienti registrati sono riservate le seguenti funzioni aggiuntive:
-\begin{itemize}
-\item selezione del punto vendita di riferimento e gestione del carrello della spesa;
-\item finalizzazione dell'ordine con scelta della modalità (ritiro sul posto o consegna a domicilio) e metodo di pagamento simulato;
-\item visualizzazione dello storico degli ordini effettuati con dettaglio delle ricevute;
-\item prenotazione della sala per eventi privati, specificando data, orario, durata e numero di partecipanti;
-\item gestione del proprio profilo personale, inclusa la modifica dei dati di recapito, il cambio password e la cancellazione dell'account.
-\end{itemize}
-
-Per il personale dipendente (manager di sede) la piattaforma mette a disposizione un'area di gestione con cui:
-\begin{itemize}
-\item modificare gli orari di apertura della propria sede per ciascun giorno della settimana;
-\item attivare o disattivare la disponibilità dei prodotti nel punto vendita e aggiornare le quantità a magazzino;
-\item gestire le richieste di prenotazione della sala eventi, con facoltà di approvarle o rifiutarle;
-\item consultare e aggiornare lo stato di avanzamento degli ordini ricevuti dalla sede;
-\item consultare il riepilogo degli incassi degli ultimi 30 giorni tramite grafico e tabella riassuntiva.
-\end{itemize}
-
-Infine, l'amministratore generale ha il controllo completo del sistema e può:
-\begin{itemize}
-\item gestire l'intero catalogo prodotti (inserimento, modifica, cancellazione e caricamento immagini);
-\item gestire le categorie merceologiche del menu;
-\item inserire, aggiornare o disattivare le sedi della catena e assegnare i rispettivi manager;
-\item prendere visione dei messaggi ricevuti tramite il modulo contatti e aggiornarne lo stato;
-\item gestire gli account degli utenti registrati (modifica del ruolo, abilitazione o disattivazione).
-\end{itemize}
-
-L'obiettivo principale è stato sviluppare un'esperienza di navigazione chiara, veloce e pienamente accessibile da qualsiasi dispositivo, prestando attenzione alle persone che utilizzano tecnologie assistive o che navigano con JavaScript disabilitato.
-
-\section{Analisi dei requisiti}
-
-Nella fase preliminare abbiamo analizzato diversi siti web esistenti nel settore della ristorazione veloce e delle catene di hamburgerie, con l'obiettivo di individuare la struttura informativa più efficace e le funzionalità attese da chi ordina cibo online. Da questa indagine abbiamo ricavato i requisiti funzionali della piattaforma, definendo la gerarchia delle pagine e l'organizzazione dei contenuti.
-
-\subsection{Analisi utente}
-Il target di riferimento è rappresentato principalmente da una clientela giovane e adulta (fascia indicativa tra i 16 e i 50 anni), abituata a consultare menu e ordinare da smartphone, spesso in mobilità o nelle fasce orarie dei pasti. Per questa ragione l'interfaccia è stata progettata con un'impostazione orientata ai dispositivi mobili, riducendo al minimo i passaggi necessari per completare un'ordinazione o reperire un orario.
-
-Il linguaggio impiegato nei testi è colloquiale ma rigoroso sulle informazioni sensibili, come la composizione dei piatti e la presenza di allergeni alimentari (glutine, lattosio, frutta a guscio).
-
-Sono state distinte quattro categorie di fruitori:
-\begin{itemize}
-\item \textbf{Ospite}: utente non autenticato che visita il sito per consultare prodotti, prezzi o recapiti delle sedi;
-\item \textbf{Cliente} (utenza di prova: \texttt{user}): utente registrato che inserisce articoli nel carrello, conclude ordini e prenota la sala eventi;
-\item \textbf{Manager} (utenza di prova: \texttt{manager}): responsabile operativo di un singolo punto vendita con compiti di gestione locale;
-\item \textbf{Amministratore} (utenza di prova: \texttt{admin}): gestore dell'intera catena con facoltà di intervento su catalogo, sedi e utenze.
-\end{itemize}
-
-\subsection{SEO}
-La struttura delle pagine e i contenuti testuali sono stati curati per rispondere a specifiche ricerche degli utenti sui motori di ricerca, tra cui:
-\begin{itemize}
-\item ricerche sul marchio (``smash burger'', ``smash burger menu'');
-\item ricerche locali correlate alla presenza dei locali nelle singole città (``hamburger padova'', ``hamburger treviso'', ``hamburger vicenza'', ``hamburger udine'');
-\item ricerche legate all'asporto o alla consegna a domicilio (``hamburger da asporto padova'', ``consegna hamburger a domicilio'');
-\item ricerche mirate a particolari esigenze alimentari (``hamburger vegetariano'', ``allergeni hamburger'');
-\item ricerche informative sul metodo gastronomico (``come si prepara lo smash burger'', ``carne smash'');
-\item ricerche per feste ed eventi privati (``hamburgeria per eventi'', ``prenotazione sala feste'').
-\end{itemize}
-
-Per favorire una corretta indicizzazione:
-\begin{itemize}
-\item ogni pagina presenta elementi \texttt{<title>} e meta tag \texttt{description} univoci e pertinenti;
-\item i contenuti sono strutturati mediante marcatori semantici HTML5 rispettando una gerarchia lineare;
-\item è stata generata una mappa del sito in formato XML (\texttt{sitemap.xml}) consultabile dai motori di ricerca;
-\item le immagini sono compresse in formato moderno WebP per limitare i tempi di scaricamento;
-\item l'assenza di dipendenze esterne riduce le richieste di rete e accelera il caricamento iniziale.
-\end{itemize}
-
-\section{Progettazione}
-
-\subsection{Schema organizzativo}
-La piattaforma adotta un'architettura modulare basata sui pattern \textbf{Page Controller}, \textbf{Transaction Script} e \textbf{Template View}:
-\begin{itemize}
-\item a ogni pagina del sito corrisponde un file PHP principale (controller) che riceve la richiesta HTTP, controlla i permessi di accesso e invoca le funzioni di logica applicativa;
-\item la logica di business e le operazioni sui dati sono raggruppate in funzioni procedurali pure, suddivise per ambito tematico (gestione carrello, elaborazione ordini, catalogo, prenotazioni, controllo accessi);
-\item le viste si occupano esclusivamente della generazione del codice HTML a partire dai dati ricevuti dal controller, senza eseguire query dirette sulla base di dati.
-\end{itemize}
-
-L'intero sito comprende 31 pagine registrate in modo centralizzato all'interno di un unico file di configurazione, suddivise in quattro ambiti di utilizzo:
-\begin{itemize}
-\item \textbf{Area pubblica} (14 pagine): home page, menu, scheda singolo prodotto, pagina servizi, presentazione dell'azienda (chi siamo), elenco sedi, scheda singola sede, modulo contatti, accesso, registrazione, policy di privacy, dichiarazione di accessibilità, mappa del sito, endpoint per il cambio tema;
-\item \textbf{Area utente} (7 pagine): area personale, modifica profilo, carrello, cassa e pagamento, ricevuta di conferma ordine, prenotazione della sala eventi, disconnessione;
-\item \textbf{Area controllo manager} (5 pagine): elenco ordini di sede, dettaglio singolo ordine, gestione prodotti di sede, gestione orari di sede, calendario prenotazioni;
-\item \textbf{Area controllo amministratore} (5 pagine): modifica scheda prodotto, gestione categorie, anagrafica sedi, consultazione messaggi di contatto, gestione permessi utenti.
-\end{itemize}
-
-\subsection{Tipi di utente e permessi}
-L'accesso alle aree riservate avviene mediante autenticazione su sessione lato server. Al momento dell'accesso le credenziali fornite vengono verificate a fronte degli hash memorizzati nel database. Se l'accesso ha esito positivo, nella sessione dell'utente viene salvato il ruolo assegnato (\texttt{cliente}, \texttt{manager} oppure \texttt{amministratore}). Ogni pagina protetta invoca una funzione di verifica dei permessi che restituisce una risposta HTTP 401 (in caso di utente non autenticato) o HTTP 403 (in caso di autorizzazioni insufficienti per la pagina richiesta).
-
-\subsection{Funzionalità}
-Le principali funzionalità del sistema comprendono:
-\begin{itemize}
-\item navigazione del catalogo prodotti suddiviso per categorie merceologiche;
-\item consultazione della scheda di dettaglio di ciascun prodotto con allergeni e opzioni disponibili;
-\item registrazione di un nuovo profilo utente con validazione dei dati anagrafici;
-\item autenticazione e disconnessione sicura per le tre categorie di utenza;
-\item composizione del carrello con selezione della sede di ritiro o consegna;
-\item completamento dell'ordine con scelta della modalità (ritiro programmato in sede o consegna al domicilio indicato) e del metodo di pagamento;
-\item gestione della concorrenza sulle scorte: lo scarico della merce a magazzino avviene all'interno di una transazione atomica SQL, impedendo vendite superiori alla reale disponibilità;
-\item prenotazione della sala eventi con selezione di data, fascia oraria e durata, protetta da controlli transazionali anti-sovrapposizione;
-\item visualizzazione e modifica dello stato degli ordini da parte del personale;
-\item consultazione del grafico temporale degli incassi a 30 giorni per il monitoraggio economico;
-\item commutazione del tema grafico tra modalità chiara e scura, funzionante sia con JavaScript attivo sia tramite richiesta POST standard.
-\end{itemize}
-
-\subsection{Convenzioni interne}
-Durante la progettazione dell'interfaccia sono state stabilite alcune convenzioni comuni:
-\begin{itemize}
-\item la parte superiore di ogni pagina presenta una struttura coerente composta da intestazione con logo, navigazione principale, indicatore dell'utenza e scorciatoia per il cambio del tema visivo;
-\item la voce del menu corrispondente alla pagina corrente non è implementata come link cliccabile (evitando link circolari), bensì come elemento testuale distinto marcato semanticamente con l'attributo \texttt{aria-current="page"};
-\item è presente un percorso di navigazione (\textit{breadcrumb}) che permette all'utente di comprendere costantemente la propria posizione all'interno della gerarchia del sito;
-\item i blocchi informativi e i prodotti sono presentati tramite schede visive (\textit{card}), facilitando la scansione rapida dei contenuti;
-\item tutti i moduli di inserimento dati mantengono i valori digitati dall'utente in caso di errore di validazione, mostrando messaggi descrittivi posizionati in prossimità dei campi interessati;
-\item lo stato dei collegamenti ipertestuali già visitati viene differenziato cromaticamente rispetto ai collegamenti non ancora aperti.
-\end{itemize}
-
-\subsection{Schema database}
-Il database è stato implementato su MariaDB versione 10.6. La struttura comprende 12 tabelle relazionali collegate da 15 vincoli di integrità referenziale (\textit{foreign keys}). Tutti gli importi monetari sono memorizzati come numeri interi espressi in centesimi di euro, evitando così errori di arrotondamento legati ai tipi a virgola mobile.
-
-Le tabelle sono le seguenti:
-\begin{itemize}
-\item \textbf{utenti}: anagrafica degli utenti registrati, credenziali cifrate, ruolo (\texttt{cliente}, \texttt{manager}, \texttt{amministratore}) e dati di consegna;
-\item \textbf{sedi}: elenco delle quattro sedi con indirizzo, recapiti telefonici e identificativo del manager incaricato;
-\item \textbf{orari\_sedi}: fasce orarie di apertura e chiusura per ciascun giorno della settimana, con vincolo di unicità su sede e giorno;
-\item \textbf{categorie}: classificazione dei prodotti (hamburger, contorni, bevande, dessert) con ordine di visualizzazione personalizzabile;
-\item \textbf{prodotti}: catalogo delle vivande con denominazione, descrizione, allergeni, prezzo e percorso dell'immagine associata;
-\item \textbf{disponibilita\_prodotti}: associazione tra sedi e prodotti, con quantità presente a magazzino e vincolo di controllo sulle quantità non negative;
-\item \textbf{carrelli} e \textbf{righe\_carrello}: memorizzazione delle sessioni di acquisto temporanee collegate all'utente e alla sede selezionata;
-\item \textbf{ordini} e \textbf{righe\_ordine}: registrazione degli ordini confermati, con tracciamento dello stato di lavorazione, modalità di ritiro o consegna, indirizzo, totale e storicizzazione puntuale dei prezzi dei prodotti;
-\item \textbf{prenotazioni}: richieste di utilizzo della sala eventi, con data, orari di inizio e fine, numero di partecipanti e stato di approvazione;
-\item \textbf{messaggi\_contatto}: richieste inviate dagli utenti tramite il modulo contatti, suddivise per categoria e stato di gestione.
-\end{itemize}
-
-\section{Realizzazione}
-
-L'attività commerciale ``Smash Burger'' è un'entità simulata a fini accademici. Le immagini illustrative dei prodotti, delle facciate dei locali e delle sezioni editoriali sono state \textbf{generate tramite strumenti di intelligenza artificiale}, al fine di garantire un'estetica omogenea e coordinata con l'interfaccia. Tutte le immagini sono state successivamente ritagliate nelle proporzioni opportune, convertite nel formato compresso WebP (con peso inferiore a 300\,KB) e corredate da descrizioni testuali alternative (\texttt{alt}) accurate per la fruizione tramite screen reader.
-
-\subsection{Struttura e contenuto}
-
-\subsubsection{HTML}
-Il codice sorgente delle pagine è scritto in HTML5 nel rispetto dei vincoli di conformità XML:
-\begin{itemize}
-\item chiusura esplicita di tutti gli elementi, compresi i tag vuoti;
-\item attributi scritti interamente in minuscolo con valori racchiusi tra virgolette;
-\item esplicitazione completa degli attributi booleani (ad esempio \texttt{required="required"});
-\item dichiarazione dei namespace XML e dell'attributo di lingua nella radice: \texttt{<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">}.
-\end{itemize}
-
-L'interfaccia è composta da 44 file di vista organizzati per area funzionale all'interno della cartella delle viste. La presenza di un unico punto di ingresso per l'assemblaggio della pagina (\texttt{mostra\_pagina()}) garantisce l'inclusione sistematica dell'intestazione comune, del percorso di navigazione, dell'area dei contenuti e del piè di pagina.
-
-\subsubsection{Popolamento database}
-La creazione e il popolamento iniziale della base di dati avvengono mediante l'esecuzione dello script SQL predisposto (\texttt{schema.sql}), contenente le istruzioni DDL per la generazione delle 12 tabelle e i dati dimostrativi: quattro sedi reali del territorio veneto e friulano, cinque categorie di menu, diciannove prodotti alimentari con ingredienti e allergeni, e tre account di prova con password cifrate mediante algoritmo di hashing sicuro.
-
-\subsection{Presentazione}
-
-\subsubsection{CSS}
-L'aspetto visivo è controllato da tre fogli di stile separati, collegati nell'intestazione HTML mediante l'attributo \texttt{media} per ottimizzarne l'applicazione in base al contesto d'uso:
-\begin{itemize}
-\item \texttt{stile.css}: foglio principale contenente il reset di base, la definizione delle variabili cromatiche e tipografiche, le regole di impaginazione e i componenti grafici per la visualizzazione standard;
-\item \texttt{mobile.css}: foglio dedicato ai dispositivi con larghezza dello schermo limitata, applicato mediante la regola \texttt{media="screen and (max-width: 48em)"} (corrispondente a 768 pixel con dimensione del font predefinita);
-\item \texttt{stampa.css}: foglio per la riproduzione cartacea, associato a \texttt{media="print"}.
-\end{itemize}
-
-Nello sviluppo dei fogli di stile abbiamo seguito questi principi:
-\begin{itemize}
-\item totale assenza di stili incorporati direttamente nel codice HTML tramite attributi \texttt{style};
-\item centralizzazione dei parametri visivi (colori primari, superfici, spaziature, ombre) tramite custom properties CSS all'interno della pseudo-classe \texttt{:root};
-\item utilizzo combinato di Flexbox e CSS Grid per la distribuzione degli elementi, limitando l'annidamento delle griglie per mantenere buone prestazioni di rendering;
-\item supporto automatico alle preferenze di movimento ridotto espresse dall'utente (\texttt{@media (prefers-reduced-motion: reduce)}), azzerando le animazioni decorative per prevenire disturbi visivi.
-\end{itemize}
-
-\subsubsection{Gestione del tema visivo}
-La piattaforma supporta due modalità grafiche distinte: chiara e scura.
-La modalità scura viene attivata in due modi complementari:
+L'attività presa a modello è la catena di ristorazione veloce ``Smash Burger'', un'azienda simulata a fini didattici operante con quattro punti vendita nel territorio veneto e friulano (Padova, Treviso, Vicenza e Udine). L'applicazione web sviluppata risponde a una duplice esigenza:
 \begin{enumerate}
-\item in via automatica, intercettando la preferenza di sistema del sistema operativo o del browser tramite la media query \texttt{@media (prefers-color-scheme: dark)};
-\item in via manuale, mediante appositi pulsanti presenti nell'intestazione che consentono all'utente di forzare la modalità desiderata.
+    \item offrire ai clienti un canale digitale per consultare i prodotti, inoltrare ordinazioni online (con opzione di asporto o consegna a domicilio) e richiedere la prenotazione della sala eventi;
+    \item fornire al personale interno (manager locali e amministratore generale) strumenti dedicati per la gestione degli ordini, l'aggiornamento delle scorte, la pianificazione degli orari e il controllo degli accessi.
 \end{enumerate}
 
-La scelta manuale viene memorizzata all'interno di un cookie sul browser dell'utente mediante una richiesta POST standard gestita lato server. In questo modo l'applicazione applica la classe del tema direttamente sul tag \texttt{<body>} durante la generazione della risposta HTML, assicurando il corretto funzionamento dell'interfaccia anche per gli utenti che navigano con JavaScript disattivato.
+\subsection{Panoramica delle funzionalità per ruolo}
+Le funzionalità offerte sono graduate in funzione del profilo di autorizzazione:
 
-\subsubsection{CSS per la stampa}
-Il foglio di stile per la stampa (\texttt{stampa.css}) è stato progettato per garantire la leggibilità delle informazioni su supporto cartaceo con un occhio di riguardo al consumo di inchiostro (\textit{PrintFriendly}):
 \begin{itemize}
-\item l'intera grafica è convertita in modalità monocromatica ad alto contrasto, impostando sfondo bianco e testo nero;
-\item tutti gli elementi di navigazione (menu di testata, percorso di navigazione, piè di pagina, pulsante torna su) e i controlli interattivi (pulsanti di azione, moduli di filtro) vengono nascosti;
-\item le ombreggiature e gli elementi decorativi sono azzerati;
-\item il layout viene linearizzato su colonna singola per adattarsi al foglio verticale;
-\item i margini di pagina sono impostati a 2 centimetri mediante la direttiva \texttt{@page}.
+    \item \textbf{Utente non autenticato (Ospite)}: esplora liberamente l'intero catalogo dei prodotti (dettaglio ingredienti, allergeni certificati e prezzi); consulta la scheda informativa delle quattro sedi con orari settimanali, indirizzi e contatti; legge la sezione divulgativa sulla tecnica culinaria dello smash burger; invia richieste di assistenza tramite l'apposito modulo contatti; seleziona il tema grafico preferito (chiaro o scuro).
+    \item \textbf{Cliente registrato}: imposta la sede di riferimento; compone e aggiorna il carrello della spesa; conclude l'ordine specificando orario di ritiro o indirizzo di recapito e metodo di pagamento simulato; consulta lo storico personale degli ordini e le relative ricevute; inoltra richieste di prenotazione della sala eventi scegliendo fascia oraria e durata; aggiorna i propri dati personali o cancella il profilo.
+    \item \textbf{Manager di sede}: dispone di un'area riservata circoscritta al proprio punto vendita. Può modificare gli orari di apertura e chiusura per ciascun giorno della settimana; abilitare o sospendere la vendita dei singoli prodotti e variarne le quantità a magazzino; valutare le richieste di prenotazione della sala eventi (approvazione o rifiuto); visualizzare e aggiornare lo stato di lavorazione degli ordini; consultare il grafico degli incassi degli ultimi trenta giorni con relativa tabella accessibile.
+    \item \textbf{Amministratore generale}: possiede privilegi completi su tutta la piattaforma. Oltre a poter operare su qualsiasi sede, gestisce il catalogo prodotti globale (creazione, aggiornamento, eliminazione vivande e caricamento di nuove immagini); modifica le categorie merceologiche; aggiunge o disattiva punti vendita; consulta i messaggi inviati dagli utenti tramite il modulo contatti; gestisce i permessi e lo stato di attivazione di tutti gli account registrati.
 \end{itemize}
 
-\subsubsection{Immagini e icone}
-La gestione dei file multimediali è suddivisa per tipologia:
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Analisi dei Requisiti e Strategia SEO}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Destinatari e scenari d'uso}
+Il servizio si rivolge principalmente a consumatori compresi nella fascia di età tra i 16 e i 50 anni. L'analisi preliminare evidenzia come l'accesso alla piattaforma avvenga in larga misura tramite dispositivi mobili (smartphone o tablet), spesso in condizioni di mobilità o in prossimità degli orari dei pasti. Da questa constatazione è scaturita la decisione di progettare l'interfaccia con un approccio marcatamente orientato al mobile, semplificando la navigazione, riducendo i passaggi per finalizzare un ordine e garantendo un caricamento rapido anche in presenza di connettività limitata.
+
+La comunicazione nei testi è accessibile e priva di tecnicismi inutili, prestando estremo rigore alla chiara evidenziazione degli allergeni alimentari (glutine, latte, frutta a guscio, uova) e delle alternative vegetariane.
+
+\subsection{Ottimizzazione per i motori di ricerca (SEO)}
+L'alberatura del sito e i testi editoriali sono stati concepiti per intercettare ricerche organiche rilevanti, tra cui:
 \begin{itemize}
-\item \textbf{Immagini del layout e delle sedi}: salvate nel formato compresso WebP all'interno della cartella delle immagini, con un peso per singolo file inferiore alla soglia prestazionale di 300\,KB;
-\item \textbf{Immagini dei prodotti}: caricate dagli amministratori e collocate nella cartella dedicata ai caricamenti; la procedura di caricamento verifica l'effettivo tipo MIME del file tramite la funzione PHP \texttt{finfo\_file()} e controlla che le dimensioni siano comprese tra 300 e 2000 pixel;
-\item \textbf{Icone dell'interfaccia}: raggruppate all'interno di un unico file SVG incorporato mediante una funzione helper PHP, evitando richieste di rete superflue;
-\item \textbf{Sicurezza della cartella di caricamento}: la cartella contenente le immagini caricate dall'amministratore è protetta da un file di configurazione server dedicato che inibisce l'esecuzione di qualsiasi script PHP, neutralizzando possibili tentativi di upload malevolo.
+    \item ricerche correlate al marchio: ``smash burger'', ``smash burger menu'', ``prezzi smash burger'';
+    \item ricerche geolocalizzate: ``hamburger padova'', ``hamburger treviso'', ``hamburger vicenza'', ``hamburger udine'';
+    \item ricerche su modalità di consumo: ``hamburger da asporto padova'', ``consegna hamburger domicilio'';
+    \item ricerche su diete e intolleranze: ``hamburger vegetariano padova'', ``allergeni hamburger'';
+    \item ricerche per ricorrenze: ``hamburgeria per eventi'', ``prenotazione sala feste privati''.
 \end{itemize}
 
-\subsubsection{Tipografia}
-Come carattere tipografico principale è stato scelto il font \textbf{Archivo}, un sans-serif geometrico a forte impatto visivo e di ottima leggibilità, distribuito con licenza libera Open Font License. I file del font sono archiviati localmente nel progetto in tre pesi distinti (regolare, grassetto e nero) e caricati via CSS con la direttiva \texttt{font-display: swap}. Lo stack di caratteri di riserva comprende font di sistema ampiamente diffusi: \texttt{"Archivo", "Helvetica Neue", Arial, sans-serif}.
+A supporto dell'indicizzazione sono stati adottati i seguenti accorgimenti tecnici:
+\begin{itemize}
+    \item definizione centralizzata di elementi \texttt{<title>} e meta tag \texttt{description} univoci per ciascuna pagina;
+    \item rigida adozione di marcatori semantici HTML5 rispettando una gerarchia coerente dei titoli;
+    \item predisposizione di una mappa del sito in formato XML (\texttt{sitemap.xml});
+    \item compressione e conversione di tutte le risorse fotografiche nel formato WebP (peso inferiore a 300\,KB);
+    \item assenza di librerie esterne o fogli di stile remoti che rallenterebbero l'elaborazione iniziale.
+\end{itemize}
 
-\subsubsection{Tavolozza colori e contrasti}
-La selezione dei colori si ispira ai toni caratteristici dei condimenti tipici delle hamburgerie. Le tabelle seguenti riportano i codici esadecimali utilizzati per i due temi:
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Architettura e Progettazione del Sistema}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Modello architetturale}
+L'applicazione è strutturata secondo i principi architetturali classici del web procedurale:
+\begin{itemize}
+    \item \textbf{Page Controller}: ogni URL valido fa capo a un controller PHP posizionato nella radice del progetto. Il controller raccoglie la richiesta HTTP, controlla le autorizzazioni dell'utente, richiama le opportune funzioni di dominio e seleziona la vista di destinazione;
+    \item \textbf{Transaction Script}: la logica applicativa è organizzata in funzioni pure distribuite in 20 file tematici (gestione ordini, carrello, prenotazioni, catalogo, sicurezza). Ciascuna operazione aziendale viene eseguita in modo isolato e deterministico;
+    \item \textbf{Template View}: la presentazione visiva è demandata a viste dedicate prive di logica di interrogazione della base di dati. Le viste ricevono un array di dati già validati e strutturati dal controller e si limitano a generare il markup finale.
+\end{itemize}
+
+L'inclusione sistematica dell'intestazione, del percorso di navigazione (\textit{breadcrumb}), dell'area operativa e del piè di pagina è garantita dalla funzione coordinatrice \texttt{mostra\_pagina()}.
+
+\subsection{Organizzazione delle pagine}
+Il sito conta complessivamente 31 pagine registrate in modo centralizzato all'interno di un file di configurazione unico, suddivise in quattro settori:
+\begin{itemize}
+    \item \textbf{Area pubblica (14 pagine)}: home page, catalogo menu, scheda singolo prodotto, servizi, presentazione aziendale (chi siamo), elenco sedi, scheda singola sede, modulo contatti, autenticazione, registrazione, privacy policy, dichiarazione di accessibilità, mappa del sito, endpoint per il cambio tema;
+    \item \textbf{Area cliente (7 pagine)}: cruscotto personale, modifica dati profilo, carrello della spesa, cassa e checkout, ricevuta di conferma ordine, prenotazione della sala eventi, disconnessione;
+    \item \textbf{Area manager (5 pagine)}: elenco ordini di competenza, dettaglio ordine, disponibilità prodotti per sede, orari settimanali di sede, calendario prenotazioni;
+    \item \textbf{Area amministratore (5 pagine)}: gestione schede prodotto, gestione categorie, anagrafica e attivazione sedi, gestione messaggi modulo contatti, gestione permessi e ruoli utente.
+\end{itemize}
+
+\subsection{Gestione dei permessi e delle sessioni}
+L'accesso alle aree riservate è presidiato da una procedura centralizzata di autorizzazione. All'atto del login, dopo la verifica delle credenziali a fronte degli hash memorizzati nel database, nella sessione dell'utente viene registrato il ruolo attribuito. Ogni controller protetto invoca la funzione di controllo dei privilegi prima di consentire l'accesso alla risorsa: in assenza di autenticazione viene restituita una risposta HTTP 401, mentre in caso di privilegi non adeguati viene emessa una risposta HTTP 403.
+
+I cookie di sessione sono configurati con direttive restrittive (\texttt{HttpOnly}, \texttt{SameSite=Lax} e flag \texttt{Secure} condizionato al protocollo HTTPS) per impedire intercettazioni arbitrarie o accessi via script. Al momento dell'autenticazione viene sistematicamente eseguita la rigenerazione dell'ID di sessione, neutralizzando gli attacchi di fissazione.
+
+\subsection{Struttura della base di dati}
+La persistenza delle informazioni è affidata al motore relazionale MariaDB (versione 10.6). Lo schema si articola in 12 tabelle relazionali, regolate da 15 vincoli di integrità referenziale (\textit{foreign key}). Tutti i valori economici sono memorizzati come numeri interi espressi in centesimi di euro (tipo \texttt{INT UNSIGNED}), scongiurando le imprecisioni di calcolo tipiche dei tipi a virgola mobile.
+
+Le tabelle create sono:
+\begin{itemize}
+    \item \textbf{utenti}: anagrafica degli account, credenziali cifrate, ruolo e dati per la consegna;
+    \item \textbf{sedi}: elenco dei quattro locali con indirizzo, recapiti e identificativo del manager assegnato;
+    \item \textbf{orari\_sedi}: fasce orarie settimanali con vincolo di unicità su sede e giorno;
+    \item \textbf{categorie}: classificazione merceologica delle vivande con ordinamento personalizzabile;
+    \item \textbf{prodotti}: catalogo delle preparazioni alimentari con denominazione, descrizione, allergeni, prezzo e percorso immagine;
+    \item \textbf{disponibilita\_prodotti}: matrice di collegamento tra sedi e prodotti, con quantità a magazzino e vincolo \texttt{CHECK (quantita >= 0)};
+    \item \textbf{carrelli} e \textbf{righe\_carrello}: carrelli di spesa temporanei associati all'utente e alla sede selezionata;
+    \item \textbf{ordini} e \textbf{righe\_ordine}: ordini confermati con indicazione dello stato di avanzamento, della modalità (ritiro o domicilio), del recapito e storicizzazione puntuale del prezzo degli articoli acquistati;
+    \item \textbf{prenotazioni}: richieste di occupazione della sala eventi con data, ora di inizio, ora di fine e stato di approvazione;
+    \item \textbf{messaggi\_contatto}: richieste inviate dagli utenti tramite il modulo contatti, classificate per argomento e stato di evasione.
+\end{itemize}
+
+\subsection{Gestione della concorrenza}
+Particolare cura è stata riservata a due scenari critici di concorrenza sui dati:
+\begin{enumerate}
+    \item \textbf{Scarico scorte a magazzino}: all'atto del checkout l'aggiornamento delle quantità disponibili avviene all'interno di una transazione SQL atomica con clausola condizionale (\texttt{UPDATE disponibilita\_prodotti SET quantita = quantita - :q WHERE sede\_id = :s AND prodotto\_id = :p AND quantita >= :q}). Se anche una sola riga non soddisfa la condizione, la transazione fallisce e l'ordine viene respinto, evitando vendite eccedenti la reale disponibilità fisica.
+    \item \textbf{Sovrapposizione delle prenotazioni}: prima di registrare una prenotazione per la sala eventi, una query transazionale verifica l'assenza di intervalli orari sovrapposti nella medesima sede e data tra le prenotazioni già approvate o in attesa.
+\end{enumerate}
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Implementazione Tecnica}
+% ─────────────────────────────────────────────────────────────────────────────
+
+\subsection{Dichiarazione sull'uso di immagini generate}
+L'attività commerciale descritta è interamente simulata a fini didattici. Le immagini illustrative dei panini, delle bevande, dei contorni, delle facciate dei locali e delle sezioni editoriali sono state \textbf{generate tramite strumenti di intelligenza artificiale}, al fine di conferire al sito un'estetica omogenea e coordinata. Tutte le risorse grafiche sono state successivamente ritagliate nelle proporzioni opportune per il layout, convertite nel formato compresso WebP (garantendo un peso per ciascun file inferiore alla soglia di 300\,KB) e corredate da descrizioni testuali alternative (\texttt{alt}) che ne illustrano fedelmente il contenuto visivo.
+
+\subsection{Struttura e semantica del markup (HTML5)}
+Le pagine sono scritte in HTML5 rispettando la sintassi XML:
+\begin{itemize}
+    \item chiusura esplicita di ogni elemento, compresi gli elementi vuoti;
+    \item valori degli attributi sempre racchiusi tra virgolette;
+    \item attributi booleani dichiarati in forma esplicita (come \texttt{required="required"});
+    \item inclusione dei namespace e dell'attributo linguistico nella radice: \texttt{<html xmlns="http://www.w3.org/1999/xhtml" lang="it" xml:lang="it">}.
+\end{itemize}
+
+Tutti i documenti adottano marcatori semantici per definire chiaramente le sezioni (\texttt{<header>}, \texttt{<nav>}, \texttt{<main>}, \texttt{<section>}, \texttt{<article>}, \texttt{<footer>}), supportando la navigazione per landmark.
+
+\subsection{Organizzazione dei fogli di stile (CSS)}
+La presentazione è articolata su tre fogli di stile distinti, collegati con l'attributo \texttt{media} adeguato:
+\begin{itemize}
+    \item \texttt{stile.css}: foglio principale contenente il reset di base, la definizione delle variabili cromatiche e dimensionali, i layout dei componenti e la gestione delle modalità chiara e scura;
+    \item \texttt{mobile.css}: foglio dedicato ai dispositivi con larghezza della finestra fino a 48\,em (768 pixel), collegato con \texttt{media="screen and (max-width: 48em)"};
+    \item \texttt{stampa.css}: foglio per la stampa cartacea, collegato con \texttt{media="print"}.
+\end{itemize}
+
+Nello sviluppo del CSS sono state seguite regole precise:
+\begin{itemize}
+    \item assenza di stili inline nell'HTML;
+    \item impiego di variabili CSS (\textit{custom properties}) all'interno di \texttt{:root} per centralizzare i colori, i margini e le ombreggiature;
+    \item adozione combinata di Flexbox e CSS Grid, limitando l'annidamento per non gravare sulle prestazioni di calcolo del browser;
+    \item disattivazione delle transizioni visive e animazioni in presenza della preferenza di sistema per la riduzione del movimento (\texttt{@media (prefers-reduced-motion: reduce)}).
+\end{itemize}
+
+\subsection{Tavolozze cromatiche e verifica dei contrasti}
+I colori adottati riprendono le tonalità tipiche dei condimenti di una classica hamburgeria americana: senape, ketchup e cetriolini sottaceto. Nelle tabelle seguenti vengono riepilogati i colori dei due temi con i relativi campioni grafici:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Elemento visivo} & \textbf{Codice HEX (Tema chiaro)} \\
-\hline
-Sfondo della pagina & \#faf7f2 \\
-Superficie schede informative & \#fffdf9 \\
-Testo principale & \#1a1a1a \\
-Accento caldo (senape) & \#9c6f00 \\
-Colore di azione / avviso (ketchup) & \#b3181f \\
-Colore di successo (cetriolini) & \#3f6b24 \\
-Bordi e divisori & \#d8cfc2 \\
-Collegamenti visitati & \#61208f \\
-\hline
+\small
+\begin{tabular}{llcl}
+\toprule
+\textbf{Ruolo visivo} & \textbf{Variabile CSS} & \textbf{Campione} & \textbf{Codice HEX} \\
+\midrule
+Sfondo della pagina & \texttt{--sfondo} & \campione{FAF7F2} & \texttt{\#faf7f2} \\
+Superficie delle schede & \texttt{--superficie} & \campione{FFFDF9} & \texttt{\#fffdf9} \\
+Superficie alternativa & \texttt{--superficie-alternativa} & \campione{EEE7DC} & \texttt{\#eee7dc} \\
+Testo principale & \texttt{--testo} & \campione{1A1A1A} & \texttt{\#1a1a1a} \\
+Accento caldo (senape) & \texttt{--senape} & \campione{9C6F00} & \texttt{\#9c6f00} \\
+Colore di azione (ketchup) & \texttt{--ketchup} & \campione{B3181F} & \texttt{\#b3181f} \\
+Colore di successo (cetriolini) & \texttt{--cetriolini} & \campione{3F6B24} & \texttt{\#3f6b24} \\
+Bordi e cornici & \texttt{--bordo} & \campione{D8CFC2} & \texttt{\#d8cfc2} \\
+Collegamenti visitati & \texttt{--visitato} & \campione{61208F} & \texttt{\#61208f} \\
+\bottomrule
 \end{tabular}
 \caption{Tavolozza colori per la modalità chiara}
 \end{table}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|c|}
-\hline
-\textbf{Elemento visivo} & \textbf{Codice HEX (Tema scuro)} \\
-\hline
-Sfondo della pagina & \#171614 \\
-Superficie schede informative & \#22201d \\
-Testo principale & \#f2ece4 \\
-Accento caldo (senape) & \#e8a100 \\
-Colore di azione / avviso (ketchup) & \#f0555a \\
-Colore di successo (cetriolini) & \#86bd4d \\
-Bordi e divisori & \#413d37 \\
-Collegamenti visitati & \#d8adff \\
-\hline
+\small
+\begin{tabular}{llcl}
+\toprule
+\textbf{Ruolo visivo} & \textbf{Variabile CSS} & \textbf{Campione} & \textbf{Codice HEX} \\
+\midrule
+Sfondo della pagina & \texttt{--sfondo} & \campione{171614} & \texttt{\#171614} \\
+Superficie delle schede & \texttt{--superficie} & \campione{22201D} & \texttt{\#22201d} \\
+Superficie alternativa & \texttt{--superficie-alternativa} & \campione{2D2A26} & \texttt{\#2d2a26} \\
+Testo principale & \texttt{--testo} & \campione{F2ECE4} & \texttt{\#f2ece4} \\
+Accento caldo (senape) & \texttt{--senape} & \campione{E8A100} & \texttt{\#e8a100} \\
+Colore di azione (ketchup) & \texttt{--ketchup} & \campione{F0555A} & \texttt{\#f0555a} \\
+Colore di successo (cetriolini) & \texttt{--cetriolini} & \campione{86BD4D} & \texttt{\#86bd4d} \\
+Bordi e cornici & \texttt{--bordo} & \campione{413D37} & \texttt{\#413d37} \\
+Collegamenti visitati & \texttt{--visitato} & \campione{D8ADFF} & \texttt{\#d8adff} \\
+\bottomrule
 \end{tabular}
 \caption{Tavolozza colori per la modalità scura}
 \end{table}
 
-Tutte le combinazioni tra colore del testo e relativo sfondo garantiscono un rapporto di contrasto cromatico pari o superiore a 5.02:1, superando la soglia minima prevista dal livello AA delle linee guida WCAG 2.1 (pari a 4.5:1 per il testo ordinario e a 3:1 per il testo a grandi dimensioni).
+Tutte le coppie testo/sfondo sono state collaudate con strumenti appositi, registrando un rapporto di contrasto minimo pari a 5.02:1, ampiamente superiore al valore limite prescritto dalle WCAG 2.1 AA (4.5:1 per il testo normale e 3:1 per il testo grande).
 
-\subsection{Comportamento}
-
-\subsubsection{PHP}
-Il codice lato server è sviluppato in linguaggio PHP versione 8.1 secondo un paradigma procedurale pulito, privo di classi e composto da 131 funzioni distribuite in 20 file tematici.
-
-I file cardine dell'infrastruttura comprendono:
+\subsection{Foglio di stile per la stampa}
+Il foglio \texttt{stampa.css} converte l'aspetto visivo in un formato orientato al risparmio di inchiostro (\textit{PrintFriendly}):
 \begin{itemize}
-\item il file di configurazione generale, contenente la gestione dei parametri di sessione e le funzioni per la generazione dinamica di percorsi puramente relativi, consentendo al sito di funzionare correttamente a prescindere dal percorso di installazione sul server universitario;
-\item il modulo di connessione alla base di dati, basato sull'estensione PDO con l'impiego costante di istruzioni preparate (\textit{prepared statements}) e parametri nominati;
-\item il file di registro delle pagine, che definisce in un unico punto i titoli, le descrizioni, i ruoli ammessi e la collocazione nei menu di ciascuna risorsa del sito.
+    \item impostazione di uno sfondo interamente bianco e testo nero ad alto contrasto;
+    \item occultamento sistematico di tutti i componenti di navigazione (menu principale, link rapidi, piè di pagina) e di tutti i controlli interattivi (pulsanti, form di ricerca, commutatori);
+    \item rimozione delle ombreggiature nette e dei bordi decorativi;
+    \item linearizzazione del layout su una colonna con margini fissati a 2\,cm mediante la regola \texttt{@page}.
 \end{itemize}
 
-Nei moduli di inserimento dati, in caso di sottomissione con errori, il sistema ripopola automaticamente i campi con i valori inseriti in precedenza ed espone messaggi diagnostici comprensivi di indicazioni puntuali per correggere il dato.
+\subsection{Tipografia}
+Il carattere tipografico adottato è **Archivo**, un carattere sans-serif grottesco moderno di grande impatto, rilasciato con licenza Open Font License. I relativi file sorgente (\texttt{.ttf}) sono inclusi localmente nel repository in tre varianti di peso (normale, grassetto e nero) e richiamati con la direttiva \texttt{font-display: swap}. La catena di ripiego (\textit{font fallback}) include caratteri ampiamente diffusi sui principali sistemi operativi: \texttt{"Archivo", "Helvetica Neue", Arial, sans-serif}.
 
-\subsubsection{JavaScript}
-Il comportamento lato client è racchiuso in un unico file (\texttt{script.js}) privo di librerie esterne e strutturato con direttiva \texttt{'use strict'}. Gli interventi si basano sulla filosofia del \textbf{Progressive Enhancement}: tutte le operazioni essenziali rimangono funzionanti anche qualora l'utente abbia disattivato JavaScript nel browser.
+\subsection{Comportamento e Progressive Enhancement (JavaScript)}
+Il comportamento dinamico lato client è gestito da un singolo file JavaScript (\texttt{script.js}) strutturato in modalità rigorosa (\texttt{'use strict'}) e privo di dipendenze da framework esterni. L'applicazione rispetta il principio del **Progressive Enhancement**: ogni funzionalità essenziale del sito (consultazione del catalogo, emissione ordini, gestione delle prenotazioni e pannello di controllo) risulta pienamente operativa anche con JavaScript completamente disabilitato nel browser.
 
-Lo script assolve a tre compiti principali:
+Lo script interviene su tre aspetti:
 \begin{enumerate}
-\item \textbf{Pulsante torna su}: compare quando lo scorrimento supera una soglia determinata e riporta la pagina all'inizio riposizionando contestualmente il focus da tastiera sull'ancora iniziale, a beneficio di chi naviga senza mouse;
-\item \textbf{Invio asincrono dei moduli (AJAX)}: i moduli provvisti dell'attributo dedicato inviano la richiesta tramite le API \texttt{fetch} native del browser, aggiornando la sola porzione centrale della pagina ed evitando il ricaricamento completo; in caso di guasto o disconnessione di rete, il modulo esegue un ripiego immediato (\textit{fallback}) sottomettendosi nel modo convenzionale;
-\item \textbf{Gestione del modulo di pagamento}: commuta la visibilità dei campi relativi all'indirizzo di spedizione in base alla modalità selezionata (ritiro in sede o consegna al domicilio) mediante attributi dati e regole CSS, senza alterare stili inline.
+    \item \textbf{Pulsante torna su}: viene reso visibile dopo che lo scorrimento supera una determinata quota; al click scorre la vista verso la sommità della pagina e sposta contestualmente il focus da tastiera sull'ancora iniziale (\texttt{\#inizio}), preservando l'accessibilità per chi naviga senza puntatore;
+    \item \textbf{Sottomissione asincrona dei form (AJAX)}: i moduli abilitati inviano i dati mediante le API native \texttt{fetch} e aggiornano la sezione centrale della pagina senza richiedere il ricaricamento dell'intero documento; in caso di fallimento della richiesta o problemi di rete, il modulo esegue un ripiego automatico sottomettendosi nel modo convenzionale;
+    \item \textbf{Gestione dinamica del pagamento}: adatta i campi visibili relativi all'indirizzo in funzione della modalità scelta (ritiro in sede o consegna a domicilio) manipolando attributi dati che pilotano le regole CSS, senza alterare stili inline.
 \end{enumerate}
 
-\subsubsection{Validazione dell'input}
-Tutti i dati inviati dagli utenti sono sottoposti a una doppia verifica:
+\subsection{Misure di sicurezza applicativa}
+La protezione della piattaforma comprende difese su molteplici livelli:
 \begin{itemize}
-\item lato client, sfruttando i controlli nativi dei form HTML5 (attributi \texttt{required}, \texttt{pattern}, \texttt{maxlength}, tipi di campo specifici come \texttt{email} e \texttt{tel});
-\item lato server, tramite funzioni PHP dedicate che convalidano il formato delle stringhe mediante espressioni regolari e filtri nativi prima di ogni scrittura nel database.
+    \item \textbf{SQL Injection}: utilizzo sistematico di istruzioni preparate PDO con parametri nominati per qualsiasi query contenente valori provenienti dall'esterno;
+    \item \textbf{Cross-Site Scripting (XSS)}: sanificazione sistematica dei dati presentati a video tramite una funzione helper che invoca \texttt{htmlspecialchars()} con codifica UTF-8 e flag \texttt{ENT\_QUOTES | ENT\_SUBSTITUTE | ENT\_HTML5};
+    \item \textbf{Cross-Site Request Forgery (CSRF)}: inclusione in ogni form di modifica di un token pseudo-casuale generato crittograficamente con \texttt{random\_bytes()}, convalidato all'arrivo tramite la funzione a tempo costante \texttt{hash\_equals()};
+    \item \textbf{Protezione delle password}: memorizzazione esclusiva degli hash calcolati mediante l'algoritmo sicuro bcrypt (\texttt{password\_hash()});
+    \item \textbf{Sicurezza dei caricamenti}: verifica rigorosa del tipo MIME reale delle immagini tramite \texttt{finfo\_file()} e inibizione dell'esecuzione di file PHP all'interno della cartella di upload tramite direttive server;
+    \item \textbf{Intestazioni di protezione HTTP}: configurazione del server web con intestazioni di Content Security Policy restrittive (prive di unsafe-inline o unsafe-eval), X-Frame-Options (SAMEORIGIN) contro il clickjacking e divieto di directory listing (\texttt{Options -Indexes}).
 \end{itemize}
 
-La presenza del controllo lato server garantisce che nessun dato non conforme possa raggiungere la base di dati anche aggirando le verifiche del browser.
+\subsection{Pagine di errore dedicate}
+La piattaforma gestisce gli errori di navigazione e le eccezioni del server mediante pagine personalizzate per i codici HTTP 401, 403, 404 e 500, configurate con percorsi relativi nel file \texttt{.htaccess}. Ognuna di queste pagine presenta una grafica coordinata, un messaggio esplicativo comprensibile e la navigazione completa del sito, evitando che l'utente rimanga bloccato in una schermata cieca.
 
-\subsubsection{Sicurezza}
-In merito alla sicurezza applicativa sono state predisposte le seguenti difese:
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Accessibilità e Conformità agli Standard}
+% ─────────────────────────────────────────────────────────────────────────────
+
+L'obiettivo progettuale costante è stato il soddisfacimento delle linee guida di accessibilità WCAG 2.1 al livello AA.
+
+\subsection{Interventi per la navigazione e la struttura}
 \begin{itemize}
-\item \textbf{Iniezioni SQL}: tutte le interrogazioni al database adoperano istruzioni preparate con parametri nominati PDO; nessuna variabile di input viene concatenata direttamente nella stringa SQL;
-\item \textbf{Cross-Site Scripting (XSS)}: ogni dato proveniente dall'utente viene sanificato prima dell'inserimento nell'HTML mediante una funzione dedicata che richiama \texttt{htmlspecialchars()} con i flag \texttt{ENT\_QUOTES | ENT\_SUBSTITUTE | ENT\_HTML5} e codifica UTF-8;
-\item \textbf{Cross-Site Request Forgery (CSRF)}: ciascun modulo di modifica include un token casuale crittograficamente sicuro generato da \texttt{random\_bytes()}, la cui corrispondenza viene verificata lato server mediante comparazione a tempo costante con \texttt{hash\_equals()};
-\item \textbf{Fissazione di sessione}: al momento dell'autenticazione viene rigenerato l'identificativo di sessione con \texttt{session\_regenerate\_id(true)};
-\item \textbf{Impostazioni dei cookie}: il cookie di sessione è configurato con direttive \texttt{HttpOnly}, \texttt{SameSite=Lax} e flag \texttt{Secure} condizionato alla presenza del protocollo HTTPS;
-\item \textbf{Memorizzazione password}: le password non sono mai salvate in chiaro ma protette con algoritmo bcrypt mediante le funzioni native \texttt{password\_hash()} e \texttt{password\_verify()};
-\item \textbf{Intestazioni di protezione e permessi}: il file di configurazione del server web imposta intestazioni di sicurezza (Content Security Policy priva di direttive permissive come unsafe-inline, X-Content-Type-Options nosniff, X-Frame-Options per contrastare il clickjacking) e vieta l'esplorazione delle cartelle di sistema (\texttt{Options -Indexes}).
+    \item \textbf{Collegamento rapido iniziale}: collocazione di un link ``Vai al contenuto'' (\textit{skip link}) come primissimo elemento del corpo pagina, permettendo a chi naviga da tastiera di saltare l'intestazione e raggiungere subito l'area dei contenuti;
+    \item \textbf{Assenza di link circolari}: la voce di navigazione corrispondente alla pagina corrente non è collegata ipertestualmente ma esposta come elemento testuale distinto, marcato con l'attributo semantico \texttt{aria-current="page"};
+    \item \textbf{Percorso di navigazione (\textit{breadcrumb})}: indicazione chiara della gerarchia della pagina corrente rispetto alla home;
+    \item \textbf{Etichettatura form}: associazione univoca ed esplicita tra etichette visibili (\texttt{<label for="...">}) e controlli di input; raggruppamento logico dei campi tramite \texttt{<fieldset>} e \texttt{<legend>};
+    \item \textbf{Tabelle accessibili}: impiego di \texttt{<caption>} per la descrizione del contenuto della tabella e attributi \texttt{scope="col"} e \texttt{scope="row"} per associare le celle di intestazione ai dati;
+    \item \textbf{Grafico degli incassi accessibile}: il disegno vettoriale SVG del grafico degli incassi a 30 giorni è accompagnato da una tabella riassuntiva dei medesimi valori numerici, garantendone la completa comprensione anche in assenza di percezione visiva;
+    \item \textbf{Messaggi di stato chiari}: gli avvisi di errore o di conferma sono identificati dall'attributo \texttt{role="status"} e recano un'etichetta testuale iniziale (``Errore:'' o ``Fatto:'') per non demandare l'informazione alla sola percezione cromatica.
 \end{itemize}
 
-\subsubsection{Pagine di errore personalizzate}
-In caso di problemi di navigazione o eccezioni del server, l'applicazione intercetta le richieste mediante direttive relative nel file \texttt{.htaccess} e mostra pagine di errore personalizzate per i codici HTTP 401, 403, 404 e 500. Ciascuna pagina di errore mantiene l'intestazione e la navigazione complessiva del sito, informando chiaramente l'utente sull'accaduto e offrendo collegamenti per proseguire la navigazione senza rimanere bloccati.
-
-\subsection{Accessibilità}
-L'obiettivo perseguito è la rispondenza alle linee guida WCAG 2.1 al livello di conformità AA, come previsto dalla normativa vigente:
+\subsection{Adattamenti per screen reader}
 \begin{itemize}
-\item \textbf{Collegamento rapido}: il primo elemento del corpo pagina è il link ``Vai al contenuto'' (\textit{skip link}), che consente agli utenti da tastiera di saltare l'intestazione e raggiungere direttamente la zona centrale;
-\item \textbf{Landmark semantici}: impiego ragionato degli elementi \texttt{<header>}, \texttt{<nav>}, \texttt{<main>}, \texttt{<section>}, \texttt{<article>} e \texttt{<footer>} per delineare le macro-aree del documento;
-\item \textbf{Titoli}: gerarchia rigorosa degli elementi di intestazione da \texttt{<h1>} a \texttt{<h4>}, senza salti di livello immotivati;
-\item \textbf{Moduli accessibili}: ogni campo di immissione dati è associato alla rispettiva etichetta visibile mediante attributi \texttt{for} e \texttt{id}; i gruppi di campi correlati sono racchiusi in elementi \texttt{<fieldset>} con descrizione in \texttt{<legend>};
-\item \textbf{Tabelle}: fornite di didascalia semantica (\texttt{<caption>}) e celle di intestazione con attributi \texttt{scope="col"} e \texttt{scope="row"};
-\item \textbf{Rappresentazione grafica degli incassi}: il grafico mensile generato in SVG è affiancato da una tabella riassuntiva dei medesimi dati, garantendo piena fruibilità anche in caso di mancata visualizzazione del disegno vettoriale;
-\item \textbf{Segnalazione di stato}: gli avvisi di conferma o di errore recano l'attributo \texttt{role="status"} e un prefisso testuale esplicito (ad esempio ``Errore:'' o ``Fatto:'') affinché l'informazione non sia veicolata dal solo colore.
+    \item \textbf{Attributo di lingua sui termini stranieri}: applicazione mirata di \texttt{lang="en"} sui nomi dei panini e delle pietanze in lingua inglese (come \textit{Cheeseburger}, \textit{Bacon Burger}, \textit{Chicken Wings}, \textit{In-N-Out Style}), evitando distorsioni fonetiche nella sintesi vocale;
+    \item \textbf{Marcatura delle sigle}: esplicitazione del significato di acronimi e abbreviazioni mediante il marcatore \texttt{<abbr>} (ad esempio per le sigle CAP e WCAG);
+    \item \textbf{Icone decorative nascoste}: apposizione dell'attributo \texttt{aria-hidden="true"} su tutte le icone SVG di contorno per escluderle dal flusso di lettura delle tecnologie assistive.
 \end{itemize}
 
-\subsubsection{Accorgimenti per tecnologie assistive}
+\subsection{Fruizione fluida su dispositivi diversi}
+L'impaginazione del sito è interamente fluida, calibrata tramite unità relative (\texttt{em}, \texttt{rem}, percentuali). In tutte le pagine e a qualunque risoluzione (a partire dalla larghezza minima di 320 pixel) non si verifica alcuno scorrimento orizzontale imprevisto. La disposizione a colonna singola per i dispositivi mobili entra in funzione automaticamente sotto i 48\,em (768 pixel).
+
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Metodologia di Collaudo e Risultati dei Test}
+% ─────────────────────────────────────────────────────────────────────────────
+
+La conformità tecnica e l'accessibilità del sito sono state verificate combinando strumenti automatici e approfondite sessioni di prova manuale.
+
+\subsection{Strumenti di verifica automatica}
 \begin{itemize}
-\item applicazione dell'attributo \texttt{lang="en"} sui nomi in lingua inglese dei panini (come \textit{Cheeseburger}, \textit{Bacon Burger}, \textit{Chicken Wings}), al fine di evitare pronunce scorrette da parte dei sintetizzatori vocali configurati per la lingua italiana;
-\item utilizzo del marcatore \texttt{<abbr>} per esplicitare il significato di sigle e acronimi presenti nel testo (come WCAG e CAP);
-\item inserimento dell'attributo \texttt{aria-hidden="true"} su tutte le icone decorative di contorno per non sovraccaricare la lettura audio;
-\item assenza di collegamenti circolari, disattivando il link sulla voce di menu corrispondente alla pagina corrente.
+    \item \textbf{W3C Nu Html Checker}: collaudo della validità del markup HTML5 su tutte le pagine pubbliche e riservate del sito, con esito di zero errori;
+    \item \textbf{W3C CSS Validation Service}: verifica formale della conformità dei tre fogli di stile (\texttt{stile.css}, \texttt{mobile.css}, \texttt{stampa.css}) tramite le relative API, riscontrando zero errori di sintassi;
+    \item \textbf{xmllint}: controllo della corretta strutturazione XML su tutti i documenti HTML5 prodotti;
+    \item \textbf{Pa11y}: scansione dell'accessibilità configurata secondo lo standard WCAG 2.1 AA, eseguita su ogni pagina sia in modalità ospite sia autenticandosi con i tre diversi ruoli di prova;
+    \item \textbf{Google Lighthouse}: verifica delle metriche prestazionali, di accessibilità, conformità alle buone pratiche e SEO, con punteggi superiori alla soglia di 90 su tutte le sezioni;
+    \item \textbf{WAVE Web Accessibility Evaluation Tool} e \textbf{Silktide Accessibility}: estensioni browser utilizzate continuativamente durante lo sviluppo per il controllo visivo dei contrasti, delle etichette e della gerarchia delle intestazioni.
 \end{itemize}
 
-\subsubsection{Comportamento su schermi diversi}
-L'impaginazione è interamente fluida e dimensionata tramite unità di misura relative (\texttt{em}, \texttt{rem}, percentuali). In nessuna pagina e con nessuna risoluzione (a partire da una larghezza minima di 320 pixel) si verifica alcuno scorrimento orizzontale non pianificato. La visualizzazione per dispositivi mobili entra in funzione alla larghezza di 48\,em (768 pixel), riorganizzando i menu di testata e disponendo i contenuti a colonna singola per favorire l'interazione con una sola mano.
-
-\section{Test effettuati}
-
-\subsection{Accessibilità e conformità agli standard}
-La verifica della qualità del sito è stata condotta integrando strumenti automatici di analisi e prove manuali approfondite.
-
-Tra gli strumenti automatici impiegati si segnalano:
+\subsection{Controlli manuali}
 \begin{itemize}
-\item \textbf{W3C Nu Html Checker}: utilizzato per la validazione della sintassi HTML5 di tutte le pagine, sia pubbliche che ad accesso riservato, con esito finale di zero errori;
-\item \textbf{W3C CSS Validation Service}: adoperato per verificare la conformità formale dei tre fogli di stile (\texttt{stile.css}, \texttt{mobile.css}, \texttt{stampa.css}), riscontrando zero errori di sintassi;
-\item \textbf{xmllint}: impiegato per accertare il rispetto rigoroso della corretta strutturazione XML su tutti i documenti renderizzati;
-\item \textbf{Pa11y}: strumento di analisi dell'accessibilità configurato sulle linee guida WCAG 2.1 AA, eseguito sistematicamente sulle pagine pubbliche e su quelle protette da autenticazione;
-\item \textbf{Google Lighthouse}: utilizzato per il collaudo complessivo su prestazioni, accessibilità, best practice e ottimizzazione SEO, con punteggi ampiamente superiori alla soglia di 90 punti in tutte le aree;
-\item \textbf{WAVE Web Accessibility Evaluation Tool} e \textbf{Silktide Accessibility}: estensioni del browser usate durante la stesura del codice per il controllo visuale dei contrasti cromatici, delle etichette e della gerarchia delle intestazioni.
+    \item navigazione completa da tastiera dell'intera interfaccia mediante i tasti Tab, Invio e Spazio, accertando la costante visibilità del focus e la coerenza dell'ordine di tabulazione;
+    \item test con JavaScript disattivato su tutti i percorsi operativi (consultazione del catalogo, ordinazione, checkout, cambio tema e pannello di controllo);
+    \item invio di moduli con campi incompleti, errati o contenenti caratteri speciali, accertando la tempestività e la chiarezza dei messaggi di errore e il mantenimento dei dati validi inseriti;
+    \item simulazione di stampa fisica e su file PDF di ricevute e pagine informative;
+    \item collaudo visivo a risoluzioni multiple (320px, 375px, 768px, 1024px, 1440px) per verificare l'adattabilità dei layout;
+    \item compatibilità con i principali browser: Google Chrome, Mozilla Firefox, Microsoft Edge, Apple Safari e Opera;
+    \item compatibilità con diversi sistemi operativi: Microsoft Windows, Linux (Ubuntu), Android e iOS.
 \end{itemize}
 
-I controlli manuali hanno compreso:
-\begin{itemize}
-\item navigazione completa da tastiera dell'intero sito tramite i tasti Tab, Invio e Spazio, verificando la visibilità costante dell'indicatore di focus e l'ordine logico degli spostamenti;
-\item sottomissione di tutti i form con campi vuoti, parziali o contenenti valori non conformi, verificando la chiarezza dei messaggi diagnostici e la conservazione dei dati validi;
-\item navigazione dell'intera applicazione con JavaScript completamente disabilitato, verificando il corretto funzionamento di menu, ordinazioni, cambio tema e pannello di controllo;
-\item collaudo visivo delle pagine su dispositivi reali e tramite strumenti di emulazione a varie risoluzioni (320px, 375px, 768px, 1024px, 1440px);
-\item prova di stampa fisica e su file PDF di ricevute, schede prodotto e pagine informative;
-\item test di compatibilità incrociata sui principali browser moderni: Google Chrome, Mozilla Firefox, Microsoft Edge, Apple Safari e Opera;
-\item test sui sistemi operativi più diffusi: Windows, Linux (Ubuntu), Android e iOS.
-\end{itemize}
-
-\subsection{Automazione delle verifiche}
-Durante l'intero ciclo di sviluppo le verifiche automatiche sono state organizzate all'interno di una pipeline di Continuous Integration tramite GitHub Actions. Ad ogni aggiornamento del codice la procedura avvia un ambiente di prova ed esegue in successione:
+\subsection{Automazione dei controlli (Continuous Integration)}
+Per preservare la qualità del codice durante lo sviluppo è stata allestita una pipeline di Continuous Integration tramite GitHub Actions. A ogni aggiornamento del codice la procedura avvia un ambiente containerizzato dedicato ed esegue in successione:
 \begin{enumerate}
-\item la validazione del markup HTML5 con il validatore ufficiale del W3C e la verifica della correttezza XML;
-\item il controllo dei tre fogli di stile CSS con le API del W3C;
-\item l'audit di accessibilità con Pa11y, autenticandosi in modo automatico con le tre diverse utenze dimostrative per testare anche le viste private;
-\item l'analisi prestazionale e qualitativa con Google Lighthouse;
-\item la sincronizzazione automatica dei file sorgente sul server universitario attraverso un canale cifrato SSH con verifica dei corretti permessi sui file.
+    \item la validazione sintattica HTML5 con il validatore ufficiale del W3C e la verifica della conformità XML;
+    \item la validazione dei tre fogli di stile CSS mediante le API del W3C;
+    \item l'audit di accessibilità con Pa11y sulle pagine pubbliche e su quelle private (autenticandosi automaticamente con le credenziali di prova dei ruoli cliente, manager e amministratore);
+    \item la valutazione prestazionale e qualitativa con Google Lighthouse;
+    \item il deploy automatizzato dei sorgenti sul server universitario attraverso un canale cifrato SSH, con correzione e verifica dei permessi di lettura ed esecuzione sui file.
 \end{enumerate}
 
-\subsection{Analisi dei falsi positivi}
-L'applicazione dei validatori automatici ha restituito esito pulito su tutte le pagine. Gli unici avvisi non bloccanti segnalati dal validatore CSS riguardano la sintassi delle custom properties (\texttt{--nome-variabile}), che rappresentano funzionalità standard del CSS moderno pienamente supportate e conformi alle specifiche.
+\subsection{Valutazione dei falsi positivi}
+I validatori automatici non hanno evidenziato criticità o violazioni dello standard. Le uniche segnalazioni riscontrate dal validatore CSS hanno natura informativa e riguardano l'impiego delle custom properties (\texttt{--nome-variabile}), le quali costituiscono una funzionalità standard del CSS moderno, pienamente supportata e conforme.
 
-\subsection{Verifiche con screen reader}
-L'accessibilità è stata testata manualmente tramite lo screen reader open-source **NVDA** su browser Mozilla Firefox e Google Chrome. Le sessioni di test hanno confermato:
+\subsection{Collaudo con screen reader}
+L'esperienza di fruizione con tecnologie assistive è stata testata manualmente tramite lo screen reader open-source **NVDA** in abbinamento ai browser Mozilla Firefox e Google Chrome. I test hanno confermato:
 \begin{itemize}
-\item la corretta lettura del testo associato al collegamento rapido iniziale e la funzionalità di salto diretto al contenuto;
-\item l'annuncio dei ruoli e degli stati per gli elementi interattivi;
-\item la corretta lettura delle tabelle con le relative intestazioni di riga e colonna;
-\item la corretta pronuncia dei termini in lingua inglese grazie agli appositi attributi di lingua;
-\item la chiara comprensione dei messaggi di esito dei moduli, annunciati correttamente come messaggi di stato.
+    \item la corretta lettura del testo associato allo skip link iniziale e l'effettivo spostamento del focus all'area centrale;
+    \item l'esatta enunciazione dei ruoli semantici e degli stati dei controlli interattivi;
+    \item l'adeguata lettura strutturata delle tabelle con annuncio delle intestazioni di colonna e di riga;
+    \item la corretta pronuncia dei termini in lingua inglese grazie agli attributi di lingua;
+    \item la tempestiva ricezione degli avvisi di esito dei moduli, annunciati correttamente come messaggi di stato.
 \end{itemize}
 
-\section{Ambiente di sviluppo}
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Ambiente di Sviluppo}
+% ─────────────────────────────────────────────────────────────────────────────
 
-Per lo sviluppo locale e il collaudo preliminare dell'applicazione è stato predisposto un ambiente containerizzato tramite Docker. Questo ambiente riproduce fedelmente la configurazione del server universitario d'esame, impiegando un container web con PHP 8.1 ed estensioni Apache (\texttt{rewrite}, \texttt{headers}, \texttt{deflate}) e un container per la base di dati MariaDB 10.6, garantendo che il comportamento del codice in locale rispecchi fedelmente quello di produzione.
-
-\section{Organizzazione del gruppo}
-
-Il lavoro di progettazione, stesura del codice e verifica è stato distribuito in modo equilibrato tra tutti i componenti del gruppo, garantendo che ciascun membro partecipasse sia alla componente di presentazione sia alla logica applicativa e ai controlli di accessibilità.
-
-\subsection{Divisione dei compiti}
+Per agevolare lo sviluppo collaborativo e garantire la piena riproducibilità del comportamento del server universitario d'esame, è stato allestito un ambiente locale containerizzato tramite Docker. La configurazione replica fedelmente lo stack tecnologico di produzione:
 \begin{itemize}
-\item \textbf{[DA COMPILARE: Nome Cognome]}:
-\begin{itemize}
-\item HTML/CSS: home page, catalogo menu, scheda dettaglio prodotto, pagina servizi;
-\item PHP/JavaScript: funzionalità e controlli relativi alle pagine assegnate;
-\item Base di dati: progettazione concettuale e logica dello schema relazionale;
-\item Testing e validazione: verifiche con WAVE, Silktide, validatori W3C e test con NVDA;
-\item Documentazione e relazione tecnica.
+    \item container web basato su PHP versione 8.1 con server Apache e moduli \texttt{rewrite}, \texttt{headers} e \texttt{deflate};
+    \item container per la base di dati basato su MariaDB versione 10.6 con volume persistente e script di auto-popolamento all'avvio.
 \end{itemize}
 
-\item \textbf{[DA COMPILARE: Nome Cognome]}:
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Organizzazione del Gruppo e Suddivisione del Lavoro}
+% ─────────────────────────────────────────────────────────────────────────────
+
+Il carico di lavoro è stato ripartito in modo equilibrato tra i quattro componenti del gruppo, consentendo a ciascuno di partecipare sia alla stesura del markup e dello stile, sia allo sviluppo delle funzioni PHP e all'esecuzione dei test di qualità.
+
+\subsection{Ripartizione dei compiti}
 \begin{itemize}
-\item HTML/CSS: pagine chi siamo, sedi, contatti, informativa privacy, dichiarazione di accessibilità;
-\item PHP/JavaScript: gestione dell'invio messaggi di contatto e logica delle pagine assegnate;
-\item Base di dati: definizione dei vincoli di integrità e indicizzazione;
-\item Testing e validazione: verifiche con WAVE, Silktide, validatori W3C e test con NVDA;
-\item Documentazione e relazione tecnica.
+    \item \textbf{Leonardo Soligo (referente)}:
+    \begin{itemize}
+        \item Coordinamento generale del progetto e definizione delle convenzioni architetturali;
+        \item HTML/CSS: pagine istituzionali e catalogo (Home page, Menu, Dettaglio prodotto, Servizi);
+        \item PHP/JavaScript: controller e logica applicativa del catalogo e dei servizi;
+        \item Base di dati: modellazione concettuale e logica dello schema relazionale;
+        \item Testing e validazione: controlli di accessibilità con WAVE, Silktide e test con NVDA;
+        \item Stesura e revisione della relazione tecnica.
+    \end{itemize}
+
+    \item \textbf{Dorde Blagojevic}:
+    \begin{itemize}
+        \item HTML/CSS: pagine informative e di supporto (Chi siamo, Sedi, Scheda sede, Modulo contatti, Privacy policy, Dichiarazione di accessibilità);
+        \item PHP/JavaScript: gestione dell'invio messaggi di contatto e presentazione delle sedi;
+        \item Base di dati: definizione dei vincoli di integrità referenziale e indici di ricerca;
+        \item Testing e validazione: controlli formali con validatore W3C (HTML5 e CSS) e test con NVDA;
+        \item Stesura e revisione della relazione tecnica.
+    \end{itemize}
+
+    \item \textbf{Alessandro Ravenna}:
+    \begin{itemize}
+        \item HTML/CSS: flusso carrello, cassa e checkout, ricevuta ordine, area personale, prenotazione sala;
+        \item PHP/JavaScript: logica transazionale del checkout, gestione concorrente delle scorte a magazzino e controllo anti-sovrapposizione prenotazioni;
+        \item Base di dati: definizione query complesse e popolamento iniziale dei dati di prova;
+        \item Testing e validazione: verifiche di usabilità su mobile, test con JavaScript disabilitato e collaudo con NVDA;
+        \item Stesura e revisione della relazione tecnica.
+    \end{itemize}
+
+    \item \textbf{Alessandro Zanier}:
+    \begin{itemize}
+        \item HTML/CSS: sezioni del pannello gestionale multilivello (Gestione ordini, Gestione prodotti e scorte, Gestione categorie, Gestione sedi e orari, Gestione utenti);
+        \item PHP/JavaScript: autenticazione, gestione delle sessioni con cookie protetti, controllo accessi per ruoli e generazione del grafico SVG;
+        \item Infrastruttura e automazione: configurazione della pipeline di Continuous Integration e script di deploy;
+        \item Testing e validazione: audit con Pa11y, verifiche prestazionali con Google Lighthouse e test con NVDA;
+        \item Stesura e revisione della relazione tecnica.
+    \end{itemize}
 \end{itemize}
 
-\item \textbf{[DA COMPILARE: Nome Cognome]}:
-\begin{itemize}
-\item HTML/CSS: flusso carrello, checkout e pagamento, ricevuta, storico ordini, prenotazione sala;
-\item PHP/JavaScript: logica transazionale degli ordini, gestione scorte a magazzino e prenotazioni;
-\item Base di dati: popolamento iniziale con dati di prova;
-\item Testing e validazione: verifiche con WAVE, Silktide, validatori W3C e test con NVDA;
-\item Documentazione e relazione tecnica.
-\end{itemize}
+% ─────────────────────────────────────────────────────────────────────────────
+\section{Considerazioni Conclusive}
+% ─────────────────────────────────────────────────────────────────────────────
 
-\item \textbf{[DA COMPILARE: Nome Cognome]}:
-\begin{itemize}
-\item HTML/CSS: sezioni del pannello di controllo (prodotti, categorie, sedi, utenti, messaggi);
-\item PHP/JavaScript: autenticazione, gestione delle sessioni, permessi e generazione del grafico SVG;
-\item Pipeline e automazione: predisposizione dei controlli automatici di qualità e deploy;
-\item Testing e validazione: verifiche con WAVE, Silktide, validatori W3C e test con NVDA;
-\item Documentazione e relazione tecnica.
-\end{itemize}
-\end{itemize}
+Il sito web di ``Smash Burger'' è stato realizzato interamente senza l'impiego di librerie o framework preconfezionati (come Bootstrap, Tailwind o jQuery), privilegiando la padronanza delle tecnologie native del web (HTML5 semantico conforme a XML, CSS3 puro con custom properties e PHP 8.1 procedurale con PDO). L'unica risorsa di terze parti integrata è il carattere tipografico Archivo, incluso localmente nel progetto con licenza Open Font License per evitare qualsiasi dipendenza da CDN esterne.
 
-\section{Note conclusive}
-
-Il sito web è stato sviluppato senza l'impiego di framework applicativi o librerie esterne (sia per la parte CSS che per quella JavaScript), attenendosi strettamente agli standard raccomandati. L'unica risorsa non prodotta direttamente dal gruppo è il font Archivo, distribuito sotto licenza Open Font License e incluso localmente nella distribuzione del progetto per escludere qualsiasi dipendenza da reti terze.
-
-L'intera applicazione rispetta rigorosamente il principio del miglioramento progressivo: ogni operazione funzionale (navigazione del catalogo, emissione ordini, prenotazioni e operazioni amministrative) può essere portata a termine con successo anche in contesti d'uso privi di supporto JavaScript.
+L'adozione rigorosa del Progressive Enhancement garantisce che la piattaforma mantenga la totalità delle proprie funzioni operative indipendentemente dalle caratteristiche del dispositivo, dalle tecnologie assistive utilizzate o dallo stato di abilitazione di JavaScript, offrendo un'esperienza d'uso veloce, trasparente e pienamente accessibile.
 
 \end{document}
