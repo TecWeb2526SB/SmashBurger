@@ -21,11 +21,28 @@ function categorie_messaggio(): array
 }
 
 /**
- * Stati in cui puo' trovarsi un messaggio.
+ * Stati in cui puo' trovarsi un messaggio, con il modo in cui il pannello li presenta.
+ *
+ * Gli stati sono due, aperto o chiuso: una lavorazione intermedia non cambierebbe niente
+ * per chi scrive e lascerebbe la riga in un limbo. Per ognuno: il verbo del pulsante che
+ * ci porta, perche' un comando deve dire che cosa fa e non come si chiama la
+ * destinazione, e il tipo dell'etichetta, perche' i due stati si distinguano da lontano.
+ */
+function stati_messaggio_pannello(): array
+{
+    return [
+        'nuovo' => ['comando' => 'Riapri', 'tipo' => 'attenzione'],
+        'chiuso' => ['comando' => 'Chiudi', 'tipo' => 'positivo'],
+    ];
+}
+
+/**
+ * Stati in cui puo' trovarsi un messaggio. Sono le chiavi dell'elenco qui sopra, cosi'
+ * l'elenco degli stati ammessi esiste in un punto solo.
  */
 function stati_messaggio(): array
 {
-    return ['nuovo', 'preso in carico', 'chiuso'];
+    return array_keys(stati_messaggio_pannello());
 }
 
 /**

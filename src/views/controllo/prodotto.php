@@ -55,7 +55,7 @@ $nuovo = $prodotto === null;
 
         <?php if (!$nuovo && $valori['immagine'] !== ''): ?>
             <figure class="anteprima-prodotto">
-                <img src="<?php echo e(risorsa('uploads/prodotti/' . basename($valori['immagine']))); ?>"
+                <img src="<?php echo e(risorsa('uploads/prodotti/' . basename($valori['immagine']), true)); ?>"
                     width="600" height="450"
                     alt="Immagine attuale di <?php echo e($valori['nome']); ?>" />
                 <figcaption>Immagine attuale</figcaption>

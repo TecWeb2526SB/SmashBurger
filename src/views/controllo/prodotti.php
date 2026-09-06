@@ -32,7 +32,12 @@
 <?php endif; ?>
 
 <?php if ($amministratore): ?>
-    <p><a class="pulsante" href="<?php echo e(url('controllo-prodotto')); ?>">Aggiungi un prodotto</a></p>
+    <p class="azioni azioni-tabella">
+        <a class="pulsante" data-tipo="positivo" href="<?php echo e(url('controllo-prodotto')); ?>">
+            <?php echo icona('piu'); ?>
+            Aggiungi un prodotto
+        </a>
+    </p>
 <?php endif; ?>
 
 <table>
@@ -42,10 +47,10 @@
             <th scope="col">Prodotto</th>
             <th scope="col">Categoria</th>
             <th scope="col">Prezzo</th>
-            <th scope="col">Nel menu</th>
+            <th scope="col" data-colonna="azioni">Nel menu</th>
             <th scope="col">Quantita</th>
             <?php if ($amministratore): ?>
-                <th scope="col">Scheda</th>
+                <th scope="col" data-colonna="azioni">Scheda</th>
             <?php endif; ?>
         </tr>
     </thead>
@@ -56,7 +61,7 @@
                 <th scope="row"><?php echo e($prodotto['nome']); ?></th>
                 <td><?php echo e($prodotto['categoria_nome']); ?></td>
                 <td><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></td>
-                <td>
+                <td data-colonna="azioni">
                     <form method="post" action="<?php echo e(url('controllo-prodotti')); ?>"
                         data-modulo="disponibilita">
                         <?php echo campo_csrf(); ?>
@@ -88,7 +93,7 @@
                     </form>
                 </td>
                 <?php if ($amministratore): ?>
-                    <td>
+                    <td data-colonna="azioni">
                         <a href="<?php echo e(url('controllo-prodotto', ['prodotto' => $prodotto['id']])); ?>">
                             Modifica
                             <span class="solo-lettori"><?php echo e($prodotto['nome']); ?></span>

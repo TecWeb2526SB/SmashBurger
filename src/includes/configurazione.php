@@ -10,7 +10,7 @@ const EMAIL_CONTATTO = 'informazioni@smashburger.it';
 const TELEFONO_CONTATTO = '049 1234567';
 
 // Cambia quando cambiano fogli di stile o script, per invalidare la cache del browser.
-const VERSIONE_RISORSE = '34';
+const VERSIONE_RISORSE = '54';
 
 // Vincoli delle immagini prodotto caricate dal pannello. Il limite di peso coincide
 // con il budget prestazionale richiesto anche agli asset editoriali del sito.
@@ -82,6 +82,25 @@ function radice_applicazione(): string
     }
 
     return $cartella . '/';
+}
+
+/**
+ * Indirizzo assoluto della radice del sito, ricavato dalla richiesta.
+ *
+ * Serve alla sitemap, che per specifica vuole indirizzi assoluti e non relativi. Il nome
+ * dell'host arriva dalla richiesta, quindi da chi la manda: se non ha la forma di un host
+ * si ricade sul nome configurato nel server, cosi' un'intestazione manomessa non finisce
+ * dentro gli indirizzi pubblicati.
+ */
+function indirizzo_base(): string
+{
+    $host = (string) ($_SERVER['HTTP_HOST'] ?? '');
+
+    if (preg_match('/^[A-Za-z0-9.-]+(:[0-9]{1,5})?$/', $host) !== 1) {
+        $host = (string) ($_SERVER['SERVER_NAME'] ?? 'localhost');
+    }
+
+    return (richiesta_su_https() ? 'https://' : 'http://') . $host . radice_applicazione();
 }
 
 /**

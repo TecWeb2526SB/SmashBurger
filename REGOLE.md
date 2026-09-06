@@ -396,6 +396,10 @@ con una riga, nello stesso momento in cui si scrive il suo CSS, non dopo.
 | Navigazione di pagina | `<p class="navigazione-pagina">` | chiude le pagine interne: ritorno a sinistra, avanzamento a destra |
 | Footer | `<footer>` con liste di link | uguale su tutte le pagine |
 | Richiamo | `<section class="richiamo">` con titolo, testo e un pulsante | blocco largo che manda a un'altra pagina raccontando un motivo per andarci (la sala eventi verso Servizi, il metodo di cottura verso Chi siamo), invece di un elenco di collegamenti |
+| Comando di tabella | `<p class="azioni azioni-tabella">` con un pulsante | apre una scheda nuova sopra un elenco tabellare, allineato al bordo destro della tabella |
+| Comandi di riga | `<p class="azioni-riga">` con i pulsanti della riga | azioni di una singola riga di tabella, sempre nello stesso ordine |
+| Apertura di errore | `<section class="apertura-errore">` con `<p class="codice-errore">`, titolo, testo e diapositiva | le quattro pagine di errore: codice di stato, che cosa è successo e come ripartire |
+| Ripartenza | `<ul class="ripartenza">` con collegamenti-pulsante | pagine da cui riprendere la navigazione dopo un 404 |
 
 Il pannello di controllo usa gli stessi componenti delle pagine pubbliche: non ha un
 proprio insieme di stili. Vale sia per il manager sia per l'amministratore, che
@@ -415,6 +419,12 @@ Le varianti si esprimono con attributi e non con classi nuove: `data-tipo` disti
 avvisi ed etichette (`attenzione`, `errore`, `positivo`, `negativo`), `data-stato`
 distingue i campi (`ok`, `attenzione`, `errore`).
 
+Nelle tabelle, `data-colonna="azioni"` marca l'intestazione e ogni cella di una colonna
+che contiene soltanto comandi. A video non cambia niente; il foglio di stampa la nasconde
+per intero, perché su carta resterebbe una colonna vuota con il suo titolo. Il marcatore
+va messo sul `th` **e** su tutti i `td` della colonna: se ne manca uno le celle non sono
+più in numero pari e la tabella si scompone.
+
 ## 16. CSS
 
 I fogli di stile si scrivono **solo quando la struttura HTML di tutte le pagine è completa
@@ -422,8 +432,16 @@ e validata**. Fino ad allora le pagine restano senza stile.
 
 - **Tre file**: `src/styles/stile.css` (layout e componenti), `src/styles/mobile.css`
   (schermo piccolo), `src/styles/stampa.css` (stampa), collegati con tre `<link>` e
-  l'attributo `media` (`screen`, `screen and (max-width: ...)`, `print`). Nessun
+  l'attributo `media` (`all`, `screen and (max-width: ...)`, `print`). Nessun
   `@import`, nessun foglio in più, nessuno stile altrove.
+- Il foglio base vale anche su carta, quindi il suo `media` è `all` e non `screen`: con
+  `screen` la stampa non lo caricherebbe affatto e uscirebbe priva di stile, perché
+  `stampa.css` contiene i soli scostamenti. Le regole valide solo a video, come
+  l'impalcatura a schermata fissa, vengono sciolte da `stampa.css`.
+- `stampa.css` dichiara le proprie proprietà personalizzate anche su
+  `:root:not(.tema-chiaro)`, per pareggiare la specificità della tavolozza scura
+  dichiarata sotto `prefers-color-scheme`, che vale anche in stampa: senza quel selettore
+  chi ha il sistema in tema scuro stamperebbe testo chiaro su carta bianca.
 - `stile.css` ha l'ordine interno: proprietà personalizzate su `:root`, reset minimo,
   elementi base, layout, i quindici componenti nell'ordine della tabella. `mobile.css` e
   `stampa.css` contengono solo gli scostamenti dal foglio base, non lo ripetono.

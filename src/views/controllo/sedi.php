@@ -15,7 +15,7 @@
             <th scope="col">Indirizzo</th>
             <th scope="col">Telefono</th>
             <th scope="col">Sala eventi</th>
-            <th scope="col">Scheda</th>
+            <th scope="col" data-colonna="azioni">Scheda</th>
         </tr>
     </thead>
     <tbody>
@@ -29,7 +29,7 @@
                         <?php echo (int) $sede['sala_eventi_disponibile'] === 1 ? 'prenotabile' : 'chiusa'; ?>
                     </span>
                 </td>
-                <td>
+                <td data-colonna="azioni">
                     <a href="<?php echo e(url('controllo-sede', ['sede' => $sede['id']])); ?>">
                         Modifica
                         <span class="solo-lettori">la sede di <?php echo e($sede['citta']); ?></span>

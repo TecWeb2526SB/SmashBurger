@@ -19,7 +19,7 @@
                 <th scope="col">Prezzo</th>
                 <th scope="col">Quantita</th>
                 <th scope="col">Totale</th>
-                <th scope="col">Togli</th>
+                <th scope="col" data-colonna="azioni">Togli</th>
             </tr>
         </thead>
         <tbody>
@@ -41,7 +41,7 @@
                         </button>
                     </td>
                     <td><?php echo e(prezzo((int) $riga['totale_riga'])); ?></td>
-                    <td>
+                    <td data-colonna="azioni">
                         <button type="submit" name="togli" value="<?php echo (int) $riga['prodotto_id']; ?>">
                             Togli
                             <span class="solo-lettori"><?php echo e($riga['nome']); ?> dal carrello</span>

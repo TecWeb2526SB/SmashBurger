@@ -7,9 +7,10 @@
  *
  * Sulla riga del proprio account non compaiono azioni: per quello c'è il profilo.
  *
- * Il ruolo e la sede si salvano insieme e non da soli: un manager puo' avere una sede
- * assegnata oppure nessuna sede, ma la modifica richiede conferma esplicita, quindi questo
- * modulo conserva il proprio pulsante e non parte al cambio di uno dei due elenchi.
+ * Il ruolo di manager esiste solo insieme a una sede: la scelta della sede si apre con
+ * quel ruolo ed è obbligatoria, e le sedi già affidate ad altri non si possono scegliere
+ * perchè una sede ha al massimo un manager. Ruolo e sede valgono solo insieme, quindi si
+ * salvano con lo stesso pulsante e il modulo non parte al cambio di uno dei due elenchi.
  */
 ?>
 <h1>Utenti</h1>
@@ -62,7 +63,7 @@
             <th scope="col">Ordini</th>
             <th scope="col">Ruolo e sede</th>
             <th scope="col">Stato</th>
-            <th scope="col">Azioni</th>
+            <th scope="col" data-colonna="azioni">Azioni</th>
         </tr>
     </thead>
     <tbody>
@@ -71,6 +72,7 @@
             $suo = (int) $utente['id'] === $utenteCorrente;
             $modulo = 'utente-' . (int) $utente['id'];
             $attivo = (int) $utente['attivo'] === 1;
+            $eManager = $utente['ruolo'] === 'manager';
             ?>
             <tr>
                 <th scope="row"><?php echo e($utente['nome_utente']); ?></th>
@@ -97,13 +99,17 @@
                             Sede affidata a <?php echo e($utente['nome_utente']); ?>
                         </label>
                         <select id="sede-<?php echo (int) $utente['id']; ?>" name="sede_id"
-                            form="<?php echo e($modulo); ?>"
-                            <?php echo $utente['ruolo'] === 'manager' ? '' : 'disabled="disabled"'; ?>>
-                            <option value="" <?php echo $utente['sede_id'] === null ? 'selected="selected"' : ''; ?>>Nessuna sede</option>
+                            form="<?php echo e($modulo); ?>" required="required"
+                            <?php echo $eManager ? '' : 'disabled="disabled"'; ?>>
+                            <option value="" disabled="disabled"
+                                <?php echo $utente['sede_id'] === null ? 'selected="selected"' : ''; ?>>Scegli una sede</option>
                             <?php foreach ($sedi as $sede): ?>
+                                <?php $sua = $utente['sede_id'] !== null && (int) $sede['id'] === (int) $utente['sede_id']; ?>
+                                <?php $libera = $sede['manager_id'] === null || $sua; ?>
                                 <option value="<?php echo (int) $sede['id']; ?>"
-                                    <?php echo $utente['sede_id'] !== null && (int) $sede['id'] === (int) $utente['sede_id'] ? 'selected="selected"' : ''; ?>>
-                                    <?php echo e($sede['citta']); ?>
+                                    <?php echo $sua ? 'selected="selected"' : ''; ?>
+                                    <?php echo $libera ? '' : 'disabled="disabled"'; ?>>
+                                    <?php echo e($sede['citta']); ?><?php echo $libera ? '' : ' (già affidata)'; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -114,7 +120,7 @@
                         <?php echo $attivo ? 'attivo' : 'disattivato'; ?>
                     </span>
                 </td>
-                <td>
+                <td data-colonna="azioni">
                     <?php if ($suo): ?>
                         <a href="<?php echo e(url('profilo')); ?>">Modifica dal profilo</a>
                     <?php else: ?>
@@ -138,6 +144,7 @@
 </table>
 
 <p>
-    Per affidare una sede a un manager scegli il ruolo e la sede, poi salva. Una sede ha
-    al massimo un manager: se è già occupata va prima liberata.
+    Il ruolo di manager va sempre insieme a una sede: scegli il ruolo, poi la sede, e salva
+    con lo stesso pulsante. Le sedi già affidate non si possono scegliere: per spostarne
+    una, prima togli il ruolo di manager a chi la tiene.
 </p>

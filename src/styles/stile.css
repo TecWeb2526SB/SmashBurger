@@ -316,39 +316,27 @@ main > blockquote {
 
 /* ---------- Header ---------- */
 
+/* Il marchio della testata e' il solo logo: porta gia' il nome dentro il segno, quindi
+   non ha ne' scritta accanto ne' filo di sottolineatura. Il nome resta nel markup per dare
+   un'etichetta al collegamento e per la stampa, dove il logo non si puo' usare. */
 .marchio {
-    position: relative;
     width: max-content;
-    padding-bottom: 0.35rem;
-    font-size: 1.2rem;
-    font-weight: 900;
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-}
-
-.marchio::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 0.25rem;
-    background: var(--senape-pieno);
-    transform: rotate(-1.5deg);
 }
 
 .marchio a {
+    display: block;
     text-decoration: none;
 }
 
-.marchio span {
-    display: block;
-    margin-top: 0.45rem;
-    font-size: 0.58rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--senape-pieno);
+.marchio img {
+    width: auto;
+    height: 3.8rem;
+}
+
+/* Il secondo segno serve solo alla carta: la parola bianca del logo, pensata per il fondo
+   scuro della testata, li' e' ridisegnata in nero. A video resta fuori. */
+.marchio-stampa {
+    display: none;
 }
 
 .header-interna nav ul {
@@ -654,6 +642,32 @@ button[data-tipo="negativo"],
     color: var(--testo-su-pieno);
 }
 
+/* Le icone accompagnano il testo dentro i comandi: la distanza fra le due parti sta qui
+   e non nel markup, cosi' vale per ogni pulsante che ne porta una. */
+button > .icona,
+.pulsante > .icona {
+    width: 1.15em;
+    height: 1.15em;
+    margin-right: var(--spazio-2);
+}
+
+/* Comando che introduce un elenco tabellare: sta sopra la tabella e si allinea al suo
+   bordo destro, quindi occupa tutta la larghezza della tabella e non quella di lettura
+   di un paragrafo. */
+.azioni-tabella {
+    justify-content: flex-end;
+    max-width: none;
+    margin-bottom: var(--spazio-3);
+}
+
+/* Comandi che agiscono su una sola riga di tabella: restano in fila e vanno a capo
+   soltanto quando la colonna non basta. */
+.azioni-riga {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spazio-2);
+}
+
 /* ---------- Istantanee editoriali ---------- */
 
 .istantanea {
@@ -676,9 +690,14 @@ button[data-tipo="negativo"],
     font-weight: 700;
 }
 
+/* height: auto non e' ridondante. Gli attributi width e height dell'immagine valgono
+   come suggerimenti di presentazione sulle proprieta' omonime: senza questa riga l'altezza
+   resterebbe quella dichiarata nel markup, e con due misure definite il rapporto verrebbe
+   ignorato, lasciando una diapositiva alta quanto il file. */
 .istantanea img,
 .foto-editoriale {
     width: 100%;
+    height: auto;
     aspect-ratio: 4 / 3;
     object-fit: cover;
 }
@@ -1580,8 +1599,10 @@ summary:hover {
     font-weight: 700;
 }
 
+/* La fotografia della sede e' 4:3 come quella dell'elenco: le due diapositive mostrano
+   lo stesso scatto e non ha senso che lo ritaglino in modo diverso. */
 .istantanea-locale img {
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 4 / 3;
 }
 
 .contatti-sede {
@@ -1692,6 +1713,83 @@ summary:hover {
     width: 0.55rem;
     height: 0.55rem;
     background: var(--ketchup-pieno);
+}
+
+/* ---------- Pagine di errore ---------- */
+
+/* Le quattro pagine di errore hanno la stessa apertura: il codice di stato, il titolo
+   che dice che cosa e' successo e la via d'uscita, con la diapositiva a fianco.
+   Il riquadro sta qui e non viene ereditato: una pagina di errore aperta da un controller
+   del pannello riceve le classi di quel controller e quindi il riquadro dei pannelli,
+   mentre la 404 arriva dalla riscrittura e non le ha. Dichiarandolo sul componente le
+   quattro pagine si somigliano comunque ci si arrivi. */
+.apertura-errore {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+    align-items: center;
+    gap: var(--spazio-7);
+    margin-top: var(--spazio-5);
+    padding: var(--spazio-6);
+    background: var(--superficie);
+    border: var(--bordo-grafico) solid var(--identita);
+    border-top: 0.55rem solid var(--ketchup-pieno);
+}
+
+/* La diapositiva dell'errore porta un'illustrazione ritagliata e non una fotografia a
+   pieno campo: sta sopra le scritte e si vede intera, quindi non fa da sfondo e la
+   sfumatura che serviva a staccare il testo dalla foto non serve piu'. */
+.apertura-errore .foto-editoriale {
+    aspect-ratio: auto;
+    justify-content: flex-start;
+}
+
+.apertura-errore .foto-editoriale::after {
+    display: none;
+}
+
+/* aspect-ratio e object-fit vanno riportati al valore naturale: l'immagine della
+   diapositiva li eredita pensati per una fotografia a pieno campo, e su un disegno
+   ritagliato taglierebbero i lati invece di riempire il riquadro. */
+.apertura-errore .foto-editoriale > img {
+    position: static;
+    width: auto;
+    height: auto;
+    max-width: 88%;
+    max-height: 13rem;
+    margin: 0 auto var(--spazio-4);
+    aspect-ratio: auto;
+    object-fit: contain;
+}
+
+.testo-errore {
+    min-width: 0;
+}
+
+.apertura-errore h1 {
+    max-width: 13ch;
+}
+
+/* Il codice di stato e' l'unico dato tecnico che compare nella pagina: sta in un
+   cartello, cosi' si riconosce prima ancora di leggere il titolo. */
+.codice-errore {
+    display: inline-block;
+    padding: var(--spazio-2) var(--spazio-4);
+    margin-bottom: var(--spazio-4);
+    background: var(--ketchup-pieno);
+    color: var(--testo-su-pieno);
+    border: var(--bordo-grafico) solid var(--identita);
+    box-shadow: var(--ombra);
+    font-size: var(--titolo-2);
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Pagine da cui ripartire dopo un 404: collegamenti in fila, non un elenco in colonna. */
+.ripartenza {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spazio-3);
+    margin-top: var(--spazio-4);
 }
 
 /* ---------- Moduli, tabelle e avvisi condivisi ---------- */

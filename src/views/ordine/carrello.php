@@ -87,7 +87,7 @@ if ($carrello === null) {
             <?php foreach ($prodotti as $prodotto): ?>
                 <li>
                     <article class="scheda">
-                        <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'])); ?>"
+                        <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'], true)); ?>"
                             width="300" height="225" loading="lazy" alt="" />
                         <h2><?php echo e($prodotto['nome']); ?></h2>
                         <p class="prezzo"><?php echo e(prezzo((int) $prodotto['prezzo_centesimi'])); ?></p>

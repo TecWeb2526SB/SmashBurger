@@ -214,7 +214,7 @@ CREATE TABLE messaggi_contatto (
     email VARCHAR(160) NOT NULL,
     categoria ENUM('ordine', 'prenotazione', 'segnalazione', 'altro') NOT NULL DEFAULT 'altro',
     testo VARCHAR(400) NOT NULL,
-    stato ENUM('nuovo', 'preso in carico', 'chiuso') NOT NULL DEFAULT 'nuovo',
+    stato ENUM('nuovo', 'chiuso') NOT NULL DEFAULT 'nuovo',
     creato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     aggiornato_il DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
@@ -322,6 +322,6 @@ INSERT INTO prenotazioni (sede_id, utente_id, data, ora_inizio, ora_fine, numero
 (1, 8, '2026-09-05', '16:00:00', '19:00:00', 25, 'rifiutata', 'Sala gia impegnata per manutenzione.', '2026-08-18 17:30:00');
 
 INSERT INTO messaggi_contatto (nome, email, categoria, testo, stato, creato_il) VALUES
-('Paolo Neri', 'paolo.neri@example.it', 'ordine', 'Ho ritirato l ordine SB-2026-0003 ma mancavano le patate. Come posso fare?', 'preso in carico', '2026-08-27 09:30:00'),
+('Paolo Neri', 'paolo.neri@example.it', 'ordine', 'Ho ritirato l ordine SB-2026-0003 ma mancavano le patate. Come posso fare?', 'nuovo', '2026-08-27 09:30:00'),
 ('Chiara Moretti', 'chiara.moretti@example.it', 'prenotazione', 'Vorrei sapere se la sala eventi di Udine tornera prenotabile a settembre.', 'nuovo', '2026-08-29 18:12:00'),
 ('Davide Longo', 'davide.longo@example.it', 'segnalazione', 'Sul telefono la pagina delle sedi mi sembra difficile da leggere in orizzontale.', 'chiuso', '2026-08-15 21:44:00');

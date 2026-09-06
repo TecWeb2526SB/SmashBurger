@@ -19,9 +19,9 @@
 
     <figure class="istantanea istantanea-locale">
         <img src="<?php echo e(risorsa('images/sedi/' . $sede['slug'] . '.webp', true)); ?>"
-            width="1200" height="800"
+            width="1200" height="900"
             alt="<?php echo e(testo_alternativo_sede($sede['slug'], $sede['citta'])); ?>" />
-        <figcaption>Smash Burger <?php echo e($sede['citta']); ?>, vista dalla strada.</figcaption>
+        <figcaption>La sede Smash Burger di <?php echo e($sede['citta']); ?>.</figcaption>
     </figure>
 </section>
 

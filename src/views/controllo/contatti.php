@@ -2,13 +2,16 @@
 /**
  * Messaggi ricevuti dal modulo di contatto.
  *
- * Riceve $messaggi, $stati e $categorie dal controller.
+ * Riceve $messaggi, $stati e $categorie dal controller. In $stati ogni stato porta con
+ * se' il verbo del pulsante che ci fa arrivare e il tipo della propria etichetta.
  *
  * Il testo si legge per intero nella riga, senza pulsante per aprirlo: il modulo che lo
  * raccoglie lo tiene entro CARATTERI_MESSAGGIO_CONTATTO caratteri, quindi ci sta.
  *
  * Ogni pulsante porta lo stato come nome e l'identificativo come valore: il browser invia
- * solo quello premuto, quindi il modulo resta uno per tutta la tabella.
+ * solo quello premuto, quindi il modulo resta uno per tutta la tabella. I comandi di una
+ * riga si susseguono sempre nello stesso ordine, quello degli stati, e la riga corrente
+ * non compare fra loro: non ha senso portare un messaggio dove gia' si trova.
  */
 ?>
 <h1>Messaggi</h1>
@@ -31,7 +34,7 @@
                     <th scope="col">Argomento</th>
                     <th scope="col">Messaggio</th>
                     <th scope="col">Stato</th>
-                    <th scope="col">Azioni</th>
+                    <th scope="col" data-colonna="azioni">Azioni</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,22 +50,24 @@
                         <td><?php echo e($categorie[$messaggio['categoria']] ?? $messaggio['categoria']); ?></td>
                         <td><?php echo e($messaggio['testo']); ?></td>
                         <td>
-                            <span class="etichetta" data-tipo="<?php echo $messaggio['stato'] === 'nuovo' ? 'attenzione' : 'positivo'; ?>">
+                            <span class="etichetta" data-tipo="<?php echo e($stati[$messaggio['stato']]['tipo']); ?>">
                                 <?php echo e($messaggio['stato']); ?>
                             </span>
                         </td>
-                        <td>
-                            <?php foreach ($stati as $stato): ?>
-                                <?php if ($stato !== $messaggio['stato']): ?>
-                                    <button type="submit" name="<?php echo e(str_replace(' ', '-', $stato)); ?>"
-                                        value="<?php echo (int) $messaggio['id']; ?>">
-                                        <?php echo e($stato); ?>
-                                        <span class="solo-lettori">
-                                            per il messaggio di <?php echo e($messaggio['nome']); ?>
-                                        </span>
-                                    </button>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
+                        <td data-colonna="azioni">
+                            <p class="azioni-riga">
+                                <?php foreach ($stati as $stato => $presentazione): ?>
+                                    <?php if ($stato !== $messaggio['stato']): ?>
+                                        <button type="submit" name="<?php echo e(str_replace(' ', '-', $stato)); ?>"
+                                            value="<?php echo (int) $messaggio['id']; ?>">
+                                            <?php echo e($presentazione['comando']); ?>
+                                            <span class="solo-lettori">
+                                                il messaggio di <?php echo e($messaggio['nome']); ?>
+                                            </span>
+                                        </button>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </p>
                         </td>
                     </tr>
                 <?php endforeach; ?>

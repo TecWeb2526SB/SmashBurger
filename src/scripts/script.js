@@ -259,6 +259,10 @@
         document.addEventListener('change', function (evento) {
             var controllo = evento.target;
 
+            // Il ruolo di manager esiste solo insieme a una sede: la scelta della sede si
+            // apre quando il ruolo diventa manager e si richiude vuota quando non lo e'
+            // piu'. L'obbligo sta sul campo, che il browser non convalida finche' e'
+            // disattivato, e viene ricontrollato dal server.
             if (controllo instanceof HTMLSelectElement && controllo.name === 'ruolo') {
                 var sedeSelect = document.getElementById(controllo.id.replace(/^ruolo-/, 'sede-'));
 

@@ -34,7 +34,9 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
     <?php if ($descrizione !== ''): ?>
         <meta name="description" content="<?php echo e($descrizione); ?>" />
     <?php endif; ?>
-    <link rel="stylesheet" media="screen" href="<?php echo e(risorsa('styles/stile.css', true)); ?>" />
+    <!-- Il foglio base vale anche su carta: stampa.css contiene i soli scostamenti,
+         quindi senza media="all" la stampa uscirebbe priva di stile. -->
+    <link rel="stylesheet" media="all" href="<?php echo e(risorsa('styles/stile.css', true)); ?>" />
     <link rel="stylesheet" media="screen and (max-width: 48em)" href="<?php echo e(risorsa('styles/mobile.css', true)); ?>" />
     <link rel="stylesheet" media="print" href="<?php echo e(risorsa('styles/stampa.css', true)); ?>" />
     <link rel="icon" type="image/svg+xml" href="<?php echo e(risorsa('images/favicon.svg')); ?>" />
@@ -47,8 +49,13 @@ if (in_array($slugCorrente, ['accedi', 'registrati', 'esci'], true)) {
     <header>
         <div class="header-interna">
             <p class="marchio">
-                <a href="<?php echo e(url()); ?>"><?php echo e(NOME_SITO); ?></a>
-                <span>Hot off the grill</span>
+                <a href="<?php echo e(url()); ?>">
+                    <img src="<?php echo e(risorsa('images/logo.webp', true)); ?>"
+                        width="512" height="479" alt="" />
+                    <img class="marchio-stampa" src="<?php echo e(risorsa('images/logo-stampa.webp', true)); ?>"
+                        width="512" height="479" alt="" />
+                    <span class="solo-lettori"><?php echo e(NOME_SITO); ?></span>
+                </a>
             </p>
 
             <nav aria-label="Navigazione principale">

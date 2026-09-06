@@ -32,7 +32,7 @@
                     <th scope="col">Cliente</th>
                     <th scope="col">Nota</th>
                     <th scope="col">Stato</th>
-                    <th scope="col">Azioni</th>
+                    <th scope="col" data-colonna="azioni">Azioni</th>
                 </tr>
             </thead>
             <tbody>
@@ -67,7 +67,7 @@
                                 <?php echo e($prenotazione['stato']); ?>
                             </span>
                         </td>
-                        <td>
+                        <td data-colonna="azioni">
                             <?php if ($prenotazione['stato'] === 'in attesa'): ?>
                                 <button type="submit" name="approvata" value="<?php echo (int) $prenotazione['id']; ?>">
                                     Approva

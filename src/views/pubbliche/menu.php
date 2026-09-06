@@ -61,7 +61,7 @@
                 <article class="scheda scheda-prodotto">
                     <div class="foto-prodotto">
                         <span class="etichetta-categoria"><?php echo e($prodotto['categoria_nome']); ?></span>
-                        <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'])); ?>"
+                        <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'], true)); ?>"
                             width="400" height="300" loading="lazy"
                             alt="<?php echo e($prodotto['nome']); ?>" />
                     </div>

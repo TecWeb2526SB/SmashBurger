@@ -49,7 +49,7 @@
                 <li>
                     <article class="concorrente-podio">
                         <div class="panino-podio">
-                            <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'])); ?>"
+                            <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'], true)); ?>"
                                 width="400" height="300" alt="" />
                             <div>
                                 <h3>

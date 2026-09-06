@@ -334,6 +334,14 @@ main > blockquote {
     grid-column: 1;
 }
 
+/* Pagine di errore */
+
+.apertura-errore {
+    grid-template-columns: 1fr;
+    gap: var(--spazio-6);
+    padding: var(--spazio-4);
+}
+
 .modulo-contatto fieldset {
     padding: var(--spazio-4);
 }

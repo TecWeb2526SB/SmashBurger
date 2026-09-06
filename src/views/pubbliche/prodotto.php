@@ -13,7 +13,7 @@
 <section class="dettaglio-prodotto">
     <div class="immagine-dettaglio-prodotto">
         <p class="numero-edizione">Smash / <?php echo e($prodotto['categoria_nome']); ?></p>
-        <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'])); ?>"
+        <img src="<?php echo e(risorsa('uploads/prodotti/' . $prodotto['immagine'], true)); ?>"
             width="600" height="450"
             alt="<?php echo e($prodotto['nome']); ?>" />
     </div>

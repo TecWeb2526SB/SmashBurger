@@ -64,7 +64,7 @@
                 <th scope="col">Modalita</th>
                 <th scope="col">Totale</th>
                 <th scope="col">Stato e pagamento</th>
-                <th scope="col">Dettaglio</th>
+                <th scope="col" data-colonna="azioni">Dettaglio</th>
             </tr>
         </thead>
         <tbody>
@@ -118,7 +118,7 @@
                             </form>
                         <?php endif; ?>
                     </td>
-                    <td>
+                    <td data-colonna="azioni">
                         <a href="<?php echo e(url('controllo-ordine', ['ordine' => $ordine['id']])); ?>">
                             Apri
                             <span class="solo-lettori">il dettaglio di <?php echo e($ordine['numero_ordine']); ?></span>

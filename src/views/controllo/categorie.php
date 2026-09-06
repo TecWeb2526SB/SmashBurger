@@ -87,7 +87,7 @@
                 <th scope="col">Nome</th>
                 <th scope="col">Slug</th>
                 <th scope="col">Posizione</th>
-                <th scope="col">Azioni</th>
+                <th scope="col" data-colonna="azioni">Azioni</th>
             </tr>
         </thead>
         <tbody>
@@ -118,7 +118,7 @@
                             form="<?php echo e($modulo); ?>" min="0" max="255"
                             value="<?php echo (int) $categoria['ordine']; ?>" />
                     </td>
-                    <td>
+                    <td data-colonna="azioni">
                         <button type="submit" form="<?php echo e($modulo); ?>">
                             Salva
                             <span class="solo-lettori"><?php echo e($categoria['nome']); ?></span>
