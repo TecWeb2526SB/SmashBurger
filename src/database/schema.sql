@@ -254,23 +254,23 @@ INSERT INTO categorie (nome, slug, descrizione, ordine) VALUES
 ('Dessert', 'dessert', 'Gelato e milkshake preparati al momento.', 4);
 
 INSERT INTO prodotti (categoria_id, nome, slug, descrizione, allergeni, immagine, prezzo_centesimi) VALUES
-(1, 'Cheeseburger', 'cheeseburger', 'Il classico: manzo schiacciato sulla piastra, cheddar fuso, cipolla e salsa della casa.', 'glutine, latte, uova, senape', 'cheeseburger.webp', 890),
+(1, 'Cheeseburger', 'cheeseburger', 'Il classico: manzo schiacciato sulla piastra, cheddar fuso, cetriolini sottaceto e salsa della casa.', 'glutine, latte, uova, senape', 'cheeseburger.webp', 890),
 (1, 'Bacon Burger', 'bacon-burger', 'Doppio manzo, bacon croccante, cheddar e salsa affumicata.', 'glutine, latte, uova, senape', 'bacon-burger.webp', 1090),
-(1, 'In-N-Out', 'in-n-out', 'Due dischi di manzo, cheddar, lattuga, pomodoro e salsa rosa.', 'glutine, latte, uova', 'in-n-out.webp', 1050),
-(1, 'Italiano', 'italiano', 'Manzo, provola affumicata, pomodoro secco e basilico fresco.', 'glutine, latte', 'italiano.webp', 1150),
-(1, 'Piccante', 'piccante', 'Manzo, jalapeno, cheddar piccante e maionese al peperoncino.', 'glutine, latte, uova', 'piccante.webp', 1090),
+(1, 'In-N-Out', 'in-n-out', 'Due dischi di manzo, cheddar, cipolla fresca, pomodoro, lattuga e salsa rosa.', 'glutine, latte, uova', 'in-n-out.webp', 1050),
+(1, 'Italiano', 'italiano', 'Manzo, provola affumicata, pomodori secchi, rucola, olive nere e pesto ai pinoli.', 'glutine, latte, frutta a guscio', 'italiano.webp', 1150),
+(1, 'Piccante', 'piccante', 'Manzo, salame piccante, cipolle caramellate, formaggio fuso e crema piccante.', 'glutine, latte, uova', 'piccante.webp', 1090),
 (1, 'Chicken Burger', 'chicken-burger', 'Petto di pollo impanato, insalata, pomodoro e maionese.', 'glutine, uova, latte', 'chicken-burger.webp', 990),
-(1, 'Chicken BBQ', 'chicken-bbq', 'Pollo grigliato, salsa barbecue, cipolla croccante e cheddar.', 'glutine, latte, uova, soia', 'chicken-bbq.webp', 1050),
-(1, 'Vegan Burger', 'vegan-burger', 'Burger vegetale di legumi, insalata, pomodoro e salsa vegana.', 'glutine, soia', 'vegan-burger.webp', 1090),
+(1, 'Chicken BBQ', 'chicken-bbq', 'Pollo fritto croccante, salsa barbecue, bacon, cheddar e coleslaw.', 'glutine, latte, uova, soia', 'chicken-bbq.webp', 1050),
+(1, 'Vegan Burger', 'vegan-burger', 'Burger vegetale croccante, coleslaw di cavolo cappuccio, insalata e salsa vegana.', 'glutine, soia', 'vegan-burger.webp', 1090),
 (2, 'Patate fritte', 'patate', 'Patate a bastoncino fritte al momento e salate a mano.', '', 'patate.webp', 450),
 (2, 'Chicken Wings', 'chicken-wings', 'Sei alette di pollo marinate e cotte al forno.', 'sedano', 'chicken-wings.webp', 750),
-(2, 'Tenders di pollo', 'tenders-di-pollo', 'Striscie di pollo impanate, servite con salsa a scelta.', 'glutine, uova', 'tenders-di-pollo.webp', 690),
-(2, 'Panzerotti', 'panzerotti', 'Tre panzerotti fritti ripieni di pomodoro e mozzarella.', 'glutine, latte', 'panzerotti.webp', 620),
+(2, 'Tenders di pollo', 'tenders-di-pollo', 'Strisce di pollo impanate, servite con salsa a scelta.', 'glutine, uova', 'tenders-di-pollo.webp', 690),
+(2, 'Panzerotti', 'panzerotti', 'Due panzerotti fritti ripieni di pomodoro e mozzarella.', 'glutine, latte', 'panzerotti.webp', 620),
 (3, 'Acqua naturale', 'acqua-naturale', 'Bottiglia da mezzo litro di acqua naturale.', '', 'acqua-naturale.webp', 150),
 (3, 'Acqua frizzante', 'acqua-frizzante', 'Bottiglia da mezzo litro di acqua frizzante.', '', 'acqua-frizzante.webp', 150),
 (3, 'Bibita alla spina', 'bibita-alla-spina', 'Bicchiere da mezzo litro di bibita a scelta fra quelle del giorno.', '', 'cup.webp', 300),
-(3, 'Birra artigianale', 'birra-artigianale', 'Bottiglia da 33 cl di birra chiara artigianale.', 'glutine', 'birra-artigianale.webp', 550),
-(4, 'Cono gelato', 'cono-gelato', 'Cono con due gusti di gelato a scelta fra quelli del giorno.', 'latte, uova, frutta a guscio', 'cono-gelato.webp', 350),
+(3, 'Birra artigianale', 'birra-artigianale', 'Bottiglia da 0,5 l di birra artigianale India Pale Ale.', 'glutine', 'birra-artigianale.webp', 550),
+(4, 'Cono gelato', 'cono-gelato', 'Cialda croccante con gelato soft al fiordilatte.', 'glutine, latte, uova', 'cono-gelato.webp', 350),
 (4, 'Milkshake alla vaniglia', 'milkshake-vaniglia', 'Milkshake denso preparato con gelato alla vaniglia.', 'latte', 'milkshake-vaniglia.webp', 480),
 (4, 'Milkshake alla banana', 'milkshake-banana', 'Milkshake denso preparato con gelato e banana fresca.', 'latte', 'milkshake-banana.webp', 480);
 

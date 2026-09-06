@@ -119,7 +119,7 @@
             <img src="<?php echo e(risorsa('images/home-metodo-smash.webp', true)); ?>"
                 width="800" height="600" loading="lazy" alt="" />
             <span>Metodo / pressione e calore</span>
-            <strong>Press. Sizzle. Flip.</strong>
+            <strong>Schiaccia. Sfrigola. Gira.</strong>
         </div>
         <figcaption>Ogni ordine comincia da questo gesto.</figcaption>
     </figure>
