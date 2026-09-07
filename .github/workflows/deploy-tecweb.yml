@@ -127,10 +127,10 @@ jobs:
           cat > "$tmpdir/configurazione-locale.php" <<EOF
           <?php
           return [
-              'DB_HOST' => $(php_quote "$db_host"),
-              'DB_NOME' => $(php_quote "$db_name"),
-              'DB_UTENTE' => $(php_quote "$db_user"),
-              'DB_PASSWORD' => $(php_quote "$db_password"),
+              'host' => $(php_quote "$db_host"),
+              'database' => $(php_quote "$db_name"),
+              'utente' => $(php_quote "$db_user"),
+              'password' => $(php_quote "$db_password"),
           ];
           EOF
 
