@@ -1,15 +1,6 @@
 --
 -- Schema del database di SmashBurger.
 --
--- Lo script non crea il database e non esegue USE: viene eseguito dentro il database
--- gia' selezionato, sia da docker-entrypoint-initdb.d in sviluppo sia dall'importazione
--- manuale sul server di consegna, dove il nome del database e' imposto dall'ateneo.
---
--- Lo script si applica a un database vuoto e non elimina nulla: in sviluppo il volume
--- viene ricreato, sul server di consegna il database viene svuotato prima dell'import.
---
--- Compatibile con MariaDB 10.6. Tutti gli importi sono interi in centesimi di euro.
---
 
 -- ---------------------------------------------------------------------------
 -- Struttura
@@ -41,8 +32,7 @@ CREATE TABLE utenti (
 
 -- Punti vendita. Lo slug identifica la sede negli indirizzi e nei moduli.
 -- manager_id e' unico: una sede ha al massimo un manager e un manager al massimo una
--- sede. Il vincolo sta qui e non su utenti perche' MariaDB 10.6 non offre indici unici
--- parziali, che servirebbero per limitare l'unicita' alle sole righe con ruolo manager.
+-- sede.
 CREATE TABLE sedi (
     id SMALLINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     slug VARCHAR(60) NOT NULL UNIQUE,
@@ -187,8 +177,7 @@ CREATE TABLE righe_ordine (
 -- Prenotazioni della sala eventi. Ogni sede ha una sola sala, quindi la prenotazione
 -- punta direttamente alla sede. La fascia dura tre ore.
 -- La non sovrapposizione si verifica nel codice e non con un vincolo di unicita': due
--- prenotazioni rifiutate o annullate possono legittimamente avere la stessa fascia, e
--- MariaDB 10.6 non permette un indice unico limitato alle sole righe attive.
+-- prenotazioni rifiutate o annullate possono legittimamente avere la stessa fascia.
 CREATE TABLE prenotazioni (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     sede_id SMALLINT UNSIGNED NOT NULL,
