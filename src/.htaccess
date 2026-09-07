@@ -4,7 +4,8 @@
 # il sito funziona sia servito dalla radice del dominio sia da una sottocartella.
 
 # Nessun elenco automatico del contenuto delle cartelle.
-Options -Indexes
+# Options -Indexes # Non funziona su server unipd
+IndexIgnore *
 
 RewriteEngine On
 

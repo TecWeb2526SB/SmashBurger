@@ -1,6 +1,7 @@
 # Nella cartella dei caricamenti non deve girare codice: un file caricato viene servito
 # come contenuto statico, mai eseguito.
-php_flag engine off
-Options -Indexes -ExecCGI
+# php_flag engine off # Non funziona su server unipd
+# Options -Indexes -ExecCGI # Non funziona su server unipd
+IndexIgnore *
 RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .php8
 AddType text/plain .php .phtml .php3 .php4 .php5 .php7 .php8
